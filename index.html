@@ -39,6 +39,13 @@
   html.lang-zhHans{ --font-display:'Noto Serif SC','Fraunces',serif; --font-body:'Noto Sans SC','Pretendard Variable',sans-serif; --font-ui:'Noto Sans SC','Pretendard Variable',sans-serif; }
   html.lang-zhHant{ --font-display:'Noto Serif TC','Fraunces',serif; --font-body:'Noto Sans TC','Pretendard Variable',sans-serif; --font-ui:'Noto Sans TC','Pretendard Variable',sans-serif; }
 
+  /* CJK (zh/ja): widen Latin-tuned ch measures so clause-level line breaks read cleanly */
+  html.lang-ja .hero h1, html.lang-zhHans .hero h1, html.lang-zhHant .hero h1{ max-width:26ch; }
+  html.lang-ja .proof .lead, html.lang-zhHans .proof .lead, html.lang-zhHant .proof .lead{ max-width:32ch; }
+  html.lang-ja .vision .statement, html.lang-zhHans .vision .statement, html.lang-zhHant .vision .statement{ max-width:34ch; }
+  html.lang-ja .philo-quote .statement, html.lang-zhHans .philo-quote .statement, html.lang-zhHant .philo-quote .statement{ max-width:34ch; }
+  html.lang-ja .close h2, html.lang-zhHans .close h2, html.lang-zhHant .close h2{ max-width:26ch; }
+
   /* ---------- Base ---------- */
   *,*::before,*::after{ box-sizing:border-box; }
   html{ -webkit-text-size-adjust:100%; }
@@ -49,6 +56,7 @@
     font-size:clamp(1.04rem,.55rem + .55vw,1.16rem); line-height:1.74;
     -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
     overflow-x:hidden;
+    line-break:strict; text-wrap:pretty;
   }
   /* faint paper grain */
   body::before{
@@ -71,15 +79,15 @@
   }
   .band--dark .eyebrow{ color:var(--muted-dark); }
 
-  h1,h2,h3{ font-family:var(--font-display); font-weight:500; margin:0; letter-spacing:-.01em; }
+  h1,h2,h3{ font-family:var(--font-display); font-weight:500; margin:0; letter-spacing:-.01em; text-wrap:balance; }
   em{ font-style:italic; }
   /* CJK has no italic — emphasis becomes accent color instead */
   html.lang-ko em, html.lang-ja em, html.lang-zhHans em, html.lang-zhHant em{ font-style:normal; color:var(--accent); }
   .band--dark em, html.lang-ko .band--dark em, html.lang-ja .band--dark em,
   html.lang-zhHans .band--dark em, html.lang-zhHant .band--dark em{ color:var(--accent-dark); }
 
-  .lead{ font-family:var(--font-display); font-weight:400; font-size:clamp(1.5rem,1rem + 2.1vw,2.5rem); line-height:1.24; letter-spacing:-.012em; }
-  .statement{ font-family:var(--font-display); font-weight:400; font-size:clamp(1.65rem,1.05rem + 2.6vw,2.95rem); line-height:1.22; letter-spacing:-.013em; max-width:21ch; }
+  .lead{ font-family:var(--font-display); font-weight:400; font-size:clamp(1.5rem,1rem + 2.1vw,2.5rem); line-height:1.24; letter-spacing:-.012em; text-wrap:balance; }
+  .statement{ font-family:var(--font-display); font-weight:400; font-size:clamp(1.65rem,1.05rem + 2.6vw,2.95rem); line-height:1.22; letter-spacing:-.013em; max-width:21ch; text-wrap:balance; }
   p{ margin:0 0 1.15em; max-width:var(--measure); }
   .prose p:last-child{ margin-bottom:0; }
 
@@ -534,7 +542,7 @@ const I18N = {
   ja:{
     nav_contact:`お問い合わせ`,
     hero_eyebrow:`AI自伝とパーソナライズド小説`,
-    hero_title:`時代を超えて<em>残る</em>、一人の人生。`,
+    hero_title:`時代を超えて<em>残る</em>、<br>一人の人生。`,
     hero_sub:`duvridge は、一人の人生を、長く残る文学に変えます。`,
     hero_cta1:`ReLife を見る`, hero_cta2:`私たちの物語`,
     lc_aria:`一人の人生が分岐点に達し、生きてきた人生と想像する人生に分かれる。`,
@@ -546,7 +554,7 @@ const I18N = {
     why_p2:`私たちは、これを静かに取り戻す価値のある喪失だと考えています。すべての人生に何百万もの読者が必要だからではなく、すべての人生が、それを愛する人々と、後に続く人々によって、抱きしめられ、読まれ、もう一度ひらかれるに値するからです。`,
     why_p3:`かつては代筆作家の数か月と多額の費用を要したことを、いまや AI が、丁寧さと技巧、そして親密さをもって成し遂げます。誰のためであっても。`,
     proof_eyebrow:`書いて証明した`,
-    proof_lead:`私たちは、提案書ではなく、自ら<em>書くこと</em>から始めました。`,
+    proof_lead:`私たちは、提案書ではなく、<br>自ら<em>書くこと</em>から始めました。`,
     proof_body1:`duvridge は、韓国語の小説を書くための独自のシステムをつくり、オープンソースとして公開しました — <a class="ilink" href="https://github.com/MJbae/awesome-novel-studio" target="_blank" rel="noopener">awesome-novel-studio</a>。そして、最も重要な試金石にかけました。そのシステムで、実際に書いたのです。十作を超えるウェブ小説、その幾つかは出版社との契約に至り、数百万人が読む市場で現実の読者に届きました。`,
     proof_body2:`一作ごとに技は深まりました。このシステムはいま第三世代に達し、その第一世代は誰もが自由に使えるよう公開されています。読者がその続きに対価を払う作品によって、すでに証明された方法です。`,
     s1_num:`10+`, s1_lab:`作のウェブ小説`,
@@ -555,7 +563,7 @@ const I18N = {
     proof_link:`オープンソースのハーネスを見る`,
     proof_bridge:`ReLife は、その技をあなたの手に委ねたときに生まれるものです。`,
     svc_eyebrow:`私たちがつくるもの`,
-    svc_head:`すべての人生は、二つの形で語ることができます。`,
+    svc_head:`すべての人生は、<br>二つの形で語ることができます。`,
     relife_label:`想像する物語`, relife_badge:`最初にお届け`,
     relife_body:`あのとき、違う選択をしていたら? ReLife は、あなたの実人生の分岐点を、<em>あなたが主人公</em>となる一編の小説に変えます。やり直す物語、あるいは、叶ったかもしれない恋の物語へ。`,
     relife_privacy:`最も私的なものは、決して端末を離れません。`,
@@ -568,7 +576,7 @@ const I18N = {
     philo2_title:`あなたの人生は、あなたのもとに。`,
     philo2_body:`最も深い物語は、信頼のなかでしか語られません。だから私たちは、その信頼を設計で守ります。最も私的なものは、あなたのそばにとどまります。`,
     philo_quote:`クラシックは、名声によって生まれるのではありません。いつか誰かが、もう一度読みたいと願う——その事実によって生まれるのです。`,
-    cta_title:`あなたの物語には、長く残る価値があります。`, cta_button:`メールを送る`,
+    cta_title:`あなたの物語には、<br>長く残る価値があります。`, cta_button:`メールを送る`,
     footer_tagline:`一人の人生をクラシックに。`,
     footer_contact:`お問い合わせ`, footer_os:`オープンソース`,
     footer_rights:`© 2026 duvridge. All rights reserved.`
@@ -576,7 +584,7 @@ const I18N = {
   zhHans:{
     nav_contact:`联系`,
     hero_eyebrow:`AI 自传与个性化小说`,
-    hero_title:`一个人的一生，<em>长久</em>留存。`,
+    hero_title:`一个人的一生，<br><em>长久</em>留存。`,
     hero_sub:`duvridge 将一个人的人生，化作长久流传的文学。`,
     hero_cta1:`了解 ReLife`, hero_cta2:`我们的故事`,
     lc_aria:`一个人的一生抵达转折点，分作你活过的人生与你想象的人生。`,
@@ -588,7 +596,7 @@ const I18N = {
     why_p2:`我们相信，这是一种值得静静弥补的失去。并非因为每一段人生都需要数百万读者，而是因为每一段人生，都值得被它所爱之人、以及后来之人珍藏、阅读、再次翻开。`,
     why_p3:`昔日需要代笔作家耗费数月、所费不赀方能完成之事，如今 AI 能以耐心、匠心与亲切来成就——为任何一个人。`,
     proof_eyebrow:`以写作验证`,
-    proof_lead:`我们并非从一份计划书开始，而是从亲手<em>写作</em>开始。`,
+    proof_lead:`我们并非从一份计划书开始，<br>而是从亲手<em>写作</em>开始。`,
     proof_body1:`duvridge 打造了一套用于创作韩文小说的系统，并将它作为开源公开给世界——<a class="ilink" href="https://github.com/MJbae/awesome-novel-studio" target="_blank" rel="noopener">awesome-novel-studio</a>。随后，我们让它接受了最重要的检验：用它来真正写作。十余部网络小说，其中数部与出版社签约，在一个数百万人阅读的市场里赢得了真实的读者。`,
     proof_body2:`每写一部，技艺便更深一层。这套系统如今已迭代至第三代，而第一代依然开放，任何人都可在其上构建——一套已被「读者愿意付费追读的作品」所验证的方法。`,
     s1_num:`10+`, s1_lab:`部网络小说`,
@@ -597,7 +605,7 @@ const I18N = {
     proof_link:`查看开源框架`,
     proof_bridge:`ReLife，正是当我们把这份技艺交到你手中时，所诞生的东西。`,
     svc_eyebrow:`我们的产品`,
-    svc_head:`每一段人生，都可以用两种方式讲述。`,
+    svc_head:`每一段人生，<br>都可以用两种方式讲述。`,
     relife_label:`想象的故事`, relife_badge:`率先推出`,
     relife_body:`倘若当初你做了不同的选择？ReLife 将你真实人生的转折点，化作一部<em>以你为主角</em>的小说：一个重新来过的故事，或是一段本可能开花结果的爱恋。`,
     relife_privacy:`最私密之事，绝不离开你的设备。`,
@@ -610,7 +618,7 @@ const I18N = {
     philo2_title:`你的人生，归你所有。`,
     philo2_body:`最深的故事，只在信任中诉说。因此我们以设计来守护这份信任：最私密之物，始终留在你身边。`,
     philo_quote:`经典并非由名声所成就，而是由「某一天，某个人愿意再次翻阅」这一事实所成就。`,
-    cta_title:`你的故事，值得长久留存。`, cta_button:`写信给我们`,
+    cta_title:`你的故事，<br>值得长久留存。`, cta_button:`写信给我们`,
     footer_tagline:`让一个人的一生成为经典。`,
     footer_contact:`联系`, footer_os:`开源项目`,
     footer_rights:`© 2026 duvridge. 保留所有权利。`
@@ -618,7 +626,7 @@ const I18N = {
   zhHant:{
     nav_contact:`聯絡`,
     hero_eyebrow:`AI 自傳與個人化小說`,
-    hero_title:`一個人的一生，<em>長久</em>留存。`,
+    hero_title:`一個人的一生，<br><em>長久</em>留存。`,
     hero_sub:`duvridge 將一個人的人生，化作長久流傳的文學。`,
     hero_cta1:`認識 ReLife`, hero_cta2:`我們的故事`,
     lc_aria:`一個人的一生抵達轉捩點，分作你活過的人生與你想像的人生。`,
@@ -630,7 +638,7 @@ const I18N = {
     why_p2:`我們相信，這是一種值得靜靜彌補的失去。並非因為每一段人生都需要數百萬讀者，而是因為每一段人生，都值得被它所愛之人、以及後來之人珍藏、閱讀、再次翻開。`,
     why_p3:`昔日需要代筆作家耗費數月、所費不貲方能完成之事，如今 AI 能以耐心、匠心與親切來成就——為任何一個人。`,
     proof_eyebrow:`以寫作驗證`,
-    proof_lead:`我們並非從一份企劃書開始，而是從親手<em>寫作</em>開始。`,
+    proof_lead:`我們並非從一份企劃書開始，<br>而是從親手<em>寫作</em>開始。`,
     proof_body1:`duvridge 打造了一套用於創作韓文小說的系統，並將它作為開源公開給世界——<a class="ilink" href="https://github.com/MJbae/awesome-novel-studio" target="_blank" rel="noopener">awesome-novel-studio</a>。隨後，我們讓它接受了最重要的考驗：用它來真正寫作。十餘部網路小說，其中數部與出版社簽約，在一個數百萬人閱讀的市場裡贏得了真實的讀者。`,
     proof_body2:`每寫一部，技藝便更深一層。這套系統如今已迭代至第三代，而第一代依然開放，任何人都可在其上構建——一套已被「讀者願意付費追讀的作品」所驗證的方法。`,
     s1_num:`10+`, s1_lab:`部網路小說`,
@@ -639,7 +647,7 @@ const I18N = {
     proof_link:`查看開源框架`,
     proof_bridge:`ReLife，正是當我們把這份技藝交到你手中時，所誕生的東西。`,
     svc_eyebrow:`我們的產品`,
-    svc_head:`每一段人生，都可以用兩種方式講述。`,
+    svc_head:`每一段人生，<br>都可以用兩種方式講述。`,
     relife_label:`想像的故事`, relife_badge:`率先推出`,
     relife_body:`倘若當初你做了不同的選擇？ReLife 將你真實人生的轉捩點，化作一部<em>以你為主角</em>的小說：一個重新來過的故事，或是一段本可能開花結果的愛戀。`,
     relife_privacy:`最私密之事，絕不離開你的裝置。`,
@@ -652,7 +660,7 @@ const I18N = {
     philo2_title:`你的人生，歸你所有。`,
     philo2_body:`最深的故事，只在信任中訴說。因此我們以設計來守護這份信任：最私密之物，始終留在你身邊。`,
     philo_quote:`經典並非由名聲所成就，而是由「某一天，某個人願意再次翻閱」這一事實所成就。`,
-    cta_title:`你的故事，值得長久留存。`, cta_button:`寫信給我們`,
+    cta_title:`你的故事，<br>值得長久留存。`, cta_button:`寫信給我們`,
     footer_tagline:`讓一個人的一生成為經典。`,
     footer_contact:`聯絡`, footer_os:`開源專案`,
     footer_rights:`© 2026 duvridge. 保留一切權利。`
