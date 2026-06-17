@@ -1,0 +1,725 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>duvridge — A life, written to last.</title>
+<meta name="description" content="duvridge turns one person's story into literature that endures — AI autobiography and personalized fiction. Starting with ReLife.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css">
+<style>
+  /* ---------- Tokens ---------- */
+  :root{
+    --paper:#E9E3D6;          /* warm putty paper — pushed dustier than the usual cream */
+    --paper-2:#E2DBCB;        /* slightly deeper tint for rhythm */
+    --ink:#1C1A16;            /* warm near-black */
+    --muted:#5C5645;          /* warm taupe, secondary text */
+    --accent:#27324E;         /* fountain-pen ink blue */
+    --navy-bg:#191F30;        /* deep ink for dark bands */
+    --on-dark:#E9E3D6;        /* paper text on dark */
+    --muted-dark:#9AA3B8;     /* cool ink-grey on dark */
+    --accent-dark:#AEBAD9;    /* light periwinkle highlight on dark */
+    --line:rgba(28,26,22,.16);
+    --line-dark:rgba(233,227,214,.18);
+
+    --font-display:'Fraunces', Georgia, 'Times New Roman', serif;
+    --font-body:'Pretendard Variable','Pretendard', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --font-ui:'Pretendard Variable','Pretendard', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+    --wrap:1080px;
+    --measure:60ch;
+    --pad-y:clamp(4.75rem, 11vh, 9rem);
+  }
+  /* CJK serif swaps (loaded on demand) keep the literary feel across languages */
+  html.lang-ko{ --font-display:'Noto Serif KR','Fraunces',serif; }
+  html.lang-ja{ --font-display:'Shippori Mincho','Fraunces',serif; --font-body:'Noto Sans JP','Pretendard Variable',sans-serif; --font-ui:'Noto Sans JP','Pretendard Variable',sans-serif; }
+  html.lang-zhHans{ --font-display:'Noto Serif SC','Fraunces',serif; --font-body:'Noto Sans SC','Pretendard Variable',sans-serif; --font-ui:'Noto Sans SC','Pretendard Variable',sans-serif; }
+  html.lang-zhHant{ --font-display:'Noto Serif TC','Fraunces',serif; --font-body:'Noto Sans TC','Pretendard Variable',sans-serif; --font-ui:'Noto Sans TC','Pretendard Variable',sans-serif; }
+
+  /* ---------- Base ---------- */
+  *,*::before,*::after{ box-sizing:border-box; }
+  html{ -webkit-text-size-adjust:100%; }
+  @media (prefers-reduced-motion: no-preference){ html{ scroll-behavior:smooth; } }
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--font-body); font-optical-sizing:auto;
+    font-size:clamp(1.04rem,.55rem + .55vw,1.16rem); line-height:1.74;
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+    overflow-x:hidden;
+  }
+  /* faint paper grain */
+  body::before{
+    content:""; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.04;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    mix-blend-mode:multiply;
+  }
+  a{ color:inherit; }
+  ::selection{ background:rgba(39,50,78,.16); }
+  img,svg{ display:block; max-width:100%; }
+
+  .wrap{ width:100%; max-width:var(--wrap); margin-inline:auto; padding-inline:clamp(1.25rem,5vw,2.75rem); position:relative; z-index:1; }
+  .band{ padding-block:var(--pad-y); position:relative; scroll-margin-top:5rem; }
+  .band--dark{ background:var(--navy-bg); color:var(--on-dark); }
+  .band--tint{ background:var(--paper-2); }
+
+  .eyebrow{
+    font-family:var(--font-ui); font-size:.72rem; font-weight:600; letter-spacing:.22em;
+    text-transform:uppercase; color:var(--muted); margin:0 0 1.35rem;
+  }
+  .band--dark .eyebrow{ color:var(--muted-dark); }
+
+  h1,h2,h3{ font-family:var(--font-display); font-weight:500; margin:0; letter-spacing:-.01em; }
+  em{ font-style:italic; }
+  /* CJK has no italic — emphasis becomes accent color instead */
+  html.lang-ko em, html.lang-ja em, html.lang-zhHans em, html.lang-zhHant em{ font-style:normal; color:var(--accent); }
+  .band--dark em, html.lang-ko .band--dark em, html.lang-ja .band--dark em,
+  html.lang-zhHans .band--dark em, html.lang-zhHant .band--dark em{ color:var(--accent-dark); }
+
+  .lead{ font-family:var(--font-display); font-weight:400; font-size:clamp(1.5rem,1rem + 2.1vw,2.5rem); line-height:1.24; letter-spacing:-.012em; }
+  .statement{ font-family:var(--font-display); font-weight:400; font-size:clamp(1.65rem,1.05rem + 2.6vw,2.95rem); line-height:1.22; letter-spacing:-.013em; max-width:21ch; }
+  p{ margin:0 0 1.15em; max-width:var(--measure); }
+  .prose p:last-child{ margin-bottom:0; }
+
+  /* ---------- ornament (mini life-curve, the recurring motif) ---------- */
+  .ornament{ width:62px; height:14px; color:var(--accent); opacity:.6; margin:0 0 1.6rem; }
+  .ornament--center{ margin-inline:auto; }
+  .band--dark .ornament{ color:var(--accent-dark); }
+
+  /* ---------- Header ---------- */
+  .site-head{
+    position:fixed; inset:0 0 auto 0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:1rem; padding:1.05rem clamp(1.25rem,5vw,2.75rem);
+    transition:background .35s ease, box-shadow .35s ease, padding .35s ease;
+  }
+  .site-head.scrolled{ background:rgba(233,227,214,.86); backdrop-filter:saturate(140%) blur(9px); box-shadow:0 1px 0 var(--line); padding-block:.7rem; }
+  .brand{ font-family:var(--font-display); font-weight:600; font-size:1.35rem; letter-spacing:-.02em; text-decoration:none; color:var(--ink); }
+  .brand .dot{ color:var(--accent); }
+  .head-right{ display:flex; align-items:center; gap:1.1rem; }
+  .langs{ display:flex; gap:.1rem; background:rgba(28,26,22,.05); border:1px solid var(--line); border-radius:999px; padding:.2rem; }
+  .scrolled .langs{ background:rgba(28,26,22,.04); }
+  .lang-btn{
+    font-family:var(--font-ui); font-size:.74rem; font-weight:600; letter-spacing:.02em;
+    border:0; background:transparent; color:var(--muted); cursor:pointer;
+    padding:.32rem .55rem; border-radius:999px; line-height:1; transition:color .2s, background .2s;
+  }
+  .lang-btn:hover{ color:var(--ink); }
+  .lang-btn[aria-pressed="true"]{ background:var(--accent); color:var(--paper); }
+  .nav-contact{ font-family:var(--font-ui); font-size:.82rem; font-weight:600; letter-spacing:.02em; text-decoration:none; color:var(--ink); border-bottom:1px solid transparent; padding-bottom:1px; transition:border-color .2s; }
+  .nav-contact:hover{ border-color:var(--ink); }
+  @media (max-width:560px){ .nav-contact{ display:none; } .brand{ font-size:1.2rem; } .langs{ gap:0; } .lang-btn{ padding:.3rem .42rem; font-size:.7rem; } }
+
+  /* ---------- Hero ---------- */
+  .hero{ min-height:100svh; display:flex; flex-direction:column; justify-content:center; padding-block:7.5rem 4rem; text-align:center; }
+  .hero .wrap{ display:flex; flex-direction:column; align-items:center; }
+  .hero h1{ font-size:clamp(2.7rem,1.4rem + 5.6vw,5.5rem); line-height:1.03; max-width:16ch; }
+  .hero-sub{ margin:1.6rem auto 0; max-width:40ch; color:var(--muted); font-size:clamp(1.08rem,1rem + .4vw,1.3rem); line-height:1.55; }
+  .hero-cta{ display:flex; gap:1.6rem 2.2rem; flex-wrap:wrap; justify-content:center; margin-top:2.4rem; }
+  .tlink{ font-family:var(--font-ui); font-size:.92rem; font-weight:600; letter-spacing:.01em; text-decoration:none; color:var(--ink); display:inline-flex; align-items:center; gap:.45em; }
+  .tlink .arr{ transition:transform .25s ease; }
+  .tlink:hover .arr{ transform:translateX(4px); }
+  .tlink--accent{ color:var(--accent); }
+
+  /* life-curve signature */
+  .lifecurve{ width:min(92%,720px); height:auto; margin:2.9rem auto .4rem; overflow:visible; }
+  .lifecurve text{ font-family:var(--font-ui); font-size:13px; letter-spacing:.04em; fill:var(--muted); }
+  .lc-path{ fill:none; stroke-linecap:round; stroke-linejoin:round; }
+  .lc-life{ stroke:var(--ink); stroke-width:2; opacity:.9; }
+  .lc-lived{ stroke:var(--ink); stroke-width:2; opacity:.5; }
+  .lc-imagined{ stroke:var(--accent); stroke-width:2.4; }
+  .lc-node{ fill:var(--paper); stroke:var(--accent); stroke-width:2.4; }
+  .lc-node-core{ fill:var(--accent); }
+  @media (max-width:680px){ .lc-end-label{ display:none; } }
+  @media (max-width:430px){ .lifecurve text{ display:none; } }
+
+  @media (prefers-reduced-motion: no-preference){
+    .lc-life{ stroke-dasharray:1; stroke-dashoffset:1; animation:draw 1.5s cubic-bezier(.5,.05,.2,1) .25s forwards; }
+    .lc-lived{ stroke-dasharray:1; stroke-dashoffset:1; animation:draw 1s cubic-bezier(.5,.05,.2,1) 1.55s forwards; }
+    .lc-imagined{ stroke-dasharray:1; stroke-dashoffset:1; animation:draw 1.05s cubic-bezier(.5,.05,.2,1) 1.55s forwards; }
+    .lc-node, .lc-node-core{ opacity:0; animation:pop .5s ease 1.45s forwards; }
+    .lifecurve text{ opacity:0; animation:fade .8s ease 2.4s forwards; }
+    .lc-turn-label{ animation-delay:1.7s; }
+    .hero h1{ opacity:0; transform:translateY(14px); animation:rise .9s cubic-bezier(.2,.7,.2,1) .05s forwards; }
+    .hero-sub{ opacity:0; transform:translateY(12px); animation:rise .9s cubic-bezier(.2,.7,.2,1) .9s forwards; }
+    .hero-cta{ opacity:0; transform:translateY(12px); animation:rise .9s cubic-bezier(.2,.7,.2,1) 2.6s forwards; }
+    .hero .eyebrow{ opacity:0; animation:fade .8s ease 0s forwards; }
+  }
+  @keyframes draw{ to{ stroke-dashoffset:0; } }
+  @keyframes pop{ from{ opacity:0; transform:scale(.4); } to{ opacity:1; transform:scale(1); } }
+  @keyframes fade{ to{ opacity:1; } }
+  @keyframes rise{ to{ opacity:1; transform:none; } }
+
+  /* ---------- Vision ---------- */
+  .vision .statement{ max-width:24ch; }
+  .vision-figure{ font-family:var(--font-ui); font-size:.72rem; font-weight:600; letter-spacing:.22em; text-transform:uppercase; color:var(--muted); }
+
+  /* ---------- Why ---------- */
+  .why .prose{ max-width:var(--measure); }
+  .why .prose p:first-of-type::first-letter{
+    font-family:var(--font-display); font-weight:500; float:left; font-size:3.6em; line-height:.78;
+    padding:.05em .12em 0 0; color:var(--accent);
+  }
+  html.lang-ko .why .prose p:first-of-type::first-letter,
+  html.lang-ja .why .prose p:first-of-type::first-letter,
+  html.lang-zhHans .why .prose p:first-of-type::first-letter,
+  html.lang-zhHant .why .prose p:first-of-type::first-letter{ float:none; font-size:inherit; line-height:inherit; padding:0; color:inherit; }
+
+  /* ---------- Proof (dark) ---------- */
+  .proof .lead{ max-width:18ch; }
+  .proof .prose{ max-width:58ch; margin-top:1.8rem; }
+  .proof .prose a.ilink{ color:var(--accent-dark); text-decoration:none; border-bottom:1px solid rgba(174,186,217,.45); transition:border-color .2s; }
+  .proof .prose a.ilink:hover{ border-color:var(--accent-dark); }
+  .stats{ display:flex; flex-wrap:wrap; gap:0; margin:3rem 0 2.4rem; border-top:1px solid var(--line-dark); border-bottom:1px solid var(--line-dark); }
+  .stat{ flex:1 1 180px; padding:1.5rem 1.6rem 1.55rem; }
+  .stat + .stat{ border-left:1px solid var(--line-dark); }
+  @media (max-width:600px){ .stat{ flex-basis:100%; } .stat + .stat{ border-left:0; border-top:1px solid var(--line-dark); } }
+  .stat-num{ font-family:var(--font-display); font-weight:500; font-size:clamp(1.9rem,1.2rem + 2vw,2.8rem); line-height:1; letter-spacing:-.02em; color:var(--on-dark); }
+  .stat-lab{ font-family:var(--font-ui); font-size:.8rem; letter-spacing:.04em; color:var(--muted-dark); margin-top:.55rem; }
+  .proof-link{ font-family:var(--font-ui); font-size:.9rem; font-weight:600; color:var(--accent-dark); text-decoration:none; display:inline-flex; align-items:center; gap:.5em; }
+  .proof-link .arr{ transition:transform .25s ease; }
+  .proof-link:hover .arr{ transform:translateX(4px); }
+  .proof-bridge{ font-family:var(--font-display); font-size:clamp(1.25rem,.9rem + 1.3vw,1.7rem); line-height:1.3; max-width:24ch; margin-top:3.2rem; padding-top:2.4rem; border-top:1px solid var(--line-dark); }
+
+  /* ---------- Services (the spread) ---------- */
+  .svc-head{ text-align:center; margin-bottom:clamp(2.6rem,5vw,4rem); }
+  .svc-head .statement{ max-width:none; margin-inline:auto; }
+  .spread{ display:grid; grid-template-columns:1fr 1px 1fr; gap:clamp(2rem,5vw,4.5rem); align-items:start; }
+  .spine{ background:var(--line); align-self:stretch; }
+  @media (max-width:820px){
+    .spread{ grid-template-columns:1fr; gap:0; }
+    .spine{ display:none; }
+    .leaf + .leaf{ border-top:1px solid var(--line); margin-top:2.8rem; padding-top:2.8rem; }
+  }
+  .leaf-top{ display:flex; align-items:center; gap:.7rem; flex-wrap:wrap; margin-bottom:1.1rem; }
+  .leaf-label{ font-family:var(--font-ui); font-size:.74rem; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); }
+  .pill{ font-family:var(--font-ui); font-size:.68rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; padding:.3em .7em; border-radius:999px; }
+  .pill--live{ background:var(--accent); color:var(--paper); }
+  .pill--soon{ background:transparent; color:var(--muted); border:1px solid var(--line); }
+  .leaf-name{ font-family:var(--font-display); font-weight:500; font-size:clamp(1.9rem,1.3rem + 1.8vw,2.6rem); line-height:1.05; margin-bottom:1rem; }
+  .leaf--relife .leaf-name{ color:var(--accent); }
+  .leaf-body{ color:var(--ink); }
+  .leaf-body.muted{ color:var(--muted); }
+  .privacy{ display:flex; align-items:flex-start; gap:.6rem; margin-top:1.4rem; font-family:var(--font-ui); font-size:.86rem; line-height:1.5; color:var(--muted); }
+  .privacy svg{ flex:none; width:16px; height:16px; margin-top:.15rem; color:var(--accent); }
+  .leaf-cta{ margin-top:1.6rem; }
+
+  /* ---------- Philosophy ---------- */
+  .beliefs{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(2rem,5vw,4rem); margin-bottom:clamp(3.2rem,7vw,5.5rem); }
+  @media (max-width:720px){ .beliefs{ grid-template-columns:1fr; gap:2.6rem; } }
+  .belief h3{ font-size:clamp(1.4rem,1rem + 1.3vw,1.9rem); margin-bottom:.85rem; }
+  .belief p{ color:var(--muted); }
+  .philo-quote{ text-align:center; }
+  .philo-quote .statement{ max-width:26ch; margin-inline:auto; }
+
+  /* ---------- Close (dark) ---------- */
+  .close{ text-align:center; }
+  .close .wrap{ display:flex; flex-direction:column; align-items:center; }
+  .close h2{ font-size:clamp(2rem,1.3rem + 3vw,3.4rem); line-height:1.1; max-width:18ch; }
+  .btn{
+    display:inline-flex; align-items:center; gap:.6em; margin-top:2.4rem;
+    font-family:var(--font-ui); font-size:.95rem; font-weight:600; letter-spacing:.01em;
+    color:var(--navy-bg); background:var(--on-dark); text-decoration:none;
+    padding:.95rem 1.7rem; border-radius:999px; transition:transform .2s ease, background .2s ease;
+  }
+  .btn:hover{ transform:translateY(-2px); background:#fff; }
+  .close-email{ margin-top:1.3rem; font-family:var(--font-ui); font-size:.92rem; color:var(--muted-dark); }
+  .close-email a{ color:var(--accent-dark); text-decoration:none; border-bottom:1px solid rgba(174,186,217,.4); }
+
+  /* ---------- Footer ---------- */
+  .foot{ background:var(--navy-bg); color:var(--on-dark); border-top:1px solid var(--line-dark); }
+  .foot .wrap{ padding-block:3rem; display:flex; flex-wrap:wrap; gap:1.6rem 2.5rem; align-items:flex-start; justify-content:space-between; }
+  .foot-brand{ font-family:var(--font-display); font-weight:600; font-size:1.5rem; letter-spacing:-.02em; }
+  .foot-brand .dot{ color:var(--accent-dark); }
+  .foot-tag{ font-family:var(--font-ui); font-size:.85rem; color:var(--muted-dark); margin-top:.5rem; max-width:30ch; }
+  .foot-links{ display:flex; flex-direction:column; gap:.55rem; font-family:var(--font-ui); font-size:.88rem; }
+  .foot-links a{ color:var(--on-dark); text-decoration:none; opacity:.92; }
+  .foot-links a:hover{ color:var(--accent-dark); }
+  .foot-langs{ display:flex; gap:.2rem; flex-wrap:wrap; }
+  .foot-langs .lang-btn{ color:var(--muted-dark); }
+  .foot-langs .lang-btn:hover{ color:var(--on-dark); }
+  .foot-langs .lang-btn[aria-pressed="true"]{ background:var(--accent-dark); color:var(--navy-bg); }
+  .foot-rights{ width:100%; border-top:1px solid var(--line-dark); padding-top:1.4rem; font-family:var(--font-ui); font-size:.78rem; color:var(--muted-dark); letter-spacing:.02em; }
+
+  /* ---------- Reveal ---------- */
+  @media (prefers-reduced-motion: no-preference){
+    [data-reveal]{ opacity:0; transform:translateY(20px); transition:opacity .8s cubic-bezier(.2,.7,.2,1), transform .8s cubic-bezier(.2,.7,.2,1); }
+    [data-reveal].in{ opacity:1; transform:none; }
+    .hero [data-reveal]{ opacity:1; transform:none; } /* hero handles its own load animation */
+  }
+
+  /* ---------- Focus ---------- */
+  a:focus-visible, button:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-radius:3px; }
+  .band--dark a:focus-visible, .foot a:focus-visible, .foot button:focus-visible, .close a:focus-visible{ outline-color:var(--accent-dark); }
+</style>
+</head>
+<body>
+
+<header class="site-head" id="head">
+  <a class="brand" href="#top" aria-label="duvridge — home">duvridge<span class="dot">.</span></a>
+  <div class="head-right">
+    <div class="langs" role="group" aria-label="Language">
+      <button class="lang-btn" data-lang="en" aria-pressed="true">EN</button>
+      <button class="lang-btn" data-lang="ko" aria-pressed="false">한국어</button>
+      <button class="lang-btn" data-lang="zhHans" aria-pressed="false">简</button>
+      <button class="lang-btn" data-lang="zhHant" aria-pressed="false">繁</button>
+      <button class="lang-btn" data-lang="ja" aria-pressed="false">日本語</button>
+    </div>
+    <a class="nav-contact" href="#close" data-i18n="nav_contact">Contact</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero band" id="hero">
+    <div class="wrap">
+      <p class="eyebrow" data-i18n="hero_eyebrow">AI autobiography &amp; personalized fiction</p>
+      <h1 data-i18n="hero_title">A life, written to <em>last</em>.</h1>
+
+      <svg class="lifecurve" viewBox="0 0 1000 300" role="img" aria-labelledby="lc-title">
+        <title id="lc-title" data-i18n-txt="lc_aria">A life that reaches a turning point and branches into the life you lived and the life you imagine.</title>
+        <!-- the life so far: an undulating curve (the highs and lows) -->
+        <path class="lc-path lc-life" pathLength="1"
+          d="M40,168 C120,168 150,96 220,96 C290,96 300,206 372,206 C440,206 452,120 520,128"/>
+        <!-- branch: the life you lived (continues, gently settling) -->
+        <path class="lc-path lc-lived" pathLength="1"
+          d="M520,128 C620,140 690,196 960,206"/>
+        <!-- branch: the life you imagine (rises) -->
+        <path class="lc-path lc-imagined" pathLength="1"
+          d="M520,128 C620,116 700,72 960,58"/>
+        <!-- turning point node -->
+        <circle class="lc-node" cx="520" cy="128" r="8"/>
+        <circle class="lc-node-core" cx="520" cy="128" r="2.6"/>
+        <!-- labels -->
+        <text class="lc-turn-label" x="520" y="100" text-anchor="middle" data-i18n-txt="lc_turning">the turning point</text>
+        <text class="lc-end-label" x="958" y="48" text-anchor="end" data-i18n-txt="lc_imagined">the life you imagine</text>
+        <text class="lc-end-label" x="958" y="228" text-anchor="end" data-i18n-txt="lc_lived">the life you lived</text>
+      </svg>
+
+      <p class="hero-sub" data-i18n="hero_sub">duvridge turns one person's story into literature that endures.</p>
+      <div class="hero-cta">
+        <a class="tlink tlink--accent" href="#services"><span data-i18n="hero_cta1">Meet ReLife</span> <span class="arr">→</span></a>
+        <a class="tlink" href="#proof"><span data-i18n="hero_cta2">Read our story</span> <span class="arr">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- VISION -->
+  <section class="band vision" id="vision">
+    <div class="wrap">
+      <p class="eyebrow" data-reveal data-i18n="vision_eyebrow">Our vision</p>
+      <p class="statement" data-reveal data-i18n="vision_body">A single human life holds more depth, beauty, and meaning than most of the books on our shelves. duvridge exists to make one person's life story into <em>a classic</em> — a work still read long after the time that made it.</p>
+    </div>
+  </section>
+
+  <!-- WHY -->
+  <section class="band band--tint why" id="why">
+    <div class="wrap">
+      <p class="eyebrow" data-reveal data-i18n="why_eyebrow">Why duvridge</p>
+      <div class="prose" data-reveal>
+        <p data-i18n="why_p1">For most of history, only the powerful and the famous had their lives written down to last. Everyone else was left to memory — and memory is fragile. A grandparent's voice, a parent's youth, the texture of an ordinary, extraordinary life: most of it fades within a single generation.</p>
+        <p data-i18n="why_p2">We think that's a quiet loss worth undoing. Not because every life needs an audience of millions, but because every life deserves to be held, read, and returned to — by the people who love it, and by those who come after.</p>
+        <p data-i18n="why_p3">What once took a ghostwriter months and a fortune, AI can now do with patience, craft, and intimacy — for anyone.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROOF -->
+  <section class="band band--dark proof" id="proof">
+    <div class="wrap">
+      <p class="eyebrow" data-reveal data-i18n="proof_eyebrow">Proven by writing</p>
+      <p class="lead" data-reveal data-i18n="proof_lead">We didn't start with a pitch. We started by <em>writing</em>.</p>
+      <div class="prose" data-reveal>
+        <p data-i18n="proof_body1">duvridge built its own system for writing Korean fiction and released it to the world as open source — <a class="ilink" href="https://github.com/MJbae/awesome-novel-studio" target="_blank" rel="noopener">awesome-novel-studio</a>. Then we put it to the only test that matters: we wrote with it. More than ten web novels, several picked up by publishers, finding real readers in a market read by millions.</p>
+        <p data-i18n="proof_body2">With every book the craft deepened. The system is now in its third generation, and the first remains open for anyone to build on — a method already proven by work that readers pay to keep reading.</p>
+      </div>
+
+      <!-- To add a verified GitHub star count later, drop a fourth .stat block here, e.g.:
+           <div class="stat"><div class="stat-num">130+</div><div class="stat-lab">GitHub stars</div></div> -->
+      <div class="stats" data-reveal>
+        <div class="stat"><div class="stat-num" data-i18n="s1_num">10+</div><div class="stat-lab" data-i18n="s1_lab">web novels</div></div>
+        <div class="stat"><div class="stat-num" data-i18n="s2_num">Published</div><div class="stat-lab" data-i18n="s2_lab">and earning readers</div></div>
+        <div class="stat"><div class="stat-num" data-i18n="s3_num">Gen 3</div><div class="stat-lab" data-i18n="s3_lab">of the craft</div></div>
+      </div>
+      <a class="proof-link" href="https://github.com/MJbae/awesome-novel-studio" target="_blank" rel="noopener" data-reveal><span data-i18n="proof_link">See the open-source harness</span> <span class="arr">→</span></a>
+
+      <p class="proof-bridge" data-reveal data-i18n="proof_bridge">ReLife is what happens when we put that craft in your hands.</p>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="band services" id="services">
+    <div class="wrap">
+      <div class="svc-head" data-reveal>
+        <svg class="ornament ornament--center" viewBox="0 0 62 14" aria-hidden="true"><path d="M1,7 C12,7 14,2 20,2 C26,2 27,12 33,12 C39,12 41,7 61,7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <p class="eyebrow" data-i18n="svc_eyebrow">What we make</p>
+        <h2 class="statement" data-i18n="svc_head">Every life can be told two ways.</h2>
+      </div>
+
+      <div class="spread">
+        <article class="leaf leaf--relife" data-reveal>
+          <div class="leaf-top">
+            <span class="leaf-label" data-i18n="relife_label">The story you imagine</span>
+            <span class="pill pill--live" data-i18n="relife_badge">Launching first</span>
+          </div>
+          <h3 class="leaf-name">ReLife</h3>
+          <p class="leaf-body" data-i18n="relife_body">What if you had chosen differently? ReLife turns the turning points of your real life into a novel where <em>you</em> are the hero — a story of starting over, or of the love that might have been.</p>
+          <p class="privacy">
+            <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+            <span data-i18n="relife_privacy">What's most personal never leaves your device.</span>
+          </p>
+          <div class="leaf-cta">
+            <a class="tlink tlink--accent" href="#close"><span data-i18n="relife_cta">Be the first to know</span> <span class="arr">→</span></a>
+          </div>
+        </article>
+
+        <div class="spine" aria-hidden="true"></div>
+
+        <article class="leaf" data-reveal>
+          <div class="leaf-top">
+            <span class="leaf-label" data-i18n="auto_label">The story you lived</span>
+            <span class="pill pill--soon" data-i18n="auto_status">In development</span>
+          </div>
+          <h3 class="leaf-name" data-i18n="auto_name">AI Autobiography</h3>
+          <p class="leaf-body muted" data-i18n="auto_body">Some lives are best kept exactly as they happened. We gather the memories and meaning of a life and compose them into a beautifully written autobiography — a book a family can hold for generations.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- PHILOSOPHY -->
+  <section class="band band--tint philosophy" id="philosophy">
+    <div class="wrap">
+      <p class="eyebrow" data-reveal data-i18n="philo_eyebrow">What we believe</p>
+      <div class="beliefs">
+        <div class="belief" data-reveal>
+          <h3 data-i18n="philo1_title">The story is yours.</h3>
+          <p data-i18n="philo1_body">We treat AI as a scribe, never the author. Every word serves the person at its center — with dignity, warmth, and the conviction that a life is worth preserving.</p>
+        </div>
+        <div class="belief" data-reveal>
+          <h3 data-i18n="philo2_title">Your life stays yours.</h3>
+          <p data-i18n="philo2_body">The deepest stories are only told in confidence. So we earn that confidence by design: what is most personal remains with you.</p>
+        </div>
+      </div>
+      <div class="philo-quote" data-reveal>
+        <svg class="ornament ornament--center" viewBox="0 0 62 14" aria-hidden="true"><path d="M1,7 C12,7 14,2 20,2 C26,2 27,12 33,12 C39,12 41,7 61,7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <p class="statement" data-i18n="philo_quote">A classic isn't made by fame. It's made by the fact that someone, someday, will want to read it again.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLOSE -->
+  <section class="band band--dark close" id="close">
+    <div class="wrap">
+      <svg class="ornament ornament--center" viewBox="0 0 62 14" aria-hidden="true"><path d="M1,7 C12,7 14,2 20,2 C26,2 27,12 33,12 C39,12 41,7 61,7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <h2 data-reveal data-i18n="cta_title">Your story deserves to last.</h2>
+      <a class="btn" href="mailto:contact@duvridge.com" data-reveal><span data-i18n="cta_button">Write to us</span> <span class="arr">→</span></a>
+      <p class="close-email" data-reveal><a href="mailto:contact@duvridge.com">contact@duvridge.com</a></p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div>
+      <div class="foot-brand">duvridge<span class="dot">.</span></div>
+      <p class="foot-tag" data-i18n="footer_tagline">Making a life into a classic.</p>
+    </div>
+    <nav class="foot-links" aria-label="Footer">
+      <a href="mailto:contact@duvridge.com" data-i18n="footer_contact">Contact</a>
+      <a href="https://github.com/MJbae/awesome-novel-studio" target="_blank" rel="noopener" data-i18n="footer_os">Open source</a>
+    </nav>
+    <div class="foot-langs" role="group" aria-label="Language">
+      <button class="lang-btn" data-lang="en" aria-pressed="true">EN</button>
+      <button class="lang-btn" data-lang="ko" aria-pressed="false">한국어</button>
+      <button class="lang-btn" data-lang="zhHans" aria-pressed="false">简</button>
+      <button class="lang-btn" data-lang="zhHant" aria-pressed="false">繁</button>
+      <button class="lang-btn" data-lang="ja" aria-pressed="false">日本語</button>
+    </div>
+    <div class="foot-rights" data-i18n="footer_rights">© 2026 duvridge. All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+/* ---------------- i18n ---------------- */
+const I18N = {
+  en:{
+    nav_contact:`Contact`,
+    hero_eyebrow:`AI autobiography &amp; personalized fiction`,
+    hero_title:`A life, written to <em>last</em>.`,
+    hero_sub:`duvridge turns one person's story into literature that endures.`,
+    hero_cta1:`Meet ReLife`, hero_cta2:`Read our story`,
+    lc_aria:`A life that reaches a turning point and branches into the life you lived and the life you imagine.`,
+    lc_turning:`the turning point`, lc_lived:`the life you lived`, lc_imagined:`the life you imagine`,
+    vision_eyebrow:`Our vision`,
+    vision_body:`A single human life holds more depth, beauty, and meaning than most of the books on our shelves. duvridge exists to make one person's life story into <em>a classic</em> — a work still read long after the time that made it.`,
+    why_eyebrow:`Why duvridge`,
+    why_p1:`For most of history, only the powerful and the famous had their lives written down to last. Everyone else was left to memory — and memory is fragile. A grandparent's voice, a parent's youth, the texture of an ordinary, extraordinary life: most of it fades within a single generation.`,
+    why_p2:`We think that's a quiet loss worth undoing. Not because every life needs an audience of millions, but because every life deserves to be held, read, and returned to — by the people who love it, and by those who come after.`,
+    why_p3:`What once took a ghostwriter months and a fortune, AI can now do with patience, craft, and intimacy — for anyone.`,
+    proof_eyebrow:`Proven by writing`,
+    proof_lead:`We didn't start with a pitch. We started by <em>writing</em>.`,
+    proof_body1:`duvridge built its own system for writing Korean fiction and released it to the world as open source — <a class="ilink" href="https://github.com/MJbae/awesome-novel-studio" target="_blank" rel="noopener">awesome-novel-studio</a>. Then we put it to the only test that matters: we wrote with it. More than ten web novels, several picked up by publishers, finding real readers in a market read by millions.`,
+    proof_body2:`With every book the craft deepened. The system is now in its third generation, and the first remains open for anyone to build on — a method already proven by work that readers pay to keep reading.`,
+    s1_num:`10+`, s1_lab:`web novels`,
+    s2_num:`Published`, s2_lab:`and earning readers`,
+    s3_num:`Gen 3`, s3_lab:`of the craft`,
+    proof_link:`See the open-source harness`,
+    proof_bridge:`ReLife is what happens when we put that craft in your hands.`,
+    svc_eyebrow:`What we make`,
+    svc_head:`Every life can be told two ways.`,
+    relife_label:`The story you imagine`, relife_badge:`Launching first`,
+    relife_body:`What if you had chosen differently? ReLife turns the turning points of your real life into a novel where <em>you</em> are the hero — a story of starting over, or of the love that might have been.`,
+    relife_privacy:`What's most personal never leaves your device.`,
+    relife_cta:`Be the first to know`,
+    auto_label:`The story you lived`, auto_status:`In development`, auto_name:`AI Autobiography`,
+    auto_body:`Some lives are best kept exactly as they happened. We gather the memories and meaning of a life and compose them into a beautifully written autobiography — a book a family can hold for generations.`,
+    philo_eyebrow:`What we believe`,
+    philo1_title:`The story is yours.`,
+    philo1_body:`We treat AI as a scribe, never the author. Every word serves the person at its center — with dignity, warmth, and the conviction that a life is worth preserving.`,
+    philo2_title:`Your life stays yours.`,
+    philo2_body:`The deepest stories are only told in confidence. So we earn that confidence by design: what is most personal remains with you.`,
+    philo_quote:`A classic isn't made by fame. It's made by the fact that someone, someday, will want to read it again.`,
+    cta_title:`Your story deserves to last.`, cta_button:`Write to us`,
+    footer_tagline:`Making a life into a classic.`,
+    footer_contact:`Contact`, footer_os:`Open source`,
+    footer_rights:`© 2026 duvridge. All rights reserved.`
+  },
+  ko:{
+    nav_contact:`문의`,
+    hero_eyebrow:`AI 자서전과 개인화 소설`,
+    hero_title:`시대가 지나도 <em>남을</em>, 한 사람의 삶.`,
+    hero_sub:`duvridge는 한 사람의 인생을 오래 남는 문학으로 만듭니다.`,
+    hero_cta1:`ReLife 만나기`, hero_cta2:`우리 이야기 보기`,
+    lc_aria:`한 사람의 삶이 분기점에 이르러, 살아온 인생과 상상하는 인생으로 갈라진다.`,
+    lc_turning:`그 분기점`, lc_lived:`살아온 인생`, lc_imagined:`상상하는 인생`,
+    vision_eyebrow:`우리의 비전`,
+    vision_body:`한 사람의 인생에는 서가에 꽂힌 대부분의 책보다 더 깊은 결과 아름다움, 의미가 담겨 있습니다. duvridge는 한 사람의 인생 스토리를 <em>시대가 지나도 남는 클래식</em>으로 만들기 위해 존재합니다.`,
+    why_eyebrow:`duvridge가 존재하는 이유`,
+    why_p1:`오랜 세월 동안, 자신의 삶을 오래 남는 형태로 기록할 수 있었던 것은 권력자와 유명인뿐이었습니다. 나머지 모든 사람의 인생은 기억에 맡겨졌고, 기억은 약합니다. 조부모의 목소리, 부모의 젊은 날, 평범하면서도 특별했던 한 삶의 결들은 대개 한 세대를 넘기지 못하고 사라집니다.`,
+    why_p2:`우리는 이것이 조용히 되돌릴 가치가 있는 상실이라고 믿습니다. 모든 인생이 수백만의 독자를 필요로 해서가 아니라, 모든 인생은 그것을 사랑하는 사람들과 그 뒤에 올 사람들에게 간직되고, 읽히고, 다시 펼쳐질 자격이 있기 때문입니다.`,
+    why_p3:`한때는 대필 작가의 수개월과 큰 비용이 필요했던 일을, 이제 AI가 정성과 솜씨, 그리고 친밀함으로 해냅니다. 누구를 위해서든.`,
+    proof_eyebrow:`직접 써서 증명했습니다`,
+    proof_lead:`우리는 제안서가 아니라, 직접 <em>쓰는 일</em>에서 시작했습니다.`,
+    proof_body1:`duvridge는 한국어 소설을 쓰기 위한 자체 시스템을 만들어 오픈소스로 공개했습니다 — <a class="ilink" href="https://github.com/MJbae/awesome-novel-studio" target="_blank" rel="noopener">awesome-novel-studio</a>. 그리고 가장 중요한 시험대에 올렸습니다. 그 시스템으로 직접 썼습니다. 열 권이 넘는 웹소설, 그중 여럿이 출판사와 계약되어 수백만이 읽는 시장에서 실제 독자를 만났습니다.`,
+    proof_body2:`한 권 한 권을 쓸 때마다 솜씨는 깊어졌습니다. 이 시스템은 지금 3세대에 이르렀고, 그 첫 세대는 누구나 가져다 쓸 수 있도록 공개되어 있습니다. 독자가 기꺼이 다음 화를 결제하는 작품으로 이미 검증된 방법입니다.`,
+    s1_num:`10+`, s1_lab:`편의 웹소설`,
+    s2_num:`출간`, s2_lab:`독자에게 가닿는`,
+    s3_num:`3세대`, s3_lab:`집필 노하우`,
+    proof_link:`오픈소스 하네스 보기`,
+    proof_bridge:`ReLife는, 그 솜씨를 당신의 손에 쥐여줄 때 일어나는 일입니다.`,
+    svc_eyebrow:`우리가 만드는 것`,
+    svc_head:`모든 인생은 두 가지로 이야기될 수 있습니다.`,
+    relife_label:`상상하는 이야기`, relife_badge:`가장 먼저 출시`,
+    relife_body:`그때 다른 선택을 했더라면? ReLife는 당신 실제 삶의 분기점을, <em>당신이 주인공</em>인 한 편의 소설로 만듭니다. 다시 시작하는 이야기, 혹은 어쩌면 이루어졌을 사랑의 이야기로.`,
+    relife_privacy:`가장 사적인 것은 당신의 기기를 떠나지 않습니다.`,
+    relife_cta:`출시 소식 먼저 받기`,
+    auto_label:`살아온 이야기`, auto_status:`준비 중`, auto_name:`AI 자서전`,
+    auto_body:`어떤 인생은 있었던 그대로 간직될 때 가장 빛납니다. 우리는 한 삶의 기억과 의미를 모아 아름답게 쓰인 한 권의 자서전으로 엮어냅니다. 한 가족이 여러 세대에 걸쳐 간직할 책으로.`,
+    philo_eyebrow:`우리의 믿음`,
+    philo1_title:`이야기는 당신의 것입니다.`,
+    philo1_body:`우리는 AI를 작가가 아니라 필경사로 봅니다. 모든 문장은 그 중심에 있는 한 사람을 위해, 존엄과 따뜻함, 그리고 한 사람의 삶은 남길 가치가 있다는 믿음으로 쓰입니다.`,
+    philo2_title:`당신의 삶은 당신에게 남습니다.`,
+    philo2_body:`가장 깊은 이야기는 오직 신뢰 속에서만 나옵니다. 그래서 우리는 그 신뢰를 설계로 지킵니다. 가장 사적인 것은 당신 곁에 그대로 머뭅니다.`,
+    philo_quote:`클래식은 명성으로 만들어지지 않습니다. 언젠가 누군가가 다시 읽고 싶어 한다는 사실로 만들어집니다.`,
+    cta_title:`당신의 이야기는 오래 남을 자격이 있습니다.`, cta_button:`메일 보내기`,
+    footer_tagline:`한 사람의 인생을 클래식으로.`,
+    footer_contact:`문의`, footer_os:`오픈소스`,
+    footer_rights:`© 2026 duvridge. 모든 권리 보유.`
+  },
+  ja:{
+    nav_contact:`お問い合わせ`,
+    hero_eyebrow:`AI自伝とパーソナライズド小説`,
+    hero_title:`時代を超えて<em>残る</em>、一人の人生。`,
+    hero_sub:`duvridge は、一人の人生を、長く残る文学に変えます。`,
+    hero_cta1:`ReLife を見る`, hero_cta2:`私たちの物語`,
+    lc_aria:`一人の人生が分岐点に達し、生きてきた人生と想像する人生に分かれる。`,
+    lc_turning:`その分岐点`, lc_lived:`生きてきた人生`, lc_imagined:`想像する人生`,
+    vision_eyebrow:`私たちのビジョン`,
+    vision_body:`一人の人生には、本棚に並ぶ多くの本よりも深い陰影と美しさ、そして意味が宿っています。duvridge は、一人の人生の物語を<em>時代を超えて残るクラシック</em>にするために存在します。`,
+    why_eyebrow:`duvridge が存在する理由`,
+    why_p1:`長い歴史の中で、自らの人生を末永く残る形に記せたのは、権力者と著名人だけでした。それ以外のすべての人の人生は記憶に委ねられ、記憶はもろいものです。祖父母の声、両親の若き日、平凡でいて特別だった人生の手ざわりは、たいてい一世代も経ずに消えていきます。`,
+    why_p2:`私たちは、これを静かに取り戻す価値のある喪失だと考えています。すべての人生に何百万もの読者が必要だからではなく、すべての人生が、それを愛する人々と、後に続く人々によって、抱きしめられ、読まれ、もう一度ひらかれるに値するからです。`,
+    why_p3:`かつては代筆作家の数か月と多額の費用を要したことを、いまや AI が、丁寧さと技巧、そして親密さをもって成し遂げます。誰のためであっても。`,
+    proof_eyebrow:`書いて証明した`,
+    proof_lead:`私たちは、提案書ではなく、自ら<em>書くこと</em>から始めました。`,
+    proof_body1:`duvridge は、韓国語の小説を書くための独自のシステムをつくり、オープンソースとして公開しました — <a class="ilink" href="https://github.com/MJbae/awesome-novel-studio" target="_blank" rel="noopener">awesome-novel-studio</a>。そして、最も重要な試金石にかけました。そのシステムで、実際に書いたのです。十作を超えるウェブ小説、その幾つかは出版社との契約に至り、数百万人が読む市場で現実の読者に届きました。`,
+    proof_body2:`一作ごとに技は深まりました。このシステムはいま第三世代に達し、その第一世代は誰もが自由に使えるよう公開されています。読者がその続きに対価を払う作品によって、すでに証明された方法です。`,
+    s1_num:`10+`, s1_lab:`作のウェブ小説`,
+    s2_num:`出版`, s2_lab:`読者に届く`,
+    s3_num:`第3世代`, s3_lab:`の執筆ノウハウ`,
+    proof_link:`オープンソースのハーネスを見る`,
+    proof_bridge:`ReLife は、その技をあなたの手に委ねたときに生まれるものです。`,
+    svc_eyebrow:`私たちがつくるもの`,
+    svc_head:`すべての人生は、二つの形で語ることができます。`,
+    relife_label:`想像する物語`, relife_badge:`最初にお届け`,
+    relife_body:`あのとき、違う選択をしていたら? ReLife は、あなたの実人生の分岐点を、<em>あなたが主人公</em>となる一編の小説に変えます。やり直す物語、あるいは、叶ったかもしれない恋の物語へ。`,
+    relife_privacy:`最も私的なものは、決して端末を離れません。`,
+    relife_cta:`いち早くお知らせを受け取る`,
+    auto_label:`生きてきた物語`, auto_status:`開発中`, auto_name:`AI自伝`,
+    auto_body:`ある人生は、あったままに遺されてこそ輝きます。私たちは一つの人生の記憶と意味を集め、美しくつづられた一冊の自伝へと織り上げます。家族が幾世代にもわたって手元に置ける本へ。`,
+    philo_eyebrow:`私たちの信念`,
+    philo1_title:`物語はあなたのもの。`,
+    philo1_body:`私たちは AI を、作家ではなく筆写者ととらえています。すべての言葉は、その中心にいる一人の人のために——尊厳と温かさ、人の一生は遺すに値するという信念をもって——記されます。`,
+    philo2_title:`あなたの人生は、あなたのもとに。`,
+    philo2_body:`最も深い物語は、信頼のなかでしか語られません。だから私たちは、その信頼を設計で守ります。最も私的なものは、あなたのそばにとどまります。`,
+    philo_quote:`クラシックは、名声によって生まれるのではありません。いつか誰かが、もう一度読みたいと願う——その事実によって生まれるのです。`,
+    cta_title:`あなたの物語には、長く残る価値があります。`, cta_button:`メールを送る`,
+    footer_tagline:`一人の人生をクラシックに。`,
+    footer_contact:`お問い合わせ`, footer_os:`オープンソース`,
+    footer_rights:`© 2026 duvridge. All rights reserved.`
+  },
+  zhHans:{
+    nav_contact:`联系`,
+    hero_eyebrow:`AI 自传与个性化小说`,
+    hero_title:`一个人的一生，<em>长久</em>留存。`,
+    hero_sub:`duvridge 将一个人的人生，化作长久流传的文学。`,
+    hero_cta1:`了解 ReLife`, hero_cta2:`我们的故事`,
+    lc_aria:`一个人的一生抵达转折点，分作你活过的人生与你想象的人生。`,
+    lc_turning:`那个转折点`, lc_lived:`你活过的人生`, lc_imagined:`你想象的人生`,
+    vision_eyebrow:`我们的愿景`,
+    vision_body:`一个人的一生，往往比书架上大多数书籍蕴含更深的层次、更动人的美与意义。duvridge 的存在，是为了让一个人的人生故事，成为<em>跨越时代而留存的经典</em>。`,
+    why_eyebrow:`duvridge 为何存在`,
+    why_p1:`在漫长的历史中，能将自己的一生记录成长久留存之形态的，唯有权贵与名人。其余所有人的人生都只能交付于记忆，而记忆是脆弱的。祖辈的声音、父母的青春、一段平凡却又非凡的人生中那些细微的纹理，常常不及一代人便已消散。`,
+    why_p2:`我们相信，这是一种值得静静弥补的失去。并非因为每一段人生都需要数百万读者，而是因为每一段人生，都值得被它所爱之人、以及后来之人珍藏、阅读、再次翻开。`,
+    why_p3:`昔日需要代笔作家耗费数月、所费不赀方能完成之事，如今 AI 能以耐心、匠心与亲切来成就——为任何一个人。`,
+    proof_eyebrow:`以写作验证`,
+    proof_lead:`我们并非从一份计划书开始，而是从亲手<em>写作</em>开始。`,
+    proof_body1:`duvridge 打造了一套用于创作韩文小说的系统，并将它作为开源公开给世界——<a class="ilink" href="https://github.com/MJbae/awesome-novel-studio" target="_blank" rel="noopener">awesome-novel-studio</a>。随后，我们让它接受了最重要的检验：用它来真正写作。十余部网络小说，其中数部与出版社签约，在一个数百万人阅读的市场里赢得了真实的读者。`,
+    proof_body2:`每写一部，技艺便更深一层。这套系统如今已迭代至第三代，而第一代依然开放，任何人都可在其上构建——一套已被「读者愿意付费追读的作品」所验证的方法。`,
+    s1_num:`10+`, s1_lab:`部网络小说`,
+    s2_num:`已出版`, s2_lab:`并赢得读者`,
+    s3_num:`第三代`, s3_lab:`的创作技艺`,
+    proof_link:`查看开源框架`,
+    proof_bridge:`ReLife，正是当我们把这份技艺交到你手中时，所诞生的东西。`,
+    svc_eyebrow:`我们的产品`,
+    svc_head:`每一段人生，都可以用两种方式讲述。`,
+    relife_label:`想象的故事`, relife_badge:`率先推出`,
+    relife_body:`倘若当初你做了不同的选择？ReLife 将你真实人生的转折点，化作一部<em>以你为主角</em>的小说：一个重新来过的故事，或是一段本可能开花结果的爱恋。`,
+    relife_privacy:`最私密之事，绝不离开你的设备。`,
+    relife_cta:`抢先获取上线消息`,
+    auto_label:`活过的故事`, auto_status:`开发中`, auto_name:`AI 自传`,
+    auto_body:`有些人生，唯有如实留存方显其光。我们收集一段人生的记忆与意义，编织成一部文笔优美的自传——一本家族得以世代珍藏的书。`,
+    philo_eyebrow:`我们的信念`,
+    philo1_title:`故事属于你。`,
+    philo1_body:`我们视 AI 为誊写者，而非作者。每一个字，都为处于其中心的那个人而写——怀着尊严、温度，以及「一个人的一生值得被留存」的信念。`,
+    philo2_title:`你的人生，归你所有。`,
+    philo2_body:`最深的故事，只在信任中诉说。因此我们以设计来守护这份信任：最私密之物，始终留在你身边。`,
+    philo_quote:`经典并非由名声所成就，而是由「某一天，某个人愿意再次翻阅」这一事实所成就。`,
+    cta_title:`你的故事，值得长久留存。`, cta_button:`写信给我们`,
+    footer_tagline:`让一个人的一生成为经典。`,
+    footer_contact:`联系`, footer_os:`开源项目`,
+    footer_rights:`© 2026 duvridge. 保留所有权利。`
+  },
+  zhHant:{
+    nav_contact:`聯絡`,
+    hero_eyebrow:`AI 自傳與個人化小說`,
+    hero_title:`一個人的一生，<em>長久</em>留存。`,
+    hero_sub:`duvridge 將一個人的人生，化作長久流傳的文學。`,
+    hero_cta1:`認識 ReLife`, hero_cta2:`我們的故事`,
+    lc_aria:`一個人的一生抵達轉捩點，分作你活過的人生與你想像的人生。`,
+    lc_turning:`那個轉捩點`, lc_lived:`你活過的人生`, lc_imagined:`你想像的人生`,
+    vision_eyebrow:`我們的願景`,
+    vision_body:`一個人的一生，往往比書架上大多數書籍蘊含更深的層次、更動人的美與意義。duvridge 的存在，是為了讓一個人的人生故事，成為<em>跨越時代而留存的經典</em>。`,
+    why_eyebrow:`duvridge 為何存在`,
+    why_p1:`在漫長的歷史中，能將自己的一生記錄成長久留存之形態的，唯有權貴與名人。其餘所有人的人生都只能交付於記憶，而記憶是脆弱的。祖輩的聲音、父母的青春、一段平凡卻又非凡的人生中那些細微的紋理，常常不及一代人便已消散。`,
+    why_p2:`我們相信，這是一種值得靜靜彌補的失去。並非因為每一段人生都需要數百萬讀者，而是因為每一段人生，都值得被它所愛之人、以及後來之人珍藏、閱讀、再次翻開。`,
+    why_p3:`昔日需要代筆作家耗費數月、所費不貲方能完成之事，如今 AI 能以耐心、匠心與親切來成就——為任何一個人。`,
+    proof_eyebrow:`以寫作驗證`,
+    proof_lead:`我們並非從一份企劃書開始，而是從親手<em>寫作</em>開始。`,
+    proof_body1:`duvridge 打造了一套用於創作韓文小說的系統，並將它作為開源公開給世界——<a class="ilink" href="https://github.com/MJbae/awesome-novel-studio" target="_blank" rel="noopener">awesome-novel-studio</a>。隨後，我們讓它接受了最重要的考驗：用它來真正寫作。十餘部網路小說，其中數部與出版社簽約，在一個數百萬人閱讀的市場裡贏得了真實的讀者。`,
+    proof_body2:`每寫一部，技藝便更深一層。這套系統如今已迭代至第三代，而第一代依然開放，任何人都可在其上構建——一套已被「讀者願意付費追讀的作品」所驗證的方法。`,
+    s1_num:`10+`, s1_lab:`部網路小說`,
+    s2_num:`已出版`, s2_lab:`並贏得讀者`,
+    s3_num:`第三代`, s3_lab:`的創作技藝`,
+    proof_link:`查看開源框架`,
+    proof_bridge:`ReLife，正是當我們把這份技藝交到你手中時，所誕生的東西。`,
+    svc_eyebrow:`我們的產品`,
+    svc_head:`每一段人生，都可以用兩種方式講述。`,
+    relife_label:`想像的故事`, relife_badge:`率先推出`,
+    relife_body:`倘若當初你做了不同的選擇？ReLife 將你真實人生的轉捩點，化作一部<em>以你為主角</em>的小說：一個重新來過的故事，或是一段本可能開花結果的愛戀。`,
+    relife_privacy:`最私密之事，絕不離開你的裝置。`,
+    relife_cta:`搶先獲取上線消息`,
+    auto_label:`活過的故事`, auto_status:`開發中`, auto_name:`AI 自傳`,
+    auto_body:`有些人生，唯有如實留存方顯其光。我們蒐集一段人生的記憶與意義，編織成一部文筆優美的自傳——一本家族得以世代珍藏的書。`,
+    philo_eyebrow:`我們的信念`,
+    philo1_title:`故事屬於你。`,
+    philo1_body:`我們視 AI 為謄寫者，而非作者。每一個字，都為處於其中心的那個人而寫——懷著尊嚴、溫度，以及「一個人的一生值得被留存」的信念。`,
+    philo2_title:`你的人生，歸你所有。`,
+    philo2_body:`最深的故事，只在信任中訴說。因此我們以設計來守護這份信任：最私密之物，始終留在你身邊。`,
+    philo_quote:`經典並非由名聲所成就，而是由「某一天，某個人願意再次翻閱」這一事實所成就。`,
+    cta_title:`你的故事，值得長久留存。`, cta_button:`寫信給我們`,
+    footer_tagline:`讓一個人的一生成為經典。`,
+    footer_contact:`聯絡`, footer_os:`開源專案`,
+    footer_rights:`© 2026 duvridge. 保留一切權利。`
+  }
+};
+
+const LANG_META = {
+  en:{ html:'en', cls:'', font:null },
+  ko:{ html:'ko', cls:'lang-ko', font:'family=Noto+Serif+KR:wght@500;600;700' },
+  ja:{ html:'ja', cls:'lang-ja', font:'family=Shippori+Mincho:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;700' },
+  zhHans:{ html:'zh-Hans', cls:'lang-zhHans', font:'family=Noto+Serif+SC:wght@500;600;700&family=Noto+Sans+SC:wght@400;500;700' },
+  zhHant:{ html:'zh-Hant', cls:'lang-zhHant', font:'family=Noto+Serif+TC:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;700' }
+};
+const loadedFonts = {};
+function ensureFont(lang){
+  const f = LANG_META[lang].font;
+  if(!f || loadedFonts[lang]) return;
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = 'https://fonts.googleapis.com/css2?' + f + '&display=swap';
+  document.head.appendChild(link);
+  loadedFonts[lang] = true;
+}
+
+function applyLang(lang){
+  const dict = I18N[lang]; if(!dict) return;
+  ensureFont(lang);
+  const root = document.documentElement;
+  root.classList.remove('lang-ko','lang-ja','lang-zhHans','lang-zhHant');
+  if(LANG_META[lang].cls) root.classList.add(LANG_META[lang].cls);
+  root.lang = LANG_META[lang].html;
+
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k = el.getAttribute('data-i18n');
+    if(dict[k] !== undefined) el.innerHTML = dict[k];
+  });
+  document.querySelectorAll('[data-i18n-txt]').forEach(el=>{
+    const k = el.getAttribute('data-i18n-txt');
+    if(dict[k] !== undefined) el.textContent = dict[k];
+  });
+  document.querySelectorAll('.lang-btn').forEach(b=>{
+    b.setAttribute('aria-pressed', String(b.dataset.lang === lang));
+  });
+}
+
+document.querySelectorAll('.lang-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=> applyLang(btn.dataset.lang));
+});
+
+/* default language */
+applyLang('en');
+
+/* ---------------- Header condense ---------------- */
+const head = document.getElementById('head');
+const onScroll = ()=>{ head.classList.toggle('scrolled', window.scrollY > 40); };
+onScroll(); window.addEventListener('scroll', onScroll, {passive:true});
+
+/* ---------------- Scroll reveal ---------------- */
+const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if(!reduce && 'IntersectionObserver' in window){
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, {threshold:0.12, rootMargin:'0px 0px -8% 0px'});
+  document.querySelectorAll('[data-reveal]').forEach(el=> io.observe(el));
+} else {
+  document.querySelectorAll('[data-reveal]').forEach(el=> el.classList.add('in'));
+}
+</script>
+</body>
+</html>
