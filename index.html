@@ -238,13 +238,6 @@
   .foot-brand{ font-family:var(--font-display); font-weight:600; font-size:1.5rem; letter-spacing:-.02em; }
   .foot-brand .dot{ color:var(--accent-dark); }
   .foot-tag{ font-family:var(--font-ui); font-size:.85rem; color:var(--muted-dark); margin-top:.5rem; max-width:30ch; }
-  .foot-links{ display:flex; flex-direction:column; gap:.55rem; font-family:var(--font-ui); font-size:.88rem; }
-  .foot-links a{ color:var(--on-dark); text-decoration:none; opacity:.92; }
-  .foot-links a:hover{ color:var(--accent-dark); }
-  .foot-langs{ display:flex; gap:.2rem; flex-wrap:wrap; }
-  .foot-langs .lang-btn{ color:var(--muted-dark); }
-  .foot-langs .lang-btn:hover{ color:var(--on-dark); }
-  .foot-langs .lang-btn[aria-pressed="true"]{ background:var(--accent-dark); color:var(--navy-bg); }
   .foot-rights{ width:100%; border-top:1px solid var(--line-dark); padding-top:1.4rem; font-family:var(--font-ui); font-size:.78rem; color:var(--muted-dark); letter-spacing:.02em; }
 
   /* ---------- Reveal ---------- */
@@ -256,7 +249,7 @@
 
   /* ---------- Focus ---------- */
   a:focus-visible, button:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-radius:3px; }
-  .band--dark a:focus-visible, .foot a:focus-visible, .foot button:focus-visible, .close a:focus-visible{ outline-color:var(--accent-dark); }
+  .band--dark a:focus-visible, .close a:focus-visible{ outline-color:var(--accent-dark); }
 </style>
 </head>
 <body>
@@ -419,17 +412,6 @@
       <div class="foot-brand">duvridge<span class="dot">.</span></div>
       <p class="foot-tag" data-i18n="footer_tagline">Making a life into a classic.</p>
     </div>
-    <nav class="foot-links" aria-label="Footer">
-      <a href="mailto:contact@duvridge.com" data-i18n="footer_contact">Contact</a>
-      <a href="https://github.com/MJbae/awesome-novel-studio" target="_blank" rel="noopener" data-i18n="footer_os">Open source</a>
-    </nav>
-    <div class="foot-langs" role="group" aria-label="Language">
-      <button class="lang-btn" data-lang="en" aria-pressed="true">EN</button>
-      <button class="lang-btn" data-lang="ko" aria-pressed="false">한국어</button>
-      <button class="lang-btn" data-lang="zhHans" aria-pressed="false">简</button>
-      <button class="lang-btn" data-lang="zhHant" aria-pressed="false">繁</button>
-      <button class="lang-btn" data-lang="ja" aria-pressed="false">日本語</button>
-    </div>
     <div class="foot-rights" data-i18n="footer_rights">© 2026 duvridge. All rights reserved.</div>
   </div>
 </footer>
@@ -469,7 +451,6 @@ const I18N = {
     trust_statement:`The deepest stories are told in confidence. What's most personal stays on your device — never on ours.`,
     cta_title:`Your story deserves to last.`,
     footer_tagline:`Making a life into a classic.`,
-    footer_contact:`Contact`, footer_os:`Open source`,
     footer_rights:`© 2026 duvridge. All rights reserved.`
   },
   ko:{
@@ -513,8 +494,6 @@ const I18N = {
     trust_statement:`가장 깊은 이야기는 오직 신뢰 속에서만 열립니다. 가장 사적인 것은 당신의 기기에만 머뭅니다 — 결코 우리 서버로 오지 않습니다.`,
     cta_title:`당신의 이야기는 오래 남을 가치가 있습니다.`,
     footer_tagline:`한 사람의 인생을 클래식으로.`,
-    footer_contact:`문의하기`,
-    footer_os:`오픈소스`,
     footer_rights:`© 2026 duvridge. All rights reserved.`
   },
   ja:{
@@ -558,8 +537,6 @@ const I18N = {
     trust_statement:`最も深い物語は、信頼のなかでしか語られません。最も私的なものは、あなたの端末にとどまります——私たちのもとには、けっして。`,
     cta_title:`あなたの物語には、永く遺る価値があります。`,
     footer_tagline:`一人の人生を、クラシックに。`,
-    footer_contact:`お問い合わせ`,
-    footer_os:`オープンソース`,
     footer_rights:`© 2026 duvridge. All rights reserved.`
   },
   zhHans:{
@@ -603,8 +580,6 @@ const I18N = {
     trust_statement:`最深的故事，只在信任里讲出。最私密的部分留在你的设备，从不存于我们。`,
     cta_title:`你的故事，值得长存。`,
     footer_tagline:`把一个人的一生，写成经典。`,
-    footer_contact:`联系我们`,
-    footer_os:`开源`,
     footer_rights:`© 2026 duvridge. 版权所有。`
   },
   zhHant:{
@@ -648,8 +623,6 @@ const I18N = {
     trust_statement:`最深的故事，只在信任中訴說。最私密之物，始終留在你的裝置——絕不在我們手中。`,
     cta_title:`你的故事，值得傳世。`,
     footer_tagline:`讓一個人的一生，成為經典。`,
-    footer_contact:`聯絡`,
-    footer_os:`開源專案`,
     footer_rights:`© 2026 duvridge. 保留一切權利。`
   }
 };
