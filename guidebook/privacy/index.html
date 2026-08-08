@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>개인정보처리방침 — Duvridge 여행 가이드북 앱</title>
+<meta name="description" content="Duvridge 여행 가이드북 앱의 개인정보처리방침입니다.">
+
+<!--
+  ⚠️ TODO — 앱 출시 전 반드시 개정할 것
+
+  본 방침은 2026-08-04 기준으로 작성되었으며, 이 시점에 Duvridge가 처리하는
+  개인정보는 "문의 이메일 수신"이 전부다. 앱은 아직 개발에 착수하지 않았다.
+
+  앱 출시(스토어 심사 제출) 전에 아래 예정 항목을 반영해 전면 개정해야 한다.
+  개정 없이 출시하면 실제 수집 항목과 방침이 불일치하여
+  Apple/Google 심사 반려 및 개인정보 보호법 위반 소지가 있다.
+
+  [출시 시 반영해야 할 예정 수집 항목]
+    - 이메일 기반 계정 정보 (회원가입/로그인)
+    - 이용자가 입력·업로드한 여행 일정 텍스트 및 캡처 이미지
+    - 생성된 가이드북 데이터
+    - 일행과의 공유 기능에 따른 데이터 공유 범위
+
+  [출시 시 반영해야 할 처리 위탁 / 국외 이전]
+    - Supabase (백엔드·데이터베이스 예정) → 위탁 및 국외 이전 고지 필요
+
+  [함께 갱신할 것]
+    - §2 수집 항목, §3 이용 목적, §4 보유 기간, §6 처리 위탁
+    - §10 자동 수집 장치 (앱 내 분석 도구 도입 시)
+    - 유료화(통신판매업 신고) 시 사업자 정보 표기 의무 발생 여부 재검토
+    - 아동(만 14세 미만) 대상 여부 판단 및 해당 시 별도 조항 추가
+    - 시행일 갱신
+-->
+
+<style>
+  :root{ color-scheme: light dark; }
+  *{ box-sizing:border-box; }
+  html{ -webkit-text-size-adjust:100%; }
+  body{
+    margin:0;
+    padding:3.5rem 1.25rem 4rem;
+    font-family:system-ui,-apple-system,'Segoe UI','Apple SD Gothic Neo','Noto Sans KR',sans-serif;
+    font-size:1rem;
+    line-height:1.75;
+    color:#1f1d1a;
+    background:#fbfaf8;
+    word-break:keep-all;
+  }
+  .wrap{ max-width:38rem; margin:0 auto; }
+  .wordmark{
+    margin:0 0 2.25rem;
+    font-size:.8125rem;
+    font-weight:600;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:#6b6558;
+  }
+  h1{ margin:0 0 .35rem; font-size:1.5rem; font-weight:600; letter-spacing:-.01em; }
+  .meta{ margin:0 0 2.5rem; font-size:.875rem; color:#6b6558; }
+  .callout{
+    margin:0 0 2.5rem;
+    padding:.9rem 1rem;
+    border:1px solid #e0dacd;
+    border-radius:.5rem;
+    background:#f4f1ea;
+    font-size:.9375rem;
+    color:#3d3a34;
+  }
+  .callout p{ margin:0; }
+  section{ margin:0 0 2rem; }
+  h2{ margin:0 0 .5rem; font-size:1rem; font-weight:600; }
+  p{ margin:0 0 .6rem; }
+  ul{ margin:0 0 .6rem; padding-left:1.15rem; }
+  li{ margin:0 0 .3rem; }
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin:0 0 .6rem;
+    font-size:.9375rem;
+  }
+  th,td{
+    padding:.5rem .6rem;
+    border:1px solid #e0dacd;
+    text-align:left;
+    vertical-align:top;
+  }
+  th{ background:#f4f1ea; font-weight:600; white-space:nowrap; }
+  .scroll{ overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  a{ color:#2b3a5e; text-underline-offset:.18em; }
+  a:hover{ opacity:.7; }
+  footer{
+    margin-top:3.5rem;
+    padding-top:1.5rem;
+    border-top:1px solid #e4dfd4;
+    font-size:.875rem;
+    color:#6b6558;
+  }
+  footer p{ margin:0 0 .2rem; }
+  .back{ margin-bottom:1rem; }
+  @media (prefers-color-scheme: dark){
+    body{ color:#e6e2da; background:#171614; }
+    .wordmark,.meta,footer{ color:#9b958a; }
+    .callout{ background:#201f1b; border-color:#38352d; color:#c9c4ba; }
+    th,td{ border-color:#38352d; }
+    th{ background:#201f1b; }
+    a{ color:#a8bade; }
+    footer{ border-top-color:#2c2a25; }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+
+  <p class="wordmark">Duvridge</p>
+
+  <h1>개인정보처리방침</h1>
+  <p class="meta">시행일: 2026년 8월 4일</p>
+
+  <div class="callout">
+    <p>
+      본 방침은 <strong>Duvridge가 개발 중인 여행 가이드북 앱</strong>과 그 지원 페이지에만 적용됩니다.
+      앱은 아직 출시되지 않았으며, 현재 Duvridge가 처리하는 개인정보는 <strong>문의 이메일 수신</strong>이 전부입니다.
+      앱 출시 시점에 실제 수집 항목을 반영하여 본 방침을 개정할 예정입니다.
+    </p>
+  </div>
+
+  <section>
+    <h2>1. 적용 범위</h2>
+    <p>
+      본 방침은 Duvridge(이하 "Duvridge")가 개발 중인 여행 가이드북 앱 및 본 지원 페이지에서의
+      개인정보 처리에 적용됩니다. Duvridge가 운영하는 다른 서비스에는 적용되지 않으며,
+      해당 서비스에는 각각의 방침이 별도로 적용됩니다.
+    </p>
+  </section>
+
+  <section>
+    <h2>2. 수집하는 개인정보 항목 및 수집 방법</h2>
+    <p>Duvridge는 현재 다음의 개인정보만을 처리합니다.</p>
+    <div class="scroll">
+      <table>
+        <tr>
+          <th>구분</th>
+          <th>항목</th>
+          <th>수집 방법</th>
+        </tr>
+        <tr>
+          <td>문의 응대</td>
+          <td>이메일 주소, 문의 내용에 이용자가 스스로 포함한 정보</td>
+          <td>이용자가 자발적으로 발송한 이메일</td>
+        </tr>
+      </table>
+    </div>
+    <p>
+      Duvridge는 회원가입 절차를 운영하지 않으며, 이용자가 문의를 보내지 않는 한
+      어떠한 개인정보도 수집하지 않습니다. 주민등록번호 등 고유식별정보와 민감정보는 수집하지 않습니다.
+    </p>
+  </section>
+
+  <section>
+    <h2>3. 개인정보의 이용 목적</h2>
+    <p>수집한 개인정보는 다음 목적으로만 이용하며, 목적이 변경될 경우 사전에 동의를 받습니다.</p>
+    <ul>
+      <li>문의 사항의 확인 및 회신</li>
+      <li>개인정보 열람·정정·삭제 등 정보주체의 요청에 대한 처리</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>4. 개인정보의 보유 및 이용 기간</h2>
+    <p>
+      문의 처리가 완료된 날로부터 <strong>1년간</strong> 보관한 후 파기합니다.
+      동일 사안에 대한 재문의 및 처리 내역 확인을 위한 최소한의 기간입니다.
+      관계 법령에 따라 보존 의무가 있는 경우에는 해당 기간 동안 보관합니다.
+    </p>
+    <p>이용자가 삭제를 요청하는 경우, 법령상 보존 의무가 없는 한 지체 없이 파기합니다.</p>
+  </section>
+
+  <section>
+    <h2>5. 개인정보의 제3자 제공</h2>
+    <p>
+      Duvridge는 이용자의 개인정보를 제3자에게 제공하지 않습니다.
+      다만 법령에 따라 수사기관 등이 적법한 절차에 따라 요청하는 경우에는 예외로 합니다.
+    </p>
+  </section>
+
+  <section>
+    <h2>6. 개인정보 처리의 위탁</h2>
+    <p>Duvridge는 서비스 운영을 위해 다음과 같이 개인정보 처리 업무를 위탁하고 있습니다.</p>
+    <div class="scroll">
+      <table>
+        <tr>
+          <th>수탁자</th>
+          <th>위탁 업무</th>
+        </tr>
+        <tr>
+          <td>Google LLC</td>
+          <td>이메일 서비스 운영(Google Workspace) — 문의 메일의 송수신 및 보관</td>
+        </tr>
+        <tr>
+          <td>Cloudflare, Inc.</td>
+          <td>웹사이트 호스팅 및 네트워크 보안 — 접속 기록의 일시적 처리</td>
+        </tr>
+      </table>
+    </div>
+    <p>
+      위탁 계약 시 개인정보의 안전한 관리를 위한 사항을 규정하고 있으며,
+      수탁자가 변경될 경우 본 방침을 통해 공개합니다.
+    </p>
+  </section>
+
+  <section>
+    <h2>7. 정보주체의 권리와 행사 방법</h2>
+    <p>이용자는 언제든지 다음의 권리를 행사할 수 있습니다.</p>
+    <ul>
+      <li>개인정보 열람 요구</li>
+      <li>오류가 있을 경우 정정 요구</li>
+      <li>삭제 요구</li>
+      <li>처리 정지 요구</li>
+    </ul>
+    <p>
+      권리 행사는 <a href="mailto:contact@duvridge.com">contact@duvridge.com</a>으로 요청하시면
+      지체 없이 조치합니다. 법정대리인이나 위임을 받은 자를 통해서도 요청할 수 있습니다.
+    </p>
+  </section>
+
+  <section>
+    <h2>8. 개인정보의 파기</h2>
+    <p>
+      보유 기간이 경과하거나 처리 목적이 달성된 개인정보는 지체 없이 파기합니다.
+      전자적 파일 형태의 정보는 복구할 수 없는 방법으로 영구 삭제하며,
+      출력물 등 기록물은 분쇄하거나 소각합니다.
+    </p>
+  </section>
+
+  <section>
+    <h2>9. 개인정보의 안전성 확보 조치</h2>
+    <ul>
+      <li>개인정보에 접근할 수 있는 인원을 최소한으로 제한합니다.</li>
+      <li>개인정보가 오가는 구간에 암호화된 통신(HTTPS)을 적용합니다.</li>
+      <li>이메일 계정에 2단계 인증 등 접근 통제 수단을 적용합니다.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>10. 쿠키 등 자동 수집 장치의 운영</h2>
+    <p>
+      본 지원 페이지는 쿠키를 사용하지 않으며, 접속자를 식별하거나 추적하는
+      분석 도구를 설치하지 않습니다. 다만 호스팅 제공자가 서비스 제공과 보안을 위해
+      접속 기록(IP 주소, 접속 시각 등)을 자체적으로 처리할 수 있습니다.
+    </p>
+  </section>
+
+  <section>
+    <h2>11. 개인정보 보호책임자</h2>
+    <p>
+      개인정보 처리에 관한 업무를 총괄하고 이용자의 불만 및 피해 구제를 담당합니다.
+    </p>
+    <ul>
+      <li>개인정보 보호책임자: Duvridge 대표</li>
+      <li>연락처: <a href="mailto:contact@duvridge.com">contact@duvridge.com</a></li>
+    </ul>
+    <p>
+      개인정보 침해에 대한 신고나 상담이 필요한 경우 아래 기관에 문의하실 수 있습니다.
+    </p>
+    <ul>
+      <li>개인정보침해신고센터 (privacy.kisa.or.kr / 국번없이 118)</li>
+      <li>개인정보 분쟁조정위원회 (kopico.go.kr / 1833-6972)</li>
+      <li>대검찰청 사이버수사과 (spo.go.kr / 국번없이 1301)</li>
+      <li>경찰청 사이버수사국 (ecrm.police.go.kr / 국번없이 182)</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>12. 방침의 변경</h2>
+    <p>
+      법령이나 서비스의 변경에 따라 본 방침이 개정될 경우, 변경 사항을 본 페이지에 게시합니다.
+      이용자에게 불리하게 변경되는 경우에는 시행일로부터 최소 30일 전에 알립니다.
+    </p>
+    <p>
+      앱 출시 시점에는 실제 수집하는 개인정보 항목을 반영하여 본 방침을 개정할 예정입니다.
+    </p>
+  </section>
+
+  <footer>
+    <p class="back"><a href="/guidebook">← 지원 페이지로 돌아가기</a></p>
+    <p>Duvridge</p>
+    <p>© 2026 Duvridge. All rights reserved.</p>
+  </footer>
+
+</main>
+</body>
+</html>
