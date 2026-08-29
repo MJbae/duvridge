@@ -234,7 +234,7 @@
   .foot .wrap{ display:flex; flex-direction:column; align-items:center; gap:.5rem; }
   .foot-brand{ font-family:var(--font-display); font-weight:600; font-size:1.5rem; letter-spacing:-.02em; }
   .foot-brand .dot{ color:var(--accent-dark); }
-  .foot-tag{ font-family:var(--font-ui); font-size:.85rem; color:var(--muted-dark); margin:0; }
+  .foot-tag{ font-family:'Fraunces',Georgia,serif; font-style:italic; font-size:.95rem; color:var(--muted-dark); margin:0; } /* brand signature — stays English in every locale */
   .foot-rights{ margin-top:2rem; padding-top:1.7rem; border-top:1px solid var(--line-dark); width:min(100%,440px); font-family:var(--font-ui); font-size:.78rem; color:var(--muted-dark); letter-spacing:.02em; }
 
   /* ---------- Reveal ---------- */
@@ -404,7 +404,7 @@
 <footer class="foot">
   <div class="wrap">
     <div class="foot-brand">duvridge<span class="dot">.</span></div>
-    <p class="foot-tag" data-i18n="footer_tagline">Making a life into a classic.</p>
+    <p class="foot-tag">A life, written to last.</p>
     <div class="foot-rights" data-i18n="footer_rights">© 2026 duvridge. All rights reserved.</div>
   </div>
 </footer>
@@ -451,7 +451,6 @@ const I18N = {
     relife_body:`What if you'd chosen differently? ReLife turns the turning points of your real life into a novel where <em>you</em> are the hero — a second chance, or the love that might have been.`,
     trust_statement:`The deepest stories are told in confidence. What's most personal stays on your device — never on ours.`,
     cta_title:`Your story deserves to last.`,
-    footer_tagline:`Making a life into a classic.`,
     footer_rights:`© 2026 duvridge. All rights reserved.`
   },
   ko:{
@@ -493,7 +492,6 @@ const I18N = {
     relife_body:`'그때 다른 길을 택했다면 어땠을까?' ReLife는 당신 인생의 갈림길을 <em>당신</em>이 주인공인 소설로 다시 써 내려갑니다. 놓쳐버린 또 한 번의 기회, 혹은 이루어졌을지도 모를 사랑의 이야기로 말이죠.`,
     trust_statement:`가장 깊은 이야기는 오직 굳건한 신뢰 위에서만 피어납니다. 당신의 가장 내밀한 기억은 오직 당신의 기기 안에만 머무릅니다. 결코 저희 서버로 전송되지 않습니다.`,
     cta_title:`당신의 이야기는 오래도록 기억될 가치가 있습니다.`,
-    footer_tagline:`한 사람의 인생을 당신만의 고전으로.`,
     footer_rights:`© 2026 duvridge. All rights reserved.`
   },
   ja:{
@@ -535,7 +533,6 @@ const I18N = {
     relife_body:`あのとき、違う選択をしていたら。ReLife は、あなたの実人生の分岐点を、<em>あなたが主人公</em>の小説に変えます。やり直す物語、あるいは、叶わなかった恋へ。`,
     trust_statement:`最も深い物語は、信頼のなかでしか語られません。最も私的なものは、あなたの端末にとどまります——私たちのもとには、けっして。`,
     cta_title:`あなたの物語には、永く遺る価値があります。`,
-    footer_tagline:`一人の人生を、クラシックに。`,
     footer_rights:`© 2026 duvridge. All rights reserved.`
   },
   zhHans:{
@@ -577,7 +574,6 @@ const I18N = {
     relife_body:`“如果当初选了另一条路会怎样？”ReLife 将你真实人生的岔路口，写成一部<em>以你为主角</em>的小说。那是一次重来的机会，或是一段本该开花结果的爱恋。`,
     trust_statement:`最深刻的故事，只在信任中倾诉。最私密的记忆只留在你的设备中，绝不会上传至我们的服务器。`,
     cta_title:`你的故事，值得被岁月铭记。`,
-    footer_tagline:`让一个人的一生，成为不朽的经典。`,
     footer_rights:`© 2026 duvridge. 保留所有权利。`
   },
   zhHant:{
@@ -619,7 +615,6 @@ const I18N = {
     relife_body:`「如果當初選了另一條路會怎樣？」ReLife 將你真實人生的岔路口，寫成一部<em>以你為主角</em>的小說。那是一次重來的機會，或是一段本該開花結果的愛戀。`,
     trust_statement:`最深刻的故事，只在信任中傾訴。最私密的記憶只留在你的裝置中，絕不會上傳至我們的伺服器。`,
     cta_title:`你的故事，值得被歲月銘記。`,
-    footer_tagline:`讓一個人的一生，成為不朽的經典。`,
     footer_rights:`© 2026 duvridge. 保留所有權利。`
   }
 };
