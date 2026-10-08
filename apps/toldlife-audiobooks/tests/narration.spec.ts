@@ -54,6 +54,8 @@ test('회차 화면은 아래 막대 하나로 듣고, 재생 버튼은 같은 �
   expect(Math.abs(playing.width - before.width)).toBeLessThan(1)
   await expect(page.locator('.article-header h1 > span')).toHaveClass(/is-reading/)
   expect(await page.evaluate(() => navigator.mediaSession.metadata?.title)).toBe('1화 어머니의 쇠갈고리')
+  const artwork = await page.evaluate(() => navigator.mediaSession.metadata?.artwork.map(image => new URL(image.src, location.href).pathname))
+  expect(artwork).toEqual([360, 720, 1280].map(width => `/audiobooks/images/episodes/ep01-01-${width}.jpg`))
   await action(page).click()
   await expect(action(page)).toHaveText('이어 듣기')
   await expect.poll(() => audio(page).evaluate((media: HTMLAudioElement) => media.paused)).toBe(true)
@@ -326,7 +328,29 @@ test('녹음이 없는 회차는 막대에 준비 중만 보이고 글은 그대
   await expect(page.locator('.reader-toolbar a, .reader-toolbar button')).toHaveCount(2)
 })
 
-test('회차 첫 그림을 받지 못하면 막대는 작은 그림을 따로 받고, 다시 불러온 그림을 이어 쓴다', async ({ page }) => {
+for (const id of ['ep06', 'ep08', 'ep11', 'ep13', 'ep14', 'ep15']) {
+  test(`${id}의 본문 삽화를 옮겨도 플레이어 대표 그림은 기존 표지를 유지한다`, async ({ page }) => {
+    await page.goto(`read/${id}.html`)
+    const representative = page.locator(`[data-illustration="${id}-01"]`)
+    if (id === 'ep11') {
+      const followsProse = await page.locator('.story-content p').first().evaluate((paragraph, imageId) => {
+        const figure = document.querySelector(`[data-illustration="${imageId}"]`)!
+        return Boolean(paragraph.compareDocumentPosition(figure) & Node.DOCUMENT_POSITION_FOLLOWING)
+      }, `${id}-01`)
+      expect(followsProse).toBe(true)
+    } else {
+      await expect(page.locator('.episode-illustration').first()).toHaveAttribute('data-illustration', `${id}-02`)
+    }
+    await expect.poll(() => representative.locator('img').evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true)
+    const thumb = bar(page).locator('img.player-thumb')
+    await expect(thumb).toHaveAttribute('src', new RegExp(`/audiobooks/images/episodes/${id}-01-`))
+    await expect(thumb).toHaveAttribute('src', await representative.locator('img').evaluate((image: HTMLImageElement) => image.currentSrc))
+    await openSheet(page)
+    await expect(sheet(page).locator('.player-sheet-art')).toHaveAttribute('src', `/audiobooks/images/episodes/${id}-01-720.jpg`)
+  })
+}
+
+test('회차 대표 그림을 받지 못하면 막대는 작은 그림을 따로 받고, 다시 불러온 그림을 이어 쓴다', async ({ page }) => {
   const painting = (url: URL) => url.pathname.includes('/images/episodes/ep01-01-') && !url.pathname.endsWith('-360.jpg')
   await page.route(painting, route => route.abort())
   await page.goto('read/ep01.html')

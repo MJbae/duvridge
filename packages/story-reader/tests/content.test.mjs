@@ -688,3 +688,37 @@ test('빈 줄 없는 소제목·빈 소제목·장면 구분도 본문 문단을
   const consecutive = '<!-- illustration: ep01-first -->\n\n<!-- illustration: ep01-next -->\n\n본문.'
   assert.throws(() => parseIllustrationMarkers(consecutive), /하나만/)
 })
+
+
+test('대표 그림은 본문 표식 순서·첫 문단과 분리해 유지하며 나중의 첫 삽화를 허용한다', async t => {
+  const { root, write } = fixture(t)
+  const images = ['ep01-01', 'ep01-02'].map(id => ({ id, episodeId: 'ep01', alt: '장면', width: 1280, height: 720,
+    ...(id === 'ep01-01' ? { representative: true } : {}),
+    sources: [360, 720, 1280].map(width => ({ src: `/images/episodes/${id}-${width}.jpg`, width })) }))
+  write('content/episode-illustrations.json', JSON.stringify({ version: 2, images }))
+  for (const image of images) for (const source of image.sources) write(`site/public${source.src}`, 'fixture')
+  const body = '서두의 설명은 그림 없이 읽는다.\n\n<!-- illustration: ep01-02 -->\n\n첫 실제 그림의 장면.\n\n<!-- illustration: ep01-01 -->\n\n나중에 나오는 대표 그림의 장면.'
+  const illustrations = loadEpisodeIllustrations(root, [{ id: 'ep01', body }])
+  assert.deepEqual(illustrations.ep01.map(image => image.id), ['ep01-02', 'ep01-01'])
+  assert.deepEqual(illustrations.ep01.map(image => image.position.start), [false, false])
+  assert.equal(illustrations.ep01.find(image => image.representative).id, 'ep01-01')
+  disposeMdItInstance()
+  const md = await createMarkdownRenderer(path.join(repo, 'independent-representative-renderer'), {
+    config(md) { md.set({ html: false }); md.use(episodeIllustrations, { base: '/test/', images: illustrations }) },
+  })
+  const html = md.render(`# 회차\n\n${body}`, { frontmatter: { kind: 'episode', episodeId: 'ep01' } })
+  assert.ok(html.indexOf('서두의 설명은 그림 없이 읽는다.') < html.indexOf('data-illustration="ep01-02"'))
+  assert.ok(html.indexOf('data-illustration="ep01-02"') < html.indexOf('data-illustration="ep01-01"'))
+  assert.equal((html.match(/loading="eager"/g) ?? []).length, 2)
+  assert.equal((html.match(/fetchpriority="high"/g) ?? []).length, 2)
+  images[1].representative = true
+  write('content/episode-illustrations.json', JSON.stringify({ version: 2, images }))
+  assert.throws(() => loadEpisodeIllustrations(root, [{ id: 'ep01', body }]), /하나만/)
+  images[0].representative = false; images[1].representative = false
+  write('content/episode-illustrations.json', JSON.stringify({ version: 2, images }))
+  assert.throws(() => loadEpisodeIllustrations(root, [{ id: 'ep01', body }]), /하나만/)
+  delete images[0].representative; delete images[1].representative
+  write('content/episode-illustrations.json', JSON.stringify({ version: 2, images }))
+  assert.equal(loadEpisodeIllustrations(root, [{ id: 'ep01', body }]).ep01.find(image => image.representative).id, 'ep01-02')
+  disposeMdItInstance()
+})

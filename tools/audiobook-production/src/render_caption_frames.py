@@ -17,6 +17,8 @@ def font(size, index=BOLD):
 
 
 def cover_fit(path):
+    if path is None:
+        return Image.new("RGB", (W, H), (30, 34, 39))
     im = Image.open(path).convert("RGB")
     scale = max(W / im.width, H / im.height)
     im = im.resize((round(im.width * scale), round(im.height * scale)), Image.LANCZOS)

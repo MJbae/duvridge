@@ -81,6 +81,7 @@ export function loadEpisodeIllustrations(root, episodes) {
   const manifest = JSON.parse(readFileSync(filename, 'utf8'))
   if (manifest.version !== 2 || !Array.isArray(manifest.images))
     throw new Error('회차 삽화 목록은 위치 정보 없는 version: 2 형식을 사용하세요.')
+  const explicitRepresentatives = manifest.images.some(image => Object.hasOwn(image, 'representative'))
   const byEpisode = Object.fromEntries(episodes.map(episode => [episode.id, episode]))
   const byId = new Map()
   const images = {}
@@ -88,6 +89,8 @@ export function loadEpisodeIllustrations(root, episodes) {
     const episode = byEpisode[image.episodeId]
     if (!episode || !/^[a-z0-9][a-z0-9-]*$/.test(image.id) || byId.has(image.id))
       throw new Error(`삽화의 회차 또는 ID가 잘못되었습니다: ${image.id}`)
+    if (Object.hasOwn(image, 'representative') && typeof image.representative !== 'boolean')
+      throw new Error(`대표 삽화 여부는 true 또는 false로 지정하세요: ${image.id}`)
     if (Object.hasOwn(image, 'position')) throw new Error(`삽화 위치는 원고 표시로만 관리합니다. position을 지우세요: ${image.id}`)
     if (!image.id.startsWith(`${episode.id}-`) || image.id === `${episode.id}-`)
       throw new Error(`삽화 ID는 소속 회차 ID로 시작해야 합니다: ${image.id} → ${episode.id}-…`)
@@ -121,9 +124,12 @@ export function loadEpisodeIllustrations(root, episodes) {
     const rows = images[episode.id] ?? []
     for (const image of rows)
       if (!seen.has(image.id)) throw new Error(`원고에 삽화 표시가 없습니다: ${image.id}`)
-    if (!rows.length || !markers[0]?.start)
-      throw new Error(`회차 첫 본문 앞에 대표 삽화 표시를 두세요: ${episode.id}`)
-    images[episode.id] = markers.map(marker => ({ ...byId.get(marker.id), position: { start: marker.start, paragraphIndex: marker.paragraphIndex } }))
+    const representatives = rows.filter(image => image.representative === true)
+    if (explicitRepresentatives && representatives.length !== 1)
+      throw new Error(`회차마다 대표 삽화를 하나만 지정하세요: ${episode.id}`)
+    const representativeId = representatives[0]?.id ?? markers[0]?.id
+    if (!representativeId) throw new Error(`회차의 대표 삽화가 없습니다: ${episode.id}`)
+    images[episode.id] = markers.map(marker => ({ ...byId.get(marker.id), representative: marker.id === representativeId, position: { start: marker.start, paragraphIndex: marker.paragraphIndex } }))
   }
   return images
 }

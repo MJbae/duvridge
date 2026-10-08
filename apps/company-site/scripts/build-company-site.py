@@ -148,7 +148,7 @@ def main():
             for folder in ("assets", "guidebook"):
                 shutil.copytree(ROOT / folder, staged / folder)
             revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
-            (staged / "deployment.json").write_text(json.dumps({"commit": revision, "services": ["company"]}) + "\n")
+            (staged / "deployment.json").write_text(json.dumps({"commit": revision, "services": ["company-site"]}) + "\n")
             if destination.exists():
                 shutil.rmtree(destination)
             shutil.copytree(staged, destination)

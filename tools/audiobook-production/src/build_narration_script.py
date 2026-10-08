@@ -262,9 +262,12 @@ def build(eid, ep, images):
         seen.add(marker["id"])
     if seen != expected:
         raise ValueError(f"모든 등록된 삽화 표시를 원고에 한 번씩 두세요: {eid}")
-    if not markers or not markers[0]["start"]:
-        raise ValueError(f"회차 첫 본문 앞에 대표 삽화 표시를 두세요: {eid}")
-    image = markers[0]["id"]
+    if not markers:
+        raise ValueError(f"원고에 등록된 삽화 표시를 두세요: {eid}")
+    representatives = [item["id"] for item in images if item["episodeId"] == eid and item.get("representative") is True]
+    if len(representatives) > 1 or (any("representative" in item for item in images) and len(representatives) != 1):
+        raise ValueError(f"회차 대표 삽화는 하나만 지정하세요: {eid}")
+    card_image = representatives[0] if representatives else markers[0]["id"]
     before = {marker["paragraphIndex"]: marker["id"] for marker in markers}
     out = []
     if eid == "prolog":
@@ -272,10 +275,11 @@ def build(eid, ep, images):
                     "say": f"{BOOK_TITLE}. {BOOK_SUBTITLE}.", "image": "cover"})
     # 부(1부·2부…)는 화면·낭독 모두 생략하고 회차로 바로 시작한다
     label, title, say = episode_label(eid, ep["title"])
-    out.append({"kind": "title", "label": label, "show": title, "say": say, "image": image})
+    out.append({"kind": "title", "label": label, "show": title, "say": say, "image": card_image})
     if dateline:
         text = dateline.group(1)
-        out.append({"kind": "dateline", "show": text, "say": speak(text) + ".", "image": image})
+        out.append({"kind": "dateline", "show": text, "say": speak(text) + ".", "image": card_image})
+    image = None  # Cover metadata must never select an unrelated early prose scene.
     paragraph_index = 0
     for p in narration_blocks(body):
         if RULE_LINE.fullmatch(p):

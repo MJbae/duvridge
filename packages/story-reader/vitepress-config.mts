@@ -101,7 +101,8 @@ return defineConfig({
       pageData.frontmatter.head.push(imagePreload(coverImageSources('webp'), base, coverImageSizes, 'image/webp'))
     } else if (pageData.frontmatter.kind === 'episode') {
       const images = catalog.illustrations as Record<string, Illustration[]>
-      const first = images[String(pageData.frontmatter.episodeId)]?.find(image => image.position.start)
+      const episodeImages = images[String(pageData.frontmatter.episodeId)] ?? []
+      const first = episodeImages.find(image => image.representative) ?? episodeImages[0]
       if (first) {
         pageData.frontmatter.head.push(imagePreload(first.webpSources?.length ? first.webpSources : first.sources,
           base, episodeImageSizes, first.webpSources?.length ? 'image/webp' : 'image/jpeg'))

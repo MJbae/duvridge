@@ -1,6 +1,8 @@
 import { createHash } from 'node:crypto'
 import { existsSync, readFileSync, readdirSync, realpathSync, statSync } from 'node:fs'
 import path from 'node:path'
+import matter from 'gray-matter'
+import { parseManuscript } from '@duvridge/story-reader/shared/episode-heading.mjs'
 import { stripIllustrationMarkers } from '@duvridge/story-reader/shared/episode-illustrations.mjs'
 import { compact, locateSentences, musicCueText, parseSrt } from './narration-cues.mjs'
 
@@ -76,17 +78,20 @@ function checkAudio(root, id) {
   if (!statSync(file).size) throw new Error(`낭독 음성 파일이 비어 있습니다: ${id}`)
 }
 
-/** A reviewed legacy recording is accepted only for the exact manuscript prose, MP3 and SRT bytes. */
+/** A reviewed legacy recording is accepted only for the reviewed episode's exact text, MP3 and SRT bytes. */
 export function acceptsRecordedRevision(root, id, matched, total) {
   const filename = path.join(root, 'content/narration-compatibility.json')
   if (!existsSync(filename)) return false
   const revision = JSON.parse(readFileSync(filename, 'utf8'))
-  const entry = revision.version === 1 ? revision.recordings?.[id] : undefined
+  const entry = revision.version === 2 ? revision.recordings?.[id] : undefined
   if (!entry || matched !== entry.matchedSentences || total !== entry.bodySentences) return false
   const digest = filename => createHash('sha256').update(readFileSync(filename)).digest('hex')
-  const manuscript = stripIllustrationMarkers(readFileSync(path.join(root, '배병희_자서전.md'), 'utf8'))
-  const manuscriptDigest = createHash('sha256').update(manuscript).digest('hex')
-  return revision.manuscriptTextSha256 === manuscriptDigest
+  const manuscript = matter(readFileSync(path.join(root, '배병희_자서전.md'), 'utf8')).content
+  const episode = parseManuscript(manuscript).episodes.find(episode => episode.id === id)
+  if (!episode) return false
+  const text = JSON.stringify({ id: episode.id, label: episode.label, title: episode.title, time: episode.time, body: stripIllustrationMarkers(episode.body) })
+  const episodeDigest = createHash('sha256').update(text).digest('hex')
+  return entry.episodeTextSha256 === episodeDigest
     && entry.audioSha256 === digest(path.join(root, recordDirectory, `${id}.mp3`))
     && entry.timingSha256 === digest(path.join(root, timingDirectory, `${id}.srt`))
 }

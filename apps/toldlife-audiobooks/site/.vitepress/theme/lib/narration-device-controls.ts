@@ -1,5 +1,5 @@
 import { withBase } from 'vitepress'
-import { catalog, startIllustration } from './reader-catalog'
+import { catalog, representativeIllustration } from './reader-catalog'
 
 type Controls = { play(): void; pause(): void; stop(): void; back(): void; forward(): void; seek(time: number): void }
 const actions: MediaSessionAction[] = ['play', 'pause', 'stop', 'seekbackward', 'seekforward', 'seekto']
@@ -34,12 +34,12 @@ export function setMediaControls(controls: Controls | null) {
   }
 }
 
-/** The lock screen shows the episode with its first watercolor. */
+/** The lock screen keeps the episode's representative watercolor, regardless of inline order. */
 export function describeEpisode(id: string) {
   if (!supported() || typeof MediaMetadata === 'undefined') return
   const episode = catalog.readingOrder.find(candidate => candidate.id === id)
   if (!episode) return
-  const image = startIllustration(id)
+  const image = representativeIllustration(id)
   navigator.mediaSession.metadata = new MediaMetadata({
     title: `${episode.label} ${episode.title}`,
     artist: catalog.work.subtitle,

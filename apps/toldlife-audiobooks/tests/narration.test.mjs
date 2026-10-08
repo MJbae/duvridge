@@ -309,7 +309,7 @@ test('3화까지의 낭독 음성과 문장 시각이 같은 회차 ID로 연결
   assert.deepEqual(tracks.ep01.cues.slice(0, 2).map(cue => cue[2]), ['title', 'dateline'])
 })
 
-test('검토한 2화 녹음 예외는 정본·음성·자막과 문장 수가 모두 같을 때만 적용한다', t => {
+test('검토한 2화 예외는 다른 회차·삽화 편집을 허용하고 해당 회차·음성·자막 변경을 거절한다', t => {
   const { root, write } = fixture(t)
   const compatibility = readFileSync(path.join(repo, 'content/narration-compatibility.json'), 'utf8')
   const recording = readFileSync(path.join(repo, 'site/public/record/ep02.mp3'))
@@ -329,10 +329,31 @@ test('검토한 2화 녹음 예외는 정본·음성·자막과 문장 수가 �
   const added = moved.replace('그는 날마다 어머니의 시린 손끝과', '<!-- illustration: ep01-new-scene -->\n\n그는 날마다 어머니의 시린 손끝과')
   write(mainFilename, added)
   assert.equal(load().sentences.ep02.length, 12)
+  const episodeMarker = '<!-- illustration: ep02-new-scene -->\n\n'
+  const ownEpisodeAdded = original.replace('메마른 땅에서 난 작물만으로는', `${episodeMarker}메마른 땅에서 난 작물만으로는`)
+  assert.notEqual(ownEpisodeAdded, original)
+  write(mainFilename, ownEpisodeAdded)
+  assert.equal(load().sentences.ep02.length, 12)
+  const ownEpisodeMoved = ownEpisodeAdded.replace(episodeMarker, '').replace('배병희도 또래 아이들처럼 학교에 다니고 싶었다.', `${episodeMarker}배병희도 또래 아이들처럼 학교에 다니고 싶었다.`)
+  assert.notEqual(ownEpisodeMoved, ownEpisodeAdded)
+  write(mainFilename, ownEpisodeMoved)
+  assert.equal(load().sentences.ep02.length, 12)
   write(mainFilename, original.replace('1940년대 태평양 전쟁과 광복 전후의 혼란 속에서 서민들의 삶은 곤궁했다.', '원래 녹음과 다른 문장으로 본문을 바꿨다.'))
   assert.throws(load, /맞지 않습니다/)
   write(mainFilename, `${original}\n`)
-  assert.throws(load, /맞지 않습니다/)
+  assert.equal(load().sentences.ep02.length, 12)
+  for (const [from, to] of [['2011년, 독정 RPC는', '2011년 무렵, 독정 RPC는'], ['subtitle: 배병희 자전소설', 'subtitle: 새롭게 정리한 작품 소개']]) {
+    const unrelated = original.replace(from, to)
+    assert.notEqual(unrelated, original)
+    write(mainFilename, unrelated)
+    assert.equal(load().sentences.ep02.length, 12)
+  }
+  for (const [from, to] of [['## 책보 대신 지게 {#ep02}', '## 책보와 지게 {#ep02}'], ['*1940년대 · 안면도 중장리*', '*1940년대 말 · 안면도 중장리*']]) {
+    const changed = original.replace(from, to)
+    assert.notEqual(changed, original)
+    write(mainFilename, changed)
+    assert.throws(load, /맞지 않습니다/)
+  }
   write(mainFilename, original)
   write('site/public/record/ep02.mp3', Buffer.concat([recording, Buffer.from('changed')]))
   assert.throws(load, /맞지 않습니다/)

@@ -3,7 +3,7 @@ import { computed, inject, nextTick, onBeforeUnmount, onMounted, ref, watch } fr
 import { useRouter, withBase } from 'vitepress'
 import { clock, listeningMinutes } from '../../shared/narration-cues.mjs'
 import { minutesLeft, playerTarget, type PlayerMode } from '../../shared/playback-selection.mjs'
-import { catalog, startIllustration, startImageSrc } from '../lib/reader-catalog'
+import { catalog, representativeIllustration, representativeImageSrc } from '../lib/reader-catalog'
 import { narrationFor, narrationKey } from '../lib/narration-controller'
 import ReaderIcon from '@duvridge/story-reader/components/ReaderIcon.vue'
 import AudiobookPlayerSheet from './AudiobookPlayerSheet.vue'
@@ -55,7 +55,7 @@ const progress = computed(() => {
   const time = current.mode === 'playing' || current.mode === 'paused' ? state.time : current.mode === 'resume' ? current.time ?? 0 : null
   return time === null ? null : `${Math.min(100, Math.max(0, (time / duration.value) * 100))}%`
 })
-// On its own page an episode's painting is already loading for the text, so the bar reuses that
+// On its own page an episode's representative painting loads with the text, so the bar reuses that
 // file instead of fetching another size of the same picture.
 // Null means the page has no painting to share; empty means it is still loading. The server-rendered
 // page leaves the thumbnail empty, so no second size of the painting is fetched before the text's own.
@@ -75,8 +75,8 @@ function unwatchPageImage() {
 function watchPageImage() {
   mounted.value = true
   unwatchPageImage()
-  const start = startIllustration(narration.page.value)
-  pageFigure = start ? document.querySelector<HTMLElement>(`[data-illustration="${start.id}"]`) : null
+  const representative = representativeIllustration(narration.page.value)
+  pageFigure = representative ? document.querySelector<HTMLElement>(`[data-illustration="${representative.id}"]`) : null
   if (!pageFigure) return void (pageImage.value = null)
   // Image events do not bubble, but the figure hears them first, also from an image made again on retry.
   pageFigure.addEventListener('load', capturePageImage, true)
@@ -89,7 +89,7 @@ onBeforeUnmount(unwatchPageImage)
 const thumb = computed(() => {
   if (!target.value || !mounted.value) return ''
   if (target.value.id === narration.page.value && pageImage.value !== null) return pageImage.value
-  return withBase(startImageSrc(target.value.id, 360))
+  return withBase(representativeImageSrc(target.value.id, 360))
 })
 const returning = computed(() => narration.onPage.value && !state.follow && state.away !== 0)
 const tip = computed(() => !state.tipSeen && narration.onPage.value && state.playing)

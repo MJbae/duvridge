@@ -46,6 +46,22 @@ class NarrationIllustrationTests(unittest.TestCase):
         self.assertEqual(lines[0]["image"], "ep01-02")
         self.assertEqual([line["image"] for line in lines if line["kind"] == "para"], ["ep01-02", "ep01-01"])
 
+    def test_representative_is_card_metadata_and_never_leaks_into_early_prose(self):
+        body = "도입 문단이다.\n\n" + self.body
+        images = [self.images[0], {**self.images[1], "representative": True}]
+        lines = self.build(body, images)
+        self.assertEqual([line["image"] for line in lines[:2]], ["ep01-02", "ep01-02"])
+        self.assertEqual([line["image"] for line in lines if line["kind"] == "para"], [None, "ep01-01", "ep01-02"])
+        original = self.build(body)
+        self.assertEqual([{key: value for key, value in line.items() if key != "image"} for line in lines],
+                         [{key: value for key, value in line.items() if key != "image"} for line in original])
+
+    def test_only_one_representative_can_select_the_title_card(self):
+        with self.assertRaisesRegex(ValueError, "대표 삽화는 하나만"):
+            self.build(self.body, [{**image, "representative": True} for image in self.images])
+        with self.assertRaisesRegex(ValueError, "대표 삽화는 하나만"):
+            self.build(self.body, [*self.images, {"id": "ep02-01", "episodeId": "ep02", "representative": True}])
+
     def test_heading_without_blank_line_preserves_the_following_prose(self):
         for heading in ["### 소제목", "###"]:
             with self.subTest(heading=heading):

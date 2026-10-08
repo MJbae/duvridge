@@ -7,6 +7,7 @@
 usage: python3 -I assemble_audiobook.py narration-scripts/ep01.json [--audio-tempo 1.0] [--video-tempo 0.9]
 """
 import argparse
+from functools import lru_cache
 import json
 import os
 import re
@@ -19,6 +20,7 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).parent))
 import render_caption_frames  # noqa: E402
 from generate_narration_clips import clip_path  # noqa: E402
+from resolve_illustration_assets import resolve_illustration_asset  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 SITE = Path(os.environ.get("MEMOIR_CONTENT_ROOT", ROOT.parents[1] / "packages/memoir-content")).expanduser().resolve()
@@ -51,11 +53,9 @@ def rms(x):
     return float(np.sqrt(np.mean(x ** 2))) if len(x) else 0.0
 
 
+@lru_cache(maxsize=None)
 def image_path(image_id):
-    if image_id == "cover":
-        return SITE / "site/public/images/bae-byunghee-hero-watercolor.png"
-    src = SITE / "content/illustration-sources" / f"{image_id}.png"
-    return src if src.exists() else SITE / "site/public/images/episodes" / f"{image_id}-1280.jpg"
+    return resolve_illustration_asset(SITE, image_id)
 
 
 def split_captions(text):

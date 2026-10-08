@@ -3,7 +3,7 @@ import { computed, inject, ref } from 'vue'
 import { withBase } from 'vitepress'
 import { clock, spokenTime } from '../../shared/narration-cues.mjs'
 import type { PlayerMode } from '../../shared/playback-selection.mjs'
-import { catalog, startImageSrc, type Episode } from '../lib/reader-catalog'
+import { catalog, representativeImageSrc, type Episode } from '../lib/reader-catalog'
 import { narrationFor, narrationKey, narrationRates } from '../lib/narration-controller'
 import ReaderIcon from '@duvridge/story-reader/components/ReaderIcon.vue'
 
@@ -19,7 +19,7 @@ const duration = computed(() => narrationFor(props.episode.id)?.duration ?? 0)
 // Sentence steps and the position bar work on the recording in use.
 const current = computed(() => state.active && state.episodeId === props.episode.id)
 const time = computed(() => (current.value ? state.time : props.mode === 'resume' ? state.saved?.time ?? 0 : 0))
-const art = computed(() => withBase(startImageSrc(props.episode.id, 720)))
+const art = computed(() => withBase(representativeImageSrc(props.episode.id, 720)))
 
 function open() {
   opened.value = true

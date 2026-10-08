@@ -659,3 +659,36 @@ test('음악 오류 안내가 붙어도 아주 크게 설정 시트는 마치기
   const done = (await dialog.getByRole('button', { name: '설정 마치기' }).boundingBox())!
   expect(done.y + done.height).toBeLessThanOrEqual(page.viewportSize()!.height)
 })
+
+
+test('여섯 회차의 삽화는 해당 장면에서 시작하고 대표 그림은 첫 그림과 별도로 유지한다', async ({ page }) => {
+  const targets = [
+    ['ep06', 'ep06-01', '갯벌에서 져 온 생김을 마당에 부려놓으면', ['ep06-02', 'ep06-01']],
+    ['ep08', 'ep08-01', '여러 마을을 오가며 기계를 계속 돌리다 보니', ['ep08-02', 'ep08-03', 'ep08-01']],
+    ['ep11', 'ep11-01', '수원에서 자취하며 학교에 다니던 딸은', ['ep11-01']],
+    ['ep13', 'ep13-01', '먹구름이 몰려와 한밤중에 장대비가 퍼붓기 시작하면', ['ep13-02', 'ep13-01']],
+    ['ep14', 'ep14-01', '그는 다시 농지 일부를 처분해 자금을 마련했다.', ['ep14-02', 'ep14-01']],
+    ['ep15', 'ep15-01', '이튿날에도 배병희는 아무 일 없었다는 듯', ['ep15-02', 'ep15-01', 'ep15-03']],
+  ] as const
+  for (const [episode, representativeId, followingText, order] of targets) {
+    await page.goto(`read/${episode}.html`)
+    expect(await page.locator('.episode-illustration').evaluateAll(figures => figures.map(figure => figure.getAttribute('data-illustration')))).toEqual(order)
+    const representative = page.locator(`[data-illustration="${representativeId}"]`)
+    await expect(representative.locator('xpath=following-sibling::p[1]')).toContainText(followingText)
+    const preload = page.locator('head link[rel="preload"][as="image"]')
+    await expect(preload).toHaveCount(1)
+    await expect(preload).toHaveAttribute('imagesrcset', new RegExp(`${representativeId}-360\\.webp`))
+    await expect(representative.locator('img')).toHaveAttribute('loading', 'eager')
+    await expect(representative.locator('img')).toHaveAttribute('fetchpriority', 'high')
+    if (['ep06', 'ep08', 'ep11', 'ep13'].includes(episode)) {
+      expect(await page.locator('.story-content p').first().evaluate(paragraph => {
+        let previous = paragraph.previousElementSibling
+        while (previous) {
+          if (previous.classList.contains('episode-illustration')) return true
+          previous = previous.previousElementSibling
+        }
+        return false
+      })).toBe(false)
+    }
+  }
+})

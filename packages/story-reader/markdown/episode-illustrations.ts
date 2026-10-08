@@ -9,6 +9,7 @@ export type Illustration = {
   alt: string
   width: number
   height: number
+  representative?: boolean
   position: { start: boolean; paragraphIndex: number }
   sources: { src: string; width: number }[]
   webpSources?: { src: string; width: number }[]
@@ -62,6 +63,7 @@ export function episodeIllustrations(md: Markdown, options: { base: string; imag
   md.renderer.rules.illustration_marker = () => ''
   md.renderer.rules.episode_illustration = (tokens, index) => {
     const { illustration: image, first } = tokens[index].meta as { illustration: Illustration; first: boolean }
+    const eager = first || image.representative === true
     const base = options.base.endsWith('/') ? options.base : `${options.base}/`
     const url = (src: string) => base + src.replace(/^\//, '')
     const binding = (value: string) => md.utils.escapeHtml(JSON.stringify(value))
@@ -70,6 +72,6 @@ export function episodeIllustrations(md: Markdown, options: { base: string; imag
     const webp = image.webpSources?.length
       ? ` :webp-srcset="${binding(imageSrcset(image.webpSources, base))}"`
       : ''
-    return `<figure class="episode-illustration" data-illustration="${md.utils.escapeHtml(image.id)}"><ResponsiveImage :src="${binding(url(fallback.src))}" :srcset="${binding(srcset)}"${webp} sizes="${episodeImageSizes}" :width="${image.width}" :height="${image.height}" alt="${md.utils.escapeHtml(image.alt)}" loading="${first ? 'eager' : 'lazy'}" fetchpriority="${first ? 'high' : 'auto'}" /></figure>\n`
+    return `<figure class="episode-illustration" data-illustration="${md.utils.escapeHtml(image.id)}"><ResponsiveImage :src="${binding(url(fallback.src))}" :srcset="${binding(srcset)}"${webp} sizes="${episodeImageSizes}" :width="${image.width}" :height="${image.height}" alt="${md.utils.escapeHtml(image.alt)}" loading="${eager ? 'eager' : 'lazy'}" fetchpriority="${eager ? 'high' : 'auto'}" /></figure>\n`
   }
 }
