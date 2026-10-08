@@ -1,11 +1,12 @@
 # 모노레포 배포 검증
 
-2026-10-08~09 KST에 기존 프로젝트를 npm workspaces 모노레포로 이관했다. 소스 원본 두 경로는 수정하지 않았다. 운영 배포는 GitHub Actions 실행 결과 확인 후 아래에 추가한다.
+2026-10-08~09 KST에 기존 프로젝트를 npm workspaces 모노레포로 이관했다. 소스 원본 두 경로는 수정하지 않았다.
 
 ## 사전 검증
 
 - 변경 영향·포털 JavaScript 검사 10건, 완전한 ToldLife 조립 Python 검사 4건 통과.
 - 회사 홈페이지 검사 6건, 공유 입력 삭제·보존 검사 2건 통과.
+- 공통 Firebase 보안 규칙을 단일 정본으로 모으고 Java 21 Firestore 에뮬레이터의 26건 검사를 통과했다. 규칙·인덱스·검증 내용은 원본과 동일하며 운영 Firebase는 변경하지 않았다.
 - 웹소설 콘텐츠 25건, 오디오북 콘텐츠·낭독·플레이어 47건 통과. 양쪽 타입 검사와 운영 경로 빌드 통과.
 - 웹소설 E2E 전체 105건 통과. 오디오북 전체 실행에서 125건 통과 후, 최신 본문 문장 좌표 수정의 세 화면 재검증 3건 통과. 고유 사례 127건 검증, 모바일 새 탭 2건은 기존 명시적 제외.
 - actionlint v1.7.12로 `.github/workflows/ci.yml` 구문 검사 통과.
@@ -27,6 +28,10 @@
 - `MJbae/bae-memoir`와 `MJbae/autobio-audiobook`의 ToldLife 호출 워크플로를 `disabled_manually`로 변경했다. 진행 중인 호출은 없었다.
 - 회사 Pages 프로젝트의 Git 연결은 보존하면서 `production_deployments_enabled=false`, `preview_deployment_setting=none`, `deployments_enabled=false`를 적용하고 GET으로 재확인했다.
 - 구 GitHub Pages 워크플로는 이전 버전 주소를 위해 유지한다. 새 Cloudflare 배포는 모노레포 Actions만 실행한다.
+
+## GitHub Actions 운영 배포
+
+첫 모노레포 커밋 `700f543b87e2c6c8491643770dba8de72982ba03`을 `main`에 반영했고 [Actions 실행 37797128868](https://github.com/MJbae/duvridge/actions/runs/37797128868)의 모든 검증·서비스 빌드·두 Pages 프로젝트 배포·배포 후 HTTP smoke 검사가 성공했다. 별도 레포 체크아웃 없이 깨끗한 작업 공간에서 루트 `npm ci`와 공유 패키지 연결을 검증했다.
 
 ## 보존 범위와 제한
 

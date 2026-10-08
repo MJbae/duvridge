@@ -7,3 +7,5 @@
 `createReaderConfig`는 앱마다 전달하는 생성 카탈로그·환경 경로·브랜드 이름으로 VitePress 설정을 만듭니다. 오디오의 Markdown 문장 표시 플러그인은 앱이 추가합니다. `prepareContent`는 루트 디렉터리를 명시적으로 받고, `extendCatalog`로 오디오 자료를 덧붙일 수 있습니다. 앱끼리 직접 소스 코드를 가져오지 않습니다.
 
 기존 상대 경로 진입점은 작은 재내보내기 파일로 유지해 테스트와 도구의 계약을 보존합니다. 공통 콘텐츠 테스트는 `tests/content.test.mjs` 하나이며 각 앱 워크스페이스에서 같은 검증을 실행합니다. 새 공통 기능은 앱 특유의 플레이어 상태·저장 키·재생 이벤트를 건드리지 않고 추가합니다.
+
+두 앱이 사용하는 Firebase 보안 규칙·인덱스와 26개 규칙 검증은 `firebase/`의 단일 정본입니다. 루트 `firebase.json`이 이를 참조합니다. 루트 `npm run test:rules`는 Java 21의 로컬 demo Firestore 에뮬레이터로 검사하며 운영 Firebase 규칙은 배포하지 않습니다.

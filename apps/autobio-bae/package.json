@@ -20,9 +20,9 @@
     "assets:share": "node scripts/generate-share-assets.mjs",
     "assets:cover": "node scripts/generate-home-cover.mjs",
     "assets:episodes": "node scripts/generate-episode-assets.mjs",
-    "test:rules": "firebase emulators:exec --only firestore --project demo-family-library \"node --test tests/firestore.rules.test.mjs\"",
+    "test:rules": "firebase emulators:exec --config ../../firebase.json --only firestore --project demo-family-library \"node --test tests/firestore.rules.test.mjs\"",
     "test:e2e": "playwright test",
-    "test:reactions": "firebase emulators:exec --only auth,firestore --project demo-family-library \"playwright test --config playwright.reactions.config.ts\"",
+    "test:reactions": "firebase emulators:exec --config ../../firebase.json --only auth,firestore --project demo-family-library \"playwright test --config playwright.reactions.config.ts\"",
     "pretypecheck": "npm run prepare:content"
   },
   "dependencies": {
@@ -32,10 +32,8 @@
     "@duvridge/memoir-content": "*"
   },
   "devDependencies": {
-    "@firebase/rules-unit-testing": "5.0.2",
     "@playwright/test": "1.63.0",
     "@types/node": "^22.0.0",
-    "firebase-tools": "15.31.0",
     "gray-matter": "^4.0.3",
     "typescript": "^5.9.3",
     "vitepress": "1.6.4",

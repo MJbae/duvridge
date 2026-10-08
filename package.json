@@ -9,6 +9,7 @@
   "scripts": {
     "test": "npm run test:repo && npm run test --workspaces --if-present",
     "test:repo": "node --test tests/*.test.mjs && python3 -m unittest discover -s tests -p 'test_*.py'",
+    "test:rules": "firebase emulators:exec --config firebase.json --only firestore --project demo-family-library \"node --test packages/reader-core/firebase/tests/firestore.rules.test.mjs\"",
     "build": "npm run build --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "dev:novels": "npm run dev --workspace @duvridge/autobio-bae",
@@ -17,5 +18,5 @@
     "affected": "node scripts/affected.mjs",
     "verify:deploy": "node scripts/verify-deployment.mjs"
   },
-  "devDependencies": { "@playwright/test": "1.63.0" }
+  "devDependencies": { "@playwright/test": "1.63.0", "firebase-tools": "15.31.0" }
 }

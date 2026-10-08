@@ -32,6 +32,7 @@ services.json              서비스와 배포 그룹 등록
 - 모든 workspace 이름은 `@duvridge/<이름>`으로 유일하게 정하고 내부 패키지는 `private: true`로 둡니다. 설치·의존성 갱신은 루트에서 실행하며 앱별 lockfile은 만들지 않습니다.
 - 원고, 터전별 목차, 공통 삽화·표지·음악은 `packages/memoir-content`에서만 수정합니다. 준비 단계가 만드는 앱 내부 사본은 Git에서 제외합니다. 최신 `autobio-bae` 작업 트리를 정본으로 가져왔습니다.
 - 공통 읽기 화면은 `reader-core`에서 수정하고 두 앱을 검증합니다. 오디오 플레이어의 배치, 재생·일시정지·속도·이어듣기·자동 다음 화·문장 이동은 오디오 앱 소유입니다.
+- 두 앱의 Firebase 보안 규칙과 인덱스도 `packages/reader-core/firebase`에서 한 번만 관리합니다. 에뮬레이터 설정은 루트 `firebase.json`을 사용합니다. 운영 Firebase 규칙 배포는 웹 배포와 별도 작업입니다.
 - 서비스마다 `test`, `build`, 필요 시 `typecheck`를 제공합니다. 공유 코드와 소비 서비스를 같은 PR에서 검토하고, 배포 그룹별로 버전과 롤백을 관리합니다.
 - 비밀값은 Actions secrets 또는 로컬 `.env`에만 둡니다. `VITE_*`는 브라우저 공개 값이므로 서비스 계정 키를 넣지 않습니다. 빌드 결과·동영상·임시 제작 파일은 커밋하지 않습니다.
 
@@ -45,6 +46,7 @@ npm run dev:audiobooks
 npm run test:repo
 npm test
 npm run typecheck
+npm run test:rules  # Java 21 필요, demo 프로젝트의 로컬 Firestore 에뮬레이터만 사용
 ```
 
 앱 하나의 명령은 `npm run <명령> --workspace @duvridge/autobio-bae` 또는 `@duvridge/autobio-audiobook`으로 실행합니다. 브라우저 회귀 테스트는 각 앱의 `test:e2e`를 사용합니다. 회사 홈페이지 본문은 `apps/company/site/translations.json`, 구조는 `template.html`, 디자인은 `assets/site.css`에 있습니다. `python3 apps/company/scripts/build-site.py`로 언어별 HTML을 갱신합니다.

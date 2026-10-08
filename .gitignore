@@ -16,3 +16,7 @@ node_modules/
 **/test-results/
 **/playwright-report/
 .DS_Store
+.firebase/
+firebase-debug.log*
+firestore-debug.log*
+ui-debug.log*

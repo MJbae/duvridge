@@ -5,6 +5,7 @@
 - `packages/memoir-content` owns manuscript, illustrations, reference materials and background music. Materialized app copies are generated inputs, never editorial sources.
 - `packages/reader-core` owns common reading UI and processing. Audiobook controls and cue interaction remain app-local; preserve their behavior when sharing UI.
 - Web builds must not regenerate recordings, SRT timings or approved clips. Paid TTS/STT requires a separate explicit production task.
+- Firebase rules and indexes live only in `packages/reader-core/firebase`; use root `firebase.json` and Java 21 for emulator tests. Web deployment does not publish Firebase rules.
 - Register services in `services.json` and verify change selection. Every upload to the shared ToldLife Pages project includes the portal and both readers.
 - PR validation receives no deployment credentials. Upload only validated artifacts built from one commit, never the repository root.
 - Run repository tests for orchestration, workspace tests/build/typecheck for affected readers, and browser tests for UI/audio changes. Record actual deployment evidence in `docs/deployment-verification.md`.
