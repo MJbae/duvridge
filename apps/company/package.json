@@ -1,9 +1,0 @@
-{
-  "name": "@duvridge/company",
-  "version": "1.0.0",
-  "private": true,
-  "scripts": {
-    "test": "python3 scripts/build-site.py --check && python3 -m unittest discover -s tests",
-    "build": "python3 scripts/build-site.py --output ../../.deploy/company"
-  }
-}

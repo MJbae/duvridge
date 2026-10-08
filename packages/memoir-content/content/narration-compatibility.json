@@ -1,6 +1,5 @@
 {
   "version": 1,
-  "manuscriptSha256": "c31ca4c88b22ca598bf0907a402e08995dec5e723e17d6017cefd132d5b2c70c",
   "recordings": {
     "ep02": {
       "audioSha256": "231e933c588bebb6e446d2c0e6442f587608329d870aa7c24bbbd2eecf638c18",
@@ -9,5 +8,6 @@
       "bodySentences": 27,
       "reason": "최신 정본에서 중복 자염 장면을 제거했다. 기존 낭독과 시각 파일은 유지하며 정본에 정확히 남아 있는 12개 문장만 강조한다."
     }
-  }
+  },
+  "manuscriptTextSha256": "c31ca4c88b22ca598bf0907a402e08995dec5e723e17d6017cefd132d5b2c70c"
 }

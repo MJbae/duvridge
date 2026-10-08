@@ -9,7 +9,7 @@
 - 공통 Firebase 보안 규칙을 단일 정본으로 모으고 Java 21 Firestore 에뮬레이터의 26건 검사를 통과했다. 규칙·인덱스·검증 내용은 원본과 동일하며 운영 Firebase는 변경하지 않았다.
 - 웹소설 콘텐츠 25건, 오디오북 콘텐츠·낭독·플레이어 47건 통과. 양쪽 타입 검사와 운영 경로 빌드 통과.
 - 웹소설 E2E 전체 105건 통과. 오디오북 전체 실행에서 125건 통과 후, 최신 본문 문장 좌표 수정의 세 화면 재검증 3건 통과. 고유 사례 127건 검증, 모바일 새 탭 2건은 기존 명시적 제외.
-- actionlint v1.7.12로 `.github/workflows/ci.yml` 구문 검사 통과.
+- actionlint v1.7.12로 `.github/workflows/monorepo-ci.yml` 구문 검사 통과.
 - 원본 MP3·SRT·제작 대본·승인된 녹음 캐시 74개가 원본과 바이트 단위로 동일하다. [보존 해시](migration-audio-preservation.json).
 
 ## 실제 미리보기 배포
@@ -21,7 +21,7 @@
 
 미리보기는 이관 중 작업 트리로 올린 스냅샷이다. 공개 marker의 원래 HEAD는 `8d17cddb53fbccf7903a7a773193101e01f72c79`, `sourceDirty=true`이며 운영 커밋 확인용으로 사용하지 않는다.
 
-`verify-deployment.mjs`는 두 앱의 터전 목차와 최신 2화 본문이 동일한지 확인했다. 오디오 플레이어의 재생·일시정지·1.25배 속도·다음 문장 이동·펼친 화면·가로 넘침도 검사했다. 스크린샷과 JSON은 로컬 `.deploy/verification-preview-company`, `.deploy/verification-preview-toldlife`에 있다. `smoke-deployment.py`의 HTTP·자산 검증도 통과했다. 초기 검증의 느린 플레이어 활성화 대기는 음성 요소가 준비될 때까지 기다리도록 보완했고 재실행이 통과했다.
+`check-deployment-browser.mjs`는 두 앱의 터전 목차와 최신 2화 본문이 동일한지 확인했다. 오디오 플레이어의 재생·일시정지·1.25배 속도·다음 문장 이동·펼친 화면·가로 넘침도 검사했다. 스크린샷과 JSON은 로컬 `.deploy/verification-preview-company`, `.deploy/verification-preview-toldlife`에 있다. `check-deployment-http.py`의 HTTP·자산 검증도 통과했다. 초기 검증의 느린 플레이어 활성화 대기는 음성 요소가 준비될 때까지 기다리도록 보완했고 재실행이 통과했다.
 
 ## 배포 실행자 전환
 
@@ -36,6 +36,18 @@
 Firebase 중복 제거 커밋 `198c33cb16f3a57177bfd0ddbfdf4128dd9d2e52`의 [Actions 실행 37797900403](https://github.com/MJbae/duvridge/actions/runs/37797900403)도 전부 성공했다. Java 21의 규칙 검사 26건과 두 앱 검증, 두 Pages 배포, 운영 SHA·경로 검사를 포함한다.
 
 운영 주소 `https://www.duvridge.com`과 `https://toldlife.duvridge.com`에서도 회사 7경로, 두 앱 52회차·음원 4개, 목차·본문 일치, 휴대폰·데스크톱 실제 오디오 조작을 확인했다. 초기 HTML의 플레이어 버튼이 활성화되기 전에 누르는 검증 경합을 피하도록 펼친 플레이어를 먼저 열어 상호작용 준비를 확인한다. 이 조정은 검증 도구에만 적용되며 서비스 UI는 변경하지 않는다.
+
+## 보존 범위와 제한
+
+## 추가 요청: 기능별 네이밍과 고정 삽화 표식
+
+서비스를 `company-site`, `toldlife-portal`, `toldlife-novels`, `toldlife-audiobooks`로 통일하고 공통 리더를 `story-reader`, 제작 코드를 `tools/audiobook-production`으로 분리했다. 파일·컴포넌트·CSS·명령·레지스트리·CI 경로를 함께 이관했다. 서비스 폴더·등록 ID·workspace 이름과 실제 소스 경로의 일치도 자동 검사한다.
+
+기존 46개 삽화는 본문 문구 위치 대신 원고의 `<!-- illustration: stable-id -->`에 연결했다. 표식을 제거하면 변경 전 원고 bytes가 그대로 복원되며 26회차 렌더링 HTML과 46개 배치 위치는 기존과 같다. 새 삽화를 기존 두 그림 사이에 넣어도 기존 ID·파일명을 바꾸지 않는다. 자산 manifest에는 위치를 저장하지 않는다. 오디오 호환성용 원고 해시는 표식을 제외한 본문을 검사하므로 표식만 편집할 때 예외 정보를 갱신할 필요가 없다.
+
+최종 단위 검증은 웹소설 29건, 오디오북 51건, 제작 파서 10건, 보안 규칙 26건, 저장소 JavaScript 11건·Python 4건, 회사 홈페이지 6건, 공통 입력 정리 2건이다. 양쪽 타입 검사와 운영 경로 빌드도 통과했다. 새 이름과 경로에서 전체 화면 회귀 검증은 웹소설 105건, 오디오북 127건 통과이며 모바일 새 탭 2건은 기존 명시적 제외다.
+
+추가 요청의 실제 미리보기는 https://75763e38.toldlife.pages.dev 에 업로드했다. 원본 녹음·자막·승인된 대본·클립 74개는 [보존 기록](migration-audio-preservation.json)의 새 목적 경로에서도 해시가 일치한다. 유료 생성 작업과 운영 Firebase 배포는 실행하지 않았다.
 
 ## 보존 범위와 제한
 

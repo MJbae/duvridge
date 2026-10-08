@@ -1,0 +1,119 @@
+{
+  "version": 1,
+  "workspaceScope": "@duvridge",
+  "globalPaths": [
+    "package.json",
+    "package-lock.json",
+    ".npmrc",
+    ".nvmrc",
+    "service-registry.json",
+    "scripts/",
+    "tests/",
+    ".github/workflows/"
+  ],
+  "ignoredPaths": [
+    "README.md",
+    "docs/"
+  ],
+  "deployGroups": {
+    "company": {
+      "project": "duvridge",
+      "origin": "https://www.duvridge.com",
+      "output": ".deploy/company",
+      "assembleCommand": [],
+      "smokePaths": [
+        "/",
+        "/ko/",
+        "/ja/",
+        "/zh-Hans/",
+        "/zh-Hant/",
+        "/guidebook/",
+        "/guidebook/privacy/"
+      ]
+    },
+    "toldlife": {
+      "project": "toldlife",
+      "origin": "https://toldlife.duvridge.com",
+      "output": ".deploy/toldlife",
+      "assembleCommand": [
+        "python3",
+        "scripts/assemble-toldlife-pages.py",
+        "--skip-build"
+      ],
+      "smokePaths": [
+        "/",
+        "/novels/",
+        "/novels/read/ep01",
+        "/audiobooks/",
+        "/audiobooks/read/ep01"
+      ],
+      "audioPaths": [
+        "/audiobooks/record/prolog.mp3"
+      ]
+    }
+  },
+  "services": [
+    {
+      "id": "company-site",
+      "path": "apps/company-site",
+      "workspace": "@duvridge/company-site",
+      "deployGroup": "company",
+      "checks": [
+        "test",
+        "build"
+      ],
+      "artifactPath": ".deploy/company",
+      "siteBase": "/"
+    },
+    {
+      "id": "toldlife-portal",
+      "path": "apps/toldlife-portal",
+      "workspace": "@duvridge/toldlife-portal",
+      "deployGroup": "toldlife",
+      "watchedPaths": [
+        "apps/company-site/assets/brand/",
+        "apps/company-site/assets/social/"
+      ],
+      "checks": [
+        "test"
+      ],
+      "artifactPath": "",
+      "siteBase": "/"
+    },
+    {
+      "id": "toldlife-novels",
+      "path": "apps/toldlife-novels",
+      "workspace": "@duvridge/toldlife-novels",
+      "deployGroup": "toldlife",
+      "checks": [
+        "test",
+        "build",
+        "test:sharing",
+        "typecheck"
+      ],
+      "artifactPath": "apps/toldlife-novels/site/.vitepress/dist",
+      "siteBase": "/novels/",
+      "requiredFiles": [
+        "read/ep01.html"
+      ]
+    },
+    {
+      "id": "toldlife-audiobooks",
+      "path": "apps/toldlife-audiobooks",
+      "workspace": "@duvridge/toldlife-audiobooks",
+      "deployGroup": "toldlife",
+      "checks": [
+        "test",
+        "build",
+        "test:sharing",
+        "typecheck"
+      ],
+      "artifactPath": "apps/toldlife-audiobooks/site/.vitepress/dist",
+      "siteBase": "/audiobooks/",
+      "requiredFiles": [
+        "read/ep01.html",
+        "record/prolog.mp3"
+      ]
+    }
+  ]
+}

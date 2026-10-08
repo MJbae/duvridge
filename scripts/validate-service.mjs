@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url'
 import { spawnSync } from 'node:child_process'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
-const registry = JSON.parse(readFileSync(resolve(root, 'services.json'), 'utf8'))
+const registry = JSON.parse(readFileSync(resolve(root, 'service-registry.json'), 'utf8'))
 const service = registry.services.find(service => service.id === process.argv[2])
 if (!service) throw new Error(`Unknown service: ${process.argv[2]}`)
 const manifest = JSON.parse(readFileSync(resolve(root, service.path, 'package.json'), 'utf8'))

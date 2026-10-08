@@ -4,13 +4,16 @@
     "upstream": "https://github.com/MJbae/bae-memoir.git",
     "commit": "0a047b47a35c6f63bd44eacf3ede9d5c558118a6",
     "dirty": [],
-    "destination": "apps/autobio-bae"
+    "destination": "apps/toldlife-novels",
+    "sharedContentDestination": "packages/memoir-content"
   },
   {
     "source": "/Users/baemanjin/orca/projects/autobio-audiobook",
     "upstream": "https://github.com/MJbae/autobio-audiobook.git",
     "commit": "8ae3c57b4487bec1ae0d9f1327f511b9ed296166",
     "dirty": [],
-    "destination": "apps/autobio-audiobook"
+    "destination": "apps/toldlife-audiobooks",
+    "productionDestination": "tools/audiobook-production",
+    "sharedContentDestination": "packages/memoir-content"
   }
 ]

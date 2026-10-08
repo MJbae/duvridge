@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "styleReference": "site/public/images/bae-byunghee-hero-watercolor.png",
   "aspectRatio": "16:9",
   "images": [
@@ -9,9 +9,6 @@
       "alt": "수채화로 그린 농민의 손에 담긴 벼 한 줌",
       "width": 1280,
       "height": 720,
-      "position": {
-        "start": true
-      },
       "sources": [
         {
           "src": "/images/episodes/prolog-01-360.jpg",
@@ -52,9 +49,6 @@
       "alt": "수채화로 그린 갯벌에서 조새로 굴을 까는 어머니",
       "width": 1280,
       "height": 720,
-      "position": {
-        "start": true
-      },
       "sources": [
         {
           "src": "/images/episodes/ep01-01-360.jpg",
@@ -94,9 +88,6 @@
       "alt": "수채화로 그린 황토 비탈밭에서 감자와 고구마를 거두는 안면도의 식구들",
       "width": 1280,
       "height": 720,
-      "position": {
-        "beforeParagraph": "비탈밭 작물과 갯벌에서 거둔 해산물 덕분에 대식구는 굶주림을 면할 수 있었다. 쌀밥 한 그릇 배불리 먹기 어려웠던 시절이었으나, 어린 배병희는 흙과 바다를 터전 삼아 건강하게 자라났다."
-      },
       "sources": [
         {
           "src": "/images/episodes/ep01-02-360.jpg",
@@ -132,9 +123,6 @@
       "alt": "수채화로 그린 책보 대신 지게를 지고 밭으로 향하는 소년",
       "width": 1280,
       "height": 720,
-      "position": {
-        "start": true
-      },
       "sources": [
         {
           "src": "/images/episodes/ep02-01-360.jpg",
@@ -175,9 +163,6 @@
       "id": "ep03-01",
       "episodeId": "ep03",
       "alt": "수채화로 그린 형이 막내 배병희의 손을 쥐고 군번을 일러주는 순간",
-      "position": {
-        "start": true
-      },
       "sources": [
         {
           "src": "/images/episodes/ep03-01-360.jpg",
@@ -216,9 +201,6 @@
       "alt": "수채화로 그린 마당에서 홀로 도리깨로 보리를 타작하는 소년",
       "width": 1280,
       "height": 720,
-      "position": {
-        "beforeParagraph": "새벽이슬이 걷히기 무섭게 보릿단을 지게로 져 날라 마당에 널어놓고 홀로 도리깨를 쥐었다. 무더운 뙤약볕 아래서 도리깨가 허공을 가르며 보릿단을 세차게 내리쳤다."
-      },
       "sources": [
         {
           "src": "/images/episodes/ep03-02-360.jpg",
@@ -259,9 +241,6 @@
       "alt": "수채화로 그린 돌풍 속에서 땔나무를 실은 목선의 노를 젓는 청년",
       "width": 1280,
       "height": 720,
-      "position": {
-        "start": true
-      },
       "sources": [
         {
           "src": "/images/episodes/ep04-01-360.jpg",
@@ -302,9 +281,6 @@
       "alt": "수채화로 그린 죽도 갯바위에 닿아 젖은 목선을 묶고 숨을 고르는 청년 배병희",
       "width": 1280,
       "height": 720,
-      "position": {
-        "beforeParagraph": "성난 파도와 사투를 벌인 끝에, 배는 천수만 한가운데 떠 있던 작은 섬 죽도(竹島)의 갯바위에 가까스로 닿았다. 뱃머리가 덜컥 바위에 부딪히며 멈추어 서자, 그는 갯바위를 끌어안고 거친 숨을 토해냈다."
-      },
       "sources": [
         {
           "src": "/images/episodes/ep04-02-360.jpg",
@@ -340,9 +316,6 @@
       "alt": "수채화로 그린 가마솥에 미꾸라지 칼국수를 끓이는 아내의 손",
       "width": 1280,
       "height": 720,
-      "position": {
-        "start": true
-      },
       "sources": [
         {
           "src": "/images/episodes/ep05-01-360.jpg",
@@ -383,9 +356,6 @@
       "id": "ep05-02",
       "episodeId": "ep05",
       "alt": "수채화로 그린 겨울밤 고구마를 나누어 먹는 가족",
-      "position": {
-        "beforeParagraph": "가을걷이가 모두 끝나면 배병희는 수확한 감자와 고구마를 안방 온돌 아랫목에 차곡차곡 쌓았다. 매서운 겨울 추위에 얼지 않도록 볏짚을 두툼하게 덮어두었다."
-      },
       "sources": [
         {
           "src": "/images/episodes/ep05-02-360.jpg",
@@ -422,9 +392,6 @@
       "alt": "수채화로 그린 겨울 마당에서 김발을 함께 널어 말리는 가족",
       "width": 1280,
       "height": 720,
-      "position": {
-        "start": true
-      },
       "sources": [
         {
           "src": "/images/episodes/ep06-01-360.jpg",
@@ -466,9 +433,6 @@
       "id": "ep06-02",
       "episodeId": "ep06",
       "alt": "수채화로 그린 겨울 새벽 갯벌의 지주식 김발에서 생김을 채취하는 배병희",
-      "position": {
-        "beforeParagraph": "동지섣달 추위가 닥치면 본격적으로 김을 따기 시작했다. 바다의 물때는 밤낮을 가리지 않았다. 배병희는 칠흑 같은 새벽이나 달빛만 희미한 한밤중에도 물이 빠지기 무섭게 갯벌로 나섰다."
-      },
       "sources": [
         {
           "src": "/images/episodes/ep06-02-360.jpg",
@@ -509,9 +473,6 @@
       "id": "ep07-01",
       "episodeId": "ep07",
       "alt": "수채화로 그린 낭장망을 걷어 올려 은빛 멸치를 거두는 배병희와 동료들",
-      "position": {
-        "start": true
-      },
       "sources": [
         {
           "src": "/images/episodes/ep07-01-360.jpg",
@@ -551,9 +512,6 @@
       "alt": "수채화로 그린 갯가 자갈밭의 가마솥에서 멸치를 삶는 배병희",
       "width": 1280,
       "height": 720,
-      "position": {
-        "beforeParagraph": "멸치는 성질이 급해 물 밖으로 나오면 금세 숨이 끊어지고 살이 물러지기 쉬웠다. 신선도를 지키는 일이 생명이었다. 배병희는 지체 없이 바닷바람이 들이치는 자갈밭에 커다란 무쇠 가마솥을 걸었다."
-      },
       "sources": [
         {
           "src": "/images/episodes/ep07-02-360.jpg",
@@ -595,9 +553,6 @@
       "alt": "수채화로 그린 발동기 곁에서 숟가락의 납으로 베어링을 고치는 손",
       "width": 1280,
       "height": 720,
-      "position": {
-        "start": true
-      },
       "sources": [
         {
           "src": "/images/episodes/ep08-01-360.jpg",
@@ -638,9 +593,6 @@
       "id": "ep08-02",
       "episodeId": "ep08",
       "alt": "수채화로 그린 소형 발동기와 평벨트로 별도 탈곡기를 돌리는 여섯 명의 이동식 탈곡팀",
-      "position": {
-        "beforeParagraph": "발동기 평벨트가 탈곡기를 돌리면 일꾼들이 손발을 맞춰 볏단을 날라 넣었다. 낟알이 순식간에 쏟아져 내렸다. 며칠이 걸리던 타작을 반나절 만에 끝내자 농민들의 호응이 대단했다."
-      },
       "sources": [
         {
           "src": "/images/episodes/ep08-02-360.jpg",
@@ -681,9 +633,6 @@
       "alt": "수채화로 그린 안면도 논에서 정면을 향한 보행형 바인더로 벼를 베어 묶는 배병희",
       "width": 1280,
       "height": 720,
-      "position": {
-        "beforeParagraph": "여럿이 온종일 매달려야 할 일을 기계가 한두 시간 만에 해치우자 마을 사람들은 혀를 내둘렀다. 배병희는 바인더로 벼를 베어 묶고 탈곡기로 타작하는 방식을 안면도 들판에 정착시켰다."
-      },
       "sources": [
         {
           "src": "/images/episodes/ep08-03-360.jpg",
@@ -725,9 +674,6 @@
       "alt": "수채화로 그린 이삿짐 트럭을 타고 안면도에서 화성으로 향하는 가족과 이웃들",
       "width": 1280,
       "height": 720,
-      "position": {
-        "start": true
-      },
       "sources": [
         {
           "src": "/images/episodes/ep09-01-360.jpg",
@@ -769,9 +715,6 @@
       "alt": "수채화로 그린 간척지 물길을 돌보며 소금기를 빼는 배병희",
       "width": 1280,
       "height": 720,
-      "position": {
-        "start": true
-      },
       "sources": [
         {
           "src": "/images/episodes/ep10-01-360.jpg",
@@ -812,9 +755,6 @@
       "alt": "수채화로 그린 독정리 논둑에서 일꾼들에게 따뜻한 밥을 나누는 배병희",
       "width": 1280,
       "height": 720,
-      "position": {
-        "beforeParagraph": "6만 평이나 되는 논은 식구들 손만으로는 감당할 수 없었다. 모내기철이면 온 동네 일손이 다 나와도 모자랄 지경이었다."
-      },
       "sources": [
         {
           "src": "/images/episodes/ep10-02-360.jpg",
@@ -850,9 +790,6 @@
       "alt": "수채화로 그린 수원으로 떠나는 딸을 배웅하는 아버지",
       "width": 1280,
       "height": 720,
-      "position": {
-        "start": true
-      },
       "sources": [
         {
           "src": "/images/episodes/ep11-01-360.jpg",
@@ -892,9 +829,6 @@
       "alt": "수채화로 그린 낡은 정미소 앞에 선 배병희",
       "width": 1280,
       "height": 720,
-      "position": {
-        "start": true
-      },
       "sources": [
         {
           "src": "/images/episodes/ep12-01-360.jpg",
@@ -935,9 +869,6 @@
       "alt": "수채화로 그린 밀린 볏값을 걱정하는 농민들이 배병희에게 정미소 인수를 부탁하는 순간",
       "width": 1280,
       "height": 720,
-      "position": {
-        "beforeParagraph": "절박해진 독정리 농민들은 머리를 맞댄 끝에 배병희를 찾아갔다."
-      },
       "sources": [
         {
           "src": "/images/episodes/ep12-02-360.jpg",
@@ -973,9 +904,6 @@
       "alt": "수채화로 그린 장대비 속에서 손전등으로 야적 가마니를 살피는 배병희",
       "width": 1280,
       "height": 720,
-      "position": {
-        "start": true
-      },
       "sources": [
         {
           "src": "/images/episodes/ep13-01-360.jpg",
@@ -1016,9 +944,6 @@
       "alt": "수채화로 그린 벼를 맡기러 몰려드는 농민과 볏가마가 쌓이는 초기 정미소 마당",
       "width": 1280,
       "height": 720,
-      "position": {
-        "beforeParagraph": "정미소가 다시 돌아가고 약속한 날에 볏값을 꼬박꼬박 내준다는 소문이 돌았다. 그러자 독정리는 물론 장안면 일대의 농가들까지 벼를 싣고 몰려들었다."
-      },
       "sources": [
         {
           "src": "/images/episodes/ep13-02-360.jpg",
@@ -1054,9 +979,6 @@
       "alt": "수채화로 그린 들판을 가로질러 정미소로 이어지는 배전 전봇대",
       "width": 1280,
       "height": 720,
-      "position": {
-        "start": true
-      },
       "sources": [
         {
           "src": "/images/episodes/ep14-01-360.jpg",
@@ -1096,9 +1018,6 @@
       "alt": "수채화로 그린 장축과 평벨트로 기계를 돌리던 정미소 내부",
       "width": 1280,
       "height": 720,
-      "position": {
-        "beforeParagraph": "이런 방식은 시끄럽고 매연이 심했다. 빠르게 도는 벨트에 옷자락이나 몸이 끼일 위험도 컸다. 기계 하나만 고장 나도 방앗간 전체가 멈춰 섰다."
-      },
       "sources": [
         {
           "src": "/images/episodes/ep14-02-360.jpg",
@@ -1139,9 +1058,6 @@
       "id": "ep15-01",
       "episodeId": "ep15",
       "alt": "수채화로 그린 볍씨를 가져간 이웃에게 정미소 일손을 청하며 품삯으로 배려하는 배병희",
-      "position": {
-        "start": true
-      },
       "sources": [
         {
           "src": "/images/episodes/ep15-01-360.jpg",
@@ -1182,9 +1098,6 @@
       "alt": "수채화로 그린 볍씨를 가져가는 이웃을 보고 조용히 돌아서는 배병희",
       "width": 1280,
       "height": 720,
-      "position": {
-        "beforeParagraph": "헛간을 지나다 우연히 그 모습을 본 배병희는 걸음을 멈췄다. 하지만 소리를 치지도, 도둑이라 다그치지도 않았다. 시골 동네에서 도둑으로 몰리면 본인은 물론 식구들까지 평생 낯을 들지 못했다. 야반도주라도 해야 할 처지였다."
-      },
       "sources": [
         {
           "src": "/images/episodes/ep15-02-360.jpg",
@@ -1225,9 +1138,6 @@
       "alt": "수채화로 그린 트럭에서 내려 길섶의 어르신에게 허리를 숙여 인사하는 배병희",
       "width": 1280,
       "height": 720,
-      "position": {
-        "beforeParagraph": "트럭을 몰고 신작로를 달리다가도 길섶에 동네 어르신이나 이웃이 보이면 저만치서 차를 세웠다. 흙먼지가 날릴세라 시동부터 껐다. 그러고는 차에서 내려 허리를 깊숙이 숙여 인사를 건넸다."
-      },
       "sources": [
         {
           "src": "/images/episodes/ep15-03-360.jpg",
@@ -1263,9 +1173,6 @@
       "alt": "수채화로 그린 가마솥 밥을 떠서 일꾼들의 그릇에 담는 아내의 손",
       "width": 1280,
       "height": 720,
-      "position": {
-        "start": true
-      },
       "sources": [
         {
           "src": "/images/episodes/ep16-01-360.jpg",
@@ -1305,9 +1212,6 @@
       "alt": "수채화로 그린 비좁은 집에서 병든 시어머니의 이불을 여미며 돌보는 아내",
       "width": 1280,
       "height": 720,
-      "position": {
-        "beforeParagraph": "정미소를 시작하기 전, 독정리의 열여덟 평 시멘트 기와집은 식솔들로 늘 비좁았다. 아내는 고향 안면도에서 함께 모시고 온 시어머니를 지극정성으로 봉양했다. 기력이 쇠해 자리에 누운 시어머니의 대소변을 받아내며 병구완을 도맡았다."
-      },
       "sources": [
         {
           "src": "/images/episodes/ep16-02-360.jpg",
@@ -1343,9 +1247,6 @@
       "alt": "수채화로 그린 텅 빈 창고와 부도 수표 앞에 앉은 배병희",
       "width": 1280,
       "height": 720,
-      "position": {
-        "start": true
-      },
       "sources": [
         {
           "src": "/images/episodes/ep17-01-360.jpg",
@@ -1386,9 +1287,6 @@
       "alt": "수채화로 그린 도난 뒤 벽이 뚫리고 쌀이 사라진 창고를 마주한 배병희",
       "width": 1280,
       "height": 720,
-      "position": {
-        "beforeParagraph": "어느 캄캄한 밤, 도둑들이 정미소 뒤편 곡식 창고 벽을 뚫고 침입했다. 창고 가득 쌓아두었던 쌀 수백 가마를 마당에 세워둔 화물 트럭에 몽땅 싣고 어둠 속으로 달아나 버렸다."
-      },
       "sources": [
         {
           "src": "/images/episodes/ep17-02-360.jpg",
@@ -1424,9 +1322,6 @@
       "id": "ep18-01",
       "episodeId": "ep18",
       "alt": "수채화로 그린 마지막 1만 2천 평만 남기기로 결단하며 장롱에서 땅문서 봉투를 꺼내는 배병희",
-      "position": {
-        "start": true
-      },
       "sources": [
         {
           "src": "/images/episodes/ep18-01-360.jpg",
@@ -1466,9 +1361,6 @@
       "id": "ep18-02",
       "episodeId": "ep18",
       "alt": "수채화로 그린 수매 장부를 펼쳐 농민에게 현금으로 볏값 전액을 지급하는 배병희",
-      "position": {
-        "beforeParagraph": "배병희는 수매 장부를 펼쳐 놓고 농민들의 이름을 하나하나 불렀다. 볏값은 한 푼도 깎지 않고 빳빳한 현금으로 쥐여 주었다. 어음도 외상 전표도 아니었다."
-      },
       "sources": [
         {
           "src": "/images/episodes/ep18-02-360.jpg",
@@ -1508,9 +1400,6 @@
       "alt": "수채화로 그린 물벼 반입을 살피는 배병희와 농민, 뒤편의 건조·저장 시설",
       "width": 1280,
       "height": 720,
-      "position": {
-        "start": true
-      },
       "sources": [
         {
           "src": "/images/episodes/ep19-01-360.jpg",
@@ -1552,9 +1441,6 @@
       "alt": "수채화로 그린 오랜 세월 밥을 짓던 부엌의 빈자리",
       "width": 1280,
       "height": 720,
-      "position": {
-        "start": true
-      },
       "sources": [
         {
           "src": "/images/episodes/ep20-01-360.jpg",
@@ -1594,9 +1480,6 @@
       "alt": "수채화로 그린 공장 앞에서 다섯 아들과 들녘을 바라보는 아버지",
       "width": 1280,
       "height": 720,
-      "position": {
-        "start": true
-      },
       "sources": [
         {
           "src": "/images/episodes/ep21-01-360.jpg",
@@ -1637,9 +1520,6 @@
       "alt": "수채화로 그린 공장 일을 마친 뒤 책을 펴고 공부하는 맏아들",
       "width": 1280,
       "height": 720,
-      "position": {
-        "beforeParagraph": "정미소가 체계를 갖추어 가자 맏아들은 청년 시절 접어두었던 배움의 길을 다시 걸었다. 가족들의 격려 속에 마흔다섯의 나이로 한국농수산대학교에 입학했다."
-      },
       "sources": [
         {
           "src": "/images/episodes/ep21-02-360.jpg",
@@ -1679,9 +1559,6 @@
       "alt": "수채화로 그린 계약재배 들판에서 익은 벼를 함께 살피는 농민들",
       "width": 1280,
       "height": 720,
-      "position": {
-        "start": true
-      },
       "sources": [
         {
           "src": "/images/episodes/ep22-01-360.jpg",
@@ -1722,9 +1599,6 @@
       "alt": "수채화로 그린 독정RPC에서 출하를 기다리는 포장 쌀과 팔레트",
       "width": 1280,
       "height": 720,
-      "position": {
-        "beforeParagraph": "국내 쌀 소비가 줄고 시장이 열리자 독정 RPC는 수출에서 길을 찾았다."
-      },
       "sources": [
         {
           "src": "/images/episodes/ep22-02-360.jpg",
@@ -1765,9 +1639,6 @@
       "alt": "수채화로 그린 도정공장에서 쌀포대를 팔레트에 쌓는 적재 로봇",
       "width": 1280,
       "height": 720,
-      "position": {
-        "start": true
-      },
       "sources": [
         {
           "src": "/images/episodes/ep23-01-360.jpg",
@@ -1809,9 +1680,6 @@
       "alt": "수채화로 그린 해 질 무렵 남양만 들녘을 바라보는 노년의 배병희",
       "width": 1280,
       "height": 720,
-      "position": {
-        "start": true
-      },
       "sources": [
         {
           "src": "/images/episodes/epilog-01-360.jpg",
@@ -1852,9 +1720,6 @@
       "alt": "수채화로 그린 옆얼굴만 살짝 보인 채 밥을 맛있게 먹는 아들과 그 모습을 지그시 바라보는 백발의 아버지",
       "width": 1280,
       "height": 720,
-      "position": {
-        "start": true
-      },
       "sources": [
         {
           "src": "/images/episodes/side-01-360.jpg",
@@ -1894,9 +1759,6 @@
       "alt": "수채화로 그린 손주가 태어난 병원에서 갓난아이를 물끄러미 바라보는 배병희",
       "width": 1280,
       "height": 720,
-      "position": {
-        "beforeParagraph": "손주들을 향한 내리사랑 또한 각별했다. 손주가 태어났다는 전화를 받고도 그는 담담하게 안부만 물었다."
-      },
       "sources": [
         {
           "src": "/images/episodes/side-02-360.jpg",

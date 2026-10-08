@@ -1,7 +1,7 @@
 {
   "firestore": {
-    "rules": "packages/reader-core/firebase/firestore.rules",
-    "indexes": "packages/reader-core/firebase/firestore.indexes.json"
+    "rules": "packages/story-reader/firebase/firestore.rules",
+    "indexes": "packages/story-reader/firebase/firestore.indexes.json"
   },
   "emulators": {
     "auth": { "host": "127.0.0.1", "port": 9099 },

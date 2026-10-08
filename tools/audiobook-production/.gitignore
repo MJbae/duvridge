@@ -1,0 +1,7 @@
+# 다시 만들 수 있는 결과물은 제외한다. narration-clips/는 유료 생성 원본이라 보존한다.
+output/
+work/
+voice-samples/
+__pycache__/
+*.pyc
+.DS_Store

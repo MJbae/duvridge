@@ -2,7 +2,7 @@
 
 ## 배포 단위와 변경 영향
 
-`services.json`이 서비스 경로·워크스페이스·검증 명령·공개 경로·Cloudflare 프로젝트의 단일 목록이다. `scripts/affected.mjs`는 Git의 변경 파일과 각 워크스페이스 `package.json`의 내부 의존성을 읽는다. 공유 패키지 변경은 직접 소비자와 간접 소비자로 전파한다. 이름 변경은 이전 경로와 새 경로를 모두 검사하고, 삭제 파일도 검사한다. 비교 기준 커밋을 찾을 수 없으면 전체 검증으로 전환한다.
+`service-registry.json`이 서비스 경로·워크스페이스·검증 명령·공개 경로·Cloudflare 프로젝트의 단일 목록이다. `scripts/select-affected-services.mjs`는 Git의 변경 파일과 각 워크스페이스 `package.json`의 내부 의존성을 읽는다. 공유 패키지 변경은 직접 소비자와 간접 소비자로 전파한다. 이름 변경은 이전 경로와 새 경로를 모두 검사하고, 삭제 파일도 검사한다. 비교 기준 커밋을 찾을 수 없으면 전체 검증으로 전환한다.
 
 | 변경 | 영향받는 서비스 | 운영 빌드·배포 |
 | --- | --- | --- |
@@ -23,7 +23,7 @@
 
 ## Pull request와 운영 배포
 
-`.github/workflows/ci.yml`은 모든 PR과 main push에서 시작한다. 필수 워크플로 자체에 경로 필터를 걸지 않고 내부의 서비스 매트릭스를 줄인다. 이렇게 해야 문서만 바꾼 PR에서도 필수 체크가 완료된다. 경로 필터로 워크플로를 건너뛰면 필수 체크가 Pending으로 남을 수 있다는 GitHub 안내를 따른다. [필수 상태 체크와 건너뛴 워크플로](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/troubleshooting-required-status-checks)
+`.github/workflows/monorepo-ci.yml`은 모든 PR과 main push에서 시작한다. 필수 워크플로 자체에 경로 필터를 걸지 않고 내부의 서비스 매트릭스를 줄인다. 이렇게 해야 문서만 바꾼 PR에서도 필수 체크가 완료된다. 경로 필터로 워크플로를 건너뛰면 필수 체크가 Pending으로 남을 수 있다는 GitHub 안내를 따른다. [필수 상태 체크와 건너뛴 워크플로](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/troubleshooting-required-status-checks)
 
 1. 체크아웃은 모두 `github.sha`로 고정한다. PR은 해당 테스트 대상 SHA, 운영은 main 이벤트의 SHA를 검증한다.
 2. 루트 `npm ci`와 단일 `package-lock.json`으로 설치한다. 잠금 파일이 manifest와 다르면 설치가 실패하며 CI에서 잠금 파일을 갱신하지 않는다. [npm ci](https://docs.npmjs.com/cli/v11/commands/npm-ci/)
@@ -40,10 +40,10 @@
 
 루트 저장소에 secret `CLOUDFLARE_API_TOKEN`, variable `CLOUDFLARE_ACCOUNT_ID`, 공개 Firebase variable `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_APP_ID`를 등록한다. Cloudflare 토큰은 해당 계정의 Pages Edit 권한을 부여한 배포 전용 토큰을 사용하며 업로드 단계에만 전달한다. [Cloudflare CI 자격 증명](https://developers.cloudflare.com/pages/how-to/use-direct-upload-with-continuous-integration/)
 
-공개 `deployment.json`의 `sourceRevision`으로 실제 배포한 커밋을 확인한다. `scripts/smoke-deployment.py`는 이 SHA, 각 서비스·회사 언어·가이드북 URL, 정적 자산, 음원 Range 응답을 확인한다. 브라우저 검증 도구는 화면과 오디오 상호작용을 추가로 확인할 수 있다. 배포 실패 시 기존 프로젝트 배포를 유지하고 원인을 수정한 뒤 main 수동 실행으로 재시도한다. 긴급 복구는 검증했던 이전 전체 스냅샷을 Cloudflare에서 rollback하거나 해당 코드로 다시 배포한다. [Cloudflare rollback](https://developers.cloudflare.com/pages/configuration/rollbacks/)
+공개 `deployment.json`의 `sourceRevision`으로 실제 배포한 커밋을 확인한다. `scripts/check-deployment-http.py`는 이 SHA, 각 서비스·회사 언어·가이드북 URL, 정적 자산, 음원 Range 응답을 확인한다. 브라우저 검증 도구는 화면과 오디오 상호작용을 추가로 확인할 수 있다. 배포 실패 시 기존 프로젝트 배포를 유지하고 원인을 수정한 뒤 main 수동 실행으로 재시도한다. 긴급 복구는 검증했던 이전 전체 스냅샷을 Cloudflare에서 rollback하거나 해당 코드로 다시 배포한다. [Cloudflare rollback](https://developers.cloudflare.com/pages/configuration/rollbacks/)
 
 ## 단일 배포 권한으로 전환
 
 구 저장소의 ToldLife 호출 워크플로를 비활성화하고 이미 실행 중인 호출도 종료한 뒤 모노레포를 배포한다. 회사 프로젝트의 Cloudflare Git 자동 빌드도 비활성화하여 GitHub Actions만 업로드하게 한다. 이전 `exit 0` + 저장소 루트 공개 설정은 모노레포에서 소스 폴더를 공개하거나 검증한 결과를 덮어쓸 수 있다. Git 연결 자체는 보존할 수 있지만 운영·미리보기 자동 배포는 꺼야 한다. Git 연동 프로젝트도 Wrangler 업로드가 가능하다. [Git 연동 프로젝트의 수동 업로드](https://developers.cloudflare.com/pages/get-started/direct-upload/)
 
-구 GitHub Pages URL은 이전 배포를 보존하는 호환 주소다. 서비스의 신규 개발과 Cloudflare 운영 배포는 이 모노레포가 기준이다. 신규 서비스도 별도의 레포 호출 워크플로 대신 `services.json`과 내부 패키지 의존성으로 등록한다. npm workspaces는 루트 설치에서 로컬 패키지를 자동 연결하고 `--workspace`로 서비스 명령을 실행할 수 있어 현재 구성에 적합하다. 원격 빌드 캐시와 대규모 작업 그래프가 필요해지면 이 목록과 경계를 유지한 채 Turborepo/Nx를 도입할 수 있다. [npm workspaces](https://docs.npmjs.com/cli/using-npm/workspaces/), [Cloudflare 모노레포 안내](https://developers.cloudflare.com/pages/configuration/monorepos/)
+구 GitHub Pages URL은 이전 배포를 보존하는 호환 주소다. 서비스의 신규 개발과 Cloudflare 운영 배포는 이 모노레포가 기준이다. 신규 서비스도 별도의 레포 호출 워크플로 대신 `service-registry.json`과 내부 패키지 의존성으로 등록한다. npm workspaces는 루트 설치에서 로컬 패키지를 자동 연결하고 `--workspace`로 서비스 명령을 실행할 수 있어 현재 구성에 적합하다. 원격 빌드 캐시와 대규모 작업 그래프가 필요해지면 이 목록과 경계를 유지한 채 Turborepo/Nx를 도입할 수 있다. [npm workspaces](https://docs.npmjs.com/cli/using-npm/workspaces/), [Cloudflare 모노레포 안내](https://developers.cloudflare.com/pages/configuration/monorepos/)

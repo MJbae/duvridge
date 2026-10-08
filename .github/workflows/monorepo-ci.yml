@@ -1,0 +1,214 @@
+name: Monorepo
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.affected.outputs.matrix }}
+      validation_matrix: ${{ steps.affected.outputs.validation_matrix }}
+      deployment_matrix: ${{ steps.affected.outputs.deployment_matrix }}
+      has_services: ${{ steps.affected.outputs.has_services }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - name: Find changed workspaces and complete deployment groups
+        id: affected
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.sha }}
+        run: |
+          if [ "$EVENT" = workflow_dispatch ]; then
+            node scripts/select-affected-services.mjs --all
+          else
+            node scripts/select-affected-services.mjs --base "$BASE_SHA" --head "$HEAD_SHA"
+          fi
+
+  repository:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+      - run: npm ci
+      - name: Test dependency impact and deployment assembly
+        run: npm run test:repo
+      - name: Check narration scripts against stable illustration markers
+        run: npm run test:production-parser
+      - name: Check canonical Firebase rules in the isolated emulator
+        run: npm run test:rules
+
+  service:
+    needs: plan
+    if: needs.plan.outputs.has_services == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(github.event_name == 'pull_request' && needs.plan.outputs.validation_matrix || needs.plan.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: npm ci
+      - name: Install browser for audiobook interaction checks
+        if: matrix.service == 'toldlife-audiobooks'
+        run: npx playwright install --with-deps chromium
+      - name: Protect desktop and phone audio interaction
+        if: matrix.service == 'toldlife-audiobooks'
+        working-directory: apps/toldlife-audiobooks
+        run: npx playwright test tests/narration.spec.ts --project=phone --project=desktop
+      - name: Validate and build the service with its production base
+        env:
+          SERVICE: ${{ matrix.service }}
+          REQUIRE_FIREBASE_CONFIG: ${{ github.event_name != 'pull_request' }}
+          VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
+        run: node scripts/validate-service.mjs "$SERVICE"
+      - name: Preserve artifact paths for project assembly
+        if: matrix.artifactPath != ''
+        env:
+          SERVICE: ${{ matrix.service }}
+          ARTIFACT_PATH: ${{ matrix.artifactPath }}
+        run: |
+          mkdir -p .deploy/artifacts
+          tar -cf ".deploy/artifacts/$SERVICE.tar" "$ARTIFACT_PATH"
+      - uses: actions/upload-artifact@v4
+        if: matrix.artifactPath != ''
+        with:
+          name: service-${{ matrix.service }}
+          path: .deploy/artifacts/${{ matrix.service }}.tar
+          if-no-files-found: error
+          retention-days: 3
+
+  required:
+    name: Monorepo required
+    needs: [plan, repository, service]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require the complete validation result
+        env:
+          PLAN_RESULT: ${{ needs.plan.result }}
+          REPOSITORY_RESULT: ${{ needs.repository.result }}
+          SERVICE_RESULT: ${{ needs.service.result }}
+          HAS_SERVICES: ${{ needs.plan.outputs.has_services }}
+        run: |
+          test "$PLAN_RESULT" = success
+          test "$REPOSITORY_RESULT" = success
+          if [ "$HAS_SERVICES" = true ]; then
+            test "$SERVICE_RESULT" = success
+          else
+            test "$SERVICE_RESULT" = skipped
+          fi
+
+  deploy:
+    needs: [plan, required]
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && needs.plan.outputs.has_services == 'true' && needs.required.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: write
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.plan.outputs.deployment_matrix) }}
+    concurrency:
+      group: pages-${{ matrix.group }}-production
+      cancel-in-progress: false
+    environment:
+      name: production-${{ matrix.group }}
+      url: ${{ matrix.origin }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: service-*
+          path: .deploy/artifacts
+          merge-multiple: true
+      - name: Restore validated immutable artifacts
+        run: |
+          for artifact in .deploy/artifacts/*.tar; do
+            tar -xf "$artifact"
+          done
+      - name: Assemble and inspect the complete project
+        env:
+          GROUP: ${{ matrix.group }}
+        run: node scripts/prepare-pages-artifact.mjs "$GROUP"
+      - name: Check source revision before deployment
+        id: before
+        run: python3 scripts/check-deployment-revision.py
+      - name: Deploy the complete Cloudflare Pages project
+        if: steps.before.outputs.current == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          OUTPUT: ${{ matrix.output }}
+          PROJECT: ${{ matrix.project }}
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN"
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          npx --yes wrangler@4.148.0 pages deploy "$OUTPUT" --project-name "$PROJECT" --branch main --commit-hash "$GITHUB_SHA" --commit-dirty=true
+      - name: Check source revision after deployment
+        if: always() && steps.before.outcome == 'success'
+        id: after
+        run: python3 scripts/check-deployment-revision.py
+      - name: Queue current main if a deployment was superseded
+        if: always() && steps.after.outputs.current == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+        run: gh workflow run monorepo-ci.yml --repo "$REPOSITORY" --ref main
+      - name: Verify the published project and every service route
+        if: steps.before.outputs.current == 'true' && steps.after.outputs.current == 'true'
+        env:
+          GROUP: ${{ matrix.group }}
+        run: python3 scripts/check-deployment-http.py --group "$GROUP"

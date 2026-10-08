@@ -4,19 +4,29 @@
   "private": true,
   "type": "module",
   "packageManager": "npm@10.9.8",
-  "engines": { "node": ">=22 <23", "npm": ">=10 <11" },
-  "workspaces": ["apps/*", "apps/autobio-audiobook/web", "packages/*"],
+  "engines": {
+    "node": ">=22 <23",
+    "npm": ">=10 <11"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "test": "npm run test:repo && npm run test --workspaces --if-present",
     "test:repo": "node --test tests/*.test.mjs && python3 -m unittest discover -s tests -p 'test_*.py'",
-    "test:rules": "firebase emulators:exec --config firebase.json --only firestore --project demo-family-library \"node --test packages/reader-core/firebase/tests/firestore.rules.test.mjs\"",
+    "test:rules": "firebase emulators:exec --config firebase.json --only firestore --project demo-family-library \"node --test packages/story-reader/firebase/tests/firestore.rules.test.mjs\"",
+    "test:production-parser": "python3 -I -m unittest discover -s tools/audiobook-production/tests",
     "build": "npm run build --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
-    "dev:novels": "npm run dev --workspace @duvridge/autobio-bae",
-    "dev:audiobooks": "npm run dev --workspace @duvridge/autobio-audiobook",
-    "build:toldlife": "python3 scripts/build-toldlife.py",
-    "affected": "node scripts/affected.mjs",
-    "verify:deploy": "node scripts/verify-deployment.mjs"
+    "dev:novels": "npm run dev --workspace @duvridge/toldlife-novels",
+    "dev:audiobooks": "npm run dev --workspace @duvridge/toldlife-audiobooks",
+    "build:toldlife": "python3 scripts/assemble-toldlife-pages.py",
+    "plan:services": "node scripts/select-affected-services.mjs",
+    "check:deployment": "node scripts/check-deployment-browser.mjs"
   },
-  "devDependencies": { "@playwright/test": "1.63.0", "firebase-tools": "15.31.0" }
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "firebase-tools": "15.31.0"
+  }
 }
