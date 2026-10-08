@@ -1,0 +1,232 @@
+  /* ---------- Tokens ---------- */
+  :root{
+    --paper:#E9E3D6;          /* warm putty paper — pushed dustier than the usual cream */
+    --paper-2:#E2DBCB;        /* slightly deeper tint for rhythm */
+    --ink:#1C1A16;            /* warm near-black */
+    --muted:#5C5645;          /* warm taupe, secondary text */
+    --accent:#27324E;         /* fountain-pen ink blue */
+    --navy-bg:#191F30;        /* deep ink for dark bands */
+    --on-dark:#E9E3D6;        /* paper text on dark */
+    --muted-dark:#9AA3B8;     /* cool ink-grey on dark */
+    --accent-dark:#AEBAD9;    /* light periwinkle highlight on dark */
+    --line:rgba(28,26,22,.16);
+    --line-dark:rgba(233,227,214,.18);
+
+    --font-display:'Fraunces', Georgia, 'Times New Roman', serif;
+    --font-body:'Pretendard Variable','Pretendard', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --font-ui:'Pretendard Variable','Pretendard', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+    --wrap:1080px;
+    --measure:60ch;
+    --pad-y:clamp(4.75rem, 11vh, 9rem);
+  }
+  /* Each static language page loads its own CJK fonts. */
+  html.lang-ko{ --font-display:'Noto Serif KR','Fraunces',serif; word-break:keep-all; }
+  html.lang-ja{ --font-display:'Shippori Mincho','Fraunces',serif; --font-body:'Noto Sans JP','Pretendard Variable',sans-serif; --font-ui:'Noto Sans JP','Pretendard Variable',sans-serif; }
+  html.lang-zhHans{ --font-display:'Noto Serif SC','Fraunces',serif; --font-body:'Noto Sans SC','Pretendard Variable',sans-serif; --font-ui:'Noto Sans SC','Pretendard Variable',sans-serif; }
+  html.lang-zhHant{ --font-display:'Noto Serif TC','Fraunces',serif; --font-body:'Noto Sans TC','Pretendard Variable',sans-serif; --font-ui:'Noto Sans TC','Pretendard Variable',sans-serif; }
+
+  /* CJK + Korean: widen Latin-tuned ch measures (these glyphs are ~2x wider per ch) so headings wrap at sensible points */
+  html.lang-ko .hero h1, html.lang-ja .hero h1, html.lang-zhHans .hero h1, html.lang-zhHant .hero h1{ max-width:26ch; }
+  html.lang-ko .proof .lead, html.lang-ja .proof .lead, html.lang-zhHans .proof .lead, html.lang-zhHant .proof .lead{ max-width:32ch; }
+  html.lang-ko .why .statement, html.lang-ja .why .statement, html.lang-zhHans .why .statement, html.lang-zhHant .why .statement{ max-width:32ch; }
+  html.lang-ko .trust .statement, html.lang-ja .trust .statement, html.lang-zhHans .trust .statement, html.lang-zhHant .trust .statement{ max-width:30ch; }
+  html.lang-ko .close h2, html.lang-ja .close h2, html.lang-zhHans .close h2, html.lang-zhHant .close h2{ max-width:26ch; }
+  /* CJK display glyphs read heavier at the same px — ease the big headings down, cap the services line, and tighten prose measures */
+  html.lang-ko .statement, html.lang-ja .statement, html.lang-zhHans .statement, html.lang-zhHant .statement{ font-size:clamp(1.45rem,1rem + 1.8vw,2.25rem); }
+  html.lang-ko .services .statement, html.lang-ja .services .statement, html.lang-zhHans .services .statement, html.lang-zhHant .services .statement{ max-width:22ch; }
+  html.lang-ko .why .prose, html.lang-ja .why .prose, html.lang-zhHans .why .prose, html.lang-zhHant .why .prose{ max-width:30ch; }
+  html.lang-ko .proof .prose, html.lang-ja .proof .prose, html.lang-zhHans .proof .prose, html.lang-zhHant .proof .prose{ max-width:32ch; }
+
+  /* ---------- Base ---------- */
+  *,*::before,*::after{ box-sizing:border-box; }
+  html{ -webkit-text-size-adjust:100%; }
+  @media (prefers-reduced-motion: no-preference){ html{ scroll-behavior:smooth; } }
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--font-body); font-optical-sizing:auto;
+    font-size:clamp(1.04rem,.55rem + .55vw,1.16rem); line-height:1.74;
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+    overflow-x:hidden;
+    line-break:strict; text-wrap:pretty;
+  }
+  /* faint paper grain */
+  body::before{
+    content:""; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.04;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    mix-blend-mode:multiply;
+  }
+  a{ color:inherit; }
+  ::selection{ background:rgba(39,50,78,.16); }
+  img,svg{ display:block; max-width:100%; }
+
+  .wrap{ width:100%; max-width:var(--wrap); margin-inline:auto; padding-inline:clamp(1.25rem,5vw,2.75rem); position:relative; z-index:1; }
+  .band{ padding-block:var(--pad-y); position:relative; scroll-margin-top:5rem; }
+  .band--dark{ background:var(--navy-bg); color:var(--on-dark); }
+  .band--tint{ background:var(--paper-2); }
+
+  .eyebrow{
+    font-family:var(--font-ui); font-size:.72rem; font-weight:600; letter-spacing:.22em;
+    text-transform:uppercase; color:var(--muted); margin:0 0 1.35rem;
+  }
+  .band--dark .eyebrow{ color:var(--muted-dark); }
+
+  h1,h2,h3{ font-family:var(--font-display); font-weight:500; margin:0; letter-spacing:-.01em; text-wrap:balance; }
+  em{ font-style:italic; }
+  /* CJK has no italic — emphasis becomes accent color instead */
+  html.lang-ko em, html.lang-ja em, html.lang-zhHans em, html.lang-zhHant em{ font-style:normal; color:var(--accent); }
+  .band--dark em, html.lang-ko .band--dark em, html.lang-ja .band--dark em,
+  html.lang-zhHans .band--dark em, html.lang-zhHant .band--dark em{ color:var(--accent-dark); }
+
+  .lead{ font-family:var(--font-display); font-weight:400; font-size:clamp(1.5rem,1rem + 2.1vw,2.5rem); line-height:1.24; letter-spacing:-.012em; text-wrap:balance; }
+  .statement{ font-family:var(--font-display); font-weight:400; font-size:clamp(1.55rem,1.05rem + 2.1vw,2.55rem); line-height:1.22; letter-spacing:-.013em; max-width:21ch; text-wrap:balance; }
+  p{ margin:0 0 1.15em; max-width:var(--measure); }
+  .prose p:last-child{ margin-bottom:0; }
+
+  /* ---------- ornament (mini life-curve, the recurring motif) ---------- */
+  .ornament{ width:62px; height:14px; color:var(--accent); opacity:.6; margin:0 0 1.6rem; }
+  .ornament--center{ margin-inline:auto; }
+  .band--dark .ornament{ color:var(--accent-dark); }
+
+  /* ---------- Header ---------- */
+  .site-head{
+    position:fixed; inset:0 0 auto 0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:1rem; padding:1.05rem clamp(1.25rem,5vw,2.75rem);
+    background:rgba(233,227,214,.86); /* Keep navigation readable on dark bands without JavaScript. */
+    transition:background .35s ease, box-shadow .35s ease, padding .35s ease;
+  }
+  .site-head.scrolled{ background:rgba(233,227,214,.86); backdrop-filter:saturate(140%) blur(9px); box-shadow:0 1px 0 var(--line); padding-block:.7rem; }
+  .brand{ font-family:var(--font-display); font-weight:600; font-size:1.35rem; letter-spacing:-.02em; text-decoration:none; color:var(--ink); }
+  .brand .dot{ color:var(--accent); }
+  .head-right{ display:flex; align-items:center; gap:1.1rem; }
+  .langs{ display:flex; gap:.1rem; background:rgba(28,26,22,.05); border:1px solid var(--line); border-radius:999px; padding:.2rem; }
+  .scrolled .langs{ background:rgba(28,26,22,.04); }
+  .lang-btn{
+    font-family:var(--font-ui); font-size:.74rem; font-weight:600; letter-spacing:.02em;
+    display:inline-block; text-decoration:none; border:0; background:transparent; color:var(--muted); cursor:pointer;
+    padding:.32rem .55rem; border-radius:999px; line-height:1; transition:color .2s, background .2s;
+  }
+  .lang-btn:hover{ color:var(--ink); }
+  .lang-btn[aria-current="page"]{ background:var(--accent); color:var(--paper); }
+  .nav-contact{ font-family:var(--font-ui); font-size:.82rem; font-weight:600; letter-spacing:.02em; text-decoration:none; color:var(--ink); border-bottom:1px solid transparent; padding-bottom:1px; transition:border-color .2s; }
+  .nav-contact:hover{ border-color:var(--ink); }
+  @media (max-width:560px){ .nav-contact{ display:none; } .brand{ font-size:1.2rem; } .langs{ gap:0; } .lang-btn{ padding:.3rem .42rem; font-size:.7rem; } }
+
+  /* ---------- Hero ---------- */
+  .hero{ min-height:100svh; display:flex; flex-direction:column; justify-content:center; padding-block:7.5rem 4rem; text-align:center; }
+  .hero .wrap{ display:flex; flex-direction:column; align-items:center; }
+  .hero h1{ font-size:clamp(2.7rem,1.4rem + 5.6vw,5.5rem); line-height:1.03; max-width:16ch; }
+  .hero-sub{ margin:1.6rem auto 0; max-width:40ch; color:var(--muted); font-size:clamp(1.08rem,1rem + .4vw,1.3rem); line-height:1.55; }
+  .hero-cta{ display:flex; gap:1.6rem 2.2rem; flex-wrap:wrap; justify-content:center; margin-top:2.4rem; }
+  .tlink{ font-family:var(--font-ui); font-size:.92rem; font-weight:600; letter-spacing:.01em; text-decoration:none; color:var(--ink); display:inline-flex; align-items:center; gap:.45em; }
+  .tlink .arr{ transition:transform .25s ease; }
+  .tlink:hover .arr{ transform:translateX(4px); }
+  .tlink--accent{ color:var(--accent); }
+
+  /* life-curve signature — the fork is the page's one bold moment */
+  .lifecurve{ width:min(92%,720px); height:auto; margin:2.9rem auto .4rem; overflow:visible; }
+  .lifecurve text{ font-family:var(--font-ui); font-size:13px; letter-spacing:.04em; fill:var(--muted); }
+  .lc-path{ fill:none; stroke-linecap:round; stroke-linejoin:round; }
+  .lc-life{ stroke:var(--ink); stroke-width:2; opacity:.9; }
+  .lc-lived{ stroke:var(--ink); stroke-width:2; opacity:.5; }
+  .lc-imagined{ stroke:var(--accent); stroke-width:2.4; }
+  .lc-imagined-glow{ stroke:var(--accent); stroke-width:7; opacity:.16; filter:url(#lc-soft); }
+  .lc-node{ fill:var(--paper); stroke:var(--accent); stroke-width:2.4; }
+  .lc-node-core{ fill:var(--accent); }
+  .lc-pulse{ fill:none; stroke:var(--accent); stroke-width:1.6; opacity:0; transform-box:fill-box; transform-origin:center; }
+  @media (max-width:680px){ .lc-end-label{ display:none; } }
+  @media (max-width:430px){ .lifecurve text{ display:none; } }
+
+  @media (prefers-reduced-motion: no-preference){
+    /* 1 — the life so far draws in */
+    .lc-life{ stroke-dasharray:1; stroke-dashoffset:1; animation:draw 1.2s cubic-bezier(.5,.05,.2,1) .3s forwards; }
+    /* 2 — the turning point lands and pulses once */
+    .lc-node, .lc-node-core{ opacity:0; animation:pop .5s ease 1.35s forwards; }
+    .lc-pulse{ animation:pulse 1.05s ease-out 1.45s forwards; }
+    /* 3 — after a beat, the path forks into two lives */
+    .lc-lived{ stroke-dasharray:1; stroke-dashoffset:1; animation:draw 1.05s cubic-bezier(.5,.05,.2,1) 1.8s forwards; }
+    .lc-imagined{ stroke-dasharray:1; stroke-dashoffset:1; animation:draw 1.1s cubic-bezier(.5,.05,.2,1) 1.85s forwards; }
+    .lc-imagined-glow{ stroke-dasharray:1; stroke-dashoffset:1; opacity:0; animation:draw 1.1s cubic-bezier(.5,.05,.2,1) 1.85s forwards, glow 1.3s ease 1.95s forwards; }
+    /* 4 — the labels settle */
+    .lifecurve text{ opacity:0; animation:fade .8s ease 2.7s forwards; }
+    .lc-turn-label{ animation-delay:1.7s; }
+    .hero h1{ opacity:0; transform:translateY(14px); animation:rise .9s cubic-bezier(.2,.7,.2,1) .05s forwards; }
+    .hero-sub{ opacity:0; transform:translateY(12px); animation:rise .9s cubic-bezier(.2,.7,.2,1) .9s forwards; }
+    .hero-cta{ opacity:0; transform:translateY(12px); animation:rise .9s cubic-bezier(.2,.7,.2,1) 1.25s forwards; }
+    .hero .eyebrow{ opacity:0; animation:fade .8s ease 0s forwards; }
+  }
+  @keyframes draw{ to{ stroke-dashoffset:0; } }
+  @keyframes pop{ from{ opacity:0; transform:scale(.4); } to{ opacity:1; transform:scale(1); } }
+  @keyframes pulse{ 0%{ opacity:.5; transform:scale(.35); } 70%{ opacity:0; transform:scale(2.6); } 100%{ opacity:0; transform:scale(2.6); } }
+  @keyframes glow{ to{ opacity:.16; } }
+  @keyframes fade{ to{ opacity:1; } }
+  @keyframes rise{ to{ opacity:1; transform:none; } }
+
+  /* ---------- Why (vision + argument, merged) ---------- */
+  .why{ text-align:center; }
+  .why .statement{ max-width:24ch; margin:0 auto 1.9rem; }
+  .why .prose{ max-width:46ch; margin-inline:auto; }
+
+  /* ---------- Proof (dark) ---------- */
+  .proof{ text-align:center; }
+  .proof .lead{ max-width:20ch; margin-inline:auto; }
+  .proof .prose{ max-width:50ch; margin:1.8rem auto 0; }
+  .proof .prose a.ilink{ color:var(--accent-dark); text-decoration:none; border-bottom:1px solid rgba(174,186,217,.45); transition:border-color .2s; }
+  .proof .prose a.ilink:hover{ border-color:var(--accent-dark); }
+  .stats{ display:flex; flex-wrap:wrap; gap:0; margin:3rem 0 2.4rem; border-top:1px solid var(--line-dark); border-bottom:1px solid var(--line-dark); }
+  .stat{ flex:1 1 180px; padding:1.5rem 1.6rem 1.55rem; }
+  .stat + .stat{ border-left:1px solid var(--line-dark); }
+  @media (max-width:600px){ .stat{ flex-basis:100%; } .stat + .stat{ border-left:0; border-top:1px solid var(--line-dark); } }
+  .stat-num{ font-family:var(--font-display); font-weight:500; font-size:clamp(1.9rem,1.2rem + 2vw,2.8rem); line-height:1; letter-spacing:-.02em; color:var(--on-dark); }
+  .stat-lab{ font-family:var(--font-ui); font-size:.8rem; letter-spacing:.04em; color:var(--muted-dark); margin-top:.55rem; }
+  .proof-link{ font-family:var(--font-ui); font-size:.9rem; font-weight:600; color:var(--accent-dark); text-decoration:none; display:inline-flex; align-items:center; gap:.5em; }
+  .proof-link .arr{ transition:transform .25s ease; }
+  .proof-link:hover .arr{ transform:translateX(4px); }
+  .proof-bridge{ font-family:var(--font-display); font-size:clamp(1.25rem,.9rem + 1.3vw,1.7rem); line-height:1.3; max-width:24ch; margin:3.2rem auto 0; padding-top:2.4rem; border-top:1px solid var(--line-dark); }
+
+  /* ---------- Services (the spread) ---------- */
+  .svc-head{ text-align:center; margin-bottom:clamp(2.6rem,5vw,4rem); }
+  .svc-head .statement{ max-width:none; margin-inline:auto; }
+  .spread{ max-width:540px; margin-inline:auto; }
+  .leaf{ text-align:center; }
+  .leaf + .leaf{ border-top:1px solid var(--line); margin-top:2.8rem; padding-top:2.8rem; }
+  .leaf-top{ display:flex; align-items:center; justify-content:center; gap:.7rem; flex-wrap:wrap; margin-bottom:1.1rem; }
+  .leaf-label{ font-family:var(--font-ui); font-size:.74rem; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); }
+  .pill{ font-family:var(--font-ui); font-size:.68rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; padding:.3em .7em; border-radius:999px; }
+  .pill--live{ background:var(--accent); color:var(--paper); }
+  .pill--sub{ background:transparent; color:var(--muted); border:1px solid var(--line); }
+  .leaf-name{ font-family:var(--font-display); font-weight:500; font-size:clamp(1.5rem,1.2rem + 1vw,1.95rem); line-height:1.1; margin-bottom:1rem; }
+  .leaf--toldlife .leaf-name{ color:var(--accent); }
+  .leaf-body{ color:var(--ink); }
+  .leaf-body.muted{ color:var(--muted); }
+  html.lang-ko .leaf-body.muted em, html.lang-ja .leaf-body.muted em, html.lang-zhHans .leaf-body.muted em, html.lang-zhHant .leaf-body.muted em{ color:var(--ink); }
+  .privacy{ display:flex; align-items:flex-start; justify-content:center; gap:.6rem; margin-top:1.4rem; font-family:var(--font-ui); font-size:.86rem; line-height:1.5; color:var(--muted); }
+  .privacy svg{ flex:none; width:16px; height:16px; margin-top:.15rem; color:var(--accent); }
+  .leaf-cta{ margin-top:1.6rem; }
+
+  /* ---------- Trust (the privacy promise — a quiet beat, not a headline) ---------- */
+  .trust{ text-align:center; }
+  .trust .statement{ max-width:32ch; margin-inline:auto; font-size:clamp(1.3rem,1rem + 1.35vw,1.95rem); line-height:1.34; color:var(--muted); }
+  .trust .statement em{ color:var(--accent); }
+
+  /* ---------- Close (dark) ---------- */
+  .close{ text-align:center; padding-bottom:clamp(3rem,6vh,4.5rem); }
+  .close .wrap{ display:flex; flex-direction:column; align-items:center; }
+  .close h2{ font-size:clamp(2rem,1.3rem + 3vw,3.4rem); line-height:1.1; max-width:18ch; }
+  .close-email{ margin-top:2.2rem; font-family:var(--font-ui); font-size:1rem; color:var(--muted-dark); }
+  .close-email a{ color:var(--accent-dark); text-decoration:none; border-bottom:1px solid rgba(174,186,217,.4); }
+
+  /* ---------- Footer (centered sign-off — continues the closing band) ---------- */
+  .foot{ background:var(--navy-bg); color:var(--on-dark); text-align:center; padding-block:0 clamp(2.75rem,5vh,3.75rem); }
+  .foot .wrap{ display:flex; flex-direction:column; align-items:center; gap:.5rem; }
+  .foot-brand{ font-family:var(--font-display); font-weight:600; font-size:1.5rem; letter-spacing:-.02em; }
+  .foot-brand .dot{ color:var(--accent-dark); }
+  .foot-tag{ font-family:'Fraunces',Georgia,serif; font-style:italic; font-size:.95rem; color:var(--muted-dark); margin:0; } /* brand signature — stays English in every locale */
+  .foot-rights{ margin-top:2rem; padding-top:1.7rem; border-top:1px solid var(--line-dark); width:min(100%,440px); font-family:var(--font-ui); font-size:.78rem; color:var(--muted-dark); letter-spacing:.02em; }
+
+  /* Content remains visible; JavaScript adds scroll animations as an enhancement. */
+
+  /* ---------- Focus ---------- */
+  a:focus-visible, button:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-radius:3px; }
+  .band--dark a:focus-visible, .close a:focus-visible{ outline-color:var(--accent-dark); }
