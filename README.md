@@ -1,92 +1,102 @@
-# duvridge
+# duvridge 모노레포
 
-JavaScript 없이도 회사 소개, 제품 설명, 개발 현황, 집필 성과, 개인정보 보호 안내와 연락처를 읽을 수 있는 정적 홈페이지입니다. 언어 선택은 각 언어의 HTML 페이지로 이동하는 일반 링크입니다.
+회사 홈페이지와 ToldLife 웹소설·오디오북을 이 저장소에서 관리합니다. 외부 서비스 저장소를 빌드 때 체크아웃하지 않습니다. 원고와 공통 읽기 화면을 한 번 수정하면 두 서비스에 함께 반영하고, 오디오 기능은 오디오북 서비스에서 독립적으로 관리합니다.
 
-| 언어 | 경로 |
-| --- | --- |
-| 영어 (기본) | `/` |
-| 한국어 | `/ko/` |
-| 일본어 | `/ja/` |
-| 중국어 간체 | `/zh-Hans/` |
-| 중국어 번체 | `/zh-Hant/` |
+| 서비스 | 소스 | 운영 주소 | 배포 단위 |
+| --- | --- | --- | --- |
+| 회사 홈페이지 | `apps/company` | https://www.duvridge.com | Pages `duvridge` |
+| ToldLife 홈 | `apps/toldlife` | https://toldlife.duvridge.com | Pages `toldlife` |
+| 웹소설 | `apps/autobio-bae` | https://toldlife.duvridge.com/novels/ | `toldlife`에 함께 업로드 |
+| 오디오북 | `apps/autobio-audiobook/web` | https://toldlife.duvridge.com/audiobooks/ | `toldlife`에 함께 업로드 |
 
-## 수정 및 생성
+## 구조와 공통 코드 정책
 
-본문은 `site/translations.json`, 공통 HTML 구조는 `site/template.html`, 디자인은 `assets/site.css`에서 수정합니다. 제목·검색 설명·언어 경로·운영 도메인은 `scripts/build-site.py`에서 관리합니다. `assets/site.js`는 헤더 및 스크롤 애니메이션만 담당합니다.
-
-```sh
-python3 scripts/build-site.py
-python3 scripts/build-site.py --check
-python3 -m unittest discover -s tests
+```text
+apps/
+  company/                 회사 홈페이지, 언어별 HTML, 가이드북
+  toldlife/                두 서비스를 연결하는 홈
+  autobio-bae/             웹소설, 배경음악
+  autobio-audiobook/
+    web/                   오디오북 화면, 플레이어, 낭독 동기화
+    tools/ scripts/ clips/ 제작 도구, 대본, 승인된 녹음 캐시
+packages/
+  memoir-content/          최신 원고·목차 구조·삽화·음악의 정본
+  reader-core/             공통 읽기 UI, 회차 파싱, 반응·읽기 기록
+scripts/                   변경 영향 계산, 배포 조립과 검증
+services.json              서비스와 배포 그룹 등록
 ```
 
-Python 표준 라이브러리만 사용합니다. 생성된 `index.html`, 각 언어 폴더의 `index.html`, `sitemap.xml`, `robots.txt`를 소스와 함께 커밋합니다. 기존처럼 저장소 루트를 정적 호스팅하면 되며, 서버 렌더링이나 런타임 번역 API는 필요하지 않습니다. 운영 도메인의 기본값은 기존 가이드북 페이지의 홈 링크와 같은 `https://www.duvridge.com`입니다.
+기존 두 앱이 쓰던 npm을 유지하여 **npm workspaces + 루트 lockfile 하나**로 설치와 버전을 통일했습니다. Node 22와 npm 10을 사용합니다. 현재 규모에서는 Python 정적 사이트와 VitePress 앱을 서비스 레지스트리로 조율하면 충분하므로 별도의 작업 실행 프레임워크를 추가하지 않았습니다. 빌드 비용이 커지면 현재 패키지 경계를 유지한 채 Turborepo 등을 도입할 수 있습니다. [npm workspaces](https://docs.npmjs.com/cli/v10/using-npm/workspaces/)와 [Turborepo의 저장소 구조 안내](https://turborepo.dev/docs/crafting-your-repository/structuring-a-repository)를 참고했습니다.
 
-로컬 확인:
+- 앱은 다른 앱의 구현을 가져오지 않습니다. 공유가 필요하면 `packages/`로 추출하고 소비 앱의 `dependencies`에 명시합니다. Python 제작 도구의 정본 경로와 정적 브랜드 자산은 레지스트리 및 문서에 명시합니다.
+- 모든 workspace 이름은 `@duvridge/<이름>`으로 유일하게 정하고 내부 패키지는 `private: true`로 둡니다. 설치·의존성 갱신은 루트에서 실행하며 앱별 lockfile은 만들지 않습니다.
+- 원고, 터전별 목차, 공통 삽화·표지·음악은 `packages/memoir-content`에서만 수정합니다. 준비 단계가 만드는 앱 내부 사본은 Git에서 제외합니다. 최신 `autobio-bae` 작업 트리를 정본으로 가져왔습니다.
+- 공통 읽기 화면은 `reader-core`에서 수정하고 두 앱을 검증합니다. 오디오 플레이어의 배치, 재생·일시정지·속도·이어듣기·자동 다음 화·문장 이동은 오디오 앱 소유입니다.
+- 서비스마다 `test`, `build`, 필요 시 `typecheck`를 제공합니다. 공유 코드와 소비 서비스를 같은 PR에서 검토하고, 배포 그룹별로 버전과 롤백을 관리합니다.
+- 비밀값은 Actions secrets 또는 로컬 `.env`에만 둡니다. `VITE_*`는 브라우저 공개 값이므로 서비스 계정 키를 넣지 않습니다. 빌드 결과·동영상·임시 제작 파일은 커밋하지 않습니다.
+
+## 개발과 검증
 
 ```sh
-python3 -m http.server 8000
-curl http://localhost:8000/ko/
+nvm use
+npm ci
+npm run dev:novels
+npm run dev:audiobooks
+npm run test:repo
+npm test
+npm run typecheck
 ```
 
-브라우저에서 `http://localhost:8000`을 열면 됩니다. `curl` 응답 자체에 소개 본문이 포함됩니다. 스크립트가 차단되거나 실행 중 오류가 나도 본문과 언어 이동, 이메일 및 외부 링크를 사용할 수 있습니다.
+앱 하나의 명령은 `npm run <명령> --workspace @duvridge/autobio-bae` 또는 `@duvridge/autobio-audiobook`으로 실행합니다. 브라우저 회귀 테스트는 각 앱의 `test:e2e`를 사용합니다. 회사 홈페이지 본문은 `apps/company/site/translations.json`, 구조는 `template.html`, 디자인은 `assets/site.css`에 있습니다. `python3 apps/company/scripts/build-site.py`로 언어별 HTML을 갱신합니다.
 
-여행 가이드북 지원 및 개인정보처리방침 페이지는 기존 `/guidebook/`, `/guidebook/privacy/`에 유지됩니다.
-
-## ToldLife 서비스 배포
-
-`https://toldlife.duvridge.com`에서 두 서비스를 하나의 Cloudflare Pages 프로젝트로 제공합니다.
-
-| 경로 | 서비스 | 소스 프로젝트 |
-| --- | --- | --- |
-| `/` | ToldLife 공통 홈 | 이 저장소의 `toldlife/index.html` |
-| `/novels/` | ToldLife Novels · 웹소설 읽기 | `autobio-bae` |
-| `/audiobooks/` | ToldLife Audiobooks · 오디오북 듣기 | `autobio-audiobook/web` |
-
-Node.js 22 이상과 각 서비스의 npm 의존성이 필요합니다. 기존 GitHub 저장소의 공개 Firebase 설정값을 재사용하려면 인증된 GitHub CLI도 필요합니다.
+서비스용 빌드에는 네 가지 `VITE_FIREBASE_*` 환경변수가 필요합니다. 기존 GitHub의 공개 설정은 다음 명령으로 가져올 수 있습니다. 배포 토큰은 가져오지 않습니다.
 
 ```sh
 python3 scripts/build-toldlife.py --github-vars
-npx --yes wrangler@4.148.0 pages deploy .deploy/toldlife --project-name toldlife --branch main
+npm run build --workspace @duvridge/company
 ```
 
-빌드 도구는 두 프로젝트의 테스트·빌드·공유 정보 검증·타입 검사를 실행한 뒤 `.deploy/toldlife/`에 배포용 파일만 모읍니다. 각 서비스의 `SITE_BASE`는 `/novels/`, `/audiobooks/`, `SITE_ORIGIN`은 `https://toldlife.duvridge.com`으로 설정됩니다. `.deploy/`는 Git에 포함하지 않습니다.
+웹소설·오디오북은 각각 `/novels/`, `/audiobooks/`와 `https://toldlife.duvridge.com`을 기준으로 빌드됩니다. 공개 파일만 `.deploy/toldlife` 및 `.deploy/company`에 모으며 저장소 루트는 배포하지 않습니다.
 
-기본 소스 경로는 `~/orca/projects/autobio-bae`, `~/orca/projects/autobio-audiobook/web`입니다. 다른 위치에서는 `--novels-source`, `--audiobooks-source`로 지정할 수 있습니다. Firebase 설정을 환경변수나 각 서비스의 로컬 `.env`에 이미 등록했다면 `--github-vars`를 생략합니다.
+## CI/CD 정책
 
-Cloudflare Pages 프로젝트의 Custom domains에 `toldlife.duvridge.com`을 연결합니다. 회사 홈페이지의 `duvridge` 배포 프로젝트와 서비스의 `toldlife` 배포 프로젝트는 각각 갱신합니다. 회사 홈페이지는 다음 명령으로 공개 HTML과 자산만 별도 폴더에 준비하여 업로드합니다.
+모든 PR와 `main` 푸시에서 단일 모노레포 커밋을 검사합니다. 변경 영향은 workspace 의존성과 `services.json`으로 계산합니다. 공통 원고·읽기 코드가 바뀌면 두 독자 앱을 검사하고, 앱 하나만 바뀌면 해당 앱을 검사합니다. 루트 lockfile·도구·워크플로 변경은 전체 검사, 문서만 바뀌면 저장소 검사만 실행합니다. 고정 이름의 `Monorepo required` 검사가 결과를 모으므로 브랜치 보호에서는 이 검사를 필수로 지정합니다.
+
+PR에서는 테스트·빌드만 수행합니다. 운영 배포는 `main` 검증 성공 후에만 수행하며 Cloudflare 토큰은 업로드 단계에만 전달합니다. 검증된 배포 artifact를 업로드하고 회사 홈페이지와 ToldLife의 대기열을 분리합니다. 진행 중인 운영 배포를 취소하지 않으며, 오래된 커밋이 최신 운영 버전을 덮지 않도록 업로드 전후 `main` 리비전을 확인합니다.
+
+**ToldLife는 한 Pages 프로젝트의 전체 스냅샷을 배포합니다.** 웹소설만 변경되어도 배포 폴더에는 홈과 웹소설·오디오북이 모두 있어야 합니다. 한 하위 폴더만 업로드하면 다른 서비스가 사라질 수 있으므로 배포 준비 단계에서는 두 앱을 같은 SHA로 검증·빌드하고 완성된 artifact를 업로드합니다. 회사 홈페이지는 별도로 배포합니다. [Cloudflare Direct Upload](https://developers.cloudflare.com/pages/get-started/direct-upload/)와 [GitHub Actions 동시 실행 제어](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency)를 기준으로 운영합니다.
+
+저장소 `MJbae/duvridge`에 필요한 설정:
+
+| 종류 | 이름 | 용도 |
+| --- | --- | --- |
+| Secret | `CLOUDFLARE_API_TOKEN` | Pages 편집 권한을 가진 배포 전용 토큰 |
+| Variable | `CLOUDFLARE_ACCOUNT_ID` | 배포 계정 |
+| Variables | `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_APP_ID` | 두 앱의 동일한 Firebase 공개 설정 |
+
+이전 두 저장소의 ToldLife 호출 워크플로와 회사 Pages의 네이티브 Git 자동 배포는 전환 시 중지합니다. 배포 실행자는 이 저장소의 Actions로 통일합니다. 기존 GitHub Pages 사이트는 이전 버전 참고용이며 새 변경은 이 모노레포에서 관리합니다. 상세 정책은 [CI/CD 문서](docs/ci-cd.md)에 있습니다.
+
+수동 배포도 같은 폴더를 사용합니다. 운영 테스트 전에는 미리보기를 만들어 검사합니다.
 
 ```sh
-python3 scripts/build-site.py --output .deploy/company
-npx --yes wrangler@4.148.0 pages deploy .deploy/company --project-name duvridge --branch main
+npx --yes wrangler@4.148.0 pages deploy .deploy/company --project-name duvridge --branch monorepo-validation
+npx --yes wrangler@4.148.0 pages deploy .deploy/toldlife --project-name toldlife --branch monorepo-validation
 ```
 
-## GitHub 푸시 후 자동 배포
+롤백은 각 Pages 프로젝트에서 이전 정상 배포를 선택합니다. ToldLife 롤백은 두 서비스가 함께 이전 스냅샷으로 돌아갑니다. 원고와 녹음을 별도로 수정하지 말고 같은 커밋으로 다시 빌드합니다.
 
-`MJbae/duvridge`, `MJbae/bae-memoir`, `MJbae/autobio-audiobook`의 `main` 브랜치 변경을 GitHub Actions로 배포합니다. 웹소설과 오디오북은 이 저장소의 `.github/workflows/toldlife.yml`을 함께 사용하여 최신 `main` 소스 두 개와 공통 홈을 한 번에 빌드합니다. 오디오북은 `web/` 변경에 반응하며, 루트의 음성 제작 도구만 바뀌면 사이트를 다시 배포하지 않습니다.
+## 서비스 추가
 
-빌드 중 다른 프로젝트의 `main`이 바뀌면 오래된 결과를 건너뛰고 새 빌드를 예약합니다. 업로드 도중 소스가 바뀐 경우에도 최신 소스로 다시 갱신합니다. 기존 각 프로젝트의 GitHub Pages 워크플로는 유지됩니다.
+1. `apps/<서비스>`에 유일한 이름의 manifest와 테스트·빌드 명령을 만듭니다. 웹 프레임워크 선택은 서비스에 맡깁니다.
+2. 공통 기능은 `packages/<기능>`에 두고 명시적인 의존성을 추가합니다. 서비스별 기능은 앱에 남깁니다.
+3. `services.json`에 경로, workspace 이름, 검증 명령, 빌드 출력, 배포 그룹을 등록하고 변경 영향 테스트를 추가합니다.
+4. 독립 서비스는 자체 Pages 프로젝트·도메인·배포 job을 사용합니다. ToldLife 하위 경로에 추가할 경우 전체 조립과 sitemap·redirect·라우트 검증을 확장합니다.
+5. PR 검증, 미리보기 배포, 운영 smoke test를 통과하고 주소·설정·롤백 방법을 기록합니다.
 
-각 저장소에 아래 설정이 필요합니다.
+## 이관과 오디오 보존
 
-- Actions secret `CLOUDFLARE_API_TOKEN`: 해당 계정의 **Cloudflare Pages 편집** 권한을 가진 배포 전용 토큰.
-- Actions variable `CLOUDFLARE_ACCOUNT_ID`: Cloudflare 계정 ID.
-- 네 가지 `VITE_FIREBASE_*` 공개 설정: 세 저장소에 같은 Firebase 웹 앱 설정을 사용합니다.
+원본 저장소의 작업 트리를 복사했고 원본 경로는 수정하지 않았습니다. `autobio-bae`의 커밋되지 않은 설정·테스트 수정도 반영했습니다. 리비전은 [이관 기록](docs/migration-sources.json)에 있습니다. Git 이력은 원본 저장소에 보존하고 여기에는 검증된 스냅샷으로 가져왔습니다.
 
-회사 홈페이지의 `.github/workflows/company.yml`은 정적 HTML 검증 후 `duvridge` Pages 프로젝트를 갱신합니다. Pull request에서는 검증만 실행합니다. Cloudflare API 토큰은 배포 단계에만 전달하며 저장소 코드나 공개 파일에 넣지 않습니다.
+기존 MP3, SRT, 대본과 승인된 클립을 보존했습니다. 최신 원고와 다른 낭독 문장은 재생을 유지하되 강조 표시를 생략합니다. 2화의 기존 녹음은 최신 원고와 일치율이 낮아 확인한 원고·녹음·자막의 해시에만 연결된 호환 예외를 사용합니다. 원고나 녹음이 다시 바뀌면 재검증합니다. 제작 도구와 기존 음성·배속·검수 정책은 [오디오 제작 안내](docs/audio-production.md)를 따릅니다. 유료 TTS/STT는 CI에서 실행하지 않습니다.
 
-## 공유 미리보기와 로고
-
-루트의 `기본로고.png`, `심볼로그.png`를 원본으로 사용합니다. `assets/brand/`에는 원본 로고의 복사본과 브라우저·모바일 아이콘, `assets/social/`에는 1200×630 공유 이미지가 있습니다. 회사 홈페이지는 duvridge 이미지, ToldLife 홈은 ToldLife 이미지를 사용하며, 각 작품은 기존 작품 표지를 유지합니다.
-
-공유용 제목·설명·이미지·대표 주소·언어 정보는 Open Graph와 X 카드 메타데이터로 초기 HTML에 포함됩니다. 회사와 ToldLife의 관계는 JSON-LD에도 제공합니다.
-
-로고나 공유 이미지 구성을 바꿀 때는 Playwright가 설치된 환경에서 다음 명령으로 다시 렌더링한 뒤, 생성된 이미지를 함께 커밋합니다.
-
-```sh
-python3 scripts/render-social-assets.py
-python3 scripts/build-site.py
-python3 -m unittest discover -s tests
-```
-
-ToldLife 공통 홈의 문구와 배치는 [토스의 라이팅 원칙](https://toss.tech/article/21022), [리디 웹소설](https://ridibooks.com/webnovel/recommendation), [윌라의 서비스 안내](https://www.welaaa.com/), [KRDS 타이포그래피](https://www.krds.go.kr/html/site/style/style_03.html)를 참고했습니다. 한국어 서비스명과 행동을 먼저 보여주고, 제목의 크기·여백·두 서비스의 시각적 비중을 조정했습니다.
+실제 배포 결과와 검증 범위는 [배포 검증 기록](docs/deployment-verification.md)에 기록합니다.

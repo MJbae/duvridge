@@ -1,0 +1,26 @@
+{
+  "name": "내 논을 파는 한이 있어도",
+  "short_name": "내 논을 파는 한이 있어도",
+  "description": "내 논을 파는 한이 있어도 — 배병희 자전소설",
+  "lang": "ko",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

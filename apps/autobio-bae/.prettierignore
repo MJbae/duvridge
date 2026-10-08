@@ -1,0 +1,8 @@
+node_modules
+site/read
+site/.vitepress/generated
+site/.vitepress/cache
+site/.vitepress/dist
+test-results
+package-lock.json
+배병희_자서전.md

@@ -1,0 +1,375 @@
+{
+  "source": "MJbae/autobio-audiobook",
+  "files": [
+    {
+      "path": "clips/ep01/000_4313776672.mp3",
+      "sha256": "955c46c6d414703851b0dfa9a17d245a82d5b6cce819444da85819b64d87ae5a",
+      "bytes": 67126
+    },
+    {
+      "path": "clips/ep01/001_867e2ade27.mp3",
+      "sha256": "f44ec3d11600b8bc6cc419edfa6cf038c5ff1d86746af470bdaa3c038b2efc05",
+      "bytes": 78411
+    },
+    {
+      "path": "clips/ep01/002_c885ff92fa.mp3",
+      "sha256": "ba8ff8bff927d5ffea53dcb656cb2a7f1516ae4f9c4515236dd3e377436ba9f4",
+      "bytes": 492817
+    },
+    {
+      "path": "clips/ep01/003_2e8468b68b.mp3",
+      "sha256": "4ca9c4559ed97a47496445d70ef32b4b5ddadf21073ed1bb521eab3f90f76952",
+      "bytes": 396896
+    },
+    {
+      "path": "clips/ep01/004_88713afb8e.mp3",
+      "sha256": "dbd040ebcc58f719d52480352a511cce935eef35b0d786683544ccb448326d06",
+      "bytes": 205053
+    },
+    {
+      "path": "clips/ep01/005_cdad0c1891.mp3",
+      "sha256": "c17f8a35790f2e64eb8ba4c779b564d38557943767cbc4a71f8f7eb7951609c2",
+      "bytes": 282166
+    },
+    {
+      "path": "clips/ep01/006_dbe5ad63fb.mp3",
+      "sha256": "b5d4737fa6a6901bd4f97d650b9e9e2acaf4c7dc7edf2b40057db98cfe854c40",
+      "bytes": 239534
+    },
+    {
+      "path": "clips/ep01/007_31483f78b4.mp3",
+      "sha256": "ed8e1f2ffca75eba7bdd8d627633645ff6d69cc36ee3b96fa109a4d43f356504",
+      "bytes": 447051
+    },
+    {
+      "path": "clips/ep01/008_f690a89980.mp3",
+      "sha256": "de0139a6c67d5b0a902c159e6945eb60744c1fdc6d59fa8a0d397eef581d7925",
+      "bytes": 179975
+    },
+    {
+      "path": "clips/ep01/009_09ca62bc25.mp3",
+      "sha256": "9cd92817042740b6d460962d925ba61bf34170b93ca291fcf31374e81efb7adc",
+      "bytes": 358653
+    },
+    {
+      "path": "clips/ep01/010_1580558940.mp3",
+      "sha256": "07846f11a8dffc4b61cc5813cbbb2b7e2fd998abb76a98f23117c28f228c36cc",
+      "bytes": 345487
+    },
+    {
+      "path": "clips/ep01/011_57d108d16f.mp3",
+      "sha256": "e07c08a0c5e97610eeb6af6e308fd5ee065bf8a3664c43c1e6891a7d55bbfa60",
+      "bytes": 398777
+    },
+    {
+      "path": "clips/ep01/012_02afb9554b.mp3",
+      "sha256": "4555adcf0d54c831471c0360d85345de786dcf2a4be1900c3ac61c724936ee53",
+      "bytes": 335456
+    },
+    {
+      "path": "clips/ep01/013_3eb312b97c.mp3",
+      "sha256": "3da81600ca170478fe07e8de16536a3663ce6d0f7bb1301dfd4acd65d58d6671",
+      "bytes": 262731
+    },
+    {
+      "path": "clips/ep01/014_93b4581eb4.mp3",
+      "sha256": "a6fb28b8e182bb369d4a92e186980d141a41668cd1eab8b103f3a6d5afdeb456",
+      "bytes": 253327
+    },
+    {
+      "path": "clips/ep01/015_8136bb273b.mp3",
+      "sha256": "fb1810792331619d3ca0c26fdbbdde1d66502b40c097026e0f245219bd88b7f9",
+      "bytes": 268373
+    },
+    {
+      "path": "clips/ep01/report.json",
+      "sha256": "0de454c1f635bce5d65845aee0d4432325f6f49db623df5b698dda682db24413",
+      "bytes": 5817
+    },
+    {
+      "path": "clips/ep02/000_d1cb7b9741.mp3",
+      "sha256": "e9df484036664a21f6ca50cd2cb9635bab59c20875dea433d1b8647e290469c1",
+      "bytes": 60857
+    },
+    {
+      "path": "clips/ep02/001_fff9b4c7f4.mp3",
+      "sha256": "6f4bfe7f8d6c14983b2d467b1982340ea3d0b37e3a596ef7c14b641d327af292",
+      "bytes": 78411
+    },
+    {
+      "path": "clips/ep02/002_d29d448231.mp3",
+      "sha256": "656d35ea2d90ac6026530d56bf9723e27b4c5d29e74176377e2c8ae0c61713c1",
+      "bytes": 362414
+    },
+    {
+      "path": "clips/ep02/003_c25694ada8.mp3",
+      "sha256": "919dce347059c5f658f32e96746cb52f0aec252b459cfd5998a3daf2ab4d20b8",
+      "bytes": 197529
+    },
+    {
+      "path": "clips/ep02/004_e9eda8094d.mp3",
+      "sha256": "a057757557ce997efc94a6ec606344c08d07ec6d95026a956d9866a4c013e630",
+      "bytes": 268373
+    },
+    {
+      "path": "clips/ep02/005_e1c09b0fb4.mp3",
+      "sha256": "f18f4880611e9aff512ab70fcfee58762dad0686d94105ed4efc22fc3b6feb15",
+      "bytes": 351129
+    },
+    {
+      "path": "clips/ep02/006_d7da33c9f8.mp3",
+      "sha256": "615ea23d862d810a73786e3895aa4be1c1f3eca2a0721bfdd346917442fd5f2a",
+      "bytes": 306617
+    },
+    {
+      "path": "clips/ep02/007_f6a2486731.mp3",
+      "sha256": "033312bf174a7be4769972c67714997943304a1b779bed424cfc8fe32d1408c3",
+      "bytes": 153017
+    },
+    {
+      "path": "clips/ep02/008_68de09d297.mp3",
+      "sha256": "c6b43670ff15cdd7c5ba009a96374b13b6d9b81799d416d9eba8c91b1a4edcf1",
+      "bytes": 224488
+    },
+    {
+      "path": "clips/ep02/009_ff6cf24763.mp3",
+      "sha256": "ecae3e4e758bad3356aa16865499152e4d294fd364bde54d63ee00e5d5a31444",
+      "bytes": 277777
+    },
+    {
+      "path": "clips/ep02/010_44df12123c.mp3",
+      "sha256": "24bef96cca2a0391010ef25d087f8b336a87f2c674771a3bcc2a4cd7f254d63b",
+      "bytes": 268373
+    },
+    {
+      "path": "clips/ep02/011_d285a25988.mp3",
+      "sha256": "54024d759932df423b7a0cdcec42165dc54155a923819bcd091753181bb96747",
+      "bytes": 216337
+    },
+    {
+      "path": "clips/ep02/012_eceb2f40aa.mp3",
+      "sha256": "b017c99e445f903e306e743a388db561ab2f2e75190b101b90cb6cc72ed2b801",
+      "bytes": 360533
+    },
+    {
+      "path": "clips/ep02/013_eaab810e4d.mp3",
+      "sha256": "a1bd0c4626026a328b513231cb6126c78df5750977c36e98929de65efa730e44",
+      "bytes": 143613
+    },
+    {
+      "path": "clips/ep02/014_40bb3f8dd5.mp3",
+      "sha256": "74581313fcec522dc94967d79aa29d99bc58af749dc301a948ea869a66962c71",
+      "bytes": 132328
+    },
+    {
+      "path": "clips/ep02/report.json",
+      "sha256": "605a93538ccb89c123614a64cadd5c7b96cdb9bfa134f5e34701300abceb3b5b",
+      "bytes": 4790
+    },
+    {
+      "path": "clips/ep03/000_65b1fc2465.mp3",
+      "sha256": "25e39e52aede81f6b2a8facbae98afacc43a94bcac7c661dfaf485a02ed6997a",
+      "bytes": 62737
+    },
+    {
+      "path": "clips/ep03/001_3b6e1e6b0f.mp3",
+      "sha256": "8788d3e49f6421c387e1107944e1fd52d5623e360794edf592c691ec721ea898",
+      "bytes": 80292
+    },
+    {
+      "path": "clips/ep03/002_16186042a8.mp3",
+      "sha256": "85097b7c26ab921f6ca2c1345bf7449a19efdab40afc91c71a55ac595d23f719",
+      "bytes": 299093
+    },
+    {
+      "path": "clips/ep03/003_37a88ce83f.mp3",
+      "sha256": "75d475a5137010df5b4674724cb48ebf0738b5e437a2bb27e92e667d9320d0cc",
+      "bytes": 421973
+    },
+    {
+      "path": "clips/ep03/004_187d0450d8.mp3",
+      "sha256": "afb1463b54e38aa6bb6960147f2a9c0ac2a95503e36cf5208fcd67e782e5ba73",
+      "bytes": 245177
+    },
+    {
+      "path": "clips/ep03/005_2ebe28341d.mp3",
+      "sha256": "f707c79c869fbc258f56dec43969192866be9bbca85bee3c7725ed1b6a7ab439",
+      "bytes": 318529
+    },
+    {
+      "path": "clips/ep03/006_345a4de473.mp3",
+      "sha256": "fbb2f7ca2b8a93f8abe52dbb628fc759f71681c1941ecc733b444c9f086413c6",
+      "bytes": 285928
+    },
+    {
+      "path": "clips/ep03/007_cd4ed5beba.mp3",
+      "sha256": "47f498aea39efd511bae229c1f31c43be7781a2e1eec2c8f62021f8a5c677c11",
+      "bytes": 414450
+    },
+    {
+      "path": "clips/ep03/008_9fe29e3f79.mp3",
+      "sha256": "6f01909f40084d12825a88609e3533eb9644a45ed1cd1dd05b5248cf7396cd5d",
+      "bytes": 379969
+    },
+    {
+      "path": "clips/ep03/009_e1086efe35.mp3",
+      "sha256": "93c4c200df161961eeaeb3670a0b6a60e086bcb8633c6076bbe8b273718f09c2",
+      "bytes": 291570
+    },
+    {
+      "path": "clips/ep03/010_9cca5a37c2.mp3",
+      "sha256": "eb3e1d71237f499bafc07a8ce7a5a381f5f4d1d353e4acf4ca36304aa6e43aa0",
+      "bytes": 443289
+    },
+    {
+      "path": "clips/ep03/011_c4c550292b.mp3",
+      "sha256": "9d13cd81768c51aca4db5c80f665cd7fea04b714dc19ee03db732d9338253354",
+      "bytes": 70888
+    },
+    {
+      "path": "clips/ep03/012_08e7510f3d.mp3",
+      "sha256": "5c4262edeeb747a03e856d69193ca164569e6a2503864672dc8e3674cbc23080",
+      "bytes": 214457
+    },
+    {
+      "path": "clips/ep03/013_ce03b1b3d2.mp3",
+      "sha256": "6a7efc56c476bc8427ca1eacf07f457433e7cdbce8180dadf3e0cab8087fba75",
+      "bytes": 311005
+    },
+    {
+      "path": "clips/ep03/014_69c5e70342.mp3",
+      "sha256": "0ad6b0b612ae20c849b2347e065c90c29a879e71145f51a416615a39a4dd6777",
+      "bytes": 245177
+    },
+    {
+      "path": "clips/ep03/015_7c9a68f3e1.mp3",
+      "sha256": "e5c88557cea950dd9c26ee1e3a76ba1173faab5f87188b0ae2e632749071097c",
+      "bytes": 345487
+    },
+    {
+      "path": "clips/ep03/report.json",
+      "sha256": "1a9a85a5866e648f031618f8705fd48e9ca469438ff57999d9537c26a7aabce5",
+      "bytes": 5448
+    },
+    {
+      "path": "clips/prolog/000_d3b3c420f6.mp3",
+      "sha256": "3f98eb8ffd168091c0119076a590f1111d6273d0b7ac6a4524af1fe9a339b662",
+      "bytes": 103489
+    },
+    {
+      "path": "clips/prolog/001_e01a104299.mp3",
+      "sha256": "b75f5c9093fa660f0628a9c24d20a08765a0fc1e5850a91c3b9dbf946279f009",
+      "bytes": 72769
+    },
+    {
+      "path": "clips/prolog/002_c98849b560.mp3",
+      "sha256": "d55fefc414f3168378173c8fbfed6eb7ed0bef71a374c03edd91c4d59ad8b4a7",
+      "bytes": 84053
+    },
+    {
+      "path": "clips/prolog/003_5dc534cc09.mp3",
+      "sha256": "2785d68be9a811eb8b042954302f41c86f18ea0429ea6251502b8c57e1cf91de",
+      "bytes": 232011
+    },
+    {
+      "path": "clips/prolog/004_8d6a42a065.mp3",
+      "sha256": "486e84df5f422fbc2b0776c7ace16b5e17e1d12ab991ca4de67ae7e74323564d",
+      "bytes": 235773
+    },
+    {
+      "path": "clips/prolog/005_ef30e8501b.mp3",
+      "sha256": "71f6225e4b2731d07d836efef78ebca4f068a359b3a3442e0a9703c883a03127",
+      "bytes": 306617
+    },
+    {
+      "path": "clips/prolog/006_0b777c275b.mp3",
+      "sha256": "12c4cf7371d74cdaf4a41ff61e3de1877a004ca50fb6f0ba74bd0f7f3b42c77b",
+      "bytes": 199410
+    },
+    {
+      "path": "clips/prolog/007_d8b44ab088.mp3",
+      "sha256": "10712b2867959f46627755c910d33e76331dbc116c2d30e82140a8911677dcf5",
+      "bytes": 308497
+    },
+    {
+      "path": "clips/prolog/008_f8bf68d01e.mp3",
+      "sha256": "c0e087235cea670b8576feb48e88d0c51c9ee57e88dff83ee0fac9150f75c876",
+      "bytes": 118535
+    },
+    {
+      "path": "clips/prolog/009_1426d8527a.mp3",
+      "sha256": "9ba5b1232958d0e6cf9d329460426cbc2f4cbb4a65f6c64dd71018e4a932de47",
+      "bytes": 300974
+    },
+    {
+      "path": "clips/prolog/010_c363d8bea4.mp3",
+      "sha256": "a324ae7810e739590254796279a756e322d121a6238688d3c48951bf4ba40bcd",
+      "bytes": 170571
+    },
+    {
+      "path": "clips/prolog/report.json",
+      "sha256": "eb1032edd9822c21d41a7decc94debcfda0a069460c5da487cc59dee4628b188",
+      "bytes": 3157
+    },
+    {
+      "path": "scripts/ep01.json",
+      "sha256": "63adefb112b0aff0b5ccbf809c7d0749c049c037e0c15c90308f6e15fc46e886",
+      "bytes": 7788
+    },
+    {
+      "path": "scripts/ep02.json",
+      "sha256": "93d230c54ee4b562bb088ba2840d66ab7f7f2f57c76383fce72a6835ed248184",
+      "bytes": 6070
+    },
+    {
+      "path": "scripts/ep03.json",
+      "sha256": "b94cdfd8e9f462adc30e282705ce32363e82fec4f2c0c95fc628252a1c3cde82",
+      "bytes": 7599
+    },
+    {
+      "path": "scripts/prolog.json",
+      "sha256": "e92a9f7501618bfc2a572cf2920fb6639d2471e6cf8ea67e3431b748fccc457f",
+      "bytes": 3917
+    },
+    {
+      "path": "web/content/narration/ep01.srt",
+      "sha256": "5c52234908d29a49195b77b7413b63d00a157032fc88d1d9b488b809634377cc",
+      "bytes": 4513
+    },
+    {
+      "path": "web/content/narration/ep02.srt",
+      "sha256": "323ce143ec789b94d0c071cca0b155ad0284e6a8038f8f924ebcdd5dddce72fe",
+      "bytes": 3522
+    },
+    {
+      "path": "web/content/narration/ep03.srt",
+      "sha256": "2e4da9eaed1da1b360b780875652d710e5d1c6a627d4e7291cb1b45adbcc579a",
+      "bytes": 4413
+    },
+    {
+      "path": "web/content/narration/prolog.srt",
+      "sha256": "5da31178b26a4892ae65e7df242de6cac6d0b54e5f8bf67914c16bc83251d229",
+      "bytes": 2208
+    },
+    {
+      "path": "web/site/public/record/ep01.mp3",
+      "sha256": "1f93244b057484cbfe693be5089a2d17b8eb22a8f05d52de209c5938768f7080",
+      "bytes": 4414738
+    },
+    {
+      "path": "web/site/public/record/ep02.mp3",
+      "sha256": "231e933c588bebb6e446d2c0e6442f587608329d870aa7c24bbbd2eecf638c18",
+      "bytes": 3393873
+    },
+    {
+      "path": "web/site/public/record/ep03.mp3",
+      "sha256": "8663843edbefbd4e6b2734f50696b6d45c7586308f77c6123c7e7b79afcd8262",
+      "bytes": 4259571
+    },
+    {
+      "path": "web/site/public/record/prolog.mp3",
+      "sha256": "7a0e9085af2c82152eec77137b835c3bac82a4040edbbdb2abf2b16c3ad8c716",
+      "bytes": 2305612
+    }
+  ]
+}

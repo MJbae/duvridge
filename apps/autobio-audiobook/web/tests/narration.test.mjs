@@ -1,0 +1,336 @@
+import assert from 'node:assert/strict'
+import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import os from 'node:os'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+import test from 'node:test'
+import matter from 'gray-matter'
+import { createMarkdownRenderer, disposeMdItInstance } from 'vitepress'
+import { parseManuscript } from '../site/.vitepress/shared/episode-heading.mjs'
+import {
+  clock,
+  compact,
+  cueIndexAt,
+  formatSrt,
+  listeningMinutes,
+  locateSentences,
+  nextCueStart,
+  parseSrt,
+  previousCueStart,
+  spokenTime,
+} from '../site/.vitepress/shared/narration-cues.mjs'
+import { classifyCues, episodeParagraphs, loadNarration } from '../site/.vitepress/shared/narration.mjs'
+import { narrationSentences } from '../site/.vitepress/markdown/narration-sentences.ts'
+import { alignSentences, findOutro, findSilences } from '../scripts/narration-align.mjs'
+import { syncNarration } from '../scripts/sync-narration.mjs'
+import { plainText, prepareContent } from '../scripts/prepare-content.mjs'
+
+const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+const mainFilename = '배병희_자서전.md'
+const original = readFileSync(path.join(repo, mainFilename), 'utf8')
+const silent = { log() {}, warn() {} }
+const work = { title: '내 논을 파는 한이 있어도', subtitle: '배병희 자전소설' }
+const sample = {
+  id: 'ep01',
+  label: '1화',
+  title: '어머니의 쇠갈고리',
+  time: '1930년대 · 안면도 중장리',
+  body: '첫 문장이다. 둘째 문장이다.\n\n셋째 문장이다.',
+}
+const timing = `${[
+  '1\n00:00:00,000 --> 00:00:08,000\n1화\n어머니의 쇠갈고리',
+  '2\n00:00:08,000 --> 00:00:13,000\n1화\n어머니의 쇠갈고리\n1930년대 · 안면도 중장리',
+  '3\n00:00:13,000 --> 00:00:20,000\n첫 문장이다.',
+  '4\n00:00:20,000 --> 00:00:27,500\n둘째\n문장이다.',
+  '5\n00:00:27,500 --> 00:00:33,250\n셋째 문장이다.',
+  '6\n00:00:33,250 --> 00:00:46,750\n♪',
+].join('\n\n')}\n`
+
+function fixture(t) {
+  const root = mkdtempSync(path.join(os.tmpdir(), 'family-narration-'))
+  t.after(() => rmSync(root, { recursive: true, force: true }))
+  const write = (filename, body) => {
+    mkdirSync(path.dirname(path.join(root, filename)), { recursive: true })
+    writeFileSync(path.join(root, filename), body)
+  }
+  return { root, write }
+}
+
+test('자막 시각을 읽고 같은 형식으로 다시 쓴다', () => {
+  const source = '1\n00:00:00,000 --> 00:00:08,066\n1화\n어머니의 쇠갈고리\n\n2\n00:01:30,724 --> 00:01:37,296\n물때가 되면 어머니는\n바다로 나섰다.\n'
+  const cues = parseSrt(source)
+  assert.deepEqual(cues, [
+    { start: 0, end: 8.066, text: '1화\n어머니의 쇠갈고리' },
+    { start: 90.724, end: 97.296, text: '물때가 되면 어머니는\n바다로 나섰다.' },
+  ])
+  assert.equal(formatSrt(cues), source)
+  assert.deepEqual(parseSrt('﻿1\r\n00:00:01,000 --> 00:00:02,500\r\n가\r\n'), [{ start: 1, end: 2.5, text: '가' }])
+  assert.throws(() => parseSrt('1\n00:00:01 --> 00:00:02\n가'), /시각/)
+  assert.throws(() => parseSrt('1\n00:00:01,000 --> 00:00:02,000\n'), /비어/)
+})
+
+test('줄바꿈과 띄어쓰기가 달라도 원고 문단 순서대로 문장을 찾고, 고친 문장은 건너뛴다', () => {
+  assert.equal(compact(' 가 나\n다 '), '가나다')
+  assert.deepEqual(
+    locateSentences(['첫 문장이다. 둘째 문장이다.', '셋째 문장이다.'], ['첫 문장\n이다.', '둘째  문장이다.', '없는 문장이다.', '셋째 문장이다.']),
+    [{ paragraph: 0, start: 0, end: 6 }, { paragraph: 0, start: 6, end: 13 }, null, { paragraph: 1, start: 0, end: 7 }]
+  )
+  assert.deepEqual(locateSentences(['그랬다. 그랬다.'], ['그랬다.', '그랬다.']), [
+    { paragraph: 0, start: 0, end: 4 },
+    { paragraph: 0, start: 4, end: 8 },
+  ])
+})
+
+test('재생 위치로 문장을 찾고 이전·다음 문장으로 옮긴다', () => {
+  const cues = [[0, 8, 'title'], [8, 13, 'dateline'], [13, 22], [22, 30], [30, 44, 'music']]
+  assert.equal(cueIndexAt(cues, -1), -1)
+  assert.equal(cueIndexAt(cues, 0), 0)
+  assert.equal(cueIndexAt(cues, 12.99), 1)
+  assert.equal(cueIndexAt(cues, 22), 3)
+  assert.equal(cueIndexAt(cues, 99), 4)
+  // A sentence under way restarts; right after it starts, the previous one plays.
+  assert.equal(previousCueStart(cues, 25), 22)
+  assert.equal(previousCueStart(cues, 22.5), 13)
+  assert.equal(previousCueStart(cues, 3), 0)
+  assert.equal(nextCueStart(cues, 14), 22)
+  assert.equal(nextCueStart(cues, 31), null)
+  assert.equal(clock(241.3), '4:01')
+  assert.equal(clock(59.9), '0:59')
+  assert.equal(spokenTime(241.3), '4분 1초')
+  assert.equal(spokenTime(120), '2분')
+  assert.equal(spokenTime(7), '7초')
+  assert.equal(listeningMinutes(241.3), 4)
+  assert.equal(listeningMinutes(124.6), 2)
+  assert.equal(listeningMinutes(20), 1)
+})
+
+test('낭독이 쉬는 구간을 찾는다', () => {
+  const rate = 1000
+  const samples = new Float32Array(3 * rate)
+  for (let index = 0; index < samples.length; index++) {
+    const time = index / rate
+    if (time < 1 || time >= 1.6) samples[index] = 0.3 * Math.sin(2 * Math.PI * 220 * time)
+  }
+  const silences = findSilences(samples, rate)
+  assert.equal(silences.length, 1)
+  assert.ok(Math.abs(silences[0].start - 1) < 0.02)
+  assert.ok(Math.abs(silences[0].end - 1.6) < 0.02)
+  assert.deepEqual(findSilences(samples, rate, { minimum: 0.7 }), [])
+})
+
+test('문단 안 문장의 시작은 가장 가까운 긴 쉼 뒤로 옮기고 문단 첫 문장은 그대로 둔다', () => {
+  const cues = [
+    { start: 0, end: 8, text: '1화\n제목' },
+    { start: 8, end: 21.64, text: '첫 문장' },
+    { start: 21.64, end: 29.91, text: '둘째 문장' },
+    { start: 29.91, end: 36.44, text: '셋째 문장' },
+    { start: 36.44, end: 44, text: '새 문단' },
+  ]
+  const silences = [
+    { start: 19.38, end: 19.7 },
+    { start: 21.74, end: 21.85 },
+    { start: 22, end: 23.05 },
+    { start: 29.93, end: 30.05 },
+    { start: 30.19, end: 31.19 },
+    { start: 35.53, end: 36.43 },
+  ]
+  const aligned = alignSentences(cues, new Set([2, 3]), silences)
+  assert.deepEqual(aligned.map(cue => [cue.start, cue.end]), [[0, 8], [8, 22.93], [22.93, 31.07], [31.07, 36.44], [36.44, 44]])
+  assert.equal(cues[2].start, 21.64)
+  assert.equal(alignSentences(cues, new Set([2]), [{ start: 26, end: 27 }])[2].start, 21.64)
+})
+
+test('마지막 문장 뒤 음악이 시작되기 전의 쉼에서 낭독이 끝난다', () => {
+  const cues = [{ start: 214.78, end: 221.77, text: '앞 문장' }, { start: 221.77, end: 241.3, text: '마지막 문장' }]
+  assert.equal(findOutro(cues, [{ start: 220.85, end: 221.86 }, { start: 224.2, end: 224.35 }, { start: 227.7, end: 228.5 }]), 227.8)
+  assert.equal(findOutro(cues, [{ start: 224.2, end: 224.35 }]), null)
+  // 3화: a breath inside the last sentence is shorter than the pause before the music, and the file fades out at the end.
+  const third = [{ start: 202.55, end: 208.78, text: '앞 문장' }, { start: 208.78, end: 232.68, text: '마지막 문장' }]
+  const pauses = [{ start: 212.77, end: 213.23 }, { start: 214.9, end: 215.25 }, { start: 218.28, end: 219.78 }, { start: 232.1, end: 232.68 }]
+  assert.equal(findOutro(third, pauses), 218.38)
+})
+
+test('제목과 장면 구분은 낭독 문장을 찾는 문단에서 뺀다', () => {
+  assert.deepEqual(episodeParagraphs('# 제목\n\n첫 문단이다.\n\n* * *\n\n둘째 문단이다.\n\n---\n\n### 소제목\n\n셋째 문단이다.'), [
+    '첫 문단이다.',
+    '둘째 문단이다.',
+    '셋째 문단이다.',
+  ])
+})
+
+test('프롤로그 녹음은 책 표지와 회차 제목, 시대·장소로 시작하고 끝 음악으로 마친다', () => {
+  const prolog = { id: 'prolog', label: '프롤로그', title: '벼 한 톨의 무게', time: '1990년대 초 · 독정 정미소', body: '' }
+  const texts = ['내 논을 파는 한이 있어도\n배병희 자전소설', '프롤로그\n벼 한 톨의 무게', '프롤로그\n벼 한 톨의 무게\n1990년대 초 · 독정 정미소', '믿었던 상회가 사라졌다.', '♪']
+  assert.deepEqual(classifyCues(texts.map(text => ({ text })), prolog, work), ['cover', 'title', 'dateline', null, 'music'])
+  assert.throws(() => classifyCues([{ text: '♪' }, { text: '문장' }], prolog, work), /끝 음악/)
+})
+
+test('낭독 음성과 문장 시각을 같은 회차 ID로 연결하고 원고 문장만 강조 대상으로 남긴다', t => {
+  const { root, write } = fixture(t)
+  write('site/public/record/ep01.mp3', 'mp3')
+  write('content/narration/ep01.srt', timing)
+  const warnings = []
+  const { tracks, sentences } = loadNarration(root, [sample], { work, warn: message => warnings.push(message) })
+  assert.deepEqual(tracks, {
+    ep01: {
+      src: '/record/ep01.mp3',
+      duration: 46.75,
+      cues: [[0, 8, 'title'], [8, 13, 'dateline'], [13, 20], [20, 27.5], [27.5, 33.25], [33.25, 46.75, 'music']],
+    },
+  })
+  assert.deepEqual(sentences, {
+    ep01: [{ cue: 2, text: '첫 문장이다.' }, { cue: 3, text: '둘째 문장이다.' }, { cue: 4, text: '셋째 문장이다.' }],
+  })
+  assert.deepEqual(warnings, [])
+  assert.deepEqual(loadNarration(path.join(root, 'missing'), [sample], { work }), { tracks: {}, sentences: {} })
+})
+
+test('짝이 없거나 원고에 없는 낭독 파일, 비었거나 겹친 시각을 준비 단계에서 거절한다', t => {
+  const { root, write } = fixture(t)
+  const load = () => loadNarration(root, [sample], { work })
+  write('content/narration/ep01.srt', timing)
+  assert.throws(load, /낭독 음성이 없습니다/)
+  write('site/public/record/ep01.mp3', 'mp3')
+  write('site/public/record/ep02.mp3', 'mp3')
+  assert.throws(load, /문장 시각 파일이 없습니다/)
+  rmSync(path.join(root, 'site/public/record/ep02.mp3'))
+  write('site/public/record/ep09.mp3', 'mp3')
+  write('content/narration/ep09.srt', timing)
+  assert.throws(load, /원고에 없습니다/)
+  rmSync(path.join(root, 'site/public/record/ep09.mp3'))
+  rmSync(path.join(root, 'content/narration/ep09.srt'))
+  write('content/narration/ep01.srt', timing.replace('00:00:20,000 --> 00:00:27,500', '00:00:19,000 --> 00:00:27,500'))
+  assert.throws(load, /겹칩니다/)
+  write('content/narration/ep01.srt', timing)
+  write('site/public/record/ep01.mp3', '')
+  assert.throws(load, /비어 있습니다/)
+})
+
+test('원고를 고친 문장은 경고하고 강조만 빼며, 녹음이 원고와 대부분 다르면 거절한다', t => {
+  const { root, write } = fixture(t)
+  write('site/public/record/ep01.mp3', 'mp3')
+  write('content/narration/ep01.srt', timing)
+  const warnings = []
+  const edited = { ...sample, body: '첫 문장을 고쳤다. 둘째 문장이다.\n\n셋째 문장이다.' }
+  const { tracks, sentences } = loadNarration(root, [edited], { work, warn: message => warnings.push(message) })
+  assert.equal(tracks.ep01.cues.length, 6)
+  assert.deepEqual(sentences.ep01.map(sentence => sentence.cue), [3, 4])
+  assert.equal(warnings.length, 1)
+  assert.match(warnings[0], /ep01 3번째 문장/)
+  assert.throws(() => loadNarration(root, [{ ...sample, body: '전혀 다른 원고다.' }], { work }), /맞지 않습니다/)
+})
+
+test('낭독 문장을 원문 그대로 감싸고 제목과 원고에 없는 문장은 감싸지 않는다', async () => {
+  disposeMdItInstance()
+  const sentences = {
+    sample: [
+      { cue: 2, text: '첫 문장이다.' },
+      { cue: 3, text: '둘째 문장이다.' },
+      { cue: 4, text: '없는 문장이다.' },
+      { cue: 5, text: '셋째는 굵게 쓴다.' },
+    ],
+  }
+  const md = await createMarkdownRenderer(path.join(repo, 'narration-renderer'), {
+    config(md) {
+      md.set({ html: false })
+      md.use(narrationSentences, { sentences })
+    },
+  })
+  const render = (text, kind = 'episode') => md.render(text, { frontmatter: { kind, episodeId: 'sample' } })
+  const html = render('# 첫 문장이다.\n\n첫 문장이다. 둘째 문장이다.\n\n셋째는 **굵게** 쓴다.\n')
+  assert.match(html, /<h1[^>]*>첫 문장이다\./)
+  assert.match(html, /<p><span class="cue" data-cue="2">첫 문장이다\.<\/span> <span class="cue" data-cue="3">둘째 문장이다\.<\/span><\/p>/)
+  assert.ok(!html.includes('data-cue="4"'))
+  assert.match(html, /<p><span class="cue" data-cue="5">셋째는 <\/span><strong><span class="cue" data-cue="5">굵게<\/span><\/strong><span class="cue" data-cue="5"> 쓴다\.<\/span><\/p>/)
+  assert.ok(!render('첫 문장이다.', 'document').includes('cue'))
+  assert.ok(!md.render('첫 문장이다.', { frontmatter: { kind: 'episode', episodeId: 'ep99' } }).includes('cue'))
+  disposeMdItInstance()
+})
+
+test('오디오북 결과물에서 음성을 옮기고 문장 시각을 실제 쉼에 맞춘다', t => {
+  const { root, write } = fixture(t)
+  write(mainFilename, original)
+  const source = path.join(root, 'audiobook')
+  const opening = parseManuscript(matter(original).content).episodes.find(episode => episode.id === 'ep01').body.split('\n\n')[0]
+  const [first, second, third] = opening.match(/[^.]+\./g).map(sentence => sentence.trim())
+  write('audiobook/ep01.mp3', 'recorded-mp3')
+  write('audiobook/ep01.srt', formatSrt([
+    { start: 0, end: 4, text: '1화\n어머니의 쇠갈고리' },
+    { start: 4, end: 6, text: '1화\n어머니의 쇠갈고리\n1930년대 · 안면도 중장리' },
+    { start: 6, end: 11, text: first },
+    { start: 11, end: 16, text: second },
+    { start: 16, end: 30, text: third },
+  ]))
+  const rate = 16000
+  const pauses = [[11.5, 12.4], [16.6, 17.4], [21, 21.8]]
+  const samples = new Float32Array(30 * rate)
+  for (let index = 0; index < samples.length; index++) {
+    const time = index / rate
+    if (!pauses.some(([from, to]) => time >= from && time < to)) samples[index] = 0.2 * Math.sin(2 * Math.PI * 180 * time)
+  }
+  syncNarration({ root, from: source, ids: ['ep01'], decodeAudio: () => samples, logger: silent })
+  assert.equal(readFileSync(path.join(root, 'site/public/record/ep01.mp3'), 'utf8'), 'recorded-mp3')
+  const cues = parseSrt(readFileSync(path.join(root, 'content/narration/ep01.srt'), 'utf8'))
+  assert.deepEqual(cues.map(cue => [cue.start, cue.end]), [[0, 4], [4, 6], [6, 12.28], [12.28, 17.28], [17.28, 21.1], [21.1, 30]])
+  assert.equal(cues.at(-1).text, '♪')
+  write('audiobook/ep01.srt', formatSrt([{ start: 0, end: 4, text: '1화\n어머니의 쇠갈고리' }, { start: 4, end: 30, text: '원고에 없는 문장이다.' }]))
+  assert.throws(() => syncNarration({ root, from: source, ids: ['ep01'], decodeAudio: () => samples, logger: silent }), /원고에서 찾지 못한 문장/)
+  assert.throws(() => syncNarration({ root, from: source, ids: ['ep99'], decodeAudio: () => samples, logger: silent }), /원고에 없는 회차/)
+})
+
+test('콘텐츠를 준비하면 낭독 회차를 목록과 문장 감싸기 자료에 넣는다', t => {
+  const { root, write } = fixture(t)
+  write(mainFilename, original)
+  write('site/public/record/ep01.mp3', readFileSync(path.join(repo, 'site/public/record/ep01.mp3')))
+  write('content/narration/ep01.srt', readFileSync(path.join(repo, 'content/narration/ep01.srt')))
+  const { catalog, warnings } = prepareContent({ root, logger: silent })
+  assert.deepEqual(Object.keys(catalog.narration), ['ep01'])
+  assert.equal(warnings.length, 14)
+  const generated = JSON.parse(readFileSync(path.join(root, 'site/.vitepress/generated/narration.json'), 'utf8'))
+  assert.equal(generated.ep01.length, 18)
+  assert.equal(matter(readFileSync(path.join(root, 'site/read/ep01.md'), 'utf8')).data.narration, undefined)
+})
+
+test('3화까지의 낭독 음성과 문장 시각이 같은 회차 ID로 연결된다', () => {
+  const main = matter(original)
+  const { episodes } = parseManuscript(main.content)
+  const { tracks, sentences } = loadNarration(repo, episodes, { work, toText: plainText })
+  assert.deepEqual(Object.keys(tracks), ['prolog', 'ep01', 'ep02', 'ep03'])
+  for (const [id, track] of Object.entries(tracks)) {
+    assert.equal(track.src, `/record/${id}.mp3`)
+    assert.ok(existsSync(path.join(repo, 'site/public', track.src)))
+    assert.equal(track.cues.at(-1)[2], 'music')
+    assert.equal(track.duration, track.cues.at(-1)[1])
+    assert.ok(sentences[id].length > 0)
+    assert.equal(sentences[id].length, { prolog: 9, ep01: 18, ep02: 12, ep03: 21 }[id])
+  }
+  assert.deepEqual(tracks.prolog.cues.slice(0, 3).map(cue => cue[2]), ['cover', 'title', 'dateline'])
+  assert.deepEqual(tracks.ep01.cues.slice(0, 2).map(cue => cue[2]), ['title', 'dateline'])
+})
+
+test('검토한 2화 녹음 예외는 정본·음성·자막과 문장 수가 모두 같을 때만 적용한다', t => {
+  const { root, write } = fixture(t)
+  const compatibility = readFileSync(path.join(repo, 'content/narration-compatibility.json'), 'utf8')
+  const recording = readFileSync(path.join(repo, 'site/public/record/ep02.mp3'))
+  const timing = readFileSync(path.join(repo, 'content/narration/ep02.srt'), 'utf8')
+  write(mainFilename, original)
+  write('content/narration-compatibility.json', compatibility)
+  write('site/public/record/ep02.mp3', recording)
+  write('content/narration/ep02.srt', timing)
+  const episode = parseManuscript(matter(original).content).episodes.find(episode => episode.id === 'ep02')
+  const load = () => loadNarration(root, [episode], { work, toText: plainText })
+  assert.equal(load().sentences.ep02.length, 12)
+  write(mainFilename, `${original}\n`)
+  assert.throws(load, /맞지 않습니다/)
+  write(mainFilename, original)
+  write('site/public/record/ep02.mp3', Buffer.concat([recording, Buffer.from('changed')]))
+  assert.throws(load, /맞지 않습니다/)
+  write('site/public/record/ep02.mp3', recording)
+  write('content/narration/ep02.srt', `${timing}\n`)
+  assert.throws(load, /맞지 않습니다/)
+  write('content/narration/ep02.srt', timing)
+  const manifest = JSON.parse(compatibility)
+  manifest.recordings.ep02.matchedSentences = 13
+  write('content/narration-compatibility.json', JSON.stringify(manifest))
+  assert.throws(load, /맞지 않습니다/)
+})

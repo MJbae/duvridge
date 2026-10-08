@@ -1,0 +1,8 @@
+{
+  "name": "@duvridge/toldlife",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "node --test ../../tests/toldlife-portal.test.mjs"
+  }
+}

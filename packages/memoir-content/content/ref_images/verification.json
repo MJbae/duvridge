@@ -1,0 +1,27 @@
+{
+  "verified_at": "2026-10-06",
+  "image_count": 105,
+  "downloaded_images": 94,
+  "existing_images_preserved": 11,
+  "file_decode_and_hash_check": "passed",
+  "downloaded_originals_byte_preserved": "passed",
+  "duplicate_byte_hashes": 0,
+  "episodes_with_reference_files": 26,
+  "all_episode_reference_paths_exist": true,
+  "errors": [],
+  "total_image_bytes": 85863865,
+  "contact_sheets": [
+    "_previews/contact-01.jpg",
+    "_previews/contact-02.jpg",
+    "_previews/contact-03.jpg",
+    "_previews/contact-04.jpg",
+    "_previews/contact-05.jpg",
+    "_previews/contact-06.jpg"
+  ],
+  "catalog_browser_check": {
+    "desktop_cards": 105,
+    "robot_episode_cards": 6,
+    "mobile_horizontal_overflow": false,
+    "javascript_errors": []
+  }
+}

@@ -1,0 +1,113 @@
+{
+  "id": "ep09-01",
+  "episodeId": "ep09",
+  "master": "content/illustration-sources/ep09-02.png",
+  "sceneHeading": "일곱 가구가 따라나선 길 {#ep09}",
+  "sceneExcerpt": "1977년 무렵, 마침내 고향을 떠나는 날이 밝았다. 화성으로 이동하는 일은 ‘오산 큰아버지’로 불리던 친족이 주도했다. 안면도 들판에서 함께 땀 흘리며 다루었던 10마력 경운기와 탈곡기, 바인더 같은 농기계와 손때 묻은 살림살이를 이삿짐 트럭에 실었다.",
+  "corrections": [
+    "Replace walking-tractor migration vehicle with an anonymous 1977-era moving truck.",
+    "Keep protagonist identity, rural family, watercolor style and neighboring-household context.",
+    "Farm equipment is cargo; do not identify the driver or assert an exact route."
+  ],
+  "references": [
+    {
+      "path": "content/illustration-sources/archive/4차_피드백_이전/ep09-02.png",
+      "role": "Edit target before 4th-feedback replacement; migration composition, family, watercolor style; wrong tractor transport.",
+      "sha256": "ab1947e03410e75fdb915da24d51d9bac18ef15452bcfdf1037513f59bebbc0c"
+    },
+    {
+      "path": "content/ref_images/배병희_본인/50대의_배병희_정장.png",
+      "role": "Mandatory protagonist identity: adult man in center, not child or suit.",
+      "sha256": "0975b11331ca1e4e79f7443319575255f2c95011a5a3cbccb9095145dedc8c64"
+    },
+    {
+      "path": "site/public/images/bae-byunghee-hero-watercolor.png",
+      "role": "Approved face geometry and watercolor portrait style.",
+      "sha256": "bdf901a59dfaee8a457529f848a536e2b36f57be564c2367c715ad3f61e5ebb9"
+    },
+    {
+      "path": "content/illustration-sources/ep09-01.png",
+      "role": "1970s same protagonist identity, age, clothes and watercolor only; binder composition excluded.",
+      "sha256": "ab90d206645bdb63d28d53d4506d3dbec10ff946ba931570901bbe10634d17c7"
+    }
+  ],
+  "prompt": "Use case: precise-object-edit.\nAsset type: corrected landscape 16:9 watercolor TITLE illustration for episode ep09 of a Korean autobiography; long edge at least 1280 pixels.\nPrimary request: edit image 1 to correct the migration vehicle from a walking tractor with a wooden trailer to a historically plausible, anonymous 1977-era Korean moving truck. The manuscript scene is Bae Byung-hee's family and neighboring households moving from Anmyeondo to Hwaseong around 1977, with household belongings and farming equipment transported by truck. Keep the original rural migration story and the coherent watercolor series.\n\nInput roles:\nImage 1 is the EDIT TARGET: preserve its warm coastal rice-field setting, people’s modest 1970s rural clothes, family character identities, muted ochre and grey-blue colors, and watercolor texture. Its tractor/trailer migration vehicle is factually wrong and must be fully replaced, and its walking family should now be shown taking the truck.\nImage 2 is mandatory face identity only: Bae Byung-hee is the ADULT MAN IN THE CENTER, not the child or suit.\nImage 3 is the approved watercolor portrait of that same man, for face geometry and painted style.\nImage 4 is another existing 1970s watercolor scene, for the same protagonist around age 45, work clothes and restrained watercolor treatment; do not copy its reaper-binder or fieldwork.\n\nScene and composition: one wide complete painting, a departure pause on a level rural road in a low coastal farming landscape. The MAIN moving truck is stationary while the family is settled for the journey, with all wheels grounded and natural perspective. Use a simple late-1960s/1970s style modest bonneted cargo truck, round headlights, weathered grey-blue body, dark tires and an ordinary high-sided wooden or metal cargo bed, no identifiable brand or precise model. View it at three-quarter side angle so its cab, loaded cargo bed and family remain clearly readable. Bae, wearing his established cap and ordinary grey-blue work jacket, is a PASSENGER at the camera-side cab window, visible head and upper body. He is not touching a steering wheel. Do not identify or feature the driver; the far-side driver area is naturally obscured. His expression is calm, thoughtful, quietly resolute. Preserve his real broad midface and cheeks, softly hooded narrow eyes, familiar brows, broad rounded nose, lip shape, rounded jaw, ears and black hairline, with slightly fewer age lines for age about 45. Integrate the face into the painting; never paste a photograph or substitute a generic farmer.\nThe elderly mother, wife and two children from the original scene retain their distinct appearances and clothes and are shown seated low inside the enclosed high-sided rear cargo bed, safely away from the truck's edges and wheels, visibly associated with the move. There is a clear low seated passenger area separate from secured household bundles; no one standing or sitting on the rim, climbing, dangling limbs, or walking in wheel paths. The truck is paused, with no dust plume or speed effect. Tie modest bedding bundles, household baskets and compact farming equipment down securely below the rail. Farm equipment, if visible, is cargo only, never the towing vehicle. Behind the main truck, softly painted smaller moving trucks with household bundles suggest the neighboring seven-household migration, without making a factual claim about an exact number of vehicles. No crowds added to the foreground. Preserve low fields, distant blue coastal water and hazy hills as soft contextual washes, without claiming a specific route or landmark.\n\nStyle: paint EVERY surface in the existing series' hand-painted watercolor on warm cold-pressed paper, transparent ochre and restrained grey-blue washes, visible pigment blooms and granulation, broad brush-shaped marks, soft wet-on-wet transitions, light paper highlights and lost edges with selective clear strokes for faces and essential truck details. No photograph with a uniform speckled paint filter, pasted face, glossy skin, hyper-detailed digital rendering, oil impasto, cartoon or hard outlines.\nFraming: landscape, preferably exact 16:9, essential truck, Bae's face and family within a generous central safe area so a centered 16:9 crop preserves them. Leave some rural landscape margin around the scene; truck and family must be large enough to read on a phone.\nAvoid: the old walking tractor or tow trailer as transport, boats, people walking as the principal means of the journey, a smiling advertisement, unsafe riding or traffic action, modern trucks or cars, luxury factory, exact branded truck identity, readable license plate, signage, lettering, text, caption, logo, watermark, decorative border, panels or collage. Opaque background.",
+  "previousIllustrationSha256": "c2067eba0a9dec96530ce5ad2f9e635ce851214ded64adc8e1c1c985a6d09d20",
+  "previousMasterSha256": "ab1947e03410e75fdb915da24d51d9bac18ef15452bcfdf1037513f59bebbc0c",
+  "previousIllustrationId": "ep09-02",
+  "placementRole": "representative",
+  "placementReason": "4차 가족 피드백에 맞춰 대표 삽화의 사실관계와 본문을 일치시킴",
+  "history": [
+    {
+      "id": "ep09-01",
+      "episodeId": "ep09",
+      "master": "content/illustration-sources/archive/4차_피드백_이전/ep09-02.png",
+      "sceneHeading": "일곱 가구가 따라나선 길 {#ep09}",
+      "sceneExcerpt": "배병희의 이주 소식을 들은 고향 이웃 일곱 가구도 그를 믿고 동행을 결정했다. 낯선 곳으로의 이주였지만 수십 년간 보여준 그의 성실함과 리더십을 신뢰했기 때문이다. 1977년 무렵 배병희 일가와 이웃들은 안면도를 떠나 남양만으로 이주했다.",
+      "corrections": [
+        "Connect the walking tractor and two-wheel load trailer with a visible, plausible drawbar.",
+        "Seat the driver securely at the front of the trailer, within reach of the handlebars, with feet supported.",
+        "Keep pedestrians beside the road and clear of wheels; show modest newly reclaimed land instead of a steep panoramic descent.",
+        "Correct protagonist likeness from the actual age-specific Bae Byung-hee photographs, preserving facial geometry.",
+        "Use multiple existing series illustrations to strengthen transparent watercolor washes, visible brushwork, and paper texture while preserving the corrected composition."
+      ],
+      "references": [
+        {
+          "path": "content/ref_images/배병희_본인/50대의_배병희_정장.png",
+          "role": "Highest-priority actual face identity: Bae Byung-hee, the adult man in the center; not the child or suit.",
+          "sha256": "0975b11331ca1e4e79f7443319575255f2c95011a5a3cbccb9095145dedc8c64"
+        },
+        {
+          "path": "site/public/images/bae-byunghee-hero-watercolor.png",
+          "role": "Existing approved portrait: the same protagonist's face and series watercolor style.",
+          "sha256": "bdf901a59dfaee8a457529f848a536e2b36f57be564c2367c715ad3f61e5ebb9"
+        },
+        {
+          "path": "site/public/images/episodes/ep11-01-1280.jpg",
+          "role": "Existing series scene: familiar protagonist likeness and painterly family-scene rendering.",
+          "sha256": "eb0117a9d77c06085d4e8a96be6c77c955590e5913b77428eb12215b7166d693"
+        },
+        {
+          "path": "content/illustration-sources/ep09-01.png",
+          "role": "New corrected binder scene: the same 1970s protagonist and stronger watercolor style.",
+          "sha256": "ab90d206645bdb63d28d53d4506d3dbec10ff946ba931570901bbe10634d17c7"
+        },
+        {
+          "path": "content/illustration-sources/archive/4차_피드백_이전/ep09-02.png",
+          "role": "Edit target: keep the sensible tractor/trailer, seated driver and walking family layout; replace generic driver likeness and repaint the surface.",
+          "sha256": "ab1947e03410e75fdb915da24d51d9bac18ef15452bcfdf1037513f59bebbc0c"
+        }
+      ],
+      "prompt": "Use case: identity-preserve. Asset type: corrected 16:9 watercolor autobiography illustration. Correct FACE IDENTITY and WATERCOLOR STYLE in input image 5. Preserve its successfully corrected 1977 migration composition and vehicle connections. Reference roles: image 1 is the actual protagonist's face, the adult man in the center, mandatory identity reference. Image 2 is the existing approved watercolor portrait of the SAME man. Image 3 is another existing series painting of him with his daughter, an identity and watercolor reference. Image 4 is the newly corrected front-view binder scene, fixing how the same 1970s man is rendered in this replacement set. Image 5 is the EDIT TARGET, its scene and vehicle geometry only, not its generic driver face.\nThe protagonist MUST be unmistakably the actual adult man in image 1 and the SAME person as the existing portrait in image 2 and father in image 3. Preserve his face width-to-height, broad midface and full cheeks, softly hooded narrow eyes and familiar brows, broad rounded nose, characteristic lip shape, rounded jaw and chin, ears and forehead-to-hairline relationship. Use age adjustments only for wrinkles and hair; do not redesign facial structure or substitute a generic rural man. No pasted photographic face: paint his real likeness coherently in watercolor. Only the main father's identity is corrected; do not give his face to other family members or neighbors.\nThe seated driver is Bae Byung-hee at about 45: use the same face as the photograph and corrected binder, slightly fewer age lines, black hair and the existing cap. In his existing three-quarter head angle, preserve the recognizable nose profile, eye position, cheek volume, mouth and chin. Keep natural scale and ordinary calm expression. Keep him securely seated at the front of the wooden load trailer with both hands on the rear-facing tractor grips and both feet on the footboard. Retain the visible coherent drawbar, wheels, load chassis, tied bedding bundles and compact threshing machine. Keep his elderly mother, wife and children walking clear of the wheels at the roadside, and neighbors farther along the road, all with their own distinct faces. Retain the low coastal landscape and dirt-road grade.\nPaint the ENTIRE scene as hand-painted watercolor in the same series as the existing painted references: warm cold-pressed paper, clearly visible translucent washes, soft wet-on-wet transitions, pigment blooms and granulation, broken brush-shaped marks, light paper left in highlights, and lost edges with selective crisp strokes for essential faces, hands and objects. Use broader painted color masses in clothing and background instead of photographic microdetail. The visible texture should come from watercolor pigment and paper, not a uniform noisy filter on a photograph. Keep the series' muted ochre, straw and grey-blue palette and legible realistic anatomy. Avoid glossy rendered skin, sharp photorealism, uniformly stippled digital texture, oil impasto, flat cartoons and hard outlines.\nInvariants: same 16:9 landscape composition, vehicle proportions and safe driver placement, same body/hand relationships and pedestrians, same load and scene. Change only the main driver's identity and global paint treatment. Do not copy portrait suits, introduce modern vehicles or machinery, disconnect the tractor and trailer, put people in wheel paths, change the driver to walking, or add text, logo or watermark.",
+      "previousIllustrationSha256": "6f238659f840b2a745b6ed9990a351420533125888e74807243dc3bb58a86efc",
+      "previousMasterSha256": "60f5d828d3cf24999630736153c9599fe456dca1f5eef0245be6a26d5cbd2722",
+      "previousIllustrationId": "ep09-02",
+      "placementRole": "representative",
+      "placementReason": "이주 행렬을 제목 아래로 올리고 바인더 장면은 해당 작업 문단으로 이동",
+      "masterSha256": "ab1947e03410e75fdb915da24d51d9bac18ef15452bcfdf1037513f59bebbc0c",
+      "preservedIllustration": "content/illustration-sources/archive/4차_피드백_이전/ep09-01-1280.jpg",
+      "reason": "4차 피드백 반영 전 경운기 이주 삽화 제작 기록"
+    }
+  ],
+  "masterSha256": "abc18af4a90a2bf99bed6b12524ae956cfd2e88fc4032402ba78241d5f940f03",
+  "generationTool": "builtin image_gen__imagegen",
+  "generatedSize": {
+    "width": 1672,
+    "height": 941
+  },
+  "visualReview": {
+    "approved": true,
+    "checks": [
+      "1970s anonymous bonneted moving truck replaces tractor transportation",
+      "Bae in near passenger cab window; steering not touched and driver obscured",
+      "original mother, wife and two children seated low within high-sided cargo bed",
+      "tied household bundles and compact threshing equipment as cargo",
+      "two background moving trucks imply neighboring-household accompaniment",
+      "painted coastal-field context and original warm watercolor treatment preserved",
+      "no legible words, logo, modern vehicle or dangerous traffic action",
+      "main family and truck inside center crop; long edge exceeds 1280"
+    ],
+    "note": "1672×941 is within 1 pixel of 16:9 crop at this width; center crop preserves subjects."
+  },
+  "manuscriptSha256AtGeneration": "adf134f46b4edbeaa1748c95b7d44cdcca9dd766d28965c56d7e9641d5a18bd2"
+}

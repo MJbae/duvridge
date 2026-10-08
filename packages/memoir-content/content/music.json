@@ -1,0 +1,113 @@
+{
+  "version": 3,
+  "tracks": [
+    {
+      "id": "intro",
+      "src": "/music/intro.mp3"
+    },
+    {
+      "id": "prolog",
+      "src": "/music/prolog.mp3"
+    },
+    {
+      "id": "ep01",
+      "src": "/music/ep01.mp3"
+    },
+    {
+      "id": "ep02",
+      "src": "/music/ep02.mp3"
+    },
+    {
+      "id": "ep03",
+      "src": "/music/ep03.mp3"
+    },
+    {
+      "id": "ep04",
+      "src": "/music/ep04.mp3"
+    },
+    {
+      "id": "ep05",
+      "src": "/music/ep05.mp3"
+    },
+    {
+      "id": "ep06",
+      "src": "/music/ep06.mp3"
+    },
+    {
+      "id": "ep07",
+      "src": "/music/ep07.mp3"
+    },
+    {
+      "id": "ep08",
+      "src": "/music/ep08.mp3"
+    },
+    {
+      "id": "ep09",
+      "src": "/music/ep09.mp3"
+    },
+    {
+      "id": "ep10",
+      "src": "/music/ep10.mp3"
+    },
+    {
+      "id": "ep11",
+      "src": "/music/ep11.mp3"
+    },
+    {
+      "id": "ep12",
+      "src": "/music/ep12.mp3"
+    },
+    {
+      "id": "ep13",
+      "src": "/music/ep13.mp3"
+    },
+    {
+      "id": "ep14",
+      "src": "/music/ep14.mp3"
+    },
+    {
+      "id": "ep15",
+      "src": "/music/ep15.mp3"
+    },
+    {
+      "id": "ep16",
+      "src": "/music/ep16.mp3"
+    },
+    {
+      "id": "ep17",
+      "src": "/music/ep17.mp3"
+    },
+    {
+      "id": "ep18",
+      "src": "/music/ep18.mp3"
+    },
+    {
+      "id": "ep19",
+      "src": "/music/ep19.mp3"
+    },
+    {
+      "id": "ep20",
+      "src": "/music/ep20.mp3"
+    },
+    {
+      "id": "ep21",
+      "src": "/music/ep21.mp3"
+    },
+    {
+      "id": "ep22",
+      "src": "/music/ep22.mp3"
+    },
+    {
+      "id": "ep23",
+      "src": "/music/ep23.mp3"
+    },
+    {
+      "id": "epilog",
+      "src": "/music/epilog.mp3"
+    },
+    {
+      "id": "side",
+      "src": "/music/side.mp3"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+node_modules/
+site/read/
+site/.vitepress/generated/
+site/.vitepress/cache/
+site/.vitepress/dist/
+.env
+.env.*
+!.env.example
+firebase-debug.log*
+firestore-debug.log*
+ui-debug.log*
+.firebase/
+playwright-report/
+test-results/
+.DS_Store
+
+# Materialized from @duvridge/memoir-content; edit packages/memoir-content instead.
+/*.md
+!/README.md
+/원자료/
+/content/*
+!/content/narration/
+/site/public/*
+!/site/public/record/
+/.memoir-content-manifest.json

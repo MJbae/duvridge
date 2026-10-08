@@ -1,0 +1,44 @@
+{
+  "name": "@duvridge/autobio-bae",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "prepare:content": "node scripts/prepare-content.mjs",
+    "predev": "npm run prepare:content",
+    "dev": "vitepress dev site --host 127.0.0.1",
+    "prebuild": "npm run prepare:content",
+    "build": "vitepress build site",
+    "preview": "vitepress preview site --host 127.0.0.1",
+    "typecheck": "vue-tsc --noEmit",
+    "pretest": "npm run prepare:content",
+    "test": "node --test tests/content.test.mjs",
+    "test:sharing": "node --test tests/sharing.test.mjs",
+    "assets:share": "node scripts/generate-share-assets.mjs",
+    "assets:cover": "node scripts/generate-home-cover.mjs",
+    "assets:episodes": "node scripts/generate-episode-assets.mjs",
+    "test:rules": "firebase emulators:exec --only firestore --project demo-family-library \"node --test tests/firestore.rules.test.mjs\"",
+    "test:e2e": "playwright test",
+    "test:reactions": "firebase emulators:exec --only auth,firestore --project demo-family-library \"playwright test --config playwright.reactions.config.ts\"",
+    "pretypecheck": "npm run prepare:content"
+  },
+  "dependencies": {
+    "firebase": "12.19.0",
+    "vue": "3.5.43",
+    "@duvridge/reader-core": "*",
+    "@duvridge/memoir-content": "*"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "5.0.2",
+    "@playwright/test": "1.63.0",
+    "@types/node": "^22.0.0",
+    "firebase-tools": "15.31.0",
+    "gray-matter": "^4.0.3",
+    "typescript": "^5.9.3",
+    "vitepress": "1.6.4",
+    "vue-tsc": "3.3.11"
+  }
+}

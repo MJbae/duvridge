@@ -1,0 +1,137 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function anonymous() {
+      return request.auth != null
+        && request.auth.token.firebase.sign_in_provider == 'anonymous';
+    }
+
+    function validId(value) {
+      return value is string && value.matches('[A-Za-z0-9_-]{1,120}');
+    }
+
+    function validBody(body) {
+      return body is string && body.size() >= 1 && body.size() <= 2000
+        && body.matches('[\\s\\S]*\\S[\\s\\S]*');
+    }
+
+    function validComment(pageId, commentId) {
+      let data = request.resource.data;
+      return validId(pageId) && validId(commentId)
+        && data.keys().hasAll(['author', 'body', 'parentId', 'uid', 'createdAt'])
+        && data.keys().hasOnly(['author', 'body', 'parentId', 'uid', 'createdAt'])
+        && data.uid == request.auth.uid
+        && data.author is string && data.author.size() >= 1 && data.author.size() <= 24
+        && data.author.matches('[^\r\n]*\\S[^\r\n]*')
+        && validBody(data.body)
+        && data.createdAt == request.time
+        && (data.parentId == null
+          || (validId(data.parentId) && data.parentId != commentId
+            && exists(/databases/$(database)/documents/pages/$(pageId)/comments/$(data.parentId))
+            && get(/databases/$(database)/documents/pages/$(pageId)/comments/$(data.parentId)).data.parentId == null));
+    }
+
+    function pairedRateLimit(pageId, commentId) {
+      let rate = getAfter(/databases/$(database)/documents/rateLimits/$(request.auth.uid)).data;
+      return rate.lastCommentAt == request.time
+        && rate.lastCommentId == commentId
+        && rate.lastPageId == pageId;
+    }
+
+    function ownerEdit() {
+      return anonymous() && resource.data.uid == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['body', 'updatedAt'])
+        && validBody(request.resource.data.body)
+        && request.resource.data.updatedAt == request.time;
+    }
+
+    function heartToggle(pageId, commentId) {
+      let heart = /databases/$(database)/documents/pages/$(pageId)/comments/$(commentId)/hearts/$(request.auth.uid);
+      let before = resource.data.get('heartCount', 0);
+      let after = request.resource.data.get('heartCount', 0);
+      return anonymous() && resource.data.uid != request.auth.uid
+        && after is int && after >= 0
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['heartCount'])
+        && ((after == before + 1 && !exists(heart) && existsAfter(heart))
+          || (after == before - 1 && exists(heart) && !existsAfter(heart)));
+    }
+
+    function heartPair(pageId, commentId, delta) {
+      let comment = /databases/$(database)/documents/pages/$(pageId)/comments/$(commentId);
+      let before = get(comment).data;
+      let after = getAfter(comment).data;
+      return before.uid != request.auth.uid
+        && after.get('heartCount', 0) == before.get('heartCount', 0) + delta;
+    }
+
+    match /pages/{pageId}/comments/{commentId}/hearts/{uid} {
+      allow get: if anonymous() && request.auth.uid == uid;
+      allow list, update: if false;
+      allow create: if anonymous() && request.auth.uid == uid && validId(pageId) && validId(commentId)
+        && request.resource.data.keys().hasAll(['createdAt'])
+        && request.resource.data.keys().hasOnly(['createdAt'])
+        && request.resource.data.createdAt == request.time
+        && heartPair(pageId, commentId, 1);
+      allow delete: if anonymous() && request.auth.uid == uid && heartPair(pageId, commentId, -1);
+    }
+
+    function validReaction(data) {
+      return data.keys().hasOnly(['heart', 'like', 'moved', 'wow', 'remember', 'updatedAt'])
+        && data.keys().hasAll(['heart', 'like', 'moved', 'wow', 'remember', 'updatedAt'])
+        && data.heart is int && data.heart in [0, 1]
+        && data.like is int && data.like in [0, 1]
+        && data.moved is int && data.moved in [0, 1]
+        && data.wow is int && data.wow in [0, 1]
+        && data.remember is int && data.remember in [0, 1]
+        && data.heart + data.like + data.moved + data.wow + data.remember <= 1
+        && data.updatedAt == request.time;
+    }
+
+    match /pages/{pageId}/reactions/{uid} {
+      allow get, list: if true;
+      allow create: if anonymous() && request.auth.uid == uid && validId(pageId)
+        && validReaction(request.resource.data);
+      allow update: if anonymous() && request.auth.uid == uid && validId(pageId)
+        && validReaction(request.resource.data)
+        && request.time >= resource.data.updatedAt + duration.value(1, 's');
+      allow delete: if false;
+    }
+
+    match /pages/{pageId}/comments/{commentId} {
+      // The stories and their comments are public. Listing must be paginated.
+      allow get: if true;
+      allow list: if request.query.limit != null && request.query.limit <= 30;
+      allow create: if anonymous() && validComment(pageId, commentId)
+        && pairedRateLimit(pageId, commentId);
+      // A visitor's existing anonymous UID owns their comments, regardless of
+      // display name. Keep identity, creation time and reply relationships fixed.
+      allow update: if ownerEdit() || heartToggle(pageId, commentId);
+      // Deleting a parent never deletes another visitor's reply documents.
+      allow delete: if anonymous() && resource.data.uid == request.auth.uid;
+    }
+
+    function validRateLimit(uid) {
+      let data = request.resource.data;
+      let commentPath = /databases/$(database)/documents/pages/$(data.lastPageId)/comments/$(data.lastCommentId);
+      return data.keys().hasAll(['lastCommentAt', 'lastCommentId', 'lastPageId'])
+        && data.keys().hasOnly(['lastCommentAt', 'lastCommentId', 'lastPageId'])
+        && validId(data.lastPageId) && validId(data.lastCommentId)
+        && data.lastCommentAt == request.time
+        && !exists(commentPath)
+        && getAfter(commentPath).data.uid == uid
+        && getAfter(commentPath).data.createdAt == request.time;
+    }
+
+    match /rateLimits/{uid} {
+      allow get: if anonymous() && request.auth.uid == uid;
+      allow list, delete: if false;
+      allow create: if anonymous() && request.auth.uid == uid && validRateLimit(uid);
+      allow update: if anonymous() && request.auth.uid == uid && validRateLimit(uid)
+        && request.time >= resource.data.lastCommentAt + duration.value(15, 's');
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
