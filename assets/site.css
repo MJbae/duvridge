@@ -204,6 +204,7 @@
   .privacy{ display:flex; align-items:flex-start; justify-content:center; gap:.6rem; margin-top:1.4rem; font-family:var(--font-ui); font-size:.86rem; line-height:1.5; color:var(--muted); }
   .privacy svg{ flex:none; width:16px; height:16px; margin-top:.15rem; color:var(--accent); }
   .leaf-cta{ margin-top:1.6rem; }
+  .service-ctas{ display:flex; flex-wrap:wrap; justify-content:center; gap:.8rem 1.5rem; }
 
   /* ---------- Trust (the privacy promise — a quiet beat, not a headline) ---------- */
   .trust{ text-align:center; }

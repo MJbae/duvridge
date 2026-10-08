@@ -6,6 +6,7 @@ import html
 import json
 from pathlib import Path
 import re
+import shutil
 import sys
 
 
@@ -13,6 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 # Matches the production home links on the existing guidebook pages.
 SITE_URL = "https://www.duvridge.com"
 PLACEHOLDER = re.compile(r"\{\{(\w+)\}\}")
+OG_LOCALES = {"en": "en_US", "ko": "ko_KR", "ja": "ja_JP", "zhHans": "zh_CN", "zhHant": "zh_TW"}
 LANGUAGES = {
     "en": {
         "path": "/", "html_lang": "en", "html_class": "", "label": "EN",
@@ -68,6 +70,19 @@ def render_pages():
         context = {key: html.escape(value, quote=True) for key, value in meta.items() if isinstance(value, str)}
         context.update({
             "canonical_url": SITE_URL + meta["path"],
+            "og_locale": OG_LOCALES[language],
+            "og_alternate_locales": "\n".join(
+                f'<meta property="og:locale:alternate" content="{locale}">'
+                for key, locale in OG_LOCALES.items() if key != language
+            ),
+            "social_image": SITE_URL + "/assets/social/duvridge.png",
+            "structured_data": json.dumps({
+                "@context": "https://schema.org",
+                "@graph": [
+                    {"@type": "Organization", "@id": SITE_URL + "/#organization", "name": "duvridge", "url": SITE_URL + "/", "logo": SITE_URL + "/assets/brand/symbol.png", "email": "contact@duvridge.com"},
+                    {"@type": "WebSite", "name": "duvridge", "url": SITE_URL + meta["path"], "description": meta["page_description"], "inLanguage": meta["html_lang"], "publisher": {"@id": SITE_URL + "/#organization"}},
+                ],
+            }, ensure_ascii=False).replace("<", "\\u003c"),
             "alternate_links": alternate_links,
             "locale_font": (
                 '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?'
@@ -108,19 +123,30 @@ def render_pages():
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check", action="store_true", help="Fail if checked-in HTML or crawler files are out of date.")
+    parser.add_argument("--output", type=Path, help="Stage public company pages and assets in a separate upload directory.")
     args = parser.parse_args()
+    destination = args.output.resolve() if args.output else ROOT
+    if args.output and (destination == ROOT or destination in ROOT.parents or any(
+        destination == ROOT / folder or ROOT / folder in destination.parents
+        for folder in ("assets", "guidebook", "site", "scripts", "tests", "toldlife", "ko", "ja", "zh-Hans", "zh-Hant")
+    )):
+        parser.error("Choose a separate upload folder, for example .deploy/company.")
     outputs = render_pages()
     stale = []
-    for path, content in outputs.items():
+    for source, content in outputs.items():
+        path = destination / source.relative_to(ROOT)
         if args.check:
             if not path.is_file() or path.read_text(encoding="utf-8") != content:
-                stale.append(str(path.relative_to(ROOT)))
+                stale.append(str(path.relative_to(destination)))
         else:
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(content, encoding="utf-8")
     if stale:
         print("Out of date: " + ", ".join(stale) + ". Run python3 scripts/build-site.py.", file=sys.stderr)
         return 1
+    if args.output and not args.check:
+        for folder in ("assets", "guidebook"):
+            shutil.copytree(ROOT / folder, destination / folder, dirs_exist_ok=True)
     print(f"{'Checked' if args.check else 'Generated'} {len(LANGUAGES)} static pages, sitemap.xml and robots.txt.")
     return 0
 

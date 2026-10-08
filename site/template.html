@@ -7,6 +7,28 @@
 <title>{{page_title}}</title>
 <meta name="description" content="{{page_description}}">
 <link rel="canonical" href="{{canonical_url}}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="duvridge">
+<meta property="og:title" content="{{page_title}}">
+<meta property="og:description" content="{{page_description}}">
+<meta property="og:url" content="{{canonical_url}}">
+<meta property="og:locale" content="{{og_locale}}">
+{{og_alternate_locales}}
+<meta property="og:image" content="{{social_image}}">
+<meta property="og:image:secure_url" content="{{social_image}}">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="duvridge logo — A life, written to last.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{page_title}}">
+<meta name="twitter:description" content="{{page_description}}">
+<meta name="twitter:image" content="{{social_image}}">
+<meta name="twitter:image:alt" content="duvridge logo — A life, written to last.">
+<meta name="theme-color" content="#E9E3D6">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/brand/favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/brand/apple-touch-icon.png">
+<script type="application/ld+json">{{structured_data}}</script>
 {{alternate_links}}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -127,6 +149,10 @@
             <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
             <span>{{toldlife_privacy}}</span>
           </p>
+          <div class="leaf-cta service-ctas">
+            <a class="tlink tlink--accent" href="https://toldlife.duvridge.com/novels/"><span>{{toldlife_novels_cta}}</span> <span class="arr" aria-hidden="true">→</span></a>
+            <a class="tlink tlink--accent" href="https://toldlife.duvridge.com/audiobooks/"><span>{{toldlife_audiobooks_cta}}</span> <span class="arr" aria-hidden="true">→</span></a>
+          </div>
           <div class="leaf-cta">
             <a class="tlink tlink--accent" href="#close"><span>{{toldlife_cta}}</span> <span class="arr">→</span></a>
           </div>

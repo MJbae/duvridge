@@ -1,0 +1,58 @@
+name: Company website
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'ko/**'
+      - 'ja/**'
+      - 'zh-Hans/**'
+      - 'zh-Hant/**'
+      - 'assets/**'
+      - 'guidebook/**'
+      - 'site/**'
+      - 'scripts/build-site.py'
+      - 'tests/**'
+      - '.github/workflows/company.yml'
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: company-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Check static company HTML
+        run: |
+          python scripts/build-site.py --check
+          python -m unittest discover -s tests
+      - name: Prepare public company files
+        run: python scripts/build-site.py --output .deploy/company
+      - name: Set up Node.js for deployment
+        if: github.event_name != 'pull_request'
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - name: Deploy the company website
+        if: github.event_name != 'pull_request'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN"
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          npx --yes wrangler@4.148.0 pages deploy .deploy/company --project-name duvridge --branch main --commit-dirty=true

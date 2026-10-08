@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ToldLife — 한 사람의 삶을 담은 이야기</title>
+  <meta name="description" content="한 사람의 삶을 담은 이야기를 ToldLife에서 만나보세요. 웹소설로 한 화씩 읽거나 오디오북으로 편안하게 들어보세요.">
+  <link rel="canonical" href="https://toldlife.duvridge.com/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="ToldLife — 한 사람의 삶을 담은 이야기">
+  <meta property="og:description" content="웹소설로 한 화씩 읽거나 오디오북으로 편안하게 들어보세요.">
+  <meta property="og:url" content="https://toldlife.duvridge.com/">
+  <meta property="og:site_name" content="ToldLife">
+  <meta property="og:locale" content="ko_KR">
+  <meta property="og:image" content="https://toldlife.duvridge.com/social/toldlife.png">
+  <meta property="og:image:secure_url" content="https://toldlife.duvridge.com/social/toldlife.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="duvridge 심볼과 ToldLife — 한 사람의 삶을 담은 이야기">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="ToldLife — 한 사람의 삶을 담은 이야기">
+  <meta name="twitter:description" content="웹소설로 한 화씩 읽거나 오디오북으로 편안하게 들어보세요.">
+  <meta name="twitter:image" content="https://toldlife.duvridge.com/social/toldlife.png">
+  <meta name="twitter:image:alt" content="duvridge 심볼과 ToldLife — 한 사람의 삶을 담은 이야기">
+  <meta name="theme-color" content="#F5F2EB">
+  <link rel="icon" type="image/png" sizes="32x32" href="/brand/favicon-32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/brand/apple-touch-icon.png">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"ToldLife","url":"https://toldlife.duvridge.com/","inLanguage":"ko","description":"한 사람의 삶을 담은 이야기를 웹소설과 오디오북으로 제공합니다.","publisher":{"@type":"Organization","name":"duvridge","url":"https://www.duvridge.com/","logo":"https://www.duvridge.com/assets/brand/symbol.png"},"hasPart":[{"@type":"WebPage","name":"ToldLife Novels","url":"https://toldlife.duvridge.com/novels/"},{"@type":"WebPage","name":"ToldLife Audiobooks","url":"https://toldlife.duvridge.com/audiobooks/"}]}</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&amp;family=Noto+Serif+KR:wght@500;600&amp;display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css">
+  <style>
+    :root { --paper:#F5F2EB; --surface:#FFFDFA; --ink:#26251F; --muted:#625F55; --accent:#27324E; --line:#DDD8CD; }
+    *,*::before,*::after { box-sizing:border-box; }
+    body { margin:0; background:var(--paper); color:var(--ink); font-family:'Pretendard Variable',system-ui,-apple-system,sans-serif; font-size:1rem; line-height:1.7; word-break:keep-all; -webkit-font-smoothing:antialiased; }
+    a { color:inherit; }
+    a:focus-visible { outline:2px solid var(--accent); outline-offset:5px; border-radius:3px; }
+    .wrap { width:min(100% - 3rem,1040px); margin-inline:auto; }
+    .head { display:flex; align-items:center; justify-content:space-between; min-height:80px; gap:1.5rem; border-bottom:1px solid var(--line); }
+    .brand { font:600 1.75rem 'Fraunces',Georgia,serif; text-decoration:none; letter-spacing:-.03em; }
+    .brand span { color:var(--accent); }
+    .nav { display:flex; align-items:center; gap:1.5rem; }
+    .nav a { display:inline-flex; align-items:center; min-height:44px; text-decoration:none; color:var(--muted); font-size:.9rem; font-weight:500; }
+    .nav a:hover { color:var(--ink); }
+    .main { display:grid; grid-template-columns:minmax(0,1.35fr) minmax(0,1fr); grid-template-areas:'intro featured' 'services services'; gap:2.5rem 4rem; padding-block:3.5rem 3rem; align-items:center; }
+    .intro { grid-area:intro; }
+    h1,h2,h3,p { margin:0; }
+    h1 { font-family:'Noto Serif KR',Georgia,serif; font-weight:600; font-size:clamp(1.85rem,1.3rem + 1.55vw,2.65rem); line-height:1.5; letter-spacing:-.045em; text-wrap:balance; }
+    .lead { margin-top:1.25rem; color:var(--muted); font-size:1.05rem; line-height:1.85; max-width:36ch; }
+    .featured { grid-area:featured; margin:0; display:grid; grid-template-columns:128px minmax(0,1fr); align-items:center; gap:1.25rem; padding:1.25rem; border:1px solid var(--line); border-radius:12px; background:rgba(255,253,250,.65); }
+    .featured img { display:block; width:128px; height:160px; object-fit:cover; object-position:46% 50%; border-radius:6px; }
+    .featured-label { font-size:.75rem; color:var(--muted); margin-bottom:.65rem; }
+    .featured h2 { font-family:'Noto Serif KR',Georgia,serif; font-size:1.1rem; line-height:1.65; font-weight:600; letter-spacing:-.03em; text-wrap:balance; }
+    .featured-author { margin-top:.65rem; font-size:.8rem; color:var(--muted); }
+    .featured-link { display:inline-flex; align-items:center; min-height:44px; font-size:.8rem; margin-top:.5rem; text-underline-offset:.25em; }
+    .services { grid-area:services; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1.25rem; align-items:stretch; }
+    .service { display:flex; flex-direction:column; padding:1.75rem; border:1px solid var(--line); border-radius:12px; background:var(--surface); }
+    .service-heading { display:flex; align-items:center; gap:.9rem; }
+    .service-mark { width:42px; height:42px; display:grid; place-items:center; border-radius:10px; background:#F1EDE4; color:#66563E; flex:none; }
+    .service--audio .service-mark { background:#EBEEF5; color:var(--accent); }
+    .service-mark svg { width:24px; height:24px; }
+    .service h2 { font-size:1.3rem; line-height:1.4; font-weight:650; letter-spacing:-.03em; }
+    .service-name { display:block; margin-top:.15rem; font-size:.75rem; color:var(--muted); letter-spacing:.015em; }
+    .description { margin:1.1rem 0 1.35rem; color:var(--muted); font-size:.95rem; line-height:1.8; }
+    .description span { display:block; }
+    .service-link { display:inline-flex; align-items:center; justify-content:center; gap:.9rem; min-height:46px; margin-top:auto; padding:.55rem 1rem; border:1px solid var(--accent); border-radius:7px; color:var(--accent); text-decoration:none; font-size:.9rem; font-weight:600; align-self:flex-start; }
+    .service-link:hover { background:#EDF0F5; }
+    .foot { display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; border-top:1px solid var(--line); padding-block:1.4rem 1.8rem; color:var(--muted); font-size:.75rem; }
+    .foot-links { display:flex; align-items:center; gap:1.2rem; }
+    .foot a { text-underline-offset:.2em; }
+    @media (max-width:900px) {
+      .main { gap:2rem; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr); }
+      .featured { grid-template-columns:90px minmax(0,1fr); gap:.85rem; padding:1rem; }
+      .featured img { width:90px; height:130px; }
+    }
+    @media (max-width:700px) {
+      .wrap { width:calc(100% - 2.5rem); }
+      .head { min-height:68px; gap:1rem; }
+      .brand { font-size:1.5rem; }
+      .nav { gap:1.1rem; }
+      .nav a { font-size:.8rem; }
+      .main { grid-template-columns:minmax(0,1fr); grid-template-areas:'intro' 'services' 'featured'; gap:1.75rem; padding-block:2rem; }
+      h1 { font-size:clamp(1.7rem,7.1vw,2.3rem); line-height:1.5; }
+      .lead { margin-top:.9rem; font-size:.95rem; line-height:1.8; }
+      .services { grid-template-columns:minmax(0,1fr); gap:.85rem; }
+      .service { padding:1.25rem; }
+      .service h2 { font-size:1.2rem; }
+      .description { margin:.9rem 0 1rem; font-size:.9rem; }
+      .featured { grid-template-columns:90px minmax(0,1fr); padding:1rem; }
+      .featured img { height:112px; }
+      .featured h2 { font-size:1rem; text-wrap:pretty; }
+      .featured-label { margin-bottom:.3rem; }
+      .featured-author { margin-top:.3rem; }
+      .featured-link { margin-top:0; }
+      .foot { align-items:flex-start; gap:.6rem; padding-block:1.1rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="head wrap">
+    <a class="brand" href="/" aria-label="ToldLife 홈">ToldLife<span aria-hidden="true">.</span></a>
+    <nav class="nav" aria-label="ToldLife 서비스">
+      <a href="/novels/">웹소설</a>
+      <a href="/audiobooks/">오디오북</a>
+    </nav>
+  </header>
+  <main class="main wrap">
+    <section class="intro" aria-labelledby="hero-title">
+      <h1 id="hero-title">한 사람의 삶을 담은<br>이야기를 만나보세요.</h1>
+      <p class="lead">웹소설로 한 화씩 읽거나<br>오디오북으로 편안하게 들어보세요.</p>
+    </section>
+    <div class="services">
+      <section class="service" aria-labelledby="novels-title">
+        <div class="service-heading">
+          <span class="service-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5c-3-2-7-2-10-1v15c3-1 7-1 10 1 3-2 7-2 10-1V4c-3-1-7-1-10 1ZM12 5v15"/></svg></span>
+          <div><h2 id="novels-title">웹소설</h2><span class="service-name" lang="en">ToldLife Novels</span></div>
+        </div>
+        <p class="description"><span>삽화와 함께 한 화씩 읽어보세요.</span><span>읽던 곳에서 이어 읽을 수 있습니다.</span></p>
+        <a class="service-link" href="/novels/">웹소설 읽기 <span aria-hidden="true">→</span></a>
+      </section>
+      <section class="service service--audio" aria-labelledby="audiobooks-title">
+        <div class="service-heading">
+          <span class="service-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="12" width="4" height="9" rx="1.5"/><rect x="17" y="12" width="4" height="9" rx="1.5"/></svg></span>
+          <div><h2 id="audiobooks-title">오디오북</h2><span class="service-name" lang="en">ToldLife Audiobooks</span></div>
+        </div>
+        <p class="description"><span>낭독을 들으며 본문을 함께 보세요.</span><span>원하는 속도로 편안하게 들을 수 있습니다.</span></p>
+        <a class="service-link" href="/audiobooks/">오디오북 듣기 <span aria-hidden="true">→</span></a>
+      </section>
+    </div>
+    <section class="featured" aria-labelledby="featured-title">
+      <img src="/novels/images/home-cover-720.webp" width="128" height="160" alt="가을 들녘을 배경으로 한 배병희의 수채화 초상">
+      <div>
+        <p class="featured-label">지금 만나볼 이야기</p>
+        <h2 id="featured-title">내 논을 파는 한이 있어도</h2>
+        <p class="featured-author">배병희 자전소설</p>
+        <a class="featured-link" href="/novels/">작품 소개 보기</a>
+      </div>
+    </section>
+  </main>
+  <footer class="foot wrap">
+    <p>© 2026 duvridge. All rights reserved.</p>
+    <div class="foot-links"><a href="https://www.duvridge.com/">duvridge</a><a href="mailto:contact@duvridge.com">문의하기</a></div>
+  </footer>
+</body>
+</html>
