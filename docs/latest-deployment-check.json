@@ -1,0 +1,153 @@
+{
+  "workflow": "https://github.com/MJbae/duvridge/actions/runs/37810209432",
+  "production": {
+    "checkedAt": "2026-10-08T16:46:58.375Z",
+    "results": [
+      {
+        "group": "company",
+        "origin": "https://www.duvridge.com",
+        "sha": "fdc790b531c26a5156b51f6a30ef099853c49498",
+        "routes": 7
+      },
+      {
+        "group": "toldlife",
+        "origin": "https://toldlife.duvridge.com",
+        "sha": "fdc790b531c26a5156b51f6a30ef099853c49498",
+        "episodeRoutes": 52,
+        "recordings": 4,
+        "devices": [
+          "phone",
+          "desktop"
+        ]
+      }
+    ]
+  },
+  "sceneAlignment": {
+    "checkedAt": "2026-10-08T16:47:18.888Z",
+    "sourceRevision": "fdc790b531c26a5156b51f6a30ef099853c49498",
+    "results": [
+      {
+        "service": "novels",
+        "episode": "ep06",
+        "order": [
+          "ep06-02",
+          "ep06-01"
+        ],
+        "matchedScenes": true,
+        "originalAudioCover": false
+      },
+      {
+        "service": "novels",
+        "episode": "ep08",
+        "order": [
+          "ep08-02",
+          "ep08-03",
+          "ep08-01"
+        ],
+        "matchedScenes": true,
+        "originalAudioCover": false
+      },
+      {
+        "service": "novels",
+        "episode": "ep11",
+        "order": [
+          "ep11-01"
+        ],
+        "matchedScenes": true,
+        "originalAudioCover": false
+      },
+      {
+        "service": "novels",
+        "episode": "ep13",
+        "order": [
+          "ep13-02",
+          "ep13-01"
+        ],
+        "matchedScenes": true,
+        "originalAudioCover": false
+      },
+      {
+        "service": "novels",
+        "episode": "ep14",
+        "order": [
+          "ep14-02",
+          "ep14-01"
+        ],
+        "matchedScenes": true,
+        "originalAudioCover": false
+      },
+      {
+        "service": "novels",
+        "episode": "ep15",
+        "order": [
+          "ep15-02",
+          "ep15-01",
+          "ep15-03"
+        ],
+        "matchedScenes": true,
+        "originalAudioCover": false
+      },
+      {
+        "service": "audiobooks",
+        "episode": "ep06",
+        "order": [
+          "ep06-02",
+          "ep06-01"
+        ],
+        "matchedScenes": true,
+        "originalAudioCover": true
+      },
+      {
+        "service": "audiobooks",
+        "episode": "ep08",
+        "order": [
+          "ep08-02",
+          "ep08-03",
+          "ep08-01"
+        ],
+        "matchedScenes": true,
+        "originalAudioCover": true
+      },
+      {
+        "service": "audiobooks",
+        "episode": "ep11",
+        "order": [
+          "ep11-01"
+        ],
+        "matchedScenes": true,
+        "originalAudioCover": true
+      },
+      {
+        "service": "audiobooks",
+        "episode": "ep13",
+        "order": [
+          "ep13-02",
+          "ep13-01"
+        ],
+        "matchedScenes": true,
+        "originalAudioCover": true
+      },
+      {
+        "service": "audiobooks",
+        "episode": "ep14",
+        "order": [
+          "ep14-02",
+          "ep14-01"
+        ],
+        "matchedScenes": true,
+        "originalAudioCover": true
+      },
+      {
+        "service": "audiobooks",
+        "episode": "ep15",
+        "order": [
+          "ep15-02",
+          "ep15-01",
+          "ep15-03"
+        ],
+        "matchedScenes": true,
+        "originalAudioCover": true
+      }
+    ]
+  }
+}

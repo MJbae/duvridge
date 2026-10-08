@@ -2,6 +2,8 @@
 
 2026-10-08~09 KST에 기존 프로젝트를 npm workspaces 모노레포로 이관했다. 소스 원본 두 경로는 수정하지 않았다.
 
+최종 운영 소스는 `fdc790b531c26a5156b51f6a30ef099853c49498`다. [Actions 실행 37810209432](https://github.com/MJbae/duvridge/actions/runs/37810209432)의 네 서비스 검증, 공통 검사, 두 Pages 배포와 배포 후 HTTP 검사가 모두 성공했다. 이후 공개 주소에서 회사 7경로, 두 앱 52회차와 음원 4개, 휴대폰·데스크톱 재생 조작, 조정한 6회차×2서비스의 삽화 위치·직후 문단·기존 오디오 대표 그림을 확인했다. [기계 판독 검증 결과](latest-deployment-check.json)에 커밋과 확인 시각을 보존한다.
+
 ## 사전 검증
 
 - 변경 영향·포털 JavaScript 검사 10건, 완전한 ToldLife 조립 Python 검사 4건 통과.
@@ -27,6 +29,7 @@
 
 - `MJbae/bae-memoir`와 `MJbae/autobio-audiobook`의 ToldLife 호출 워크플로를 `disabled_manually`로 변경했다. 진행 중인 호출은 없었다.
 - 회사 Pages 프로젝트의 Git 연결은 보존하면서 `production_deployments_enabled=false`, `preview_deployment_setting=none`, `deployments_enabled=false`를 적용하고 GET으로 재확인했다.
+- 중지된 네이티브 빌드 설정도 새 `apps/company-site` 명령과 `.deploy/company` 출력에 맞추었다. 저장소 루트를 공개하는 설정은 제거했다.
 - 구 GitHub Pages 워크플로는 이전 버전 주소를 위해 유지한다. 새 Cloudflare 배포는 모노레포 Actions만 실행한다.
 
 ## GitHub Actions 운영 배포

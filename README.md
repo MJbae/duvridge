@@ -85,6 +85,12 @@ npx --yes wrangler@4.148.0 pages deploy .deploy/company --project-name duvridge 
 npx --yes wrangler@4.148.0 pages deploy .deploy/toldlife --project-name toldlife --branch monorepo-validation
 ```
 
+운영 페이지·음원·휴대폰과 데스크톱 플레이어를 다시 확인하려면 실행합니다. 결과 JSON과 스크린샷은 `.deploy/verification`에 저장됩니다. 특정 배포 커밋을 확인할 때는 `--expected-sha`를 덧붙입니다.
+
+```sh
+npm run check:deployment -- --company https://www.duvridge.com --toldlife https://toldlife.duvridge.com
+```
+
 롤백은 각 Pages 프로젝트에서 이전 정상 배포를 선택합니다. ToldLife 롤백은 두 서비스가 함께 이전 스냅샷으로 돌아갑니다. 원고와 녹음을 별도로 수정하지 말고 같은 커밋으로 다시 빌드합니다.
 
 ## 서비스 추가
