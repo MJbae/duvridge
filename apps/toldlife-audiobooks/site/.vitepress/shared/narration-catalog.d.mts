@@ -13,5 +13,3 @@ export function loadNarration(
   episodes: readonly NarratedEpisode[],
   options?: { work?: Work; toText?: (text: string) => string; warn?: (message: string) => void }
 ): { tracks: Record<string, NarrationTrack>; sentences: Record<string, NarrationSentence[]> }
-
-export function acceptsRecordedRevision(root: string, id: string, matched: number, total: number): boolean

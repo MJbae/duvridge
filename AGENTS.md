@@ -6,6 +6,7 @@
 - Place illustrations using standalone `<!-- illustration: stable-id -->` markers in the manuscript. The asset manifest contains no paragraph indexes or text anchors. Preserve existing image IDs when adding images between them.
 - `packages/story-reader` owns common reading UI and processing. Audiobook controls and cue interaction remain app-local; preserve their behavior when sharing UI.
 - Web builds must not regenerate recordings, SRT timings or approved clips. Paid TTS/STT requires a separate explicit production task.
+- Existing audio will be regenerated. Its text agreement must not constrain manuscript or illustration edits or block web builds; keep playback UI and file/timing integrity checks unchanged. New recording imports still validate against the current manuscript.
 - Firebase rules and indexes live only in `packages/story-reader/firebase`; use root `firebase.json` and Java 21 for emulator tests. Web deployment does not publish Firebase rules.
 - Register services in `service-registry.json` and verify change selection. Every upload to the shared ToldLife Pages project includes the portal and both readers.
 - PR validation receives no deployment credentials. Upload only validated artifacts built from one commit, never the repository root.

@@ -1,16 +1,11 @@
-import { createHash } from 'node:crypto'
 import { existsSync, readFileSync, readdirSync, realpathSync, statSync } from 'node:fs'
 import path from 'node:path'
-import matter from 'gray-matter'
-import { parseManuscript } from '@duvridge/story-reader/shared/episode-heading.mjs'
-import { stripIllustrationMarkers } from '@duvridge/story-reader/shared/episode-illustrations.mjs'
 import { compact, locateSentences, musicCueText, parseSrt } from './narration-cues.mjs'
 
 /** Narration uses the episode ID: site/public/record/<id>.mp3 read along content/narration/<id>.srt. */
 export const recordDirectory = 'site/public/record'
 export const timingDirectory = 'content/narration'
-// An edited sentence only loses its highlight; a recording that no longer fits the episode stops the build.
-const minimumMatch = 0.5
+// Existing recordings will be regenerated. Editorial changes never depend on their text match rate.
 
 const round = value => Math.round(value * 100) / 100
 const oneLine = text => text.replace(/\s*\n\s*/g, ' ')
@@ -78,24 +73,6 @@ function checkAudio(root, id) {
   if (!statSync(file).size) throw new Error(`낭독 음성 파일이 비어 있습니다: ${id}`)
 }
 
-/** A reviewed legacy recording is accepted only for the reviewed episode's exact text, MP3 and SRT bytes. */
-export function acceptsRecordedRevision(root, id, matched, total) {
-  const filename = path.join(root, 'content/narration-compatibility.json')
-  if (!existsSync(filename)) return false
-  const revision = JSON.parse(readFileSync(filename, 'utf8'))
-  const entry = revision.version === 2 ? revision.recordings?.[id] : undefined
-  if (!entry || matched !== entry.matchedSentences || total !== entry.bodySentences) return false
-  const digest = filename => createHash('sha256').update(readFileSync(filename)).digest('hex')
-  const manuscript = matter(readFileSync(path.join(root, '배병희_자서전.md'), 'utf8')).content
-  const episode = parseManuscript(manuscript).episodes.find(episode => episode.id === id)
-  if (!episode) return false
-  const text = JSON.stringify({ id: episode.id, label: episode.label, title: episode.title, time: episode.time, body: stripIllustrationMarkers(episode.body) })
-  const episodeDigest = createHash('sha256').update(text).digest('hex')
-  return entry.episodeTextSha256 === episodeDigest
-    && entry.audioSha256 === digest(path.join(root, recordDirectory, `${id}.mp3`))
-    && entry.timingSha256 === digest(path.join(root, timingDirectory, `${id}.srt`))
-}
-
 /** Opening and music cues carry their kind; sentences found in the manuscript can be highlighted. */
 function readTrack(root, episode, { work, toText, warn }) {
   const cues = parseSrt(readFileSync(path.join(root, timingDirectory, `${episode.id}.srt`), 'utf8'))
@@ -104,9 +81,6 @@ function readTrack(root, episode, { work, toText, warn }) {
   const body = cues.map((cue, index) => ({ cue, index })).filter(({ index }) => !kinds[index])
   const found = locateSentences(episodeParagraphs(episode.body, toText), body.map(({ cue }) => cue.text))
   const missing = body.filter((_, position) => !found[position])
-  if (body.length && (body.length - missing.length) / body.length < minimumMatch
-    && !acceptsRecordedRevision(root, episode.id, body.length - missing.length, body.length))
-    throw new Error(`원고와 낭독 문장이 맞지 않습니다: ${episode.id} (${body.length}개 중 ${missing.length}개를 찾지 못함)`)
   for (const { cue, index } of missing)
     warn(`원고에서 찾지 못한 낭독 문장은 표시하지 않습니다: ${episode.id} ${index + 1}번째 문장 “${oneLine(cue.text)}”`)
   return {

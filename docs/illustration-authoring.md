@@ -83,6 +83,6 @@ npm run build --workspace @duvridge/toldlife-audiobooks
 
 브라우저에는 표시 문구 없이 기존 삽화만 렌더링됩니다. 생성 카탈로그의 `position.start`와 `position.paragraphIndex`는 본문 시작 위치·순서 검증에 쓰는 계산 결과이며 직접 편집하지 않습니다. 대표 그림 선택은 별도의 `representative` 값으로 합니다. 제작 도구도 현재 원고를 읽어 본문 위치를 계산합니다. 이번 장면 배치 조정은 [삽화와 장면 정렬 기록](illustration-story-alignment.md)에 정리했습니다.
 
-삽화 위치 편집은 기존 음성·SRT·제작 클립을 변경하지 않습니다. 기존 녹음 호환 검증은 해당 녹음 회차의 ID·회차 표기·제목·시점·본문에서 삽화 표시를 제외한 텍스트 해시를 사용하므로 표시 추가·이동은 허용합니다. 다른 회차나 작품 소개를 편집해도 2화의 검토한 녹음 예외는 유지합니다. 해당 회차의 실제 본문·제목·시점을 고치면 녹음과의 일치 문장 검증을 다시 적용합니다.
+현재 오디오는 재생성 예정이므로 기존 녹음과의 일치 여부에 맞추어 본문·제목·시점·삽화 편집을 제한하지 않습니다. 삽화 편집이나 웹 빌드는 기존 음성·SRT·제작 클립을 변경하지 않으며, 정확히 일치하는 문장만 강조합니다. 새 음성을 반영하는 별도 제작 작업에서는 최신 원고와의 일치를 검증합니다.
 
 구현은 [VitePress의 Markdown 플러그인 설정](https://vitepress.dev/guide/markdown#advanced-configuration)과 [markdown-it의 블록 규칙 확장](https://markdown-it.github.io/markdown-it/interfaces/Ruler.html)을 사용합니다. 표시에 필요한 좁은 규칙만 추가하며 임의 HTML 실행은 계속 비활성화합니다.

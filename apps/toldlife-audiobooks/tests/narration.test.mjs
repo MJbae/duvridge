@@ -207,18 +207,23 @@ test('짝이 없거나 원고에 없는 낭독 파일, 비었거나 겹친 시�
   assert.throws(load, /비어 있습니다/)
 })
 
-test('원고를 고친 문장은 경고하고 강조만 빼며, 녹음이 원고와 대부분 다르면 거절한다', t => {
+test('원고를 고치면 일치 문장만 강조하고 일치율과 무관하게 기존 재생 자료를 유지한다', t => {
   const { root, write } = fixture(t)
   write('site/public/record/ep01.mp3', 'mp3')
   write('content/narration/ep01.srt', timing)
   const warnings = []
+  const originalTrack = loadNarration(root, [sample], { work }).tracks.ep01
   const edited = { ...sample, body: '첫 문장을 고쳤다. 둘째 문장이다.\n\n셋째 문장이다.' }
   const { tracks, sentences } = loadNarration(root, [edited], { work, warn: message => warnings.push(message) })
   assert.equal(tracks.ep01.cues.length, 6)
   assert.deepEqual(sentences.ep01.map(sentence => sentence.cue), [3, 4])
   assert.equal(warnings.length, 1)
   assert.match(warnings[0], /ep01 3번째 문장/)
-  assert.throws(() => loadNarration(root, [{ ...sample, body: '전혀 다른 원고다.' }], { work }), /맞지 않습니다/)
+  const missingWarnings = []
+  const replaced = loadNarration(root, [{ ...sample, body: '전혀 다른 원고다.' }], { work, warn: message => missingWarnings.push(message) })
+  assert.deepEqual(replaced.tracks.ep01, originalTrack)
+  assert.deepEqual(replaced.sentences.ep01, [])
+  assert.equal(missingWarnings.length, 3)
 })
 
 test('낭독 문장을 원문 그대로 감싸고 제목과 원고에 없는 문장은 감싸지 않는다', async () => {
@@ -309,60 +314,21 @@ test('3화까지의 낭독 음성과 문장 시각이 같은 회차 ID로 연결
   assert.deepEqual(tracks.ep01.cues.slice(0, 2).map(cue => cue[2]), ['title', 'dateline'])
 })
 
-test('검토한 2화 예외는 다른 회차·삽화 편집을 허용하고 해당 회차·음성·자막 변경을 거절한다', t => {
+test('재생성 전 2화 원고를 자유롭게 수정해도 기존 음성과 시각을 유지하고 남은 문장만 강조한다', t => {
   const { root, write } = fixture(t)
-  const compatibility = readFileSync(path.join(repo, 'content/narration-compatibility.json'), 'utf8')
-  const recording = readFileSync(path.join(repo, 'site/public/record/ep02.mp3'))
-  const timing = readFileSync(path.join(repo, 'content/narration/ep02.srt'), 'utf8')
-  write(mainFilename, original)
-  write('content/narration-compatibility.json', compatibility)
-  write('site/public/record/ep02.mp3', recording)
-  write('content/narration/ep02.srt', timing)
+  write('site/public/record/ep02.mp3', readFileSync(path.join(repo, 'site/public/record/ep02.mp3')))
+  write('content/narration/ep02.srt', readFileSync(path.join(repo, 'content/narration/ep02.srt'), 'utf8'))
   const episode = parseManuscript(matter(original).content).episodes.find(episode => episode.id === 'ep02')
-  const load = () => loadNarration(root, [episode], { work, toText: plainText })
-  assert.equal(load().sentences.ep02.length, 12)
-  // Moving an existing anchor and adding an annotation do not change the recorded prose.
-  const marker = '<!-- illustration: ep01-02 -->\n\n'
-  const moved = original.replace(marker, '').replace('거센 바닷바람과 소금기에 어머니의 손등은', `${marker}거센 바닷바람과 소금기에 어머니의 손등은`)
-  write(mainFilename, moved)
-  assert.equal(load().sentences.ep02.length, 12)
-  const added = moved.replace('그는 날마다 어머니의 시린 손끝과', '<!-- illustration: ep01-new-scene -->\n\n그는 날마다 어머니의 시린 손끝과')
-  write(mainFilename, added)
-  assert.equal(load().sentences.ep02.length, 12)
-  const episodeMarker = '<!-- illustration: ep02-new-scene -->\n\n'
-  const ownEpisodeAdded = original.replace('메마른 땅에서 난 작물만으로는', `${episodeMarker}메마른 땅에서 난 작물만으로는`)
-  assert.notEqual(ownEpisodeAdded, original)
-  write(mainFilename, ownEpisodeAdded)
-  assert.equal(load().sentences.ep02.length, 12)
-  const ownEpisodeMoved = ownEpisodeAdded.replace(episodeMarker, '').replace('배병희도 또래 아이들처럼 학교에 다니고 싶었다.', `${episodeMarker}배병희도 또래 아이들처럼 학교에 다니고 싶었다.`)
-  assert.notEqual(ownEpisodeMoved, ownEpisodeAdded)
-  write(mainFilename, ownEpisodeMoved)
-  assert.equal(load().sentences.ep02.length, 12)
-  write(mainFilename, original.replace('1940년대 태평양 전쟁과 광복 전후의 혼란 속에서 서민들의 삶은 곤궁했다.', '원래 녹음과 다른 문장으로 본문을 바꿨다.'))
-  assert.throws(load, /맞지 않습니다/)
-  write(mainFilename, `${original}\n`)
-  assert.equal(load().sentences.ep02.length, 12)
-  for (const [from, to] of [['2011년, 독정 RPC는', '2011년 무렵, 독정 RPC는'], ['subtitle: 배병희 자전소설', 'subtitle: 새롭게 정리한 작품 소개']]) {
-    const unrelated = original.replace(from, to)
-    assert.notEqual(unrelated, original)
-    write(mainFilename, unrelated)
-    assert.equal(load().sentences.ep02.length, 12)
-  }
-  for (const [from, to] of [['## 책보 대신 지게 {#ep02}', '## 책보와 지게 {#ep02}'], ['*1940년대 · 안면도 중장리*', '*1940년대 말 · 안면도 중장리*']]) {
-    const changed = original.replace(from, to)
-    assert.notEqual(changed, original)
-    write(mainFilename, changed)
-    assert.throws(load, /맞지 않습니다/)
-  }
-  write(mainFilename, original)
-  write('site/public/record/ep02.mp3', Buffer.concat([recording, Buffer.from('changed')]))
-  assert.throws(load, /맞지 않습니다/)
-  write('site/public/record/ep02.mp3', recording)
-  write('content/narration/ep02.srt', `${timing}\n`)
-  assert.throws(load, /맞지 않습니다/)
-  write('content/narration/ep02.srt', timing)
-  const manifest = JSON.parse(compatibility)
-  manifest.recordings.ep02.matchedSentences = 13
-  write('content/narration-compatibility.json', JSON.stringify(manifest))
-  assert.throws(load, /맞지 않습니다/)
+  const before = loadNarration(root, [episode], { work, toText: plainText })
+  assert.equal(before.sentences.ep02.length, 12)
+  assert.equal(existsSync(path.join(root, 'content/narration-compatibility.json')), false)
+  const surviving = before.sentences.ep02.slice(0, 2)
+  const edited = { ...episode, title: '새로 다듬은 제목', time: '새로 정리한 시점',
+    body: ['새롭게 쓴 도입 문단이다.', ...surviving.map(sentence => sentence.text), '마무리도 새로 고쳤다.'].join('\n\n') }
+  const result = loadNarration(root, [edited], { work, toText: plainText })
+  assert.deepEqual(result.tracks.ep02, before.tracks.ep02)
+  assert.deepEqual(result.sentences.ep02, surviving)
+  const rewritten = loadNarration(root, [{ ...edited, body: '남아 있는 낭독 문장 없이 새로 정리한 본문이다.' }], { work, toText: plainText })
+  assert.deepEqual(rewritten.tracks.ep02, before.tracks.ep02)
+  assert.deepEqual(rewritten.sentences.ep02, [])
 })
