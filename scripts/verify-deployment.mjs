@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { parseArgs } from 'node:util'
-import { chromium } from '@playwright/test'
+import { chromium, expect } from '@playwright/test'
 
 const { values } = parseArgs({ options: {
   toldlife: { type: 'string' }, company: { type: 'string' },
@@ -82,15 +82,30 @@ try {
         else {
           const bar = page.getByRole('region', { name: '오디오북 플레이어' })
           await page.locator('.narration-audio').waitFor({ state: 'attached' })
+          const sheet = page.getByRole('dialog', { name: '펼친 플레이어' })
+          // SSR controls exist before hydration; opening the sheet proves their handlers are ready.
+          await expect(async () => {
+            await bar.locator('.player-expand').click()
+            await expect(sheet).toBeVisible({ timeout: 2000 })
+          }).toPass({ timeout: 30000 })
+          await sheet.getByRole('button', { name: '접기' }).click()
           console.log(`Checking ${device} playback at ${page.url()}`)
           await bar.locator('.player-action').click()
-          await page.waitForFunction(() => {
-            const audio = document.querySelector('.narration-audio')
-            return audio && !audio.paused && audio.readyState >= 2
-          }, undefined, { timeout: 60000 })
+          try {
+            await page.waitForFunction(() => {
+              const audio = document.querySelector('.narration-audio')
+              return audio && !audio.paused && audio.readyState >= 2
+            }, undefined, { timeout: 60000 })
+          } catch (error) {
+            const media = await page.locator('.narration-audio').evaluate(audio => ({
+              src: audio.currentSrc, paused: audio.paused, readyState: audio.readyState,
+              networkState: audio.networkState, error: audio.error?.message,
+            }))
+            console.error(JSON.stringify({ device, media, player: await bar.innerText(), errors }))
+            throw error
+          }
           assert((await bar.locator('.player-action').textContent()).includes('일시 정지'))
           await bar.locator('.player-expand').click()
-          const sheet = page.getByRole('dialog', { name: '펼친 플레이어' })
           await sheet.waitFor({ state: 'visible' })
           await sheet.getByRole('button', { name: '1.25배 빠르게' }).click()
           assert.equal(await page.locator('.narration-audio').evaluate(audio => audio.playbackRate), 1.25)
