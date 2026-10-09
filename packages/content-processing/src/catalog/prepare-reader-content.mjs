@@ -110,6 +110,9 @@ function discover(root, book) {
     for (const entry of readdirSync(directory, { withFileTypes: true })) {
       if (entry.name.startsWith('.') || entry.name === 'node_modules' || entry.isSymbolicLink())
         continue
+      // Editorial working notes are materialized for local reference, never published documents.
+      if (directory === contentRoot && entry.isDirectory() && entry.name === 'editorial-notes')
+        continue
       const filename = path.join(directory, entry.name)
       if (entry.isDirectory()) visit(filename)
       else if (entry.isFile() && /\.md$/i.test(entry.name) && !isExcludedMarkdown(entry.name))

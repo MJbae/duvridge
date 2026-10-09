@@ -1035,6 +1035,67 @@
         ]
       },
       "manuscriptSha256AtGeneration": "adf134f46b4edbeaa1748c95b7d44cdcca9dd766d28965c56d7e9641d5a18bd2"
+    },
+    {
+      "id": "ep11-01",
+      "episodeId": "ep11",
+      "master": "illustrations/source-images/ep11-01.png",
+      "masterSha256": "8ed1c1533db0a454634981e2f5ef9ab9b9969afd50346e84eab7400219d2f2ba",
+      "sceneHeading": "자식들만큼은 {#ep11}",
+      "sceneExcerpt": "수원에서 자취하며 고등학교에 다니던 큰딸은 주말이면 집에 다녀갔다. 돌아갈 때마다 아내는 정성껏 담근 깍두기를 새지 않게 꽁꽁 싸매 들려주었다.",
+      "placementRole": "body",
+      "date": "2026-10-09",
+      "mode": "built-in image_gen",
+      "references": [
+        {
+          "path": "illustrations/source-images/archive/ep11-before-high-school.jpg",
+          "role": "Archived original ep11 illustration: unchanged father and rural farewell setting; daughter age is the correction target.",
+          "sha256": "eb0117a9d77c06085d4e8a96be6c77c955590e5913b77428eb12215b7166d693"
+        },
+        {
+          "path": "references/images/배병희_본인/50대의_배병희_정장.png",
+          "role": "Actual Bae Byung-hee, the adult seated in the center: facial identity only.",
+          "sha256": "0975b11331ca1e4e79f7443319575255f2c95011a5a3cbccb9095145dedc8c64"
+        },
+        {
+          "path": "public/images/bae-byunghee-hero-watercolor.png",
+          "role": "Approved watercolor portrait: same father and established paint style.",
+          "sha256": "bdf901a59dfaee8a457529f848a536e2b36f57be564c2367c715ad3f61e5ebb9"
+        }
+      ],
+      "prompt": "Use case: identity-preserve.\nAsset type: corrected existing 16:9 watercolor body illustration for episode 11 of a Korean family autobiography.\nInput images: image 1 is the EDIT TARGET, the existing rural doorstep farewell scene; image 2 is the actual father's face, Bae Byung-hee, the adult seated at the CENTER of the photograph, identity reference only, not the child or suit; image 3 is the approved painted portrait, watercolor style and father's identity reference.\nPrimary request: correct the DAUGHTER from a little child to the family's ELDEST DAUGHTER, a Korean HIGH SCHOOL STUDENT about seventeen, in the early 1980s. Her birth year is uncertain; express late-adolescent age visually, never write dates.\nPreserve the existing illustration's father, his familiar broad face and softly hooded eyes, restrained kind expression, seated posture, grey cotton work shirt and blue trousers, rural doorway, late-day fields and warm watercolor palette. Preserve the natural handover of bus fare. Do not redesign the father, add people, or change the setting or composition.\nMake the daughter visibly a mature late-adolescent schoolgirl, not a primary-school child: near adult female height and realistic late-teen body/head proportions, a composed face with a subtly longer jaw, and tidy chin-length black bob hair. Dress her in modest early-1980s Korean school clothes: simple dark navy cardigan over a white collared blouse, plain dark below-knee skirt, modest school shoes, an ordinary worn shoulder book bag without logos. No sailor suit, modern short skirt or childish floral blouse. She stands naturally beside her seated father while receiving the fare in one hand; support a small securely lidded stainless-steel kimchi food container close against her body with the other arm, the container partly tied in plain cloth. Her hands must connect continuously to her own arms.\nStyle: preserve the series' hand-painted watercolor on warm cold-pressed paper, transparent ochre and restrained grey-blue washes, pigment blooms, granulation, visible brush-shaped marks, and selective crisp edges for faces, hands and essential objects. Repaint altered areas coherently, no photographic cutouts or artificial paint filter.\nConstraints: one single complete landscape illustration at 16:9, about 1536 by 864 pixels or higher. Keep both people and the fare/food container inside the frame. Exactly two people, father and late-teen eldest daughter. No text, captions, school crest, dates, logos, watermark, decorative borders, collage or panels.",
+      "manuscriptSha256AtGeneration": "899080cd74845e11639600ee1bfe37bb888673bf57264407545b62a0f7ff36f4",
+      "previousIllustrationSha256": "eb0117a9d77c06085d4e8a96be6c77c955590e5913b77428eb12215b7166d693"
+    },
+    {
+      "id": "ep11-family-care",
+      "episodeId": "ep11",
+      "master": "illustrations/source-images/ep11-family-care.png",
+      "masterSha256": "3cff53c1c05aff9bb44daff847057c964da89350483e9702aeab1c13ebc2acdf",
+      "sceneHeading": "자식들만큼은 {#ep11}",
+      "sceneExcerpt": "아무리 일손이 바빠도 아이들 머리가 조금만 자라면 마당에 앉혀두고 손수 깎아주었다. 가위로 짧고 단정하게 다듬은 뒤 머리를 감겨주었다.",
+      "placementRole": "representative-opening",
+      "date": "2026-10-09",
+      "mode": "built-in image_gen",
+      "references": [
+        {
+          "path": "references/images/배병희_본인/50대의_배병희_정장.png",
+          "role": "Actual Bae Byung-hee, the adult seated in the center: facial identity only.",
+          "sha256": "0975b11331ca1e4e79f7443319575255f2c95011a5a3cbccb9095145dedc8c64"
+        },
+        {
+          "path": "public/images/bae-byunghee-hero-watercolor.png",
+          "role": "Approved watercolor portrait: same father and established paint style.",
+          "sha256": "bdf901a59dfaee8a457529f848a536e2b36f57be564c2367c715ad3f61e5ebb9"
+        },
+        {
+          "path": "illustrations/source-images/archive/ep11-before-high-school.jpg",
+          "role": "Existing series illustration: same father, work clothes, rural setting and watercolor only; not the farewell composition or young daughter.",
+          "sha256": "eb0117a9d77c06085d4e8a96be6c77c955590e5913b77428eb12215b7166d693"
+        }
+      ],
+      "prompt": "Use case: historical-scene.\nAsset type: one NEW representative opening illustration for episode 11, \"자식들만큼은\", in an established Korean family autobiography watercolor series.\nInput images: image 1 is the actual Bae Byung-hee, the adult seated in the CENTER of the photograph, facial identity only, not his child or suit. Image 2 is the approved watercolor portrait of the SAME man, identity and watercolor style. Image 3 is an existing illustration, reference only for the recognizable father's face, work clothes, countryside and watercolor family-scene treatment; do not copy its farewell action or its young girl.\nPrimary request: show the usually reserved father quietly caring for his children, through a scene directly in the manuscript: he trims a young son's hair by hand in the modest family courtyard.\nScene/backdrop: early 1980s rural Dokjeong-ri, Hwaseong, Korea. A compact ordinary one-storey Korean rural home, low wooden porch, unpaved courtyard, a small flowerbed the mother tends, and reclaimed rice fields softly visible beyond. Modest practical 1970s/early-1980s rural roof and plain walls, not an ornate hanok, palace, historic costume village or grand estate.\nSubjects: Bae Byung-hee in his mid-forties, familiar broad midface and rounded cheeks/jaw, narrow softly hooded eyes, rounded nose, restrained mouth, short black hair and grey cotton work shirt with blue trousers. The same father's identity as the photo and painted portrait must remain recognizable, painted coherently. He stands slightly bent beside his primary-school-age SON sitting on a low sturdy wooden stool, gently trimming the boy's short dark hair using a small ordinary metal hair-cutting scissors. One hand naturally steadies a section of hair and the other operates the scissors beside the crown, safely away from his face. The boy has a distinct child's face, a plain cotton shirt and trousers, a relaxed seated posture and naturally supported feet; a light plain cloth around his shoulders catches hair. The mother, a distinct middle-aged Korean woman in modest practical everyday clothes, tends the small flowerbed at a quiet distance near the house, secondary to the father and son. Exactly three people. No departing daughter in this scene.\nStyle/medium: hand-painted watercolor matching the established series, warm cold-pressed paper, transparent ochre and grey-blue washes, broad painted color masses, visible watercolor blooms, granulation and brush-shaped marks, lost edges with selective crisp strokes for the familiar father's face, the connected hands, scissors and the child's hair. Preserve paper highlights and understated domestic warmth, no photorealism, pasted photographic faces, glossy digital skin, uniform noisy filters, oil paint, cartoon or hard outlines.\nComposition/framing: one complete 16:9 landscape illustration, about 1536 by 864 pixels or higher. Medium-wide view, father and boy's care action clearly readable at thumbnail size, house and flowerbed give context without competing; no montage, panels or collage. Keep all essential heads, arms, scissors and feet inside the crop. A quiet ordinary afternoon, gentle natural light, no theatrical expressions.\nConstraints: illustration only, no lettering, captions, title, dates, symbols, logos, watermark, border, money, bus, school-uniformed child, electric clippers, modern salon tools, cloned faces, extra fingers or impossible disconnected limbs.",
+      "manuscriptSha256AtGeneration": "899080cd74845e11639600ee1bfe37bb888673bf57264407545b62a0f7ff36f4"
     }
   ],
   "revision": 6,
@@ -1133,5 +1194,11 @@
       "ep09-01",
       "ep21-01"
     ]
+  },
+  "episode11FeedbackRevision": {
+    "date": "2026-10-09",
+    "reason": "본문 윤문을 보존하고 제목과 큰딸의 고등학생 신분만 최소 수정. 기존 삽화의 큰딸 연령 교정 및 서두 대표 삽화 추가. 출생연도 미확정으로 본문과 이미지에 정확한 연도·나이 표기 없음.",
+    "representativeId": "ep11-family-care",
+    "preservedIllustrationId": "ep11-01"
   }
 }

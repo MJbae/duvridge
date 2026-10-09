@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 import { legacyEpisodes } from '../site/.vitepress/shared/episode-heading.mjs'
 import rawCatalog from '../site/.vitepress/generated/catalog.json' with { type: 'json' }
+import illustrationManifest from '../../../content/books/bae-byunghee/illustrations/manifest.json' with { type: 'json' }
 import type { Illustration } from '@duvridge/content-processing/types'
 async function noOverflow(page: Page) { expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true) }
 
@@ -299,8 +300,8 @@ test('옛 회차 주소의 반응 위치 링크도 번호 주소에서 유지한
 test('모든 회차의 삽화를 불러오며 16:9 전체 그림을 화면 폭에 맞춘다', async ({ page }, info) => {
   test.setTimeout(90000)
   const images = rawCatalog.illustrations as Record<string, Illustration[]>
-  expect(Object.keys(images)).toHaveLength(26)
-  expect(Object.values(images).flat()).toHaveLength(46)
+  expect(Object.keys(images)).toHaveLength(new Set(illustrationManifest.images.map(image => image.episodeId)).size)
+  expect(Object.values(images).flat()).toHaveLength(illustrationManifest.images.length)
   const broken: string[] = []
   page.on('response', response => {
     if (response.url().includes('/images/episodes/') && !response.ok()) broken.push(response.url())
@@ -508,7 +509,7 @@ test('여섯 회차의 삽화는 해당 장면에서 시작하고 대표 그림�
   const targets = [
     ['ep06', 'ep06-01', '갯벌에서 져 온 생김을 마당에 부려놓으면', ['ep06-02', 'ep06-01']],
     ['ep08', 'ep08-01', '여러 마을을 오가며 기계를 계속 돌리다 보니', ['ep08-02', 'ep08-03', 'ep08-01']],
-    ['ep11', 'ep11-01', '수원에서 자취하며 학교에 다니던 딸은', ['ep11-01']],
+    ['ep11', 'ep11-family-care', '열여덟 평 독정리 집은', ['ep11-family-care', 'ep11-01']],
     ['ep13', 'ep13-01', '먹구름이 몰려와 한밤중에 장대비가 퍼붓기 시작하면', ['ep13-02', 'ep13-01']],
     ['ep14', 'ep14-01', '그는 다시 농지 일부를 처분해 자금을 마련했다.', ['ep14-02', 'ep14-01']],
     ['ep15', 'ep15-01', '이튿날에도 배병희는 아무 일 없었다는 듯', ['ep15-02', 'ep15-01', 'ep15-03']],
@@ -523,7 +524,11 @@ test('여섯 회차의 삽화는 해당 장면에서 시작하고 대표 그림�
     await expect(preload).toHaveAttribute('imagesrcset', new RegExp(`${representativeId}-360\\.webp`))
     await expect(representative.locator('img')).toHaveAttribute('loading', 'eager')
     await expect(representative.locator('img')).toHaveAttribute('fetchpriority', 'high')
-    if (['ep06', 'ep08', 'ep11', 'ep13'].includes(episode)) {
+    if (episode === 'ep11') {
+      await expect(page.locator('[data-illustration="ep11-01"]').locator('xpath=following-sibling::p[1]'))
+        .toContainText('수원에서 자취하며 고등학교에 다니던 큰딸은')
+    }
+    if (['ep06', 'ep13'].includes(episode)) {
       expect(await page.locator('.story-content p').first().evaluate(paragraph => {
         let previous = paragraph.previousElementSibling
         while (previous) {

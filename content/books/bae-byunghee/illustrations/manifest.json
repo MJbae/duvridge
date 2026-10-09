@@ -796,9 +796,48 @@
       ]
     },
     {
+      "id": "ep11-family-care",
+      "episodeId": "ep11",
+      "alt": "수채화로 그린 독정리 집 마당에서 아들의 머리를 손수 깎아주는 배병희와 꽃밭을 가꾸는 아내",
+      "width": 1280,
+      "height": 720,
+      "sources": [
+        {
+          "src": "/images/episodes/ep11-family-care-360.jpg",
+          "width": 360
+        },
+        {
+          "src": "/images/episodes/ep11-family-care-720.jpg",
+          "width": 720
+        },
+        {
+          "src": "/images/episodes/ep11-family-care-1280.jpg",
+          "width": 1280
+        }
+      ],
+      "webpSources": [
+        {
+          "src": "/images/episodes/ep11-family-care-360.webp",
+          "width": 360
+        },
+        {
+          "src": "/images/episodes/ep11-family-care-720.webp",
+          "width": 720
+        },
+        {
+          "src": "/images/episodes/ep11-family-care-1280.webp",
+          "width": 1280
+        }
+      ],
+      "referenceIds": [
+        "local-01"
+      ],
+      "representative": true
+    },
+    {
       "id": "ep11-01",
       "episodeId": "ep11",
-      "alt": "수채화로 그린 수원으로 떠나는 딸을 배웅하는 아버지",
+      "alt": "수채화로 그린 깍두기 통을 안고 수원으로 돌아가는 고등학생 큰딸에게 차비를 건네는 아버지",
       "width": 1280,
       "height": 720,
       "sources": [
@@ -832,8 +871,7 @@
       "referenceIds": [
         "local-01",
         "sup-007"
-      ],
-      "representative": true
+      ]
     },
     {
       "id": "ep12-01",

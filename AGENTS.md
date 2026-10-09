@@ -3,6 +3,7 @@
 - Use Node.js 22 and npm 10. Install from the root with `npm ci`; maintain only the root lockfile.
 - Deployable services live in `apps/`, shared maintained sources in `packages/`. Declare shared workspace dependencies. Do not import another app's implementation.
 - Authored book data lives outside packages in `content/books/<book-id>/`. Edit `manuscript.md`, `book.json`, illustration/music manifests and original assets there. Materialized app copies are generated inputs, never editorial sources.
+- The manuscript is authoritative. Never rewrite its prose to fit existing audio, test fixtures or paragraph-length limits. Verify app copies and published chapter text against the canonical source; exclude the entire editorial-notes directory from publication.
 - Place illustrations using standalone `<!-- illustration: stable-id -->` markers in the manuscript. The asset manifest contains no paragraph indexes or text anchors. Preserve existing image IDs when adding images between them.
 - Shared packages contain reusable code and are separated by function: `content-processing`, `reader-ui`, `reader-reactions`, and `vitepress-reader`. Keep manuscripts, media and book-specific text/metadata out of packages. Audiobook controls and cue interaction remain app-local.
 - Web builds must not regenerate recordings, SRT timings or approved clips. Paid TTS/STT requires a separate explicit production task.

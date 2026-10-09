@@ -26,17 +26,46 @@ import { resolveBookSource } from '@duvridge/content-processing/source-files/res
 
 const repo = process.cwd()
 const book = JSON.parse(readFileSync(path.join(repo, 'content/book.json'), 'utf8'))
-const { source: bookSource } = resolveBookSource({
+const { source: bookSource, book: sourceBook } = resolveBookSource({
   repositoryRoot: path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..'), appRoot: repo,
 })
 const { legacyEpisodes, legacyPageIds } = createLegacyEpisodeMaps(book.legacy)
 const parseManuscript = (markdown, warn) => parseSharedManuscript(markdown, warn, { legacyEpisodes })
 const prepareContent = options => prepareSharedContent({ book, ...options })
 const mainFilename = 'manuscript.md'
-const illustratedOriginal = readFileSync(path.join(repo, mainFilename), 'utf8')
+const illustratedOriginal = readFileSync(path.join(bookSource, sourceBook.manuscript ?? mainFilename), 'utf8')
 // Fixtures without an illustration manifest deliberately contain prose only.
 const original = stripIllustrationMarkers(illustratedOriginal)
 const silent = { log() {}, warn() {} }
+
+test('앱 작업 사본과 생성된 모든 회차가 현재 정본의 본문·제목·앞뒤 회차를 반영한다', () => {
+  assert.equal(readFileSync(path.join(repo, mainFilename), 'utf8'), illustratedOriginal)
+  const { content, data } = matter(illustratedOriginal)
+  const structure = parseManuscript(content)
+  const generated = JSON.parse(readFileSync(path.join(repo, 'site/.vitepress/generated/catalog.json'), 'utf8'))
+  assert.equal(generated.work.title, plainText(data.title || sourceBook.work?.title || ''))
+  assert.equal(generated.work.subtitle, plainText(data.subtitle || sourceBook.work?.subtitle || ''))
+  assert.deepEqual(generated.places, structure.places)
+  assert.deepEqual(generated.readingOrder.map(episode => episode.id), structure.episodes.map(episode => episode.id))
+  for (const [index, episode] of structure.episodes.entries()) {
+    const entry = generated.readingOrder[index]
+    const page = matter(readFileSync(path.join(repo, 'site/read', `${episode.id}.md`), 'utf8'))
+    assert.equal(entry.title, episode.title)
+    assert.equal(entry.time, episode.time)
+    assert.equal(entry.label, episode.label)
+    assert.equal(entry.number, episode.number)
+    assert.deepEqual(entry.place, episode.place)
+    assert.equal(page.content.trim(), `# ${episode.title}\n\n${episode.body}`.trim())
+    assert.equal(page.data.title, episode.title)
+    assert.equal(page.data.shareTitle, `${episode.label} ${episode.title} · ${generated.work.title}`)
+    assert.equal(page.data.episodeId, episode.id)
+    assert.equal(page.data.time, episode.time)
+    assert.equal(page.data.prev?.title ?? null, structure.episodes[index - 1]?.title ?? null)
+    assert.equal(page.data.prev?.url ?? null, generated.readingOrder[index - 1]?.url ?? null)
+    assert.equal(page.data.next?.title ?? null, structure.episodes[index + 1]?.title ?? null)
+    assert.equal(page.data.next?.url ?? null, generated.readingOrder[index + 1]?.url ?? null)
+  }
+})
 
 test('27개 음악 파일을 원고·회차·음원 파일명과 같은 ID로 빠짐없이 연결한다', () => {
   const episodes = parseManuscript(matter(original).content).episodes
@@ -145,16 +174,17 @@ test('터전 4개와 23화, 앞뒤 회차를 생성하고 정본의 모든 본�
   assert.equal(readPage('ep01.md').data.pageId, 'ep01')
 })
 
-test('휴대폰에서 한 덩어리로 읽히지 않도록 회차 본문 문단은 150자를 넘지 않는다', () => {
-  const { episodes } = parseManuscript(matter(original).content)
-  assert.equal(episodes.length, 26)
-  // Scene lines, images, lists and spoken lines keep their own shape; only narration is measured.
-  const isNarration = paragraph => !/^(\*|!|>|\[|#|-|\d+\.)/.test(paragraph) && !/^[“"].*[”"]$/s.test(paragraph)
-  const long = episodes.flatMap(episode => episode.body.split(/\n\s*\n/)
-    .map(paragraph => paragraph.trim())
-    .filter(paragraph => paragraph && isNarration(paragraph) && paragraph.length > 150)
-    .map(paragraph => `${episode.id} ${paragraph.length}자: ${paragraph.slice(0, 30)}`))
-  assert.deepEqual(long, [])
+test('긴 문단도 저자가 정한 문단과 줄바꿈을 그대로 보존하며 자동 분할하지 않는다', t => {
+  const { root, write, run, readPage } = fixture(t)
+  const episode = parseManuscript(matter(original).content).episodes.find(episode => episode.id === 'ep01')
+  const paragraph = '아버지는 새벽마다 논으로 나가 이웃들과 함께 하루의 일을 시작했다. '.repeat(12).trim()
+  assert.ok(paragraph.length > 150)
+  const body = `${paragraph}\n\n다음 문단은 저자가 선택한 위치에서 시작한다.\n본문의 줄바꿈도 그대로 남긴다.`
+  const revised = original.replace(episode.body, body)
+  write(mainFilename, revised)
+  run()
+  assert.equal(readFileSync(path.join(root, mainFilename), 'utf8'), revised)
+  assert.equal(readPage('ep01.md').content.trim(), `# ${episode.title}\n\n${body}`)
 })
 
 test('제목을 바꾸어도 ID를 유지하고 원고 순서와 번호가 어긋나면 생성을 거절한다', (t) => {
@@ -459,6 +489,22 @@ test('임시글, 운영 문서, 프로젝트 내부와 심볼릭 링크의 Markd
   )
 })
 
+test('편집노트 폴더는 새 파일명과 하위 폴더를 포함해 게시하지 않고 원본을 보존한다', t => {
+  const { root, write, run } = fixture(t)
+  const notes = {
+    'content/editorial-notes/new-review.md': '# 새 편집 검토\n\n아직 확정하지 않은 수정안.\n',
+    'content/editorial-notes/revisions/future-plan.md': '---\npublished: true\n---\n# 다음 개정 계획\n',
+  }
+  for (const [filename, body] of Object.entries(notes)) write(filename, body)
+  write('content/family-memory.md', '# 공개 가족 자료\n')
+  const { catalog, manifest } = run()
+  assert.deepEqual(catalog.documents.map(document => document.title), ['공개 가족 자료'])
+  for (const [filename, body] of Object.entries(notes)) {
+    assert.ok(!manifest.sources.some(page => page.source === filename))
+    assert.equal(readFileSync(path.join(root, filename), 'utf8'), body)
+  }
+})
+
 test('편집 제안서는 루트와 content에서 정확한 파일명으로만 제외하며 원본을 보존한다', (t) => {
   const editorial = '# 편집 참고\n\n제안 내용은 사이트에 게시하지 않습니다.\n'
   const editorialNames = [
@@ -634,7 +680,7 @@ test('누락·중복·미등록·다른 회차의 표시와 잘못된 자산을 
   for (const image of images) for (const source of [...image.sources, ...image.webpSources ?? []]) write(`site/public${source.src}`, 'fixture')
   const manifest = () => write('content/episode-illustrations.json', JSON.stringify({ version: 2, images }))
   manifest()
-  assert.equal(Object.values(run().catalog.illustrations).flat().length, 46)
+  assert.equal(Object.values(run().catalog.illustrations).flat().length, images.length)
   write(mainFilename, illustratedOriginal.replace('<!-- illustration: ep01-02 -->\n\n', ''))
   assert.throws(run, /표시가 없습니다/)
   write(mainFilename, illustratedOriginal.replace('<!-- illustration: ep01-02 -->', '<!-- illustration: ep01-02 -->\n\n중복 표식을 구분하는 문단.\n\n<!-- illustration: ep01-02 -->'))

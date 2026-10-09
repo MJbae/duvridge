@@ -1,8 +1,15 @@
 import assert from 'node:assert/strict'
-import { mkdir, writeFile } from 'node:fs/promises'
+import { createHash } from 'node:crypto'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { parseArgs } from 'node:util'
 import { chromium, expect } from '@playwright/test'
+import matter from 'gray-matter'
+import { createMarkdownRenderer, disposeMdItInstance } from 'vitepress'
+import { parseManuscript } from '@duvridge/content-processing/manuscripts/parse-manuscript.mjs'
+import { createLegacyEpisodeMaps } from '@duvridge/content-processing/manuscripts/episode-ids.mjs'
+import { stripIllustrationMarkers } from '@duvridge/content-processing/illustrations/parse-illustration-markers.mjs'
 
 const { values } = parseArgs({ options: {
   toldlife: { type: 'string' }, company: { type: 'string' },
@@ -44,15 +51,47 @@ try {
   }
   if (values.toldlife) {
     const sha = await marker(values.toldlife)
-    const episodes = ['prolog', ...Array.from({ length: 23 }, (_, i) => `ep${String(i + 1).padStart(2, '0')}`), 'epilog', 'side']
+    const repositoryRoot = fileURLToPath(new URL('../', import.meta.url))
+    const registry = JSON.parse(await readFile(resolve(repositoryRoot, 'service-registry.json'), 'utf8'))
+    const books = [...new Set(registry.services.filter(service => service.deployGroup === 'toldlife' && service.book).map(service => service.book))]
+    assert.equal(books.length, 1, 'ToldLife readers must select the same canonical book for this check')
+    const bookId = books[0]
+    const sourceRoot = resolve(repositoryRoot, registry.books[bookId].path)
+    const book = JSON.parse(await readFile(resolve(sourceRoot, 'book.json'), 'utf8'))
+    const manuscript = await readFile(resolve(sourceRoot, book.manuscript ?? 'manuscript.md'))
+    const sourceHash = createHash('sha256').update(manuscript).digest('hex')
+    const { content: sourceContent, data: sourceData } = matter(manuscript.toString())
+    const { legacyEpisodes } = createLegacyEpisodeMaps(book.legacy)
+    const structure = parseManuscript(sourceContent, undefined, { legacyEpisodes })
+    const episodes = structure.episodes.map(episode => episode.id)
+    const markdown = await createMarkdownRenderer(sourceRoot, { html: false })
+    const inspector = await browser.newPage()
+    let paragraphChecks = 0
     for (const service of ['novels', 'audiobooks']) {
-      for (const id of episodes) {
+      for (const episode of structure.episodes) {
+        const { id } = episode
         const text = await (await request(values.toldlife, `/${service}/read/${id}.html`)).text()
         assert(text.includes('story-content'), `${service}/${id}: no reader body`)
         assert(!text.includes('<!-- illustration:'), `${service}/${id}: raw illustration marker leaked`)
         assert(text.includes(`https://toldlife.duvridge.com/${service}/read/${id}.html`), 'Wrong canonical')
+        const rendered = markdown.render(stripIllustrationMarkers(episode.body))
+        const comparison = await inspector.evaluate(({ published, authored }) => {
+          const parser = new DOMParser()
+          const actual = parser.parseFromString(published, 'text/html')
+          const expected = parser.parseFromString(authored, 'text/html')
+          return {
+            title: actual.querySelector('meta[property="og:title"]')?.getAttribute('content'),
+            paragraphs: [...actual.querySelectorAll('.story-content p')].map(paragraph => paragraph.textContent),
+            expected: [...expected.querySelectorAll('p')].map(paragraph => paragraph.textContent),
+          }
+        }, { published: text, authored: rendered })
+        assert.equal(comparison.title, `${episode.label} ${episode.title} · ${sourceData.title || book.work.title}`, `${service}/${id}: stale title`)
+        assert.deepEqual(comparison.paragraphs, comparison.expected, `${service}/${id}: published prose differs from the canonical manuscript`)
+        paragraphChecks += comparison.expected.length
       }
     }
+    await inspector.close()
+    disposeMdItInstance()
     for (const id of ['prolog', 'ep01', 'ep02', 'ep03']) {
       const response = await request(values.toldlife, `/audiobooks/record/${id}.mp3`, { headers: { Range: 'bytes=0-255' } })
       assert((await response.arrayBuffer()).byteLength > 0, `Empty recording: ${id}`)
@@ -123,7 +162,8 @@ try {
       assert.deepEqual(errors, [], 'Browser runtime errors')
       await context.close()
     }
-    evidence.results.push({ group: 'toldlife', origin: values.toldlife, sha, episodeRoutes: 52, recordings: 4, devices: ['phone', 'desktop'] })
+    evidence.results.push({ group: 'toldlife', origin: values.toldlife, sha, episodeRoutes: episodes.length * 2, recordings: 4,
+      manuscript: { bookId, sha256: sourceHash, episodeCount: episodes.length, paragraphChecks }, devices: ['phone', 'desktop'] })
   }
 } finally {
   await browser.close()

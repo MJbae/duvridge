@@ -267,9 +267,11 @@ test('낭독 문장을 원문 그대로 감싸고 제목과 원고에 없는 문
 
 test('오디오북 결과물에서 음성을 옮기고 문장 시각을 실제 쉼에 맞춘다', t => {
   const { root, write } = fixture(t)
-  write(mainFilename, original)
+  // Alignment needs three sentences in one paragraph. Use a dedicated import
+  // fixture so rewriting the author's opening cannot change that test scenario.
+  const opening = '첫 문장이다. 둘째 문장이다. 셋째 문장이다.'
+  write(mainFilename, `---\ntitle: ${work.title}\nsubtitle: ${work.subtitle}\n---\n\n# 1936. 안면도 중장리\n\n## ${sample.title} {#ep01}\n\n*${sample.time}*\n\n${opening}\n`)
   const source = path.join(root, 'audiobook')
-  const opening = stripIllustrationMarkers(parseManuscript(matter(original).content).episodes.find(episode => episode.id === 'ep01').body).split('\n\n')[0]
   const [first, second, third] = opening.match(/[^.]+\./g).map(sentence => sentence.trim())
   write('audiobook/ep01.mp3', 'recorded-mp3')
   write('audiobook/ep01.srt', formatSrt([

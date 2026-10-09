@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "manuscript_sha256": "f19d8f715938009b9e82108680c699f7e37bb1f0bc2d04071d1d3745104e3636",
+  "manuscript_sha256": "3320ade338ebf179ed6779540a315cb8253cc0c9f71bccaa30ed17bbcbd266f4",
   "episode_count": 26,
   "episodes": [
     {
@@ -266,9 +266,9 @@
       "id": "ep11",
       "number": 11,
       "type": "본편",
-      "title": "수원 가는 버스",
+      "title": "자식들만큼은",
       "setting": "1980년대 초 · 화성 독정리",
-      "suggested_representative_scene": "반찬통을 든 딸에게 새벽 길에서 차비를 당부하는 아버지",
+      "suggested_representative_scene": "독정리 집 마당에서 아들의 머리를 손수 깎아주는 배병희와 꽃밭을 가꾸는 아내",
       "reference_ids": [
         "local-01",
         "sup-007",
@@ -281,7 +281,10 @@
         "시대_참고/농기구_생활/sup-006_1973_경운기_영농.jpg",
         "배병희_자녀들/자녀들과_배우자들.jpeg"
       ],
-      "historical_notes": "가족 사진의 개별 얼굴 대응 미확인. 원고에 없는 학교·교복 표지를 추가하지 않음."
+      "historical_notes": "가족 사진의 개별 얼굴 대응 미확인. 원고에 없는 학교·교복 표지를 추가하지 않음.",
+      "suggested_body_scenes": [
+        "깍두기 통을 안고 수원으로 돌아가는 고등학생 큰딸에게 차비를 건네는 아버지"
+      ]
     },
     {
       "id": "ep12",

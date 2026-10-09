@@ -1,8 +1,15 @@
 import { expect, test, type Page } from '@playwright/test'
 import rawCatalog from '../site/.vitepress/generated/catalog.json' with { type: 'json' }
+import rawSentences from '../site/.vitepress/generated/narration.json' with { type: 'json' }
 
 type Track = { src: string; duration: number; cues: (number | string)[][] }
 const narration = (rawCatalog as unknown as { narration: Record<string, Track> }).narration
+const sentences = rawSentences as Record<string, { cue: number; text: string }[]>
+// Editorial changes may remove any old recording cue. Exercise sentence interaction
+// with text that still exists, while the separate mismatch test covers unmatched cues.
+const readAlongEpisode = Object.keys(narration)
+  .sort((left, right) => (sentences[right]?.length ?? 0) - (sentences[left]?.length ?? 0))[0]
+const readAlongSentences = sentences[readAlongEpisode] ?? []
 const cueStart = (id: string, index: number) => narration[id].cues[index][0] as number
 const audio = (page: Page) => page.locator('.narration-audio')
 const currentTime = (page: Page) => audio(page).evaluate((media: HTMLAudioElement) => media.currentTime)
@@ -84,7 +91,9 @@ test('펼친 플레이어에서 문장을 옮기고 재생 속도와 다음 화 
   await sheet(page).getByRole('button', { name: '다음 문장' }).click()
   await expect(page.locator('.article-time > span')).toHaveClass(/is-reading/)
   await sheet(page).getByRole('button', { name: '다음 문장' }).click()
-  await expect(page.locator('.story-content .cue[data-cue="2"]')).toHaveClass(/is-reading/)
+  if (sentences.ep02.some(sentence => sentence.cue === 2))
+    await expect(page.locator('.story-content .cue[data-cue="2"]')).toHaveClass(/is-reading/)
+  else await expect(page.locator('.story-content .is-reading')).toHaveCount(0)
   expect(Math.abs(await currentTime(page) - cueStart('ep02', 2))).toBeLessThan(0.3)
   await sheet(page).getByRole('button', { name: '이전 문장' }).click()
   await expect(page.locator('.article-time > span')).toHaveClass(/is-reading/)
@@ -106,20 +115,23 @@ test('펼친 플레이어에서 문장을 옮기고 재생 속도와 다음 화 
 })
 
 test('멈춘 회차를 다시 열면 이어 듣기로 멈춘 문장부터 이어 간다', async ({ page }) => {
+  test.skip(!readAlongSentences.length, '현재 원고와 일치하는 녹음 문장이 없으면 문장 표시를 제공하지 않는다')
+  const id = readAlongEpisode
+  const targetCue = readAlongSentences[0].cue
   await tipSeen(page)
-  await startEpisode(page, 'ep01')
+  await startEpisode(page, id)
   await action(page).click()
+  await jumpTo(page, cueStart(id, targetCue) + 0.2)
   await openSheet(page)
-  for (let step = 0; step < 3; step++) await sheet(page).getByRole('button', { name: '다음 문장' }).click()
   await sheet(page).getByRole('button', { name: '접기' }).click()
-  await expect(page.locator('.story-content .cue[data-cue="3"]')).toHaveClass(/is-reading/)
+  await expect(page.locator(`.story-content .cue[data-cue="${targetCue}"]`).first()).toHaveClass(/is-reading/)
   await page.reload()
   await expect(action(page)).toHaveText('이어 듣기')
   await expect(bar(page)).toContainText(/\d+:\d{2}부터 · \d+분 남음/)
   expect(await audio(page).evaluate((media: HTMLAudioElement) => media.paused)).toBe(true)
   await action(page).click()
-  await listening(page, 'ep01')
-  expect(Math.abs(await currentTime(page) - cueStart('ep01', 3))).toBeLessThan(1.5)
+  await listening(page, id)
+  expect(Math.abs(await currentTime(page) - cueStart(id, targetCue))).toBeLessThan(1.5)
 })
 
 test('끝 음악에서 멈춘 회차는 다 들은 것으로 치고, 홈은 그다음 화를 권한다', async ({ page }) => {
@@ -139,20 +151,23 @@ test('끝 음악에서 멈춘 회차는 다 들은 것으로 치고, 홈은 그�
 })
 
 test('듣는 동안 다른 곳을 읽으면 따라가기를 멈추고, 누른 문장부터 다시 듣는다', async ({ page }, info) => {
+  test.skip(readAlongSentences.length < 2, '현재 원고와 일치하는 녹음 문장이 둘 미만이면 문장 간 이동을 제공하지 않는다')
+  const id = readAlongEpisode
+  const currentCue = readAlongSentences[Math.floor(readAlongSentences.length / 4)].cue
+  const pickCue = readAlongSentences[Math.floor(readAlongSentences.length * 3 / 4)].cue
   // Instant scrolling keeps the page still between the voice's moves and the reader's own.
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await tipSeen(page)
-  await startEpisode(page, 'ep01')
-  await jumpTo(page, cueStart('ep01', 6) + 0.2)
-  const sixth = page.locator('.story-content .cue[data-cue="6"]')
-  await expect(sixth).toHaveClass(/is-reading/)
+  await startEpisode(page, id)
+  await jumpTo(page, cueStart(id, currentCue) + 0.2)
+  await expect(page.locator(`.story-content .cue[data-cue="${currentCue}"]`).first()).toHaveClass(/is-reading/)
   await page.mouse.move(100, 300)
   await page.mouse.wheel(0, 1800)
   const back = page.getByRole('button', { name: '지금 듣는 곳으로', exact: true })
   await expect(back).toBeVisible()
   // The latest manuscript intentionally leaves rewritten recording cues unhighlighted.
   // Choose an exact surviving sentence after manual scrolling has paused following.
-  const pickable = page.locator('.story-content .cue[data-cue="15"]').first()
+  const pickable = page.locator(`.story-content .cue[data-cue="${pickCue}"]`).first()
   await pickable.evaluate(element => element.scrollIntoView({ block: 'center', behavior: 'instant' }))
   const target = await pickable.evaluate(element => {
     const line = element.getClientRects()[0]
@@ -164,7 +179,7 @@ test('듣는 동안 다른 곳을 읽으면 따라가기를 멈추고, 누른 �
   await page.screenshot({ path: `test-results/reading/${info.project.name}-narration-pick.png` })
   await offer.click()
   await expect(page.locator(`.story-content .cue[data-cue="${target.cue}"]`).first()).toHaveClass(/is-reading/)
-  expect(Math.abs(await currentTime(page) - cueStart('ep01', target.cue))).toBeLessThan(1)
+  expect(Math.abs(await currentTime(page) - cueStart(id, target.cue))).toBeLessThan(1)
   await expect(back).toHaveCount(0)
   await page.mouse.wheel(0, -2400)
   await expect(back).toBeVisible()
@@ -177,15 +192,43 @@ test('듣는 동안 다른 곳을 읽으면 따라가기를 멈추고, 누른 �
 })
 
 test('듣기 전에도 문장을 누르면 그 문장부터 들을 수 있다', async ({ page }) => {
+  test.skip(!readAlongSentences.length, '현재 원고와 일치하는 녹음 문장이 없으면 문장 누르기를 제공하지 않는다')
+  const id = readAlongEpisode
+  const targetCue = readAlongSentences[0].cue
   await tipSeen(page)
-  await page.goto('read/ep01.html')
-  const sentence = page.locator('.story-content .cue[data-cue="5"]').first()
+  await page.goto(`read/${id}.html`)
+  const sentence = page.locator(`.story-content .cue[data-cue="${targetCue}"]`).first()
   await sentence.scrollIntoViewIfNeeded()
   await sentence.click()
   await page.getByRole('button', { name: /^여기부터 듣기/ }).click()
-  await listening(page, 'ep01')
-  expect(Math.abs(await currentTime(page) - cueStart('ep01', 5))).toBeLessThan(1)
-  await expect(page.locator('.story-content .cue[data-cue="5"]').first()).toHaveClass(/is-reading/)
+  await listening(page, id)
+  expect(Math.abs(await currentTime(page) - cueStart(id, targetCue))).toBeLessThan(1)
+  await expect(sentence).toHaveClass(/is-reading/)
+})
+
+test('수정한 원고와 다른 녹음 문장에서는 본문을 그대로 두고 재생·문장 이동을 유지한다', async ({ page }) => {
+  const unmatched = Object.entries(narration).flatMap(([id, track]) => {
+    const matched = new Set((sentences[id] ?? []).map(sentence => sentence.cue))
+    return track.cues.map((cue, index) => ({ id, cue, index }))
+      .filter(({ cue, index }) => cue.length === 2 && !matched.has(index))
+  })[0]
+  test.skip(!unmatched, '녹음과 원고가 모두 일치하면 불일치 시점이 없다')
+  const { id, index } = unmatched
+  await tipSeen(page)
+  await startEpisode(page, id)
+  const body = await page.locator('.story-content').innerText()
+  await action(page).click()
+  await jumpTo(page, cueStart(id, index) + 0.2)
+  await expect(page.locator('.is-reading')).toHaveCount(0)
+  await expect(page.locator(`.story-content .cue[data-cue="${index}"]`)).toHaveCount(0)
+  expect(await page.locator('.story-content').innerText()).toBe(body)
+  await openSheet(page)
+  await sheet(page).getByRole('button', { name: '다음 문장' }).click()
+  expect(Math.abs(await currentTime(page) - cueStart(id, index + 1))).toBeLessThan(0.3)
+  await sheet(page).getByRole('button', { name: '이전 문장' }).click()
+  expect(Math.abs(await currentTime(page) - cueStart(id, index))).toBeLessThan(0.3)
+  await sheet(page).getByRole('button', { name: '이어 듣기' }).click()
+  await listening(page, id)
 })
 
 test('회차 끝은 상자 없는 한 줄 이동이고, 다음 화를 누르면 넘어가자마자 그 회차를 들려 준다', async ({ page }) => {
@@ -329,9 +372,10 @@ test('녹음이 없는 회차는 막대에 준비 중만 보이고 글은 그대
 })
 
 for (const id of ['ep06', 'ep08', 'ep11', 'ep13', 'ep14', 'ep15']) {
-  test(`${id}의 본문 삽화를 옮겨도 플레이어 대표 그림은 기존 표지를 유지한다`, async ({ page }) => {
+  test(`${id}의 본문 삽화와 플레이어에 등록한 대표 그림을 연결한다`, async ({ page }) => {
     await page.goto(`read/${id}.html`)
-    const representative = page.locator(`[data-illustration="${id}-01"]`)
+    const representativeId = id === 'ep11' ? 'ep11-family-care' : `${id}-01`
+    const representative = page.locator(`[data-illustration="${representativeId}"]`)
     if (id === 'ep11') {
       const followsProse = await page.locator('.story-content p').first().evaluate((paragraph, imageId) => {
         const figure = document.querySelector(`[data-illustration="${imageId}"]`)!
@@ -343,10 +387,10 @@ for (const id of ['ep06', 'ep08', 'ep11', 'ep13', 'ep14', 'ep15']) {
     }
     await expect.poll(() => representative.locator('img').evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true)
     const thumb = bar(page).locator('img.player-thumb')
-    await expect(thumb).toHaveAttribute('src', new RegExp(`/audiobooks/images/episodes/${id}-01-`))
+    await expect(thumb).toHaveAttribute('src', new RegExp(`/audiobooks/images/episodes/${representativeId}-`))
     await expect(thumb).toHaveAttribute('src', await representative.locator('img').evaluate((image: HTMLImageElement) => image.currentSrc))
     await openSheet(page)
-    await expect(sheet(page).locator('.player-sheet-art')).toHaveAttribute('src', `/audiobooks/images/episodes/${id}-01-720.jpg`)
+    await expect(sheet(page).locator('.player-sheet-art')).toHaveAttribute('src', `/audiobooks/images/episodes/${representativeId}-720.jpg`)
   })
 }
 
