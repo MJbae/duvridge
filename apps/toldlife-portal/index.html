@@ -61,15 +61,16 @@
     .big-button { display: flex; align-items: center; justify-content: center; gap: 8px; height: 54px; padding: 0 20px; border-radius: 12px; background: var(--gold); color: var(--night); font-size: 1rem; font-weight: 600; white-space: nowrap; }
     .big-button:hover { background: var(--gold-hover); }
     .big-button svg { flex-shrink: 0; }
-    /* Works: the cover's shape tells the series apart — tall for novels, square for audio, wide for video. */
-    .works { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px 10px; margin: 0; padding: 32px 20px 40px; list-style: none; }
-    .works--wide { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .works a { display: flex; flex-direction: column; gap: 7px; }
-    .works img { width: 100%; height: auto; object-fit: cover; object-position: 50% 50%; border-radius: 6px; background: var(--raised); }
-    .works--poster img { aspect-ratio: 2 / 3; }
-    .works--square img { aspect-ratio: 1 / 1; }
-    .works--wide img { aspect-ratio: 16 / 9; }
-    .works span { font-size: 0.8125rem; font-weight: 600; line-height: 1.35; }
+    /* Works: the same cells in every tab, large while there are few; the last cell invites the next original. */
+    .works { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 10px; margin: 0; padding: 32px 20px 40px; list-style: none; }
+    .works a { display: flex; flex-direction: column; gap: 8px; }
+    .works img { width: 100%; height: auto; aspect-ratio: 2 / 3; object-fit: cover; object-position: 50% 50%; border-radius: 8px; background: var(--raised); }
+    .work-name { font-size: 0.9375rem; font-weight: 600; line-height: 1.35; }
+    .invite-card { display: flex; flex-direction: column; justify-content: space-between; aspect-ratio: 2 / 3; padding: 18px 16px; border: 1px solid #2c303b; border-radius: 8px; background: var(--raised); }
+    .invite-dot { width: 10px; height: 10px; border-radius: 5px; background: var(--gold); }
+    .invite-line { font-family: var(--face-title); font-size: 1.25rem; font-weight: 700; line-height: 1.4; letter-spacing: -0.01em; }
+    .work-invite .work-name { color: var(--gold); }
+    .work-invite:hover .work-name { color: var(--gold-hover); }
     .foot { display: none; }
     @media (min-width: 900px) {
       .head { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 12px 40px; max-width: 1200px; min-height: 72px; margin: 0 auto; padding: 0 clamp(20px, 4vw, 40px); }
@@ -82,9 +83,8 @@
       .hero-copy { position: relative; inset: auto; max-width: 1200px; min-height: 440px; margin: 0 auto; padding: 64px clamp(20px, 4vw, 40px) 48px; justify-content: flex-end; align-items: flex-start; gap: 24px; }
       .hero-title { max-width: 9em; font-size: clamp(2.25rem, 4.4vw, 3.5rem); line-height: 1.14; text-wrap: balance; }
       .big-button { min-width: 240px; padding: 0 28px; }
-      .works { grid-template-columns: repeat(auto-fill, minmax(min(160px, 100%), 1fr)); gap: 28px 16px; max-width: 1200px; margin: 0 auto; padding: 40px clamp(20px, 4vw, 40px) 64px; }
-      .works--wide { grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr)); }
-      .works span { font-size: 0.9375rem; }
+      .works { grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr)); gap: 28px 16px; max-width: 1200px; margin: 0 auto; padding: 40px clamp(20px, 4vw, 40px) 64px; }
+      .work-name { font-size: 1rem; }
       .foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; max-width: 1200px; margin: 0 auto; padding: 20px clamp(20px, 4vw, 40px) 28px; border-top: 1px solid var(--line); color: var(--gray); font-size: 0.75rem; }
     }
   </style>

@@ -16,8 +16,8 @@ test('format roots open the right portal tab and the old video fragment works', 
     await page.goto(`/${format}/`)
     await expect(page).toHaveURL(new RegExp(`\\?tab=${format}$`))
     await expect(page.locator('.panel.is-active')).toHaveAttribute('id', format)
-    await expect(page.locator('.panel.is-active .works a')).toHaveCount(2)
-    await page.locator('.panel.is-active .works a').nth(1).click()
+    await expect(page.locator('.panel.is-active .works a:not(.work-invite)')).toHaveCount(2)
+    await page.locator('.panel.is-active .works a:not(.work-invite)').nth(1).click()
     await expect(page).toHaveURL(new RegExp(`/${format}/url-rehearsal/$`))
     await expect(page.getByRole('heading', { name: '주소 검증 작품', exact: true })).toBeVisible()
   }

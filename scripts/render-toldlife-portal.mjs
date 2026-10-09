@@ -51,7 +51,9 @@ function portalRuntime(works) {
 }
 export function renderPortal(works) {
   if (!works.length) throw new Error('포털에 공개할 작품이 없습니다.')
-  const panels = Object.entries({ novels: ['오리지널 시리즈', '읽기', 'poster'], audiobooks: ['오디오북', '듣기', 'square'], videos: ['영상', '보기', 'wide'] }).map(([format, [label, verb, shape]]) => {
+  // Every tab lists works in the same cells; the last one invites a life to become the next original.
+  const invite = '<li><a class="work-invite" href="https://www.duvridge.com/ko/#services"><span class="invite-card"><span class="invite-dot" aria-hidden="true"></span><span class="invite-line">살아낸 삶이<br>원작이 됩니다</span></span><span class="work-name">원작 의뢰하기</span></a></li>'
+  const panels = Object.entries({ novels: ['오리지널 시리즈', '읽기'], audiobooks: ['오디오북', '듣기'], videos: ['영상', '보기'] }).map(([format, [label, verb]]) => {
     const featured = works[0]
     const home = `/${format}/${featured.id}/`
     const first = featured.episodes.find(episode => format === 'novels' || episode.recorded)
@@ -60,9 +62,9 @@ export function renderPortal(works) {
     const srcset = sources => sources.map(source => `/novels${source.src} ${source.width}w`).join(', ')
     const list = works.map(work => {
       const image = work.cover.src || work.cover.sources.find(source => source.width === 720)?.src || work.cover.sources[0].src
-      return `<li><a href="/${format}/${escape(work.id)}/"><img src="/novels${escape(image)}" width="${work.cover.width}" height="${work.cover.height}" alt="${escape(work.cover.alt)}" loading="lazy"><span>${escape(work.title)}</span></a></li>`
-    }).join('')
-    return `<section id="${format}" class="panel${format === 'novels' ? ' is-active' : ''}" aria-label="${label}"><div class="hero"><a class="hero-art" href="${home}" tabindex="-1" aria-hidden="true"><picture>${featured.cover.webpSources?.length ? `<source type="image/webp" srcset="${escape(srcset(featured.cover.webpSources))}" sizes="100vw">` : ''}<img src="${escape(src)}" srcset="${escape(srcset(featured.cover.sources))}" sizes="100vw" width="${featured.cover.width}" height="${featured.cover.height}" alt="" ${format === 'novels' ? 'fetchpriority="high"' : 'loading="lazy"'}></picture></a><div class="hero-copy"><h2 class="hero-title"><a href="${home}">${escape(featured.title)}</a></h2><a class="big-button" href="${home}${first?.id ?? ''}" data-action="${format}" data-work="${featured.id}">${icons[format]}<span>${first ? `처음부터 ${verb}` : '준비 중'}</span></a></div></div><ul class="works works--${shape}" aria-label="작품">${list}</ul></section>`
+      return `<li><a href="/${format}/${escape(work.id)}/"><img src="/novels${escape(image)}" width="${work.cover.width}" height="${work.cover.height}" alt="${escape(work.cover.alt)}" loading="lazy"><span class="work-name">${escape(work.title)}</span></a></li>`
+    }).join('') + invite
+    return `<section id="${format}" class="panel${format === 'novels' ? ' is-active' : ''}" aria-label="${label}"><div class="hero"><a class="hero-art" href="${home}" tabindex="-1" aria-hidden="true"><picture>${featured.cover.webpSources?.length ? `<source type="image/webp" srcset="${escape(srcset(featured.cover.webpSources))}" sizes="100vw">` : ''}<img src="${escape(src)}" srcset="${escape(srcset(featured.cover.sources))}" sizes="100vw" width="${featured.cover.width}" height="${featured.cover.height}" alt="" ${format === 'novels' ? 'fetchpriority="high"' : 'loading="lazy"'}></picture></a><div class="hero-copy"><h2 class="hero-title"><a href="${home}">${escape(featured.title)}</a></h2><a class="big-button" href="${home}${first?.id ?? ''}" data-action="${format}" data-work="${featured.id}">${icons[format]}<span>${first ? `처음부터 ${verb}` : '준비 중'}</span></a></div></div><ul class="works" aria-label="작품">${list}</ul></section>`
   }).join('\n')
   const script = `<script>const workStorageKey=${workStorageKey.toString()};const migrateWorkStorage=${migrateWorkStorage.toString()};(${portalRuntime.toString()})(${safeJson(works)});</script>`
   return readFileSync(template, 'utf8').replace('<!-- work-panels -->', panels).replace('<!-- work-script -->', script)

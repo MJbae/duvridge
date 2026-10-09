@@ -33,3 +33,13 @@ test('portal video tab keeps the legacy alias and exposes the new work route', (
   assert.match(portal, /data-tab="videos"/)
   assert.match(portal, /value === 'video' \? 'videos'/)
 })
+
+test('every tab lists works in the same cells and ends with the invitation to the next original', () => {
+  for (const format of ['novels', 'audiobooks', 'videos']) {
+    const panel = portal.match(new RegExp(`<section id="${format}"[\\s\\S]*?</section>`))[0]
+    assert.match(panel, /<ul class="works" aria-label="작품">/)
+    assert.match(panel, /<a class="work-invite" href="https:\/\/www\.duvridge\.com\/ko\/#services">/)
+    assert.match(panel, /살아낸 삶이<br>원작이 됩니다/)
+  }
+  assert.doesNotMatch(portal, /works--(?:poster|square|wide)/)
+})
