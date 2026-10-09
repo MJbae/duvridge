@@ -38,7 +38,9 @@
       "assembleCommand": [
         "python3",
         "scripts/assemble-toldlife-pages.py",
-        "--skip-build"
+        "--skip-build",
+        "--video-media",
+        "release"
       ],
       "smokePaths": [
         "/",

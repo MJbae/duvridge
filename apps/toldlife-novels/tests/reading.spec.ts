@@ -7,6 +7,11 @@ async function noOverflow(page: Page) { expect(await page.evaluate(() => documen
 const bigButton = (page: Page) => page.locator('.work-action .big-button')
 const quiet = (page: Page) => page.addInitScript(() => localStorage.setItem('family-library:music', JSON.stringify({ enabled: false })))
 const fontSize = (page: Page) => page.locator('.story-content p').first().evaluate(element => parseFloat(getComputedStyle(element).fontSize))
+// How far a row sits from the middle of the screen.
+const offCenter = (page: Page, selector: string) => page.locator(selector).evaluate(element => {
+  const box = element.getBoundingClientRect()
+  return Math.abs(box.top + box.height / 2 - innerHeight / 2)
+})
 
 test('작품 홈은 키아트·제목·큰 버튼 하나와 회차 목록만 보여 준다', async ({ page }) => {
   await quiet(page)
@@ -15,31 +20,29 @@ test('작품 홈은 키아트·제목·큰 버튼 하나와 회차 목록만 보
   await expect(page.getByRole('heading', { level: 1, name: rawCatalog.work.title })).toBeVisible()
   await expect(bigButton(page)).toHaveText('처음부터 읽기')
   await expect(bigButton(page)).toHaveAttribute('href', '/novels/bae-byunghee/prolog')
-  await expect(page.locator('.episode-item')).toHaveCount(26)
-  await expect(page.locator('.episode-item:visible')).toHaveCount(5)
+  // Every episode is in one scrolling list, each with its painting.
+  await expect(page.locator('.episode-item:visible')).toHaveCount(26)
+  await expect(page.locator('.episode-list')).toHaveClass(/is-pictured/)
+  await expect(page.locator('.episode-item .episode-thumb img')).toHaveCount(26)
+  await expect(page.getByRole('button', { name: '전체 회차 보기' })).toHaveCount(0)
   await expect(page.locator('.round-action.is-current')).toHaveCount(0)
   await expect(page.getByText(/듣기/)).toHaveCount(0)
   await expect(page.locator('.work-synopsis, .place-heading, .settings-button')).toHaveCount(0)
-  await page.getByRole('button', { name: '전체 회차 보기' }).click()
-  await expect(page.locator('.episode-item:visible')).toHaveCount(26)
   await noOverflow(page)
 })
 
-test('읽기 화면 위 막대는 뒤로·회차 제목·설정뿐이고, 제목을 누르면 목차가 열린다', async ({ page }) => {
+test('읽기 화면 위 막대는 뒤로·회차 제목·설정뿐이고, 뒤로 가면 읽던 회차가 목록 가운데 온다', async ({ page }) => {
   await quiet(page)
   await page.goto('ep03')
   await expect(page).toHaveTitle(`3화 열두 자리 숫자 · ${rawCatalog.work.title}`)
-  await expect(page.locator('.reader-bar a, .reader-bar button')).toHaveCount(3)
+  await expect(page.locator('.reader-bar a, .reader-bar button')).toHaveCount(2)
   await expect(page.locator('.reader-title')).toHaveText('3화 열두 자리 숫자')
-  await expect(page.locator('.reader-back')).toHaveAttribute('href', '/novels/bae-byunghee/#episode-ep03')
   await page.locator('.reader-title').click()
-  const toc = page.getByRole('dialog', { name: '목차' })
-  await expect(toc).toBeVisible()
-  await expect(toc.getByRole('link')).toHaveCount(26)
-  await expect(toc.locator('[aria-current="page"]')).toHaveText('3화 열두 자리 숫자')
-  await toc.getByRole('link', { name: '4화 천수만의 돌풍' }).click()
-  await expect(page).toHaveURL(/bae-byunghee\/ep04$/)
-  await expect(page.locator('.reader-title')).toHaveText('4화 천수만의 돌풍')
+  await expect(page.getByRole('dialog', { name: '목차' })).toHaveCount(0)
+  await expect(page.locator('.reader-back')).toHaveAttribute('href', '/novels/bae-byunghee/#episode-ep03')
+  await page.locator('.reader-back').click()
+  await expect(page).toHaveURL(/bae-byunghee\/#episode-ep03$/)
+  await expect.poll(() => offCenter(page, '#episode-ep03')).toBeLessThan(40)
   await noOverflow(page)
 })
 
@@ -78,16 +81,17 @@ test('본문을 누르면 위아래 막대가 숨고 얇은 진행선만 남는�
   await expect(page.locator('.library')).not.toHaveClass(/chrome-hidden/)
 })
 
-test('회차 끝에는 다음 화 그림·제목과 큰 버튼만 있고, 다 읽으면 작품 홈이 다음 화를 권한다', async ({ page }) => {
+test('회차 끝에는 다음 화 큰 버튼과 그 아래 이전 화만 있고, 다 읽으면 작품 홈이 다음 화를 권한다', async ({ page }) => {
   await quiet(page)
   await page.goto('ep01')
   await page.locator('.episode-end').scrollIntoViewIfNeeded()
-  const next = page.locator('.next-episode')
-  await expect(next.locator('.next-title')).toHaveText('2화 책보 대신 지게')
-  await expect(next.locator('.big-button')).toHaveText('2화 읽기')
-  await expect(next.locator('.big-button')).toHaveAttribute('href', '/novels/bae-byunghee/ep02')
-  await expect(next.locator('img')).toHaveAttribute('alt', /책보 대신 지게/)
-  await expect(page.locator('.previous-episode')).toHaveCount(0)
+  const nav = page.locator('.episode-nav')
+  await expect(nav.locator('.big-button')).toHaveText('다음 화')
+  await expect(nav.locator('.big-button')).toHaveAttribute('href', '/novels/bae-byunghee/ep02')
+  await expect(nav.locator('.episode-back')).toHaveText('이전 화')
+  await expect(nav.locator('.episode-back')).toHaveAttribute('href', '/novels/bae-byunghee/prolog')
+  // The next episode's painting and title are not shown.
+  await expect(page.locator('.episode-end img, .next-title, .next-art')).toHaveCount(0)
   await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('family-library:bae-byunghee:completed') || '[]'))).toContain('ep01')
   await page.goto('./')
   await expect(bigButton(page)).toHaveText('2화 읽기')
@@ -111,13 +115,22 @@ test('읽던 곳은 작품 홈 버튼과 진행 막대에 남고, 이어 읽으�
   await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(800)
 })
 
-test('마지막 회차는 끝 표시와 전체 회차 보기로 마친다', async ({ page }) => {
+test('마지막 회차는 끝 표시와 흐린 다음 화로 마치고, 이전 화로는 돌아갈 수 있다', async ({ page }) => {
   await quiet(page)
   await page.goto('side')
   await page.locator('.episode-end').scrollIntoViewIfNeeded()
   await expect(page.locator('.story-end')).toHaveText('끝')
-  await expect(page.locator('.next-episode .big-button')).toHaveText('전체 회차 보기')
-  await expect(page.locator('.next-title')).toHaveCount(0)
+  await expect(page.locator('.episode-nav .big-button')).toHaveText('다음 화')
+  await expect(page.locator('.episode-nav .big-button')).toBeDisabled()
+  await expect(page.locator('.episode-nav .episode-back')).toHaveAttribute('href', '/novels/bae-byunghee/epilog')
+})
+
+test('첫 회차의 이전 화는 흐리게 자리만 지킨다', async ({ page }) => {
+  await quiet(page)
+  await page.goto('prolog')
+  await page.locator('.episode-end').scrollIntoViewIfNeeded()
+  await expect(page.locator('.episode-nav .episode-back')).toBeDisabled()
+  await expect(page.locator('.episode-nav .big-button')).toHaveAttribute('href', '/novels/bae-byunghee/ep01')
 })
 
 test('옛 연대 읽기 기록을 새 회차의 제목과 주소로 이어 읽는다', async ({ page }) => {
@@ -171,7 +184,8 @@ for (const [episodeId, oldTitle] of [['ep05', '미꾸라지 칼국수'], ['ep11'
     }, { id: episode.id, title: oldTitle, url: `/novels${episode.url}` })
     await page.goto('./')
     const row = page.locator(`#episode-${episodeId}`)
-    await expect(row.locator('.episode-name')).toContainText(`${episode.label} ${episode.title}`)
+    await expect(row.locator('.episode-label')).toHaveText(episode.label)
+    await expect(row.locator('.episode-title')).toContainText(episode.title)
     await expect(row).toHaveAttribute('href', `/novels${episode.url}`)
     await expect(row).toHaveAttribute('aria-current', 'true')
     await expect(bigButton(page)).toHaveText(`${episode.label} 이어 읽기`)

@@ -2,12 +2,15 @@
 """Build the monorepo's complete ToldLife project into an isolated upload folder."""
 
 import argparse
+import hashlib
 import json
 import os
 from pathlib import Path
 import shutil
 import subprocess
 import tempfile
+import time
+import urllib.request
 from xml.sax.saxutils import escape
 from urllib.parse import urlsplit
 
@@ -87,7 +90,57 @@ def redirect_rules(staged, services):
     return [{"from": source, "to": target, "status": 301} for source, target in sorted(rules.items())]
 
 
-def assemble(output, services):
+def video_manifests(books=ROOT / "content/books"):
+    """Each book's published videos: the list, with its book ID, from content/books/<book>/video/media.json."""
+    for manifest in sorted(Path(books).glob("*/video/media.json")):
+        book = json.loads((manifest.parent.parent / "book.json").read_text(encoding="utf-8"))["id"]
+        yield book, json.loads(manifest.read_text(encoding="utf-8"))
+
+
+def check_video(path, video):
+    digest = hashlib.sha256()
+    with open(path, "rb") as stream:
+        for chunk in iter(lambda: stream.read(1 << 20), b""):
+            digest.update(chunk)
+    if path.stat().st_size != video["bytes"] or digest.hexdigest() != video["sha256"]:
+        raise ValueError(f"Video differs from its published list: {path.name}")
+
+
+def add_video_media(staged, source, books=ROOT / "content/books"):
+    """Videos are published apart from Git. Copy them from a folder, or fetch them from the release the
+    book's video list names, and accept each only when its size and SHA-256 match that list."""
+    if not source or source == "none":
+        return 0
+    added = 0
+    for book, manifest in video_manifests(books):
+        release = manifest.get("release", {})
+        for episode, video in manifest.get("videos", {}).items():
+            target = staged / "videos/works" / book / "media" / video["file"]
+            target.parent.mkdir(parents=True, exist_ok=True)
+            if source == "release":
+                url = f"https://github.com/{release['repository']}/releases/download/{release['tag']}/{video['file']}"
+                for attempt in range(3):
+                    try:
+                        with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "duvridge-deploy/1.0"}), timeout=120) as response, open(target, "wb") as stream:
+                            shutil.copyfileobj(response, stream, 1 << 20)
+                        check_video(target, video)
+                        break
+                    except Exception:
+                        if attempt == 2:
+                            raise
+                        time.sleep(5)
+            else:
+                folder = Path(source)
+                found = next((candidate for candidate in (folder / video["file"], folder / f"{episode}.mp4") if candidate.is_file()), None)
+                if not found:
+                    raise ValueError(f"Video file missing for {book}/{episode}: {video['file']}")
+                shutil.copyfile(found, target)
+                check_video(target, video)
+            added += 1
+    return added
+
+
+def assemble(output, services, video_media=None):
     expected_bases = {service["siteBase"] for service in REGISTRY["services"]
                       if service["deployGroup"] == "toldlife" and service.get("artifactPath")}
     bases = [base for base, _ in services]
@@ -121,6 +174,7 @@ def assemble(output, services):
                 else:
                     relative = relative.removesuffix(".html")
                 urls.append(SITE_ORIGIN + base + relative)
+        videos = add_video_media(staged, video_media)
         (staged / "robots.txt").write_text(f"User-agent: *\nAllow: /\n\nSitemap: {SITE_ORIGIN}/sitemap.xml\n")
         (staged / "sitemap.xml").write_text(
             '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
@@ -143,6 +197,7 @@ def assemble(output, services):
             "sourceDirty": bool(subprocess.check_output(["git", "-C", str(ROOT), "status", "--porcelain"], text=True).strip()),
             "services": [{"base": base, "files": sum(file.is_file() for file in dist.rglob("*"))}
                          for base, dist in services],
+            "videos": videos,
         }, indent=2) + "\n", encoding="utf-8")
         files = [file for file in staged.rglob("*") if file.is_file()]
         if len(files) > 20000:
@@ -165,6 +220,7 @@ def main():
     parser.add_argument("--github-vars", action="store_true", help="Load public Firebase settings from the monorepo's GitHub variables.")
     parser.add_argument("--skip-build", action="store_true", help="Assemble already-built and checked service outputs.")
     parser.add_argument("--output", type=Path, default=ROOT / REGISTRY["deployGroups"]["toldlife"]["output"])
+    parser.add_argument("--video-media", default="none", help="Where the published videos come from: none, release, or a folder holding them.")
     args = parser.parse_args()
     services = []
     for service in REGISTRY["services"]:
@@ -183,7 +239,7 @@ def main():
         dist = (ROOT / service["artifactPath"] if source == default_source
                 else source / Path(service["artifactPath"]).relative_to(service["path"]))
         services.append((base, dist))
-    assemble(args.output, services)
+    assemble(args.output, services, args.video_media)
 
 
 if __name__ == "__main__":

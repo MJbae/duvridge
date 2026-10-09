@@ -1,21 +1,21 @@
 <script setup lang="ts">
 import { workStorageKey, migrateWorkStorage } from '@duvridge/reader-ui/state/work-storage.mjs'
-import { computed, onMounted, provide, ref } from 'vue'
+import { computed, onMounted, provide, ref, watch } from 'vue'
 import { useData, withBase } from 'vitepress'
 import ReaderIcon from '@duvridge/reader-ui/components/ReaderIcon.vue'
 import WorkHome, { type WorkRow } from '@duvridge/reader-ui/components/WorkHome.vue'
-import { episodeName, episodeThumb, progressPercent } from '@duvridge/reader-ui/series/work-rows.mjs'
+import { episodeThumb, progressPercent } from '@duvridge/reader-ui/series/work-rows.mjs'
 import { imageSrcset } from '@duvridge/reader-ui/images/create-image-sources.mjs'
 import { listenAction } from '../shared/playback-selection.mjs'
 import TheaterPlayer from './components/TheaterPlayer.vue'
 import SceneArt from './components/SceneArt.vue'
-import { followsHere, narrationKey, useNarration, type NarrationMode } from './lib/narration-controller'
+import { followsHere, narrationKey, useNarration, videoElementKey, type NarrationMode } from './lib/narration-controller'
 import { useCatalogHelpers } from './lib/reader-catalog'
 import { migrateCompleted, migrateReading } from '../shared/reading-history.mjs'
 const { catalog, episodeImage, workHome, episodePath, narrationFor } = useCatalogHelpers()
 const key = (kind: string) => workStorageKey(catalog.work.id, kind)
 const { frontmatter, page, site } = useData()
-// This app owns video playback, captions and scene interaction.
+// This app owns video playback and scene interaction; the subtitles are part of each video.
 const mode = computed<NarrationMode>(() => 'watch')
 const isMissing = computed(() => Boolean(page.value.isNotFound))
 const view = computed(() => {
@@ -25,10 +25,11 @@ const view = computed(() => {
   return frontmatter.value.kind === 'episode' ? 'episode' : 'missing'
 })
 const pageEpisode = computed(() => (view.value === 'episode' ? String(frontmatter.value.pageId || '') : ''))
-const narrationAudio = ref<HTMLAudioElement>()
+const narrationVideo = ref<HTMLVideoElement>()
 const completed = ref<string[]>([])
-const narration = useNarration({ audio: narrationAudio, page: pageEpisode, mode, onFinish: markCompleted })
+const narration = useNarration({ media: narrationVideo, page: pageEpisode, mode, onFinish: markCompleted })
 provide(narrationKey, narration)
+provide(videoElementKey, narrationVideo)
 const { state } = narration
 const pendingEpisode = computed(() => (view.value === 'episode' && !narrationFor(pageEpisode.value) ? catalog.readingOrder.find(entry => entry.id === pageEpisode.value) : undefined))
 function writeStorage(key: string, value: string) { try { localStorage.setItem(key, value) } catch { /* optional */ } }
@@ -44,7 +45,7 @@ function markCompleted(id: string) {
 const verb = computed(() => (mode.value === 'watch' ? '보기' : '듣기'))
 const position = computed(() => (state.active ? { id: state.episodeId, time: state.time } : state.saved))
 const action = computed(() => {
-  const found = listenAction({ readingOrder: catalog.readingOrder, narration: catalog.narration ?? {}, saved: position.value, completed: completed.value })
+  const found = listenAction({ readingOrder: catalog.readingOrder, narration: catalog.video ?? {}, saved: position.value, completed: completed.value })
   if (!found) return { label: '준비 중', id: '', current: false }
   const episode = catalog.readingOrder.find(entry => entry.id === found.id)!
   const label = { resume: `${episode.label} 이어 ${verb.value}`, next: `${episode.label} ${verb.value}`, start: `처음부터 ${verb.value}`, again: `처음부터 다시 ${verb.value}` }[found.kind]
@@ -56,7 +57,8 @@ const rows = computed<WorkRow[]>(() => catalog.readingOrder.map(entry => {
   const heard = completed.value.includes(entry.id)
   return {
     id: entry.episodeId || entry.id,
-    name: episodeName(entry),
+    label: entry.label,
+    title: entry.title,
     href: track ? episodePath(entry.id) : undefined,
     thumb: episodeThumb(catalog.illustrations, entry.episodeId || entry.id, withBase),
     progress: heard && !resume ? 100 : resume && track ? progressPercent(position.value!.time / track.duration) : 0,
@@ -81,6 +83,9 @@ function openRow(event: MouseEvent, row: WorkRow) {
   if (entry && followsHere(event)) narration.open(entry.id)
 }
 
+// Back on the episode list, the video stops; its place is kept for 이어 보기.
+watch(view, value => { if (value === 'home' && state.active) narration.stop() })
+
 onMounted(() => {
   try { migrateWorkStorage(localStorage, catalog.work) } catch { /* Browser storage is optional. */ }
   completed.value = migrateCompleted(catalog, readJson(key('completed')))
@@ -93,10 +98,10 @@ onMounted(() => {
 <template>
   <div class="library page-theater">
     <a class="skip-link" href="#main">본문으로 건너뛰기</a>
-    <audio ref="narrationAudio" class="narration-audio" preload="none" />
     <WorkHome v-if="view === 'home'" :series="mode === 'watch' ? 'video' : 'audio'" :title="catalog.work.title" :art="art"
       :action="{ label: action.label, href: action.id ? episodePath(action.id) : undefined }" :rows="rows" @action="openAction" @select="openRow" />
-    <TheaterPlayer v-else-if="view === 'episode' && !pendingEpisode && mode === 'watch'" :key="pageEpisode" :episode-id="pageEpisode" />
+    <!-- One player for every episode, so its video element carries on into the next episode. -->
+    <TheaterPlayer v-else-if="view === 'episode' && !pendingEpisode && mode === 'watch'" :episode-id="pageEpisode" />
     <div v-else-if="pendingEpisode" class="listen-page">
       <header class="listen-bar">
         <a class="listen-icon" :href="workHome(pendingEpisode.episodeId || pendingEpisode.id)" aria-label="작품 홈으로"><ReaderIcon name="chevron-down" :size="24" :stroke="1.9" /></a>

@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted } from 'vue'
 import ReaderIcon from './ReaderIcon.vue'
 import { seriesHomeHref, seriesIcons, seriesLinks, type SeriesKey } from '../series/series-tabs.mjs'
-import { episodeWindow, type Thumb } from '../series/work-rows.mjs'
+import type { Thumb } from '../series/work-rows.mjs'
 
 export type WorkArt = { src: string; srcset: string; webpSrcset?: string; alt: string; width: number; height: number }
 export type WorkRow = {
   id: string
-  name: string
+  /** '3화', '프롤로그'; empty for a page without one. */
+  label: string
+  title: string
   /** No address means the episode is not out in this format yet. */
   href?: string
   thumb?: Thumb
@@ -22,11 +24,17 @@ const emit = defineEmits<{ action: [event: MouseEvent]; select: [event: MouseEve
 const icon = computed(() => seriesIcons[props.series])
 const iconSize = computed(() => (props.series === 'video' ? 18 : 20))
 const links = computed(() => seriesLinks(props.series))
-const expanded = ref(false)
-const currentIndex = computed(() => props.rows.findIndex(row => row.current))
-const range = computed(() => episodeWindow(props.rows.length, currentIndex.value))
-const folded = computed(() => !expanded.value && props.rows.length > range.value.end - range.value.start)
-const shown = (index: number) => !folded.value || (index >= range.value.start && index < range.value.end)
+// Every row shows its painting, or none does: one list never mixes the two looks.
+const pictured = computed(() => props.rows.length > 0 && props.rows.every(row => row.thumb))
+
+/** Back from an episode, the address names its row; that row comes to the middle of the screen. */
+function centerReturnedRow() {
+  const id = location.hash.match(/^#episode-([A-Za-z0-9_-]+)$/)?.[1]
+  const row = id ? document.getElementById(`episode-${id}`) : null
+  row?.scrollIntoView({ block: 'center', behavior: 'instant' })
+}
+// VitePress scrolls an address's anchor to the top once the page renders; centring follows it.
+onMounted(() => requestAnimationFrame(() => requestAnimationFrame(centerReturnedRow)))
 </script>
 
 <template>
@@ -54,37 +62,37 @@ const shown = (index: number) => !folded.value || (index >= range.value.start &&
       </section>
       <section class="work-episodes" aria-labelledby="episodes-title">
         <h2 id="episodes-title">회차</h2>
-        <div class="episode-list">
-          <template v-for="(row, index) in rows" :key="row.id">
-            <a v-if="row.href" :id="`episode-${row.id}`" class="episode-item" :href="row.href" :hidden="!shown(index) || undefined"
+        <div class="episode-list" :class="pictured ? 'is-pictured' : 'is-text'">
+          <template v-for="row in rows" :key="row.id">
+            <a v-if="row.href" :id="`episode-${row.id}`" class="episode-item" :class="{ 'is-current': row.current, 'is-done': row.progress >= 100 }" :href="row.href"
               :aria-current="row.current ? 'true' : undefined" @click="emit('select', $event, row)">
-              <span class="episode-thumb">
-                <picture v-if="row.thumb">
-                  <source v-if="row.thumb.webpSrcset" type="image/webp" :srcset="row.thumb.webpSrcset" sizes="(min-width: 900px) 240px, 96px" />
-                  <img :src="row.thumb.src" :srcset="row.thumb.srcset" sizes="(min-width: 900px) 240px, 96px" :alt="row.thumb.alt" loading="lazy" decoding="async" width="360" height="203" />
+              <span v-if="pictured && row.thumb" class="episode-thumb">
+                <picture>
+                  <source v-if="row.thumb.webpSrcset" type="image/webp" :srcset="row.thumb.webpSrcset" sizes="(min-width: 900px) 240px, 128px" />
+                  <img :src="row.thumb.src" :srcset="row.thumb.srcset" sizes="(min-width: 900px) 240px, 128px" :alt="row.thumb.alt" loading="lazy" decoding="async" width="360" height="203" />
                 </picture>
                 <span class="episode-progress" aria-hidden="true"><span :style="{ width: `${row.progress}%` }" /></span>
               </span>
               <span class="episode-line">
-                <span class="episode-name">{{ row.name }}<span class="sr-only">, {{ row.actionLabel }}</span></span>
-                <span class="round-action" :class="{ 'is-current': row.current }" aria-hidden="true"><ReaderIcon :name="icon" :size="iconSize" :stroke="1.9" /></span>
+                <span class="episode-text"><span v-if="row.label" class="episode-label">{{ row.label }}</span><span class="episode-title">{{ row.title }}<span class="sr-only">, {{ row.actionLabel }}</span></span></span>
+                <span v-if="row.current" class="round-action is-current" aria-hidden="true"><ReaderIcon :name="icon" :size="iconSize" :stroke="1.9" /></span>
               </span>
+              <span v-if="!pictured && row.current" class="episode-progress" aria-hidden="true"><span :style="{ width: `${row.progress}%` }" /></span>
             </a>
-            <div v-else :id="`episode-${row.id}`" class="episode-item is-waiting" :hidden="!shown(index) || undefined">
-              <span class="episode-thumb">
-                <picture v-if="row.thumb">
-                  <source v-if="row.thumb.webpSrcset" type="image/webp" :srcset="row.thumb.webpSrcset" sizes="(min-width: 900px) 240px, 96px" />
-                  <img :src="row.thumb.src" :srcset="row.thumb.srcset" sizes="(min-width: 900px) 240px, 96px" :alt="row.thumb.alt" loading="lazy" decoding="async" width="360" height="203" />
+            <div v-else :id="`episode-${row.id}`" class="episode-item is-waiting">
+              <span v-if="pictured && row.thumb" class="episode-thumb">
+                <picture>
+                  <source v-if="row.thumb.webpSrcset" type="image/webp" :srcset="row.thumb.webpSrcset" sizes="(min-width: 900px) 240px, 128px" />
+                  <img :src="row.thumb.src" :srcset="row.thumb.srcset" sizes="(min-width: 900px) 240px, 128px" :alt="row.thumb.alt" loading="lazy" decoding="async" width="360" height="203" />
                 </picture>
               </span>
               <span class="episode-line">
-                <span class="episode-name">{{ row.name }}</span>
+                <span class="episode-text"><span v-if="row.label" class="episode-label">{{ row.label }}</span><span class="episode-title">{{ row.title }}</span></span>
                 <span class="pending-pill">준비 중</span>
               </span>
             </div>
           </template>
         </div>
-        <button v-if="folded" type="button" class="episodes-more" @click="expanded = true">전체 회차 보기</button>
       </section>
     </main>
     <footer class="series-footer"><span>© 2026 duvridge</span><a href="mailto:contact@duvridge.com">문의하기</a></footer>

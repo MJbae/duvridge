@@ -1,7 +1,5 @@
 @import '@duvridge/reader-ui/styles/reader.css';
 
-.narration-audio { display: none; }
-
 /* A seek bar drawn the same everywhere: gold up to the position, a round knob on it. */
 .seek-range { -webkit-appearance: none; appearance: none; display: block; width: 100%; height: 20px; margin: 0; background: transparent; cursor: pointer; }
 .seek-range::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: linear-gradient(to right, var(--gold) var(--seek, 0%), #343846 var(--seek, 0%)); }
@@ -45,24 +43,16 @@ button.lyric-line:hover { color: var(--gray); }
 .listen-tool.is-on span { color: var(--gold); }
 .listen-main > .big-button.is-pending { margin-top: 24px; }
 
-/* The video: the picture on top, its subtitle in a band below it, then scenes and episodes. */
+/* The video: the picture on top with its subtitles inside it, then scenes and episodes. */
 .theater-page { min-height: 100svh; background: var(--night); color: var(--ivory); }
 .stage { position: relative; width: 100%; max-width: 960px; margin: 0 auto; aspect-ratio: 16 / 9; background: #000000; overflow: hidden; }
+.stage-video { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; background: #000000; }
 .stage-frame { position: absolute; inset: 0; cursor: pointer; }
-.stage-art { position: absolute; inset: 0; display: block; overflow: hidden; }
-.stage-art img { transform: scale(1.02); animation: stage-drift 14s ease-in-out infinite alternate; animation-play-state: paused; }
-.stage-art.is-moving img { animation-play-state: running; }
-@keyframes stage-drift { from { transform: scale(1.02); } to { transform: scale(1.1); } }
-@media (prefers-reduced-motion: reduce) { .stage-art img { animation: none; } }
-.scene-enter-active, .scene-leave-active { transition: opacity 700ms ease; }
-.scene-enter-from, .scene-leave-to { opacity: 0; }
 .stage-controls { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between; background: rgb(0 0 0 / 45%); pointer-events: none; }
 .stage-controls button, .stage-controls a, .stage-controls input { pointer-events: auto; }
 .stage-top { display: flex; align-items: center; gap: 6px; padding: 4px 8px 0 4px; }
 .stage-icon { display: grid; place-items: center; width: 48px; height: 48px; flex-shrink: 0; color: #ffffff; }
 .stage-title { flex: 1; min-width: 0; overflow: hidden; font-size: 1rem; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
-.stage-cc { height: 36px; padding: 0 12px; border: 1.5px solid #ffffff; border-radius: 8px; color: #ffffff; font-size: 0.8125rem; font-weight: 600; }
-.stage-cc[aria-pressed='true'] { border-color: transparent; background: #ffffff; color: var(--night); }
 .stage-middle { display: flex; align-items: center; justify-content: center; gap: 44px; }
 .stage-skip { display: grid; place-items: center; width: 52px; height: 52px; color: #ffffff; }
 .stage-play { display: grid; place-items: center; width: 64px; height: 64px; border-radius: 32px; background: rgb(17 19 24 / 60%); color: #ffffff; }
@@ -76,38 +66,34 @@ button.lyric-line:hover { color: var(--gray); }
 .stage-seek::-moz-range-thumb { width: 14px; height: 14px; background: var(--gold); }
 .stage-thin { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: rgb(255 255 255 / 25%); pointer-events: none; }
 .stage-thin span { display: block; height: 100%; background: var(--gold); }
-.stage-caption { position: absolute; left: 120px; right: 120px; bottom: 96px; margin: 0; text-align: center; pointer-events: none; }
-.stage-caption span { padding: 3px 8px; border-radius: 4px; background: rgb(0 0 0 / 70%); color: #ffffff; font-size: 1.1875rem; line-height: 1.6; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
-.is-ended .stage-art { opacity: 0.55; }
+.is-ended .stage-video { opacity: 0.55; }
 .is-ended .stage::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--gold); }
 .stage-end-collapse { position: absolute; left: 4px; top: 4px; }
-.subtitle-band { max-width: 960px; height: 112px; margin: 0 auto; padding: 12px 20px 0; border-top: 1px solid #1a1c22; background: #000000; }
-.subtitle-band p { margin: 0; text-align: center; color: #ffffff; font-size: 1.1875rem; font-weight: 500; line-height: 1.6; }
 .theater-main { max-width: 960px; margin: 0 auto; padding-bottom: calc(40px + env(safe-area-inset-bottom)); }
 .theater-heading { display: flex; flex-direction: column; gap: 4px; padding: 20px 20px 0; }
 .theater-heading h1 { margin: 0; font-family: var(--face-title); font-size: 1.375rem; font-weight: 700; line-height: 1.3; }
 .theater-heading p { margin: 0; color: var(--gray); font-size: 0.875rem; }
 .theater-section { display: flex; flex-direction: column; gap: 12px; margin-top: 28px; padding: 0 20px; }
 .theater-section h2 { margin: 0; font-family: var(--face-title); font-size: 1.125rem; font-weight: 700; line-height: 1.5rem; }
+.theater-section .episode-list { margin-top: -8px; }
+.theater-section .episode-item:last-child { border-bottom: 0; }
 .scene-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .scene-card { display: flex; flex-direction: column; gap: 8px; color: var(--ivory); text-align: left; }
 .scene-thumb { position: relative; display: block; aspect-ratio: 16 / 9; border-radius: 8px; overflow: hidden; background: var(--night-raised); }
+.scene-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .scene-done { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: var(--gold); opacity: 0; }
 .scene-card.is-past .scene-done { opacity: 1; }
 .scene-card.is-current .scene-thumb { box-shadow: 0 0 0 2px var(--gold); }
 .scene-card.is-current { color: var(--gold-hover); }
 .scene-name { display: -webkit-box; overflow: hidden; font-size: 0.9375rem; font-weight: 600; line-height: 1.3125rem; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-.theater-episodes { display: flex; flex-direction: column; margin-top: -8px; }
-.theater-episode { display: flex; align-items: center; gap: 12px; min-height: 56px; border-bottom: 1px solid var(--night-line); color: var(--ivory); font-size: 1rem; font-weight: 600; }
-.theater-episode:last-child { border-bottom: 0; }
-.theater-episode.is-current { color: var(--gold-hover); }
-.theater-episode.is-waiting span:first-child { flex: 1; }
-.theater-end { display: flex; flex-direction: column; padding: 24px 20px 0; }
-.theater-end .next-episode { margin-top: 32px; }
+/* At the end the reactions and 다음 화 sit at the foot of the screen, under the stopped picture and the title. */
+.theater-page.is-ended:not(.is-full) { display: flex; flex-direction: column; }
+.is-ended .theater-main { display: flex; flex: 1; flex-direction: column; width: 100%; }
+.theater-end { display: flex; flex-direction: column; margin-top: auto; padding: 28px 20px 0; }
 
-/* Turned sideways, or asked for: the picture fills the screen and the subtitle sits on it. */
+/* Turned sideways, or asked for: the picture fills the screen. */
 .theater-page.is-full .stage { position: fixed; inset: 0; z-index: 50; max-width: none; aspect-ratio: auto; }
-.theater-page.is-full .stage-art img { object-fit: contain; }
+.theater-page.is-full .stage-video { object-fit: contain; }
 .theater-page.is-full .stage-controls { background: linear-gradient(to bottom, rgb(0 0 0 / 62%) 0%, rgb(0 0 0 / 18%) 28%, rgb(0 0 0 / 18%) 62%, rgb(0 0 0 / 72%) 100%); }
 .theater-page.is-full .stage-top { padding: 8px 16px 0 12px; }
 .theater-page.is-full .stage-middle { gap: 56px; }
@@ -116,12 +102,10 @@ button.lyric-line:hover { color: var(--gray); }
 .theater-page.is-full .stage-bottom { flex-direction: column-reverse; gap: 6px; padding: 0 28px 10px; }
 .theater-page.is-full .stage-row { min-height: 40px; }
 .theater-page.is-full .stage-time { font-size: 0.875rem; }
-.theater-page:not(.is-full) .stage-caption { display: none; }
 .stage:fullscreen { width: 100vw; height: 100vh; max-width: none; aspect-ratio: auto; }
-.stage-end { position: absolute; inset: 0; display: grid; grid-template-columns: minmax(0, 400px) minmax(0, 300px); justify-content: center; align-items: center; gap: 32px; padding: 56px; background: rgb(0 0 0 / 60%); }
+.stage-end { position: absolute; inset: 0; display: grid; grid-template-columns: minmax(0, 360px); justify-content: center; align-items: center; padding: 56px; background: rgb(0 0 0 / 60%); }
 .stage-end-back { position: absolute; left: 12px; top: 8px; }
-.stage-end-art { display: block; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; }
 .stage-end-side { display: flex; flex-direction: column; gap: 24px; }
 .stage-end-side .reaction-options button { height: 64px; background: rgb(28 31 39 / 92%); }
-.stage-end-side .next-episode { margin-top: 0; }
-@media (max-height: 360px) { .stage-end { padding: 40px 48px; gap: 24px; } }
+.stage-end-side .episode-nav { margin-top: 0; }
+@media (max-height: 360px) { .stage-end { padding: 40px 48px; } .stage-end-side { gap: 16px; } }

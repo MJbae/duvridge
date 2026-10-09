@@ -11,3 +11,16 @@ test('video uses work-scoped narration, scene files and every manuscript episode
     assert.equal(track.cues.at(-1)[1], track.duration)
   }
 })
+test('every recorded episode has its video: the recording\'s sentences and scenes in the video\'s own times', () => {
+  assert.deepEqual(Object.keys(catalog.video), Object.keys(catalog.narration))
+  for (const [id, track] of Object.entries(catalog.video)) {
+    const recording = catalog.narration[id]
+    assert.match(track.src, new RegExp(`^/works/${catalog.work.id}/media/${id}\\.[a-f0-9]{10}\\.mp4$`))
+    assert.equal(track.cues.length, recording.cues.length)
+    assert.deepEqual(track.cues.map(cue => cue[2] ?? null), recording.cues.map(cue => cue[2] ?? null))
+    assert.deepEqual(track.texts, recording.texts)
+    assert.deepEqual(track.scenes, recording.scenes)
+    assert.equal(track.cues.at(-1)[1], track.duration)
+    for (let index = 1; index < track.cues.length; index++) assert.ok(track.cues[index][0] >= track.cues[index - 1][0], `${id} cue ${index}`)
+  }
+})

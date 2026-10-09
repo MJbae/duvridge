@@ -1,0 +1,165 @@
+{
+  "version": 1,
+  "release": {
+    "repository": "MJbae/duvridge",
+    "tag": "videos-bae-byunghee-20261009"
+  },
+  "videos": {
+    "prolog": {
+      "file": "prolog.a2af82afe0.mp4",
+      "bytes": 15067104,
+      "sha256": "a2af82afe0f375a61447d18eff3a5055043609c85d2cf029a985d68fd3ddc95f",
+      "duration": 120.933
+    },
+    "ep01": {
+      "file": "ep01.fd8a40d0b3.mp4",
+      "bytes": 13787984,
+      "sha256": "fd8a40d0b33f2f233bb0e047fbce304469cf5ca27cd194138cbcf8c82361ffc6",
+      "duration": 109.133
+    },
+    "ep02": {
+      "file": "ep02.9e6c84e1eb.mp4",
+      "bytes": 13557862,
+      "sha256": "9e6c84e1eba38c2a46e1db24feb220cfcb8812b802b4cb1941b77bb2bc74d127",
+      "duration": 106.133
+    },
+    "ep03": {
+      "file": "ep03.0dc21d46e4.mp4",
+      "bytes": 23663995,
+      "sha256": "0dc21d46e4a4a0701cd76219a7bb4420da443e994cbb5a958d47c0cbd5aefb17",
+      "duration": 193.333
+    },
+    "ep04": {
+      "file": "ep04.adf25568c4.mp4",
+      "bytes": 23510915,
+      "sha256": "adf25568c4247f13ee40c72250603e9c775e55190549d1237a40908c92283817",
+      "duration": 197.0
+    },
+    "ep05": {
+      "file": "ep05.6f6c1b99cc.mp4",
+      "bytes": 18749769,
+      "sha256": "6f6c1b99cc4c64cd48afc26904a776dce05b6af2cdfe33f9b22aedae2d6b72ea",
+      "duration": 257.067
+    },
+    "ep06": {
+      "file": "ep06.7349dd69f7.mp4",
+      "bytes": 17970830,
+      "sha256": "7349dd69f710869fd4eef6bac359ca316ca6849b42d6b133b3ff7098a572c749",
+      "duration": 302.667
+    },
+    "ep07": {
+      "file": "ep07.76dc52c78c.mp4",
+      "bytes": 19811368,
+      "sha256": "76dc52c78ca0033397f5981ec7cdbbebfbf78163a9e7c3a0e8bef0d370774e7f",
+      "duration": 264.2
+    },
+    "ep08": {
+      "file": "ep08.9d5ca6593b.mp4",
+      "bytes": 16146203,
+      "sha256": "9d5ca6593b17d2150e713925614cd06fc53ff7db5c2e1cdcbfb2aefa95ea332f",
+      "duration": 237.533
+    },
+    "ep09": {
+      "file": "ep09.32d92b60ea.mp4",
+      "bytes": 18370383,
+      "sha256": "32d92b60eab870ede1f5a8c60e78d04f01c1ab2f9beb2bca76ea38bca856faf9",
+      "duration": 271.2
+    },
+    "ep10": {
+      "file": "ep10.ec2c7e1308.mp4",
+      "bytes": 16324822,
+      "sha256": "ec2c7e1308ba4b98fad2f9045a5e96128606eb5b1be62d2c645c1840bffac8b2",
+      "duration": 217.533
+    },
+    "ep11": {
+      "file": "ep11.51f42f46a7.mp4",
+      "bytes": 15937021,
+      "sha256": "51f42f46a75414da7511a031d6421625cffa79ed92bccbd83d9ab4c3b0c733f4",
+      "duration": 217.533
+    },
+    "ep12": {
+      "file": "ep12.ef6fe278b9.mp4",
+      "bytes": 23645954,
+      "sha256": "ef6fe278b9de102ecd9b779d4c793e6d1288dab6b5836d614f58be75e83177f4",
+      "duration": 192.667
+    },
+    "ep13": {
+      "file": "ep13.c65040d883.mp4",
+      "bytes": 20986902,
+      "sha256": "c65040d883bb82eb32b31323a778dd7f7497c76d6be7111724501aeb1de1dc00",
+      "duration": 249.133
+    },
+    "ep14": {
+      "file": "ep14.eef82cf1c2.mp4",
+      "bytes": 20337205,
+      "sha256": "eef82cf1c22e8575f2ffc4cf2f9fb126b02caccf0296b4a69d42b1afa5f9d33b",
+      "duration": 166.667
+    },
+    "ep15": {
+      "file": "ep15.116683880b.mp4",
+      "bytes": 17099284,
+      "sha256": "116683880bcc4366650b65d5c56e0136de08f4b3eea168635db614cbc3166824",
+      "duration": 228.467
+    },
+    "ep16": {
+      "file": "ep16.0cdc463b88.mp4",
+      "bytes": 23102487,
+      "sha256": "0cdc463b88a1908bba45797796e3b729059ccc0786b40f7d07e162dec6f62997",
+      "duration": 199.133
+    },
+    "ep17": {
+      "file": "ep17.45e85871a6.mp4",
+      "bytes": 23966932,
+      "sha256": "45e85871a6b9083356a48b0b64907cf4ee08353c18a7d59251b0821276d09a75",
+      "duration": 211.533
+    },
+    "ep18": {
+      "file": "ep18.b90f92b8c4.mp4",
+      "bytes": 17426061,
+      "sha256": "b90f92b8c48bfe0b0780c5fa5e667af37b62d00a29e2e86dc14727c6e3f2e9f7",
+      "duration": 151.8
+    },
+    "ep19": {
+      "file": "ep19.c49fc24a4f.mp4",
+      "bytes": 18553756,
+      "sha256": "c49fc24a4f0494af212bfb78191ac13dae61bb1b5581433d4facbb01e3055367",
+      "duration": 148.933
+    },
+    "ep20": {
+      "file": "ep20.2704d15d10.mp4",
+      "bytes": 16407670,
+      "sha256": "2704d15d1021c863cb577955e617ecf0a43529947eb7ebba7fc22f23dc86ebeb",
+      "duration": 143.4
+    },
+    "ep21": {
+      "file": "ep21.d43fb81a5d.mp4",
+      "bytes": 20750171,
+      "sha256": "d43fb81a5d5cb066609edc521fdb8a5ceb12c3610f6dc19a2ef7cea022118fbf",
+      "duration": 173.533
+    },
+    "ep22": {
+      "file": "ep22.743f2a3004.mp4",
+      "bytes": 20623208,
+      "sha256": "743f2a30049b800c909b5ff74c8e1ce7c030c90c65a9c75d9ee4671f0fcb9684",
+      "duration": 169.8
+    },
+    "ep23": {
+      "file": "ep23.dbdacacc49.mp4",
+      "bytes": 14238952,
+      "sha256": "dbdacacc495747463d96c6568ae7e0069e6b805ed3e72c7ad030aa4f2ab38861",
+      "duration": 126.733
+    },
+    "epilog": {
+      "file": "epilog.6246054b5b.mp4",
+      "bytes": 17234471,
+      "sha256": "6246054b5bc27d6fa04dc2a4864e11f694731c0b1bff15b873880decb06ef049",
+      "duration": 138.733
+    },
+    "side": {
+      "file": "side.8fdded2bd2.mp4",
+      "bytes": 19518221,
+      "sha256": "8fdded2bd2fe678f9e04feb442a8317aab497072db5f144b12dfbb3e52b27516",
+      "duration": 166.667
+    }
+  }
+}

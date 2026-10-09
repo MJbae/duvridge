@@ -42,7 +42,6 @@ const completed = ref<string[]>([])
 const lastFinished = computed(() => lastRead.value?.finished ?? completed.value.includes(lastRead.value?.id || ''))
 const chrome = ref(true)
 const progress = ref(0)
-const toc = ref<InstanceType<typeof ReaderSheet>>()
 const settings = ref<InstanceType<typeof ReaderSheet>>()
 const storageKey = key('reading')
 let activeEpisode: Episode | undefined, activeScroll = 0, activeFinished = false, version = 0
@@ -124,7 +123,8 @@ const rows = computed<WorkRow[]>(() => catalog.readingOrder.map(entry => {
   const current = action.value.current && action.value.episode.id === entry.id
   return {
     id: entry.episodeId || entry.id,
-    name: episodeName(entry),
+    label: entry.label,
+    title: entry.title,
     href: withBase(entry.url),
     thumb: episodeThumb(catalog.illustrations, entry.episodeId || entry.id, withBase),
     progress: completed.value.includes(entry.id) ? 100 : reading ? progressPercent(lastRead.value?.progress ?? 0) : 0,
@@ -148,7 +148,7 @@ function openRow(_event: MouseEvent, row: WorkRow) { if (row.current && action.v
 async function setupPage() {
   const current = ++version
   clearTimeout(saveTimer); saveReading(); activeEpisode = undefined
-  toc.value?.close(); settings.value?.close()
+  settings.value?.close()
   chrome.value = true
   await nextTick()
   syncThemeColor()
@@ -219,21 +219,16 @@ onBeforeUnmount(() => {
       <header class="reader-bar" @focusin="chrome = true">
         <nav class="reader-bar-inner" aria-label="읽기 도구">
           <a class="reader-back" :href="homeHref" aria-label="작품 홈으로"><ReaderIcon name="chevron-left" :size="22" :stroke="1.9" /></a>
-          <button type="button" class="reader-title" aria-haspopup="dialog" aria-label="목차 열기" @click="toc?.open()"><span>{{ barTitle }}</span><ReaderIcon name="caret-down" :size="18" :stroke="2" /></button>
+          <p class="reader-title"><span>{{ barTitle }}</span></p>
           <ReaderSettingsButton @open="settings?.open()" />
         </nav>
       </header>
       <main id="main" tabindex="-1" class="reader-main" @click="toggleChrome">
         <article class="story-content"><Content /></article>
-        <NovelEpisodeEnd v-if="isEpisode" :key="pageId" :page-id="pageId" :next="frontmatter.next" :home-href="workHome" @complete="complete" />
+        <NovelEpisodeEnd v-if="isEpisode" :key="pageId" :page-id="pageId" :previous="frontmatter.prev" :next="frontmatter.next" @complete="complete" />
       </main>
       <div class="reader-foot" aria-hidden="true"><div class="reader-foot-inner"><span class="reader-track"><span :style="{ width: `${progressPercent(progress)}%` }" /></span><span>{{ progressPercent(progress) }}%</span></div></div>
       <span class="reader-thin" aria-hidden="true"><span :style="{ width: `${progressPercent(progress)}%` }" /></span>
-      <ReaderSheet ref="toc" title="목차" done-label="닫기">
-        <nav class="toc-list" aria-label="회차 목록">
-          <a v-for="entry in catalog.readingOrder" :key="entry.id" :href="withBase(entry.url)" :aria-current="entry.id === pageId ? 'page' : undefined" @click="toc?.close()"><span>{{ episodeName(entry) }}</span></a>
-        </nav>
-      </ReaderSheet>
       <ReaderSheet ref="settings" title="읽기 설정">
         <div>
           <p class="sheet-label">글자 크기</p>

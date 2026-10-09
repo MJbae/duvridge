@@ -118,16 +118,16 @@ try {
     const missing = await fetch(new URL('/missing-monorepo-route', values.toldlife))
     assert.equal(missing.status, 404, 'Unknown routes must return 404')
     const audio = page => page.locator('.narration-audio')
-    async function startPlayback(page, device) {
+    async function startPlayback(page, device, selector = '.narration-audio') {
       // Server-rendered buttons exist before hydration; retry until the narration really plays.
       await expect(async () => {
         await page.getByRole('button', { name: '재생', exact: true }).click({ timeout: 2000 })
-        await page.waitForFunction(() => {
-          const media = document.querySelector('.narration-audio')
+        await page.waitForFunction(target => {
+          const media = document.querySelector(target)
           return media && !media.paused && media.readyState >= 2
-        }, undefined, { timeout: 15000 })
+        }, selector, { timeout: 15000 })
       }).toPass({ timeout: 60000 }).catch(async error => {
-        const media = await audio(page).evaluate(element => ({ src: element.currentSrc, paused: element.paused, readyState: element.readyState, error: element.error?.message }))
+        const media = await page.locator(selector).evaluate(element => ({ src: element.currentSrc, paused: element.paused, readyState: element.readyState, error: element.error?.message }))
         console.error(JSON.stringify({ device, url: page.url(), media }))
         throw error
       })
@@ -156,7 +156,7 @@ try {
       }
       await page.goto(new URL(`/novels/${bookId}/${episodes[1] ?? episodes[0]}`, values.toldlife).href)
       await page.locator('.story-content p').first().waitFor()
-      assert.equal(await page.locator('.reader-bar a, .reader-bar button').count(), 3, 'reader bar controls')
+      assert.equal(await page.locator('.reader-bar a, .reader-bar button').count(), 2, 'reader bar controls')
       await expect(async () => {
         await page.getByRole('button', { name: '설정', exact: true }).click({ timeout: 2000 })
         await expect(page.getByRole('dialog', { name: '읽기 설정' })).toBeVisible({ timeout: 2000 })
@@ -178,11 +178,13 @@ try {
       await page.getByRole('button', { name: '일시 정지', exact: true }).click()
       assert(await audio(page).evaluate(element => element.paused))
       await page.goto(new URL(`/videos/${bookId}/${recordings[0]}`, values.toldlife).href)
-      await startPlayback(page, device)
-      assert((await page.locator('.subtitle-band').textContent()).trim().length > 0, 'no video subtitle')
+      // The video carries its own subtitles; the page draws none of its own.
+      await startPlayback(page, device, '.stage-video')
+      assert.match(await page.locator('.stage-video').getAttribute('src'), /\/videos\/works\/[^/]+\/media\/[a-z0-9-]+\.[a-f0-9]{10}\.mp4$/, 'video source')
+      assert.equal(await page.locator('.subtitle-band, .stage-caption').count(), 0, 'separate video subtitles')
       assert(!await overflows(), 'video overflows')
       await page.screenshot({ path: `${output}/video-${device}-player.png` })
-      await page.evaluate(() => document.querySelector('.narration-audio').pause())
+      await page.evaluate(() => document.querySelector('.stage-video').pause())
       assert.deepEqual(errors, [], 'Browser runtime errors')
       await context.close()
     }

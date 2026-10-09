@@ -18,13 +18,18 @@ export type Catalog = ReaderCatalog & {
   documents: Reading[]
   illustrations: Record<string, EpisodeImage[]>
   narration: Record<string, NarrationTrack>
+  /** Each recorded episode's video: the same sentences and scenes as the recording, in the video's own times. */
+  video: Record<string, NarrationTrack>
 }
 export const useCatalog = () => useWorkCatalog<Catalog>()
 
 
 export function useCatalogHelpers() {
   const catalog = useCatalog()
-  const narrationFor = (id: string): NarrationTrack | undefined => catalog.narration?.[id]
+  /** What this app plays: the episode's video. */
+  const narrationFor = (id: string): NarrationTrack | undefined => catalog.video?.[id]
+  /** The recording the audiobook plays; the place both formats share is kept in its times. */
+  const audioFor = (id: string): NarrationTrack | undefined => catalog.narration?.[id]
   const episodePath = (id: string) => withBase(catalog.readingOrder.find(entry => entry.id === id)?.url ?? `/${catalog.work.id}/`)
 
   /** The work's home in this build's series; with an episode, scrolled to that episode's row. */
@@ -60,5 +65,5 @@ export function useCatalogHelpers() {
     return sceneImage(representativeIllustration(id)?.id)
   }
 
-  return { catalog, narrationFor, episodePath, workHome, representativeIllustration, sceneImage, episodeImage }
+  return { catalog, narrationFor, audioFor, episodePath, workHome, representativeIllustration, sceneImage, episodeImage }
 }

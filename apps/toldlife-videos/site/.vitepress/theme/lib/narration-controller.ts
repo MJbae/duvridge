@@ -37,26 +37,40 @@ function listen(target: EventTarget, entries: [string, EventListener, AddEventLi
   return () => { for (const [name, handler] of entries) target.removeEventListener(name, handler) }
 }
 
-/** The audiobook and the video play the same narration; only the page that shows it differs. */
+/** The audiobook and the video tell the same narration; only the page that shows it differs. */
 export type NarrationMode = 'listen' | 'watch'
-type Options = { audio: Ref<HTMLAudioElement | undefined>; page: ComputedRef<string>; mode: ComputedRef<NarrationMode>; onFinish: (id: string) => void }
+type Options = { media: Ref<HTMLVideoElement | undefined>; page: ComputedRef<string>; mode: ComputedRef<NarrationMode>; onFinish: (id: string) => void }
 export type Narration = ReturnType<typeof useNarration>
 export const narrationKey: InjectionKey<Narration> = Symbol('narration')
+/** The player puts its video element here; the controller plays whatever element is in it. */
+export const videoElementKey: InjectionKey<Ref<HTMLVideoElement | undefined>> = Symbol('video-element')
 
 /**
- * One recording at a time, for the audiobook player and the video alike. It keeps playing while the
- * listener moves between pages, resumes from the sentence where it stopped, and at an episode's end
- * shows that end before the next episode starts.
+ * One video at a time. It keeps playing from one episode to the next, resumes from the sentence where
+ * the viewer stopped, and at an episode's end shows that end before the next episode starts.
  */
-export function useNarration({ audio, page, mode, onFinish }: Options) {
-  const { catalog, narrationFor, episodePath } = useCatalogHelpers()
+export function useNarration({ media, page, mode, onFinish }: Options) {
+  const { catalog, narrationFor, audioFor, episodePath } = useCatalogHelpers()
   const keys = { ...settingsKeys, session: workStorageKey(catalog.work.id, 'narration') }
+  /** The place shared with the audiobook is kept in the recording's times: a sentence maps to the same sentence. */
+  function mapTime(time: number, from: NarrationTrack | undefined, to: NarrationTrack | undefined) {
+    if (!from || !to) return time
+    const index = cueIndexAt(from.cues, time)
+    if (index < 0) return 0
+    const [start, end] = from.cues[index]
+    const [targetStart, targetEnd] = to.cues[Math.min(index, to.cues.length - 1)]
+    const share = end > start ? Math.min(1, Math.max(0, (time - start) / (end - start))) : 0
+    return targetStart + share * (targetEnd - targetStart)
+  }
+  const toVideo = (id: string, time: number) => mapTime(time, audioFor(id), narrationFor(id))
+  const toRecording = (id: string, time: number) => mapTime(time, narrationFor(id), audioFor(id))
   function savedSession(): { id: string; time: number } | null {
     try {
       const saved = JSON.parse(readStorage(keys.session) || 'null')
       if (typeof saved?.id !== 'string' || !Number.isFinite(saved.time) || !narrationFor(saved.id)) return null
-      // A place in the closing music belongs to an episode already heard.
-      return saved.time < outroAt(narrationFor(saved.id)) ? { id: saved.id, time: saved.time } : null
+      const time = toVideo(saved.id, saved.time)
+      // A place in the closing music belongs to an episode already seen.
+      return time < outroAt(narrationFor(saved.id)) ? { id: saved.id, time } : null
     } catch { return null }
   }
   const router = useRouter()
@@ -86,7 +100,7 @@ export function useNarration({ audio, page, mode, onFinish }: Options) {
     return index < 0 ? undefined : catalog.readingOrder[index + 1]
   })
   const nextTrack = computed(() => (next.value ? narrationFor(next.value.id) : undefined))
-  const element = () => audio.value
+  const element = () => media.value
   const loaded = () => Boolean(track.value && element()?.getAttribute('src') === withBase(track.value.src))
   const now = () => (loaded() ? element()!.currentTime : state.time)
 
@@ -162,7 +176,7 @@ export function useNarration({ audio, page, mode, onFinish }: Options) {
     // Once the closing music plays the episode is heard, so there is no place left in it to come back to.
     if (state.time >= outroStart.value) return clearSaved()
     state.saved = { id: state.episodeId, time: Math.round(state.time * 100) / 100 }
-    writeStorage(keys.session, JSON.stringify(state.saved))
+    writeStorage(keys.session, JSON.stringify({ id: state.episodeId, time: Math.round(toRecording(state.episodeId, state.time) * 100) / 100 }))
   }
 
   /** Once the closing music starts, the episode counts as heard. */
@@ -312,14 +326,11 @@ export function useNarration({ audio, page, mode, onFinish }: Options) {
   // Leaving an episode's end for another page: the end screen goes, and anything planned to start stays.
   watch(page, id => { if (state.ended && state.ended !== id) { state.ended = ''; cancelAdvance() } })
 
-  onMounted(() => {
-    try { migrateWorkStorage(localStorage, catalog.work) } catch { /* Browser storage is optional. */ }
-    const rate = Number(readStorage(keys.rate))
-    if (narrationRates.some(option => option === rate)) state.rate = rate
-    state.autoplay = readStorage(keys.autoplay) !== '0'
-    state.saved = savedSession()
-    unbind = [
-      listen(element()!, [
+  // The video element arrives with the player, after this controller; its events are followed from then on.
+  let unbindMedia: (() => void) | undefined
+  function bindMedia(target: HTMLVideoElement | undefined) {
+    unbindMedia?.()
+    unbindMedia = target ? listen(target, [
         ['play', () => { state.playing = true; wakeLock.hold(); reportState('playing') }],
         ['playing', () => { state.playing = true; state.waiting = false }],
         ['pause', () => {
@@ -339,13 +350,26 @@ export function useNarration({ audio, page, mode, onFinish }: Options) {
           Object.assign(state, { failed: true, playing: false, waiting: false })
           wakeLock.release()
         }],
-      ]),
+      ]) : undefined
+    // Opened from the episode list, before the player was there: it starts once the player's video is.
+    if (target && state.active && !state.ended && !loaded()) play()
+  }
+  watch(media, bindMedia, { flush: 'post' })
+
+  onMounted(() => {
+    try { migrateWorkStorage(localStorage, catalog.work) } catch { /* Browser storage is optional. */ }
+    // A video plays at its own pace; the audiobook's speed is not carried over.
+    state.autoplay = readStorage(keys.autoplay) !== '0'
+    state.saved = savedSession()
+    bindMedia(media.value)
+    unbind = [
       listen(window, [['pagehide', save]]),
       listen(document, [['visibilitychange', wakeLock.refresh]]),
     ]
   })
 
   onBeforeUnmount(() => {
+    unbindMedia?.()
     for (const remove of unbind) remove()
     clearTimeout(sleepTimer)
     cancelAdvance()

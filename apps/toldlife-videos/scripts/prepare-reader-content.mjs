@@ -4,6 +4,7 @@ import { materializeBookContent } from '@duvridge/content-processing/source-file
 import { resolveBookSource } from '@duvridge/content-processing/source-files/resolve-book-source.mjs'
 import { prepareContent as prepareShared, plainText } from '@duvridge/content-processing/catalog/prepare-reader-content.mjs'
 import { loadNarration } from '../site/.vitepress/shared/narration-catalog.mjs'
+import { loadVideo, videoDirectory } from '../site/.vitepress/shared/video-catalog.mjs'
 import { prepareWorkCatalogs } from '@duvridge/content-processing/source-files/prepare-work-catalogs.mjs'
 export { plainText }
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
@@ -15,8 +16,13 @@ export function prepareContent(options = {}) {
     narrationSource: ({ source, book }) => ({
       [book.legacy?.servedAtRoot ? path.resolve(projectRoot, '../toldlife-audiobooks/content/narration') : path.join(source, 'narration/timings')]: 'content/narration',
       [book.legacy?.servedAtRoot ? path.resolve(projectRoot, '../toldlife-audiobooks/site/public/record') : path.join(source, 'narration/record')]: 'site/public/record',
+      // The video list and subtitle times; the video files themselves are published apart from Git.
+      [path.join(source, 'video')]: videoDirectory,
     }),
-    extendCatalog({ root, structure, work }) { return { catalog: { narration: loadNarration(root, structure.episodes, { work }).tracks } } },
+    extendCatalog({ root, structure, work }) {
+      const narration = loadNarration(root, structure.episodes, { work }).tracks
+      return { catalog: { narration, video: loadVideo(root, narration, { work }).videos } }
+    },
   })
   return prepareShared({ ...options, root, book: editorial.book, extendCatalog({ root, structure, work }) {
     const narration = loadNarration(root, structure.episodes, { work })

@@ -1,21 +1,18 @@
 <script setup lang="ts">
-import { computed, inject, ref } from 'vue'
+import { computed, inject, nextTick, onMounted, ref, watch } from 'vue'
 import ReaderIcon from '@duvridge/reader-ui/components/ReaderIcon.vue'
-import EpisodeNext from '@duvridge/reader-ui/components/EpisodeNext.vue'
-import { episodeName } from '@duvridge/reader-ui/series/work-rows.mjs'
+import EpisodeNav from '@duvridge/reader-ui/components/EpisodeNav.vue'
 import { clock, cueIndexAt, spokenTime } from '../../shared/narration-cues.mjs'
 import { lyricLines, sceneAt, sleepLabel } from '../../shared/playback-selection.mjs'
 import { useCatalogHelpers } from '../lib/reader-catalog'
 import { followsHere, narrationKey } from '../lib/narration-controller'
 import SceneArt from './SceneArt.vue'
-import EpisodeSheet from './EpisodeSheet.vue'
 import EpisodeReactions from './EpisodeReactions.vue'
 const { catalog, episodeImage, sceneImage, workHome, episodePath, narrationFor } = useCatalogHelpers()
 
 const props = defineProps<{ episodeId: string }>()
 const narration = inject(narrationKey)!
 const { state } = narration
-const sheet = ref<InstanceType<typeof EpisodeSheet>>()
 const order = catalog.readingOrder
 const index = computed(() => order.findIndex(entry => entry.id === props.episodeId))
 const episode = computed(() => order[index.value])
@@ -29,22 +26,34 @@ const cue = computed(() => (track.value ? cueIndexAt(track.value.cues, time.valu
 const playing = computed(() => isCurrent.value && state.playing)
 const failed = computed(() => isCurrent.value && state.failed)
 const ended = computed(() => state.ended === props.episodeId)
-const lines = computed(() => lyricLines(texts.value, cue.value))
+const current = computed(() => lyricLines(texts.value, cue.value).current)
 const image = computed(() => sceneImage(sceneAt(track.value?.scenes ?? [], cue.value)) ?? episodeImage(props.episodeId))
 const homeHref = computed(() => workHome(episode.value?.episodeId || props.episodeId))
 const previous = computed(() => order.slice(0, Math.max(0, index.value)).reverse().find(entry => narrationFor(entry.id)))
 const next = computed(() => order[index.value + 1])
 const nextPlayable = computed(() => (next.value && narrationFor(next.value.id) ? next.value : undefined))
 const rateLabel = computed(() => `${state.rate.toFixed(state.rate * 100 % 10 ? 2 : 1)}×`)
-// The last three sentences stay on the end screen, the final one bright.
-const closing = computed(() => texts.value.map((text, position) => ({ text, position })).filter(entry => entry.text).slice(-3))
-const nextCard = computed(() => (next.value ? { name: episodeName(next.value), image: episodeImage(next.value.id) } : undefined))
-const nextAction = computed(() => {
-  if (!next.value) return { label: '전체 회차 보기', href: workHome() }
-  return nextPlayable.value
-    ? { label: `${next.value.label} 듣기`, href: episodePath(next.value.id) }
-    : { label: `${next.value.label} 듣기 · 준비 중` }
-})
+// The whole episode is on screen as lines; at the end the last one stays bright.
+const spoken = computed(() => texts.value.map((text, position) => ({ text, position })).filter(entry => entry.text))
+const lastSpoken = computed(() => spoken.value.at(-1)?.position ?? -1)
+// 다음 화 waits dashed until it is recorded; there is nothing before the first episode or after the last.
+const nextLink = computed(() => (nextPlayable.value ? { href: episodePath(nextPlayable.value.id) } : next.value ? { pending: true } : undefined))
+const previousLink = computed(() => (previous.value ? { href: episodePath(previous.value.id) } : undefined))
+
+// The sentence being heard stays a third of the way down. A listener scrolling the text keeps it a moment.
+const lyrics = ref<HTMLElement>()
+let touchedAt = 0
+function follow(smooth: boolean) {
+  const box = lyrics.value
+  const line = box?.querySelector<HTMLElement>('[aria-current="true"]')
+  if (!box || !line || Date.now() - touchedAt < 4000) return
+  box.scrollTo({ top: Math.max(0, line.offsetTop - box.clientHeight / 3), behavior: smooth ? 'smooth' : 'instant' })
+}
+function touched() { touchedAt = Date.now() }
+watch(current, () => { void nextTick(() => follow(true)) })
+watch(() => props.episodeId, () => { touchedAt = 0; void nextTick(() => follow(false)) })
+watch(ended, value => { if (!value) void nextTick(() => follow(false)) })
+onMounted(() => follow(false))
 
 function togglePlay() {
   if (failed.value) return narration.retry()
@@ -62,6 +71,7 @@ function seekTo(event: Event) {
 }
 function goEpisode(event: MouseEvent, id: string) { if (followsHere(event)) narration.open(id) }
 function goNext(event: MouseEvent) { if (nextPlayable.value) goEpisode(event, nextPlayable.value.id) }
+function goPrevious(event: MouseEvent) { if (previous.value) goEpisode(event, previous.value.id) }
 </script>
 
 <template>
@@ -69,19 +79,20 @@ function goNext(event: MouseEvent) { if (nextPlayable.value) goEpisode(event, ne
     <header class="listen-bar">
       <a class="listen-icon" :href="homeHref" aria-label="플레이어 접기"><ReaderIcon name="chevron-down" :size="24" :stroke="1.9" /></a>
       <span class="listen-label">{{ episode.label }}</span>
-      <button v-if="!ended" type="button" class="listen-icon" aria-label="회차 목록" aria-haspopup="dialog" @click="sheet?.open()"><ReaderIcon name="contents" :size="22" :stroke="1.9" /></button>
-      <span v-else class="listen-icon" aria-hidden="true" />
+      <span class="listen-icon" aria-hidden="true" />
     </header>
     <main id="main" tabindex="-1" class="listen-main">
       <template v-if="!ended">
-        <SceneArt class="listen-art" :image="image" sizes="(min-width: 720px) 640px, calc(100vw - 40px)" eager />
-        <div class="listen-heading"><h1>{{ episode.title }}</h1><p>{{ catalog.work.title }}</p></div>
-        <section class="lyrics" aria-label="낭독 문장">
-          <button v-if="lines.previous >= 0" type="button" class="lyric-line" @click="narration.playCue(episodeId, lines.previous)">{{ texts[lines.previous] }}</button>
-          <p v-if="lines.current >= 0" class="lyric-current" aria-current="true">{{ texts[lines.current] }}</p>
-          <button v-if="lines.next >= 0" type="button" class="lyric-line" @click="narration.playCue(episodeId, lines.next)">{{ texts[lines.next] }}</button>
+        <div class="listen-heading">
+          <SceneArt class="listen-art" :image="image" sizes="112px" eager />
+          <div class="listen-titles"><h1>{{ episode.title }}</h1><p>{{ catalog.work.title }}</p></div>
+        </div>
+        <section ref="lyrics" class="lyrics" aria-label="낭독 문장" @wheel.passive="touched" @touchmove.passive="touched">
+          <template v-for="line in spoken" :key="line.position">
+            <p v-if="line.position === current" class="lyric-current" aria-current="true">{{ line.text }}</p>
+            <button v-else type="button" class="lyric-line" @click="narration.playCue(episodeId, line.position)">{{ line.text }}</button>
+          </template>
         </section>
-        <div class="listen-spacer" />
         <div class="listen-seek">
           <input class="seek-range" type="range" min="0" :max="duration" step="0.1" :value="time" aria-label="재생 위치" :aria-valuetext="spokenTime(time)"
             :style="{ '--seek': `${duration ? (time / duration) * 100 : 0}%` }" @input="seekTo" />
@@ -105,15 +116,13 @@ function goNext(event: MouseEvent) { if (nextPlayable.value) goEpisode(event, ne
       </template>
       <template v-else>
         <section class="lyrics is-closing" aria-label="마지막 낭독 문장">
-          <p v-for="(entry, position) in closing" :key="entry.position" :class="position === closing.length - 1 ? 'lyric-current' : 'lyric-line'">{{ entry.text }}</p>
+          <p v-for="line in spoken" :key="line.position" :class="line.position === lastSpoken ? 'lyric-current' : 'lyric-line'">{{ line.text }}</p>
         </section>
-        <div class="listen-spacer" @pointerdown="narration.cancelAdvance()" />
         <div class="listen-end" @pointerdown="narration.cancelAdvance()">
           <EpisodeReactions :page-id="episodeId" />
-          <EpisodeNext series="audio" :next="nextCard" :action="nextAction" :counting="state.advanceAt > 0" @go="goNext" />
+          <EpisodeNav series="audio" :previous="previousLink" :next="nextLink" :counting="state.advanceAt > 0" @go="goNext" @back="goPrevious" />
         </div>
       </template>
     </main>
-    <EpisodeSheet ref="sheet" :current="episodeId" @choose="id => narration.open(id)" />
   </div>
 </template>

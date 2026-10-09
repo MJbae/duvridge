@@ -93,6 +93,9 @@ jobs:
       - name: Install browser for audiobook interaction checks
         if: matrix.service == 'toldlife-audiobooks' || matrix.service == 'toldlife-videos'
         run: npx playwright install --with-deps chromium
+      - name: Install ffmpeg for silent stand-in videos
+        if: matrix.service == 'toldlife-videos'
+        run: command -v ffmpeg >/dev/null || (sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg)
       - name: Protect desktop and phone audio interaction
         if: matrix.service == 'toldlife-audiobooks' || matrix.service == 'toldlife-videos'
         working-directory: apps/${{ matrix.service }}

@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { workStorageKey, migrateWorkStorage } from '@duvridge/reader-ui/state/work-storage.mjs'
-import { computed, onMounted, provide, ref } from 'vue'
+import { computed, onMounted, provide, ref, watch } from 'vue'
 import { useData, withBase } from 'vitepress'
 import ReaderIcon from '@duvridge/reader-ui/components/ReaderIcon.vue'
 import WorkHome, { type WorkRow } from '@duvridge/reader-ui/components/WorkHome.vue'
-import { episodeName, episodeThumb, progressPercent } from '@duvridge/reader-ui/series/work-rows.mjs'
+import { episodeThumb, progressPercent } from '@duvridge/reader-ui/series/work-rows.mjs'
 import { imageSrcset } from '@duvridge/reader-ui/images/create-image-sources.mjs'
 import { listenAction } from '../shared/playback-selection.mjs'
 import AudiobookPlayer from './components/AudiobookPlayer.vue'
@@ -56,7 +56,8 @@ const rows = computed<WorkRow[]>(() => catalog.readingOrder.map(entry => {
   const heard = completed.value.includes(entry.id)
   return {
     id: entry.episodeId || entry.id,
-    name: episodeName(entry),
+    label: entry.label,
+    title: entry.title,
     href: track ? episodePath(entry.id) : undefined,
     thumb: episodeThumb(catalog.illustrations, entry.episodeId || entry.id, withBase),
     progress: heard && !resume ? 100 : resume && track ? progressPercent(position.value!.time / track.duration) : 0,
@@ -81,6 +82,9 @@ function openRow(event: MouseEvent, row: WorkRow) {
   if (entry && followsHere(event)) narration.open(entry.id)
 }
 
+// Back on the episode list, the recording stops; its place is kept for 이어 듣기.
+watch(view, value => { if (value === 'home' && state.active) narration.stop() })
+
 onMounted(() => {
   try { migrateWorkStorage(localStorage, catalog.work) } catch { /* Browser storage is optional. */ }
   completed.value = migrateCompleted(catalog, readJson(key('completed')))
@@ -103,8 +107,10 @@ onMounted(() => {
         <span class="listen-label">{{ pendingEpisode.label }}</span><span class="listen-icon" aria-hidden="true" />
       </header>
       <main id="main" tabindex="-1" class="listen-main">
-        <SceneArt class="listen-art" :image="episodeImage(pendingEpisode.id)" sizes="(min-width: 720px) 640px, calc(100vw - 40px)" eager />
-        <div class="listen-heading"><h1>{{ pendingEpisode.title }}</h1><p>{{ catalog.work.title }}</p></div>
+        <div class="listen-heading">
+          <SceneArt class="listen-art" :image="episodeImage(pendingEpisode.id)" sizes="112px" eager />
+          <div class="listen-titles"><h1>{{ pendingEpisode.title }}</h1><p>{{ catalog.work.title }}</p></div>
+        </div>
         <div class="listen-spacer" />
         <button type="button" class="big-button is-pending" disabled><ReaderIcon :name="mode === 'watch' ? 'play' : 'headphones'" :size="20" :stroke="1.9" />{{ pendingEpisode.label }} {{ verb }} · 준비 중</button>
       </main>

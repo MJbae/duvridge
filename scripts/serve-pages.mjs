@@ -4,7 +4,7 @@ import path from 'node:path'
 const directory = path.resolve(process.argv[2] || '.deploy/toldlife')
 const port = Number(process.argv[3] || 4190)
 const rules = existsSync(path.join(directory, '_redirects')) ? new Map(readFileSync(path.join(directory, '_redirects'), 'utf8').trim().split('\n').filter(Boolean).map(line => { const [from, to, status] = line.split(/\s+/); return [from, { to, status: Number(status) }] })) : new Map()
-const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.xml': 'application/xml', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.mp3': 'audio/mpeg', '.woff2': 'font/woff2' }
+const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.xml': 'application/xml', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.mp3': 'audio/mpeg', '.mp4': 'video/mp4', '.woff2': 'font/woff2' }
 createServer((req, res) => {
   const url = new URL(req.url, 'http://localhost')
   const redirect = rules.get(url.pathname)

@@ -8,9 +8,10 @@
   },
   "scripts": {
     "prepare:content": "node scripts/prepare-reader-content.mjs",
-    "predev": "npm run prepare:content",
+    "prepare:media": "node scripts/prepare-video-media.mjs",
+    "predev": "npm run prepare:content && npm run prepare:media",
     "dev": "vitepress dev site --host 127.0.0.1",
-    "prebuild": "npm run prepare:content",
+    "prebuild": "npm run prepare:content && npm run prepare:media",
     "build": "vitepress build site",
     "preview": "vitepress preview site --host 127.0.0.1",
     "typecheck": "vue-tsc --noEmit",

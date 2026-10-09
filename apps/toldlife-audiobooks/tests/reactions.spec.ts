@@ -55,7 +55,7 @@ async function openReactions(page: Page, id = 'prolog') {
   // The reactions and the next episode keep the 40px gap of every episode end.
   expect(await page.evaluate(() => {
     const box = (selector: string) => document.querySelector(selector)!.getBoundingClientRect()
-    return Math.round(box('.next-episode').top - box('.reaction-options').bottom)
+    return Math.round(box('.episode-nav').top - box('.reaction-options').bottom)
   })).toBe(40)
 }
 async function storedReactions(request: APIRequestContext) {

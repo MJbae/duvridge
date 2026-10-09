@@ -4,16 +4,6 @@ export function episodeName(episode) {
   return episode.number ? `${episode.label} ${episode.title}` : `${episode.label} · ${episode.title}`
 }
 
-/**
- * Which rows a folded list shows: a few around the episode in progress (it sits fourth, as in the
- * design), or the first ones before anything was opened.
- */
-export function episodeWindow(length, currentIndex, size = 5) {
-  if (length <= size) return { start: 0, end: length }
-  const start = Math.max(0, Math.min((currentIndex < 0 ? 0 : currentIndex - 3), length - size))
-  return { start, end: start + size }
-}
-
 /** Progress shown under a thumbnail, as a whole percentage between 0 and 100. */
 export function progressPercent(value) {
   if (!Number.isFinite(value)) return 0

@@ -29,6 +29,8 @@ export default defineConfig({
     timeout: 120000,
     env: {
       SITE_BASE: '/videos/',
+      // Silent stand-ins of each video's length, unless a folder of the published videos is given.
+      TOLDLIFE_VIDEO_FIXTURES: process.env.TOLDLIFE_VIDEO_MEDIA ? '' : '1',
       VITE_FIREBASE_API_KEY: '',
       VITE_FIREBASE_AUTH_DOMAIN: '',
       VITE_FIREBASE_PROJECT_ID: '',

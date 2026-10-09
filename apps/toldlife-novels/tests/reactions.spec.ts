@@ -46,7 +46,7 @@ async function openReactions(page: Page) {
   // The rule, the reactions and the next episode keep the 36 / 40px rhythm.
   expect(await page.evaluate(() => {
     const box = (selector: string) => document.querySelector(selector)!.getBoundingClientRect()
-    return [box('.reaction-options').top - box('.end-rule').bottom, box('.next-episode').top - box('.reaction-options').bottom].map(Math.round)
+    return [box('.reaction-options').top - box('.end-rule').bottom, box('.episode-nav').top - box('.reaction-options').bottom].map(Math.round)
   })).toEqual([36, 40])
 }
 async function storedReactions(request: APIRequestContext) {
@@ -66,7 +66,7 @@ test('Firebase가 연결되어도 댓글 화면과 요청은 없고 회차 반�
   await page.locator('.episode-end').screenshot({ path: 'test-results/reactions/reactions-390.png' })
   await expect(page.locator('#comments, .family-comments, .comment-composer')).toHaveCount(0)
   await expect(page.getByRole('textbox')).toHaveCount(0)
-  await page.locator('.next-episode .big-button').click()
+  await page.locator('.episode-nav .big-button').click()
   await expect(page).toHaveURL(/ep02$/)
   await expect(page.locator('.reader-title')).toHaveText('2화 책보 대신 지게')
   await page.locator('#reactions').scrollIntoViewIfNeeded()
@@ -110,7 +110,7 @@ test('episode reactions coalesce clicks, persist across browsers, switch, cancel
     await expect(page.locator('.reaction-options button[aria-pressed="false"] svg[fill="currentColor"]')).toHaveCount(0)
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
     await page.screenshot({ path: 'test-results/reactions/reactions-320.png', fullPage: true })
-    await page.locator('.next-episode .big-button').click()
+    await page.locator('.episode-nav .big-button').click()
     await expect(page).toHaveURL(/ep02$/)
     await expect.poll(async () => (await storedReactions(request))[0]?.fields.wow.integerValue).toBe('1')
     expect((await storedReactions(request))[0].fields.remember.integerValue).toBe('0')
@@ -180,7 +180,7 @@ test('미전송 선택을 보관하고 다른 화에서 새로고침해도 이�
   await page.locator('.reaction-options button').first().click()
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem('family-library:reaction:ep01')!)))
     .toMatchObject({ selected: 'heart', pending: true })
-  await page.locator('.next-episode .big-button').click()
+  await page.locator('.episode-nav .big-button').click()
   await expect(page).toHaveURL(/ep02$/)
   await page.reload()
   await page.locator('#reactions').scrollIntoViewIfNeeded()

@@ -65,8 +65,12 @@ test('하나의 재생기로 모든 회차의 곡을 3% 음량으로 이어 틀�
     await playing(page, track.src)
     await fixedVolume(page)
     expect(await audio.evaluate(element => element === document.querySelector('.background-audio'))).toBe(true)
-    await page.locator('.next-episode .big-button').click()
+    const next = page.locator('.episode-nav .big-button')
+    if (episode === rawCatalog.readingOrder.at(-1)) await expect(next).toBeDisabled()
+    else await next.click()
   }
+  // After the last episode there is no next one: the reader leaves by the work-home arrow.
+  await page.getByRole('link', { name: '작품 홈으로' }).click()
   await expect(page.locator('.work-home')).toBeVisible()
   await expect.poll(() => backgroundAudio(page).evaluate((element: HTMLAudioElement) => element.paused)).toBe(true)
   expect(broken).toEqual([])

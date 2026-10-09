@@ -1,5 +1,7 @@
 """Exercise complete, atomic Pages snapshots without rebuilding the reader apps."""
+import hashlib
 import importlib.util
+import io
 import json
 from pathlib import Path
 import tempfile
@@ -103,6 +105,63 @@ class ToldLifeAssemblyTests(unittest.TestCase):
             file.truncate(25 * 1024 * 1024 + 1)
         with self.assertRaisesRegex(ValueError, "25 MiB"):
             build.assemble(self.output, self.services)
+
+
+class VideoMediaTests(unittest.TestCase):
+    """Videos stay out of Git: the assembly accepts only files that match the book's video list."""
+
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temporary.cleanup)
+        self.root = Path(self.temporary.name)
+        self.books = self.root / "books"
+        (self.books / "first/video").mkdir(parents=True)
+        (self.books / "first/book.json").write_text(json.dumps({"id": "first-work"}))
+        self.content = b"video bytes"
+        digest = hashlib.sha256(self.content).hexdigest()
+        self.file = f"ep01.{digest[:10]}.mp4"
+        (self.books / "first/video/media.json").write_text(json.dumps({
+            "version": 1, "release": {"repository": "owner/repo", "tag": "videos-first"},
+            "videos": {"ep01": {"file": self.file, "bytes": len(self.content), "sha256": digest, "duration": 1.0}}}))
+        self.staged = self.root / "staged"
+        self.folder = self.root / "web"
+        self.folder.mkdir()
+        self.target = self.staged / "videos/works/first-work/media" / self.file
+
+    def add(self, source):
+        return build.add_video_media(self.staged, source, books=self.books)
+
+    def test_without_a_source_the_snapshot_carries_no_video(self):
+        self.assertEqual(self.add("none"), 0)
+        self.assertFalse(self.staged.exists())
+
+    def test_a_folder_copy_is_placed_under_its_work_and_checked(self):
+        (self.folder / "ep01.mp4").write_bytes(self.content)
+        self.assertEqual(self.add(str(self.folder)), 1)
+        self.assertEqual(self.target.read_bytes(), self.content)
+
+    def test_a_missing_or_changed_video_stops_the_assembly(self):
+        with self.assertRaisesRegex(ValueError, "missing"):
+            self.add(str(self.folder))
+        (self.folder / self.file).write_bytes(b"other video")
+        with self.assertRaisesRegex(ValueError, "differs"):
+            self.add(str(self.folder))
+
+    def test_release_downloads_are_retried_until_they_match(self):
+        requested = []
+        bodies = iter([b"cut short", self.content])
+
+        def urlopen(request, timeout):
+            requested.append(request.full_url)
+            return io.BytesIO(next(bodies))
+
+        with patch.object(build.urllib.request, "urlopen", urlopen), patch.object(build.time, "sleep"):
+            self.assertEqual(self.add("release"), 1)
+            self.assertEqual(self.target.read_bytes(), self.content)
+            bodies = iter([b"cut short"] * 3)
+            with self.assertRaisesRegex(ValueError, "differs"):
+                self.add("release")
+        self.assertEqual(requested, [f"https://github.com/owner/repo/releases/download/videos-first/{self.file}"] * 5)
 
 
 if __name__ == "__main__":

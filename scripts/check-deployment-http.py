@@ -64,6 +64,16 @@ def check(group_id, origin=None, revision=None):
             raise ValueError(f"{path}: missing audio data")
         print(f"OK audio {origin}{path}")
     if group_id == "toldlife":
+        # Every published video answers a range request with its listed size, as Safari needs to play it.
+        for manifest in sorted((ROOT / "content/books").glob("*/video/media.json")):
+            book = json.loads((manifest.parent.parent / "book.json").read_text())["id"]
+            videos = json.loads(manifest.read_text())["videos"]
+            for video in videos.values():
+                path = f"/videos/works/{book}/media/{video['file']}"
+                _, response_headers = fetch(path, {"Range": "bytes=0-1"}, limit=2)
+                if response_headers.get("Content-Range") != f"bytes 0-1/{video['bytes']}":
+                    raise ValueError(f"{path}: expected a ranged video of {video['bytes']} bytes")
+            print(f"OK {len(videos)} ranged videos for {book}")
         class NoRedirect(urllib.request.HTTPRedirectHandler):
             def redirect_request(self, req, fp, code, msg, headers, newurl):
                 return None
