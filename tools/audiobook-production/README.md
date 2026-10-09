@@ -1,6 +1,6 @@
 # 듣는 자서전 제작 가이드
 
-배병희 자전소설 『내 논을 파는 한이 있어도』를 어르신이 듣고 볼 수 있는 오디오북으로 만드는 작업이다. 회차마다 MP3(듣기용, 보통 배속), MP4(큰 자막 영상, 0.9배속), 각각의 SRT(자막)를 만든다. 만든 MP3는 [오디오 웹 앱](../../apps/toldlife-audiobooks/)에서 글과 함께 들을 수 있다. 새 세션은 이 문서와 연결된 모노레포 안내를 보고 이어서 작업한다.
+배병희 자전소설 『내 논을 파는 한이 있어도』를 어르신이 듣고 볼 수 있는 오디오북으로 만드는 작업이다. 회차마다 MP3(듣기용, 보통 배속), MP4(큰 자막 영상, 0.9배속), 각각의 SRT(자막)를 만든다. 만든 MP3는 [오디오 웹 앱](../../apps/toldlife-audiobooks/)에서 글과 함께 들을 수 있고, MP4는 [영상 웹 앱](../../apps/toldlife-videos/)에서 그대로 재생한다. 새 세션은 이 문서와 연결된 모노레포 안내를 보고 이어서 작업한다.
 
 이 제작 도구는 Duvridge 모노레포의 `tools/audiobook-production/`에 있다. 설치·검증·배포 정책은 [루트 README](../../README.md), 제작 도구의 경로와 보존 정책은 [오디오 제작 안내](../../docs/audio-production.md)를 따른다.
 
@@ -14,6 +14,7 @@
 
 - **같은 날 원고가 바뀐 회차:** 바뀐 줄만 다시 녹음했다. 프롤로그는 원고를 한 번 더 고쳐 두 차례 만들었다. 2화는 문단 하나가 빠져 번호가 밀린 2줄을 다시 녹음했다.
 - **호칭 변경:** "둘째 딸"을 "작은딸"로 바꿔(사용자 결정, 2026-10-09) 11화 3줄과 외전 1줄을 다시 녹음했다. 맏딸은 원고에 이미 "큰딸"로 적혀 있다.
+- **외전 다시 만들기:** 사용자가 외전 원고를 고쳐(2026-10-09) 바뀐 마지막 2줄(016·017)만 새로 녹음하고 MP3·MP4를 다시 만들었다.
 - **이전 녹음 재사용:** 1~3화는 같은 자리의 문장이 그대로인 줄(1화 2줄, 2화 2줄, 3화 3줄)에 이전 원고의 녹음을 썼다.
 
 **기한:** Eleven v4 무료 체험은 **2026-10-22 무렵에 끝난다.** 전 회차 녹음은 그 전에 마쳤다. 원고를 고쳐 다시 녹음할 일이 그 뒤에 생기면 v4 요금과 이용 가능 여부부터 확인한다(아직 확인하지 않았다).
@@ -76,12 +77,14 @@ tools/audiobook-production/   ← Duvridge 모노레포. output/·work/·voice-s
 │   ├── assemble_audiobook.py             속도·쉼·음악·음량 → MP3·MP4·SRT
 │   ├── render_caption_frames.py         표지·회차 카드·자막 PNG
 │   ├── resolve_illustration_assets.py    승인된 공개 삽화 경로 선택
+│   ├── publish_web_videos.py             MP4 웹 사본·영상 목록(media.json) 갱신
 │   ├── list_narration_review_items.py    예전 받아쓰기 검수 결과 목록(쓰지 않는다)
 │   └── analyze_voice_pitch.py           목소리 비교용 음높이 추정
 ├── narration-scripts/<회차>.json  낭독 대본 (원고에서 자동 생성)
 ├── narration-clips/<회차>/        줄별 녹음 캐시. 크레딧이 드는 원본이라 저장소에 넣는다. report.json은 예전 받아쓰기 검수 기록이며 더 갱신하지 않는다
 ├── output/<회차>.mp3·.srt        웹 사이트용(1.0배). narration-clips에서 다시 만들 수 있다
 ├── output/video/<회차>.mp4·.srt  통합 영상용(0.9배)
+├── output/video-web/<회차>.<해시>.mp4  영상 탭에 올리는 사본(25MB 이상은 다시 인코딩)
 ├── work/                중간 파일(믹스 WAV, 화면 PNG). 지워도 다시 만들어진다
 ├── voice-samples/       목소리 후보 비교 샘플
 └── tests/              유료 호출 없이 삽화 표시·대본 변환 검증
@@ -140,7 +143,7 @@ tools/audiobook-production/   ← Duvridge 모노레포. output/·work/·voice-s
 
 ## 주의할 점
 
-- **공개 범위:** 낭독 음성(MP3)과 문장 시각은 공개해도 된다(사용자 결정, 2026-10-08). 영상(MP4)과 가족 재무 정보는 공개 저장소에 올리지 않는다.
+- **공개 범위:** 낭독 음성(MP3)과 문장 시각은 공개해도 된다(사용자 결정, 2026-10-08). 자막이 든 영상(MP4)도 영상 탭에서 공개한다(사용자 결정, 2026-10-09). 영상 파일은 저장소에 커밋하지 않고 GitHub Release에 올린다(나중에 R2로 옮긴다). 가족 재무 정보는 공개하지 않는다.
 - **녹음 파일 이름:** `narration-clips/<회차>/<줄번호>_<해시>.mp3`다. 해시는 낭독 문장, 목소리, 모델, 시드로 정해진다. 대본에 줄을 넣거나 빼면 줄번호가 밀려서 기존 녹음을 못 찾는다. 이때는 녹음 파일 이름과 `report.json`의 번호도 함께 옮긴다. 그러지 않으면 다시 녹음하느라 크레딧을 쓴다.
 - **셸:** 기본 셸이 zsh라 `set -- $var`가 단어를 나누지 않는다. bash 스크립트는 `bash`로 실행한다. macOS의 bash 3에는 `declare -A`가 없다.
 - **목소리 확인:** v4 생성 기록(history)에는 목소리 이름이 비어 나온다. 목소리를 바꿔 시험할 때는 음높이(`src/analyze_voice_pitch.py`)로 실제로 다른 목소리가 쓰였는지 확인한다.
@@ -149,5 +152,6 @@ tools/audiobook-production/   ← Duvridge 모노레포. output/·work/·voice-s
 
 1. 원고를 고치면 고친 회차만 `src/produce-audiobooks.sh <회차…>`로 다시 만든다. 문장이 바뀐 줄만 새로 녹음되고 나머지는 캐시를 쓴다. 줄이 빠지거나 늘어 번호가 밀리면 그 뒤 줄도 새로 녹음된다.
 2. 다시 만든 회차는 루트에서 `npm run narration:sync --workspace @duvridge/toldlife-audiobooks -- <회차>`로 옮긴다. 받아쓰기 검수와 재녹음은 하지 않는다.
-3. 웹 배포 주소와 검증 결과는 [루트 README](../../README.md)에서 확인한다. 유튜브 일부 공개 재생목록으로 영상을 공유할지는 아직 정하지 않았다.
+3. 영상은 이 폴더에서 `python3 -I src/publish_web_videos.py <회차>`를 실행한다. 25MB 이상인 영상은 Cloudflare Pages의 25MiB 제한에 맞게 다시 인코딩한다. 웹 사본에는 내용 해시를 붙이고, `content/books/<작품>/video/media.json`과 `video/timings/`도 함께 갱신한다. 새 사본은 `gh release upload <media.json의 tag> output/video-web/<회차>.<해시>.mp4 --repo MJbae/duvridge`로 올린 뒤 커밋한다. 올리지 않으면 배포 조립이 영상을 받지 못해 멈춘다.
+4. 웹 배포 주소와 검증 결과는 [루트 README](../../README.md)에서 확인한다. 유튜브 일부 공개 재생목록으로 영상을 공유할지는 아직 정하지 않았다.
 4. (선택) 할아버지나 고모님 반응을 받아 속도·자막 크기를 조정한다. 조정하면 `assemble_audiobook.py`만 다시 돌리면 된다(`--audio-tempo`, `--video-tempo`). 녹음은 다시 할 필요가 없다.

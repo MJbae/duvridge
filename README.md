@@ -18,7 +18,7 @@ apps/
   toldlife-portal/          플랫폼 홈: 오리지널 시리즈·오디오북·영상 탭
   toldlife-novels/          웹소설 읽기, 배경음악
   toldlife-audiobooks/      오디오북 듣기, 플레이어, 낭독 동기화
-  toldlife-videos/         장면 그림·자막으로 영상 보기
+  toldlife-videos/         자막이 든 영상(MP4) 보기, 장면 이동
 content/books/
   bae-byunghee/
     manuscript.md          웹 페이지의 원문
@@ -47,7 +47,7 @@ service-registry.json              서비스와 배포 그룹 등록
 - 책 제목·표지·공유 정보·이전 회차 대응표는 `content/books/<책 ID>/book.json`으로 관리합니다. 앱의 책 선택은 `service-registry.json`의 `bookCatalog.path`와 소비 서비스의 `bookCatalog: true`로 선언하며, `content` 변경도 소비하는 세 리더의 CI 대상에 포함됩니다.
 - 세 앱의 Firebase 보안 규칙과 인덱스도 `packages/reader-reactions/firestore`에서 한 번만 관리합니다. 에뮬레이터 설정은 루트 `firebase.json`을 사용합니다. 운영 Firebase 규칙 배포는 웹 배포와 별도 작업입니다.
 - 서비스마다 `test`, `build`, 필요 시 `typecheck`를 제공합니다. 공유 코드와 소비 서비스를 같은 PR에서 검토하고, 배포 그룹별로 버전과 롤백을 관리합니다.
-- 비밀값은 Actions secrets 또는 로컬 `.env`에만 둡니다. `VITE_*`는 브라우저 공개 값이므로 서비스 계정 키를 넣지 않습니다. 빌드 결과·동영상·임시 제작 파일은 커밋하지 않습니다.
+- 비밀값은 Actions secrets 또는 로컬 `.env`에만 둡니다. `VITE_*`는 브라우저 공개 값이므로 서비스 계정 키를 넣지 않습니다. 빌드 결과·동영상·임시 제작 파일은 커밋하지 않습니다. 영상 탭의 MP4는 GitHub Release에 두고 배포 조립 때 받습니다.
 
 ## 개발과 검증
 
@@ -77,7 +77,9 @@ python3 scripts/assemble-toldlife-pages.py --github-vars
 npm run build --workspace @duvridge/company-site
 ```
 
-웹소설·오디오북은 각각 `/novels/`, `/audiobooks/`와 `https://toldlife.duvridge.com`을 기준으로 빌드됩니다. 공개 파일만 `.deploy/toldlife` 및 `.deploy/company`에 모으며 저장소 루트는 배포하지 않습니다.
+웹소설·오디오북·영상은 각각 `/novels/`, `/audiobooks/`, `/videos/`와 `https://toldlife.duvridge.com`을 기준으로 빌드됩니다. 공개 파일만 `.deploy/toldlife` 및 `.deploy/company`에 모으며 저장소 루트는 배포하지 않습니다.
+
+영상 MP4는 조립 단계에서 `--video-media`로 넣습니다. 기본값 `none`은 영상 없이 조립합니다. `release`는 `content/books/<작품>/video/media.json`의 GitHub Release에서 받습니다. 폴더 경로를 주면(예: `tools/audiobook-production/output/video-web`) 그 폴더에서 복사합니다. 어느 경우든 파일 크기와 SHA-256이 목록과 다르면 조립을 멈춥니다. 운영 배포는 `release`를 사용합니다(`service-registry.json`).
 
 ## CI/CD 정책
 
@@ -134,4 +136,4 @@ npm run check:deployment -- --company https://www.duvridge.com --toldlife https:
 
 실제 배포 결과와 검증 범위는 [배포 검증 기록](docs/deployment-verification.md)에 기록합니다.
 
-공개 회차 주소는 `/novels/<작품>/<회차>`, `/audiobooks/<작품>/<회차>`, `/videos/<작품>/<회차>`이며 `.html`을 붙이지 않습니다. 형식 첫 주소는 포털의 해당 탭으로 301 이동합니다. 첫 작품의 옛 회차 주소는 조립 단계에서 만든 `_redirects`로 새 회차에 직접 301 이동합니다. 미디어는 이번 작업에서 Pages에 유지합니다.
+공개 회차 주소는 `/novels/<작품>/<회차>`, `/audiobooks/<작품>/<회차>`, `/videos/<작품>/<회차>`이며 `.html`을 붙이지 않습니다. 형식 첫 주소는 포털의 해당 탭으로 301 이동합니다. 첫 작품의 옛 회차 주소는 조립 단계에서 만든 `_redirects`로 새 회차에 직접 301 이동합니다. 미디어는 이번 작업에서 Pages에 유지합니다. 영상 MP4도 Release에서 받아 `/videos/works/<작품>/media/`에 함께 올립니다. R2로 옮길 때는 받는 위치만 바꿉니다.
