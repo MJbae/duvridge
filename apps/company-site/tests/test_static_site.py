@@ -171,6 +171,16 @@ class StaticSiteTests(unittest.TestCase):
                 self.assertEqual(len(stops), 1)
                 self.assertTrue(lines[0]["d"].endswith(f'{stops[0]["cx"]},{stops[0]["cy"]}'))
                 self.assertFalse(any("eyebrow" in class_names(attrs) for _, attrs in hero))
+                # The product follows right below, so the opening screen carries no buttons.
+                self.assertFalse(any(tag == "a" for tag, _ in hero))
+
+    def test_studio_invites_every_life(self):
+        translations = json.loads((ROOT / "site/translations.json").read_text(encoding="utf-8"))
+        for language, copy in translations.items():
+            with self.subTest(language=language):
+                # The studio writes anyone's life; the retired line limited it to founders and their companies.
+                for word in ("창업", "회사", "founder", "company", "創業", "会社", "创始", "公司", "創辦"):
+                    self.assertNotIn(word, copy["studio_tagline"])
 
     def test_hero_content_stays_visible_without_motion(self):
         css = strip_motion_blocks((ROOT / "assets/site.css").read_text(encoding="utf-8"))
