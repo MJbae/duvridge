@@ -172,7 +172,9 @@ jobs:
 
   deploy:
     needs: [plan, required]
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && needs.plan.outputs.has_services == 'true' && needs.required.result == 'success'
+    # Without a status function GitHub skips this job whenever any earlier job was skipped, such as the URL
+    # rehearsal on a company-only change. `required` already decides whether every needed check passed.
+    if: ${{ !cancelled() && github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && needs.plan.outputs.has_services == 'true' && needs.required.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:

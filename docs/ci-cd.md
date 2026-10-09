@@ -32,7 +32,7 @@
 3. 저장소의 영향 분석·조립 테스트, `packages/`의 공통 기능 테스트와 단일 정본 Firebase 규칙의 Firestore 에뮬레이터 검사를 항상 실행한다. 패키지 테스트는 `npm run test --workspace packages --if-present`로 실행하므로 새 패키지의 `test`도 자동 포함된다. Java 21과 demo 프로젝트를 사용하며 운영 Firebase에는 쓰지 않는다. PR은 영향받은 서비스만, main은 영향받은 배포 그룹의 모든 서비스를 테스트하고 빌드한다.
 4. 소설/오디오북은 콘텐츠 테스트, 운영 경로 빌드, 공유 메타데이터 테스트, 타입 검사를 수행한다. 오디오북은 휴대폰·데스크톱 낭독 상호작용 E2E도 실행한 뒤 운영 경로로 다시 빌드한다.
 5. `Monorepo required`가 계획·저장소 테스트·전체 서비스 매트릭스의 성공을 확인한다. 서비스가 없는 변경은 명시적인 skipped 결과를 허용한다. 브랜치 보호의 필수 상태 체크로 이 이름을 지정한다.
-6. main과 수동 main 실행만 검증한 아티팩트를 배포한다. PR에는 Cloudflare 토큰을 전달하지 않는다. 수동 실행은 전체 그룹을 검증·배포하므로 누락된 운영 갱신 복구에도 사용한다.
+6. main과 수동 main 실행만 검증한 아티팩트를 배포한다. PR에는 Cloudflare 토큰을 전달하지 않는다. 수동 실행은 전체 그룹을 검증·배포하므로 누락된 운영 갱신 복구에도 사용한다. 배포 작업은 조건 앞에 `!cancelled()`를 두고 `Monorepo required` 결과로만 판단한다. 상태 함수가 없으면 회사만 바뀐 main에서 ToldLife 주소 검사가 건너뛰어질 때 GitHub가 그 건너뜀을 이어받아 배포까지 건너뛴다.
 
 서비스 빌드 결과는 경로를 보존하는 tar 아티팩트로 전달한다. 운영 배포에서는 같은 실행의 아티팩트만 복원하고, ToldLife 조립 전에 세 리더의 작품 홈·대표 회차·필수 음원·canonical base를 확인한다. 25 MiB 파일 제한, 20,000개 파일 제한, 공개 폴더의 환경 설정 파일도 검사한다. [Cloudflare 업로드 제한](https://developers.cloudflare.com/pages/get-started/direct-upload/#limits)
 
