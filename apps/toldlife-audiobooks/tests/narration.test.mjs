@@ -203,6 +203,9 @@ test('장면 정보는 낭독 대본의 그림 순서를 자막 번호로 옮기
   const cues = parseSrt(timing)
   assert.deepEqual(buildScenes(script, cues, 'ep01'), [{ cue: 0, image: 'ep01-01' }, { cue: 4, image: 'ep01-02' }])
   assert.throws(() => buildScenes(script.slice(0, -1), cues, 'ep01'), /맞지 않습니다/)
+  // Prose before the first illustration marker carries no image; the opening painting stays on screen.
+  const late = script.map((line, index) => (index === 2 ? { ...line, image: null } : line))
+  assert.deepEqual(buildScenes(late, cues, 'ep01'), [{ cue: 0, image: 'ep01-01' }, { cue: 4, image: 'ep01-02' }])
   assert.throws(() => buildScenes([...script.slice(0, -1), { kind: 'para', show: '다른 문장이다.', image: 'ep01-02' }], cues, 'ep01'), /다릅니다/)
   const { root, write } = fixture(t)
   write('site/public/record/ep01.mp3', 'mp3')
@@ -279,23 +282,23 @@ test('오디오북 결과물에서 음성을 옮기고 문장 시각을 실제 �
 test('콘텐츠를 준비하면 낭독 회차를 목록에 넣고 본문은 따로 감싸지 않는다', t => {
   const { root, write } = fixture(t)
   write(mainFilename, stripIllustrationMarkers(original))
-  write('site/public/record/ep01.mp3', readFileSync(path.join(repo, 'site/public/record/ep01.mp3')))
-  write('content/narration/ep01.srt', readFileSync(path.join(repo, 'content/narration/ep01.srt'), 'utf8'))
+  write('site/public/record/prolog.mp3', readFileSync(path.join(repo, 'site/public/record/prolog.mp3')))
+  write('content/narration/prolog.srt', readFileSync(path.join(repo, 'content/narration/prolog.srt'), 'utf8'))
   const { catalog, warnings } = prepareContent({ root, logger: silent })
-  assert.deepEqual(Object.keys(catalog.narration), ['ep01'])
-  assert.equal(catalog.narration.ep01.texts.length, catalog.narration.ep01.cues.length)
+  assert.deepEqual(Object.keys(catalog.narration), ['prolog'])
+  assert.equal(catalog.narration.prolog.texts.length, catalog.narration.prolog.cues.length)
   assert.deepEqual(warnings, [])
   assert.equal(existsSync(path.join(root, 'site/.vitepress/generated/narration.json')), false)
-  assert.equal(matter(readFileSync(path.join(root, 'site/read/ep01.md'), 'utf8')).data.narration, undefined)
+  assert.equal(matter(readFileSync(path.join(root, 'site/read/prolog.md'), 'utf8')).data.narration, undefined)
 })
 
-test('3화까지의 낭독 음성과 문장 시각, 장면이 같은 회차 ID로 연결된다', () => {
+test('모든 회차의 낭독 음성과 문장 시각, 장면이 같은 회차 ID로 연결된다', () => {
   const main = matter(original)
   const { episodes } = parseManuscript(main.content)
   const { tracks } = loadNarration(repo, episodes, { work })
   const manifest = JSON.parse(readFileSync(path.join(repo, '../../content/books/bae-byunghee/illustrations/manifest.json'), 'utf8'))
   const known = new Set(['cover', ...manifest.images.map(image => image.id)])
-  assert.deepEqual(Object.keys(tracks), ['prolog', 'ep01', 'ep02', 'ep03'])
+  assert.deepEqual(Object.keys(tracks), episodes.map(episode => episode.id))
   for (const [id, track] of Object.entries(tracks)) {
     assert.equal(track.src, `/record/${id}.mp3`)
     assert.ok(existsSync(path.join(repo, 'site/public', track.src)))

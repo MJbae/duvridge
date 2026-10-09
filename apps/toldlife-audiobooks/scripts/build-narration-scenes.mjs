@@ -28,7 +28,8 @@ export function buildScenes(lines, cues, id = '') {
     if (unit.kind === 'para' && compact(unit.text) !== compact(spoken[index].text))
       throw new Error(`${id}: ${index + 1}번째 문장이 낭독 대본과 다릅니다.`)
   })
-  return units.reduce((scenes, unit, index) => (scenes.at(-1)?.image === unit.image ? scenes : [...scenes, { cue: index, image: unit.image }]), [])
+  // Prose before an episode's first illustration has no picture of its own; the title card's painting stays.
+  return units.reduce((scenes, unit, index) => (!unit.image || scenes.at(-1)?.image === unit.image ? scenes : [...scenes, { cue: index, image: unit.image }]), [])
 }
 
 /** Writes content/narration/<id>.scenes.json beside each episode's subtitle timing. */

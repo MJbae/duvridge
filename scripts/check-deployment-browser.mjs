@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { createHash } from 'node:crypto'
-import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { parseArgs } from 'node:util'
@@ -89,7 +89,11 @@ try {
       assert(listen.includes(`https://toldlife.duvridge.com/audiobooks/read/${id}.html`), `audiobooks/${id}: wrong canonical`)
       assert.equal((await headOf(listen)).title, `${episode.label} ${episode.title} · ${title}`, `audiobooks/${id}: stale title`)
     }
-    const recordings = ['prolog', 'ep01', 'ep02', 'ep03']
+    // Episodes are recorded one at a time; check the ones this revision publishes, in reading order.
+    const audiobooks = registry.services.find(service => service.id === 'toldlife-audiobooks')
+    const recorded = new Set((await readdir(resolve(repositoryRoot, audiobooks.path, 'site/public/record'))).filter(name => name.endsWith('.mp3')).map(name => name.slice(0, -4)))
+    const recordings = episodes.filter(id => recorded.has(id))
+    assert(recordings.length > 0, 'No recorded episode to check')
     for (const id of recordings) {
       const episode = structure.episodes.find(entry => entry.id === id)
       const watch = await (await request(values.toldlife, `/audiobooks/watch/${id}.html`)).text()
@@ -150,7 +154,7 @@ try {
       }).toPass({ timeout: 30000 })
       assert(!await overflows(), 'novel reader overflows')
       await page.screenshot({ path: `${output}/novels-${device}-reader.png`, fullPage: true })
-      await page.goto(new URL('/audiobooks/read/ep02.html', values.toldlife).href)
+      await page.goto(new URL(`/audiobooks/read/${recordings[0]}.html`, values.toldlife).href)
       console.log(`Checking ${device} playback at ${page.url()}`)
       await startPlayback(page, device)
       assert(await page.getByRole('button', { name: '일시 정지', exact: true }).isVisible())
@@ -164,7 +168,7 @@ try {
       await page.screenshot({ path: `${output}/audiobooks-${device}-player.png`, fullPage: true })
       await page.getByRole('button', { name: '일시 정지', exact: true }).click()
       assert(await audio(page).evaluate(element => element.paused))
-      await page.goto(new URL('/audiobooks/watch/ep02.html', values.toldlife).href)
+      await page.goto(new URL(`/audiobooks/watch/${recordings[0]}.html`, values.toldlife).href)
       await startPlayback(page, device)
       assert((await page.locator('.subtitle-band').textContent()).trim().length > 0, 'no video subtitle')
       assert(!await overflows(), 'video overflows')

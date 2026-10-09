@@ -1,8 +1,9 @@
-"""낭독 대본(JSON)의 각 줄을 ElevenLabs로 생성하고 받아쓰기(STT)로 검수한다.
+"""낭독 대본(JSON)의 각 줄을 ElevenLabs로 생성한다.
 
-usage: python3 -I generate_narration_clips.py narration-scripts/ep01.json [--only 3,5] [--force] [--no-stt]
+usage: python3 -I generate_narration_clips.py narration-scripts/ep01.json [--only 3,5] [--force]
 - 같은 문장·목소리·모델·시드면 다시 만들지 않는다(narration-clips/<회차>/ 캐시).
-- 검수 결과는 narration-clips/<회차>/report.json 에 남긴다.
+- 받아쓰기(STT) 검수와 재녹음은 하지 않는다(사용자 결정, 2026-10-09). 받아쓰기가 정확하지 않아 결과를 믿을 수 없다.
+  예전 검수 기능은 --stt 로만 켜지며 쓰지 않는다. 그 결과는 narration-clips/<회차>/report.json 에 남아 있다.
 """
 import argparse
 import difflib
@@ -147,17 +148,26 @@ def main():
     ap.add_argument("script")
     ap.add_argument("--only", help="줄 번호 목록, 예: 3,5")
     ap.add_argument("--force", action="store_true")
-    ap.add_argument("--no-stt", action="store_true")
     ap.add_argument("--workers", type=int, default=3)
-    ap.add_argument("--retakes", type=int, default=0, help="검수 실패 시 다시 만들 횟수(사용자 결정 2026-10-08: 0번, 사람이 듣고 판단)")
-    ap.add_argument("--recheck", action="store_true", help="이미 검수한 캐시 녹음도 다시 받아쓰기")
-    ap.add_argument("--approve", help="사람이 들어 보고 괜찮다고 한 줄 번호, 예: 2,3")
+    # 사용자 결정(2026-10-09): 받아쓰기 검수와 재녹음을 하지 않는다. 아래 네 옵션은 예전 검수용이며 쓰지 않는다.
+    ap.add_argument("--stt", action="store_true", help="예전 받아쓰기 검수(쓰지 않는다, 사용자 결정 2026-10-09)")
+    ap.add_argument("--retakes", type=int, default=0, help="--stt 검수 실패 시 다시 만들 횟수(쓰지 않는다)")
+    ap.add_argument("--recheck", action="store_true", help="--stt 이미 검수한 캐시 녹음도 다시 받아쓰기")
+    ap.add_argument("--approve", help="--stt 사람이 들어 보고 괜찮다고 한 줄 번호, 예: 2,3")
     a = ap.parse_args()
     eid = Path(a.script).stem
     lines = json.loads(Path(a.script).read_text(encoding="utf-8"))
     only = {int(x) for x in a.only.split(",")} if a.only else None
     env = api_env()
     todo = [(i, ln) for i, ln in enumerate(lines) if ln["say"] and (only is None or i in only)]
+
+    if not a.stt:
+        with ThreadPoolExecutor(a.workers) as pool:
+            done = list(pool.map(lambda item: (item[0], *generate(item[0], item[1], eid, env, a.force)), todo))
+        for i, _, made in done:
+            print(f"· {i:03d} {'생성' if made else '캐시'}")
+        print(f"[{eid}] 녹음 {len(done)}줄, 새로 만든 줄 {sum(made for *_, made in done)}개")
+        return
 
     report_path = ROOT / "narration-clips" / eid / "report.json"
     report = json.loads(report_path.read_text()) if report_path.exists() else {}
@@ -173,7 +183,7 @@ def main():
         prev = report.get(str(i))
         if not made and prev and prev.get("file") == path.name and not a.recheck:
             return i, path, made, prev   # 같은 녹음은 다시 받아쓰기하지 않는다(사람 확인 기록 유지)
-        result = None if a.no_stt else {**check(i, ln, path, env), "seed": SEED}
+        result = {**check(i, ln, path, env), "seed": SEED}
         if result and not result["ok"] and made and a.retakes:
             result = retake(i, ln, eid, env, result, a.retakes)
         return i, path, made, result

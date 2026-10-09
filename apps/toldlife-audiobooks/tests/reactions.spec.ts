@@ -30,7 +30,7 @@ test.beforeEach(async ({ request }) => {
   expect(clearAccounts.ok()).toBeTruthy()
 })
 
-async function openReactions(page: Page, id = 'ep01') {
+async function openReactions(page: Page, id = 'prolog') {
   // Reactions belong to the end of an episode: play it out, and stay there instead of moving on.
   await page.addInitScript(() => localStorage.setItem('family-library:narration-autoplay', '0'))
   await page.goto(`/read/${id}.html`)
@@ -59,7 +59,7 @@ async function openReactions(page: Page, id = 'ep01') {
   })).toBe(40)
 }
 async function storedReactions(request: APIRequestContext) {
-  const response = await request.get(`${documentsBase}/pages/memoir-ep01/reactions`, { headers: { Authorization: 'Bearer owner' } })
+  const response = await request.get(`${documentsBase}/pages/memoir-prolog/reactions`, { headers: { Authorization: 'Bearer owner' } })
   expect(response.ok()).toBeTruthy()
   return (await response.json()).documents || []
 }
@@ -75,15 +75,11 @@ test('Firebase가 연결되어도 댓글 화면과 요청은 없고 회차 반�
   await page.locator('.listen-end').screenshot({ path: 'test-results/reactions/reactions-390.png' })
   await expect(page.locator('#comments, .family-comments, .comment-composer')).toHaveCount(0)
   await expect(page.getByRole('textbox')).toHaveCount(0)
-  await page.locator('.next-episode .big-button').click()
-  await expect(page).toHaveURL(/ep02\.html$/)
-  await openReactions(page, 'ep02')
   await expect(page.getByRole('button', { name: '좋아요', exact: true })).toBeEnabled()
-  await expect(page.locator('#comments, .family-comments, .comment-composer')).toHaveCount(0)
   expect(commentRequests).toEqual([])
 })
 
-test('episode reactions coalesce clicks, persist across browsers, switch, cancel, and survive next-episode navigation', async ({ page, request, browser }) => {
+test('episode reactions coalesce clicks, persist across browsers, switch, cancel, and survive leaving the episode', async ({ page, request, browser }) => {
   await page.setViewportSize({ width: 320, height: 740 })
   await openReactions(page)
   expect(await storedReactions(request)).toHaveLength(0)
@@ -118,8 +114,9 @@ test('episode reactions coalesce clicks, persist across browsers, switch, cancel
     await expect(page.locator('.reaction-options button[aria-pressed="false"] svg[fill="currentColor"]')).toHaveCount(0)
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
     await page.screenshot({ path: 'test-results/reactions/reactions-320.png', fullPage: true })
-    await page.locator('.next-episode .big-button').click()
-    await expect(page).toHaveURL(/ep02\.html$/)
+    // Only the prologue is recorded, so leave through the player's link to the work page instead of the next episode.
+    await page.getByRole('link', { name: '플레이어 접기' }).click()
+    await expect(page).toHaveURL(/#episode-prolog$/)
     await expect.poll(async () => (await storedReactions(request))[0]?.fields.wow.integerValue).toBe('1')
     expect((await storedReactions(request))[0].fields.remember.integerValue).toBe('0')
   } finally { await context.close() }
@@ -179,24 +176,21 @@ test('저장 요청 중에도 선택을 바꾸고 마지막 선택만 순서대�
   } finally { release() }
 })
 
-test('미전송 선택을 보관하고 다른 화에서 새로고침해도 이어서 저장한다', async ({ page, request }) => {
+test('미전송 선택을 보관하고 회차를 떠나 새로고침해도 이어서 저장한다', async ({ page, request }) => {
   await page.route(/\/firestore-reaction-store\.ts(?:\?|$)/, async route => {
     await new Promise(resolve => setTimeout(resolve, 1800))
     await route.continue().catch(() => { /* The old document's request is cancelled on navigation. */ })
   })
   await openReactions(page)
   await page.locator('.reaction-options button').first().click()
-  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('family-library:reaction:ep01')!)))
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('family-library:reaction:prolog')!)))
     .toMatchObject({ selected: 'heart', pending: true })
-  await page.locator('.next-episode .big-button').click()
-  await expect(page).toHaveURL(/ep02\.html$/)
+  await page.getByRole('link', { name: '플레이어 접기' }).click()
+  await expect(page).toHaveURL(/#episode-prolog$/)
   await page.reload()
-  await openReactions(page, 'ep02')
-  await expect(page.locator('.reaction-options button')).toHaveCount(4)
-  await expect(page.locator('.reaction-options button[aria-pressed="true"]')).toHaveCount(0)
-  await expect.poll(async () => (await storedReactions(request))[0]?.fields.heart.integerValue).toBe('1')
-  await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('family-library:reaction:ep01')!).pending)).toBe(false)
   await openReactions(page)
+  await expect.poll(async () => (await storedReactions(request))[0]?.fields.heart.integerValue).toBe('1')
+  await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('family-library:reaction:prolog')!).pending)).toBe(false)
   await expect(page.locator('.reaction-options button').first()).toHaveAttribute('aria-pressed', 'true')
 })
 
@@ -214,9 +208,9 @@ test('기존 반응을 UID·선택·시각 그대로 이관하고 재실행해�
     updatedAt: { timestampValue: time },
   })
   for (const [id, user, selected, time] of [
-    ['memoir-ep-josae', uid!, 'like', older],
-    ['memoir-ep-josae', 'other-reader', 'heart', older],
-    ['memoir-ep01', 'other-reader', 'wow', newer],
+    ['memoir-life-prologue', uid!, 'like', older],
+    ['memoir-life-prologue', 'other-reader', 'heart', older],
+    ['memoir-prolog', 'other-reader', 'wow', newer],
   ]) {
     const response = await request.patch(`${documentsBase}/pages/${id}/reactions/${user}`, { headers: { Authorization: 'Bearer owner' }, data: { fields: fields(selected, time) } })
     expect(response.ok()).toBeTruthy()

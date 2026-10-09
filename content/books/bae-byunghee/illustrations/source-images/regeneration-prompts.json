@@ -20,7 +20,7 @@
     {
       "id": "ep06-01",
       "episodeId": "ep06",
-      "master": "illustrations/source-images/ep06-01.png",
+      "master": "illustrations/source-images/white-watercolor/ep06-01.png",
       "sceneHeading": "겨울 갯벌의 김 양식 {#ep06}",
       "sceneExcerpt": "네모난 나무틀로 물에 풀린 김을 알맞게 떠올려 물기를 뺀 뒤, 볏짚으로 엮은 발 위에 한 장씩 얇고 가지런하게 펴 얹었다. 두께가 너무 두껍지도 않고 구멍이 숭숭 뚫리지도 않게 매끄러운 사각형을 빚어내는 데는 오랜 눈썰미가 필요했다. 방학을 맞은 아이들도 손이 시리고 트는 고생을 마다하지 않고 마당 가득 김발을 나르고 너는 일을 도왔다.",
       "corrections": [
@@ -64,7 +64,7 @@
     {
       "id": "ep08-03",
       "episodeId": "ep08",
-      "master": "illustrations/source-images/ep09-01.png",
+      "master": "illustrations/source-images/white-watercolor/ep08-03.png",
       "sceneHeading": "멈춰 선 탈곡기를 돌려라 {#ep08}",
       "sceneExcerpt": "이어 1970년대 중반에는 충남 광천 시장에서 벼를 베어 묶는 보행형 수확기인 ‘바인더(Binder)’를 보고 과감히 구입했다. 당시 안면도에서는 낯선 기계였다. 낫으로 며칠씩 베어야 할 논을 바인더로 밀고 나가면 밑동을 벤 벼를 노끈으로 묶어 논둑에 가지런히 내려놓았다.",
       "corrections": [
@@ -347,7 +347,7 @@
     {
       "id": "side-01",
       "episodeId": "side",
-      "master": "illustrations/source-images/side-01.png",
+      "master": "illustrations/source-images/white-watercolor/side-01.png",
       "sceneHeading": "외전. 아버지의 밥상 {#side}",
       "sceneExcerpt": "정미소 일을 돕던 자식이 온몸에 뽀얀 쌀겨와 먼지를 뒤집어쓴 채 밤늦게 돌아왔을 때의 일이다. 아버지는 먼저 저녁을 들지 않고, 김이 모락모락 피어오르는 갓 삶은 수육 한 상을 정갈하게 차려놓은 채 자식을 우두커니 기다리고 있었다. “아버지, 왜 먼저 진지 안 드시고 기다리셨어요?”라는 물음에, 아버지는 그저 “식기 전에 어서 먹어라” 하며 젓가락을 쥐여줄 뿐이었다.",
       "corrections": [
@@ -379,7 +379,7 @@
     {
       "id": "ep03-01",
       "episodeId": "ep03",
-      "master": "illustrations/source-images/ep03-01.png",
+      "master": "illustrations/source-images/white-watercolor/ep03-01.png",
       "sceneHeading": "열두 자리 숫자 {#ep03}",
       "sceneExcerpt": "형들이 입대하던 날, 바로 위 형은 막내의 손을 꼭 쥐며 자신의 군번을 일러주었다. 열두 자리에 이르는 긴 숫자였다. 소년은 뙤약볕 아래서 도리깨를 내리칠 때마다, 밤마다 욱신거리는 손을 모아 쥐고 형들의 무사 귀환을 빌 때마다 그 열두 자리 숫자를 입속으로 외우고 또 외웠다.",
       "placementRole": "representative",
@@ -414,7 +414,7 @@
     {
       "id": "ep07-01",
       "episodeId": "ep07",
-      "master": "illustrations/source-images/ep07-01.png",
+      "master": "illustrations/source-images/white-watercolor/ep07-01.png",
       "sceneHeading": "멸치 떼를 쫓는 청년 {#ep07}",
       "sceneExcerpt": "낭장망은 조류가 드나드는 길목의 얕은 바다에 참나무 말뚝을 단단히 박고, 조류의 방향을 따라 긴 자루그물을 쳐서 물고기를 잡는 어구였다. 밀물을 타고 들어온 물고기들이 썰물 때 빠른 여울에 휩쓸려 그물 끝자루로 자연스럽게 모여들도록 한 원리였다. 바닷일은 물때가 곧 시계였다. 밤낮을 가리지 않고 썰물이 끝날 무렵이 되면 배병희와 동료들은 물길을 건너가 묵직하게 가라앉은 그물을 걷어 올렸다. 그물을 들어 올리면 퍼덕이는 멸치 떼가 은빛을 뿜으며 쏟아져 나왔고, 맑고 투명한 실치와 꼴뚜기, 갖가지 바닷물고기가 그물 가득 묵직하게 걸려들었다.",
       "placementRole": "representative",
@@ -449,7 +449,7 @@
     {
       "id": "ep15-01",
       "episodeId": "ep15",
-      "master": "illustrations/source-images/ep15-01.png",
+      "master": "illustrations/source-images/white-watercolor/ep15-01.png",
       "sceneHeading": "품삯으로 건넨 볍씨 {#ep15}",
       "sceneExcerpt": "이튿날에도 배병희는 아무 일 없었다는 듯 그 이웃을 살갑게 대했다. 그러고는 며칠 지나 그가 무안하지 않도록 슬며시 말을 건넸다.\n“정미소에 잔손 가는 일이 영 밀렸는데, 며칠 와서 일손 좀 보태주시오.”\n공짜로 건네는 적선이 아니라 떳떳한 품삯으로 쥐여주어 이웃의 자존심을 지켜준 속 깊은 배려였다.",
       "placementRole": "representative",
@@ -484,7 +484,7 @@
     {
       "id": "ep18-01",
       "episodeId": "ep18",
-      "master": "illustrations/source-images/ep18-01.png",
+      "master": "illustrations/source-images/white-watercolor/ep18-01.png",
       "sceneHeading": "마지막 1만 2천 평 {#ep18}",
       "sceneExcerpt": "하지만 배병희는 조금도 주저하지 않고 안방 장롱 깊숙한 곳에서 손때 묻은 누런 땅문서 봉투를 꺼냈다. 식구들이 입에 풀칠하며 버틸 최소한의 농토인 4정보, 즉 마지막 1만 2천 평만 남겨두고 남아 있던 논을 남김없이 팔기로 결단을 내렸다. 날짜를 맞추어 급전을 마련해야 했기에 제값을 따질 겨를도 없이 헐값에라도 논을 넘겼다.",
       "placementRole": "representative",
@@ -518,7 +518,7 @@
     {
       "id": "ep18-02",
       "episodeId": "ep18",
-      "master": "illustrations/source-images/ep18-02.png",
+      "master": "illustrations/source-images/white-watercolor/ep18-02.png",
       "sceneHeading": "마지막 1만 2천 평 {#ep18}",
       "sceneExcerpt": "어음이나 외상 전표가 아니었다. 배병희는 수매 장부를 펼쳐놓고 농민들의 이름을 하나하나 호명하며, 빳빳한 현금으로 볏값 전액을 단 한 푼도 에누리 없이 손에 쥐여주었다. 볏값을 떼일까 봐 밤잠을 설치며 가슴을 졸이던 농민들은 눈앞에 놓인 돈다발을 보고 말을 잇지 못했다.\n“배 사장, 정말 이 돈을 다 준단 말이오? 정미소 논까지 다 팔아서 마련했다던데….”\n거친 손으로 지폐를 건네받은 한 늙은 농부의 눈시울이 붉어졌다. 어떤 농민은 떨리는 손으로 돈을 쥔 채 한참 동안 고개를 들지 못했다. 남들은 부도가 나면 슬그머니 자취를 감추기 바쁘던 시절이었다. 제 논을 팔아가면서까지 약속했던 볏값을 온전히 치러낸 배병희의 결단은 농민들의 가슴을 먹먹하게 울렸다. 배병희는 농민들의 거친 손을 꼭 쥐며 나직이 말했다.\n“약속한 돈인데 당연히 드려야지요. 믿고 기다려주셔서 참말로 고맙습니다.”",
       "placementRole": "body",
@@ -552,7 +552,7 @@
     {
       "id": "ep06-02",
       "episodeId": "ep06",
-      "master": "illustrations/source-images/ep06-02.png",
+      "master": "illustrations/source-images/white-watercolor/ep06-02.png",
       "sceneHeading": "겨울 갯벌의 김 양식 {#ep06}",
       "sceneExcerpt": "동지섣달 살을 에는 추위가 닥치면 김 채취가 본격적으로 시작되었다. 바다의 물때는 밤낮을 가리지 않았기에, 배병희는 칠흑 같은 새벽이나 달빛만 희미한 한밤중에도 물이 빠지기 무섭게 갯벌로 나섰다. 갯벌 위로 살얼음이 버석거리고 칼바람이 얼굴을 후려치는 엄동설한이었다. 얼음장 같은 뻘물에 손을 담그고, 대나무 발에 까맣게 엉겨 붙은 생김을 손끝으로 일일이 뜯어냈다. 장갑을 껴도 얼음물이 스며들면 손가락이 마비되어 감각이 사라졌고, 손마디는 부르트고 갈라져 피가 배어 나왔다. 하지만 그는 추위를 느낄 겨를도 없이 밀물이 차오르기 전에 부지런히 광주리를 채워 지게로 져 날랐다.",
       "placementRole": "body",
@@ -590,7 +590,7 @@
     {
       "id": "ep08-02",
       "episodeId": "ep08",
-      "master": "illustrations/source-images/ep08-02.png",
+      "master": "illustrations/source-images/white-watercolor/ep08-02.png",
       "sceneHeading": "멈춰 선 탈곡기를 돌려라 {#ep08}",
       "sceneExcerpt": "발동기 평벨트가 탈곡기를 돌리면 일꾼들이 손발을 맞춰 볏단을 날라 넣었다. 낟알이 순식간에 쏟아져 내리며, 며칠이 걸리던 타작을 반나절 만에 끝내자 농민들의 호응이 대단했다.",
       "placementRole": "body",
@@ -628,7 +628,7 @@
     {
       "id": "ep01-02",
       "episodeId": "ep01",
-      "master": "illustrations/source-images/ep01-02.png",
+      "master": "illustrations/source-images/white-watercolor/ep01-02.png",
       "masterSha256": "16d277d41980477a7c33be7c2c5ae80331b52061f9cec3edd60ab9d7a5052d50",
       "sceneHeading": "어머니의 쇠갈고리 {#ep01}",
       "sceneExcerpt": "비탈밭 작물과 갯벌에서 거둔 해산물 덕분에 대식구는 굶주림을 면할 수 있었다. 쌀밥 한 그릇 배불리 먹기 어려웠던 시절이었으나, 어린 배병희는 흙과 바다를 터전 삼아 건강하게 자라났다. 어머니의 시린 손끝과 부지런히 땀 흘리는 아버지와 형들의 모습을 날마다 마주하며 정직한 노동의 참된 가치를 자연스럽게 가슴에 새겼다.",
@@ -657,7 +657,7 @@
     {
       "id": "ep04-02",
       "episodeId": "ep04",
-      "master": "illustrations/source-images/ep04-02.png",
+      "master": "illustrations/source-images/white-watercolor/ep04-02.png",
       "masterSha256": "340caf573891211a94893bd9fdfa848a44037ce025d5cdfa4ba4ed436f07700b",
       "sceneHeading": "천수만의 돌풍 {#ep04}",
       "sceneExcerpt": "성난 파도와 사투를 벌인 끝에, 배는 천수만 한가운데 외로이 떠 있던 작은 섬 죽도(竹島)의 갯바위에 가까스로 닿았다. 뱃머리가 덜컥 바위에 부딪히며 멈추어 서자, 그는 갯바위를 끌어안고 거친 숨을 토해냈다. 가까스로 목선과 젖은 나무를 바위틈에 묶어둔 뒤, 살을 에는 바닷바람 속에서 뜬눈으로 밤을 지새우며 조난의 두려움을 버텨냈다.",
@@ -693,7 +693,7 @@
     {
       "id": "ep10-02",
       "episodeId": "ep10",
-      "master": "illustrations/source-images/ep10-02.png",
+      "master": "illustrations/source-images/white-watercolor/ep10-02.png",
       "masterSha256": "71913e34de1de44886ee9fc99a15624382bf2d68d34fcc3aa913598a76f05626",
       "sceneHeading": "소금기 밴 6만 평 {#ep10}",
       "sceneExcerpt": "6만 평이나 되는 너른 논은 일가족의 손만으로는 감당할 수 없는 거대한 대지였다. 모내기철이면 온 동네 일손이 다 나와도 모자랄 지경이었다. 배병희는 마을 주민들과 품앗이를 나누는 데 그치지 않고, 품삯을 주고 이웃들의 일손을 널리 모았다. 그는 형편이 어렵거나 갓 이주해 생계가 막막한 농가를 먼저 찾아가 일을 청했다. 품삯은 그날그날 현금이나 쌀로 넉넉하게 셈해 주었고, 일을 시작하기 전에는 늘 따뜻한 밥을 배불리 먹이며 일꾼들을 가족처럼 살뜰히 대했다. 낯선 타향살이에 서먹했던 이웃들의 마음도 논두렁에서 함께 나눈 밥상과 거짓 없는 품삯을 통해 차츰 깊은 신뢰로 바뀌어 갔다.",
@@ -727,7 +727,7 @@
     {
       "id": "ep12-02",
       "episodeId": "ep12",
-      "master": "illustrations/source-images/ep12-02.png",
+      "master": "illustrations/source-images/white-watercolor/ep12-02.png",
       "masterSha256": "48e7aa4325797a458464c06de503e9d93515c2f195b86d50c08ddb5267532566",
       "sceneHeading": "망해가는 정미소를 사다 {#ep12}",
       "sceneExcerpt": "절박해진 독정리 농민들이 모여 상의 끝에 찾아간 사람이 바로 배병희였다.\n“배 사장, 배 사장이 이 정미소를 맡아주지 않으면 우리 농민들은 다 길바닥에 나앉게 생겼소. 제발 이 정미소 좀 맡아 살려주시오. 배 사장이 맡아준다면 우리가 두말없이 벼를 다 맡기고 앞장서서 돕겠소.”",
@@ -761,7 +761,7 @@
     {
       "id": "ep13-02",
       "episodeId": "ep13",
-      "master": "illustrations/source-images/ep13-02.png",
+      "master": "illustrations/source-images/white-watercolor/ep13-02.png",
       "masterSha256": "84f717ce583d48e1d619604d8dd1665ac164ea937c36219b169cd9574d8b0c83",
       "sceneHeading": "장대비 속 볏가마 사수작전 {#ep13}",
       "sceneExcerpt": "정미소가 정상 가동되고 약속한 날에 볏값을 꼬박꼬박 내준다는 소문이 돌자, 독정리는 물론 인근 장안면 들판의 농가들까지 벼를 싣고 몰려들었다. 그러나 당시 정미소에는 쏟아져 들어오는 곡식을 다 들여놓을 만한 번듯한 창고가 없었다.",
@@ -800,7 +800,7 @@
     {
       "id": "ep15-03",
       "episodeId": "ep15",
-      "master": "illustrations/source-images/ep15-03.png",
+      "master": "illustrations/source-images/white-watercolor/ep15-03.png",
       "masterSha256": "0a9d2db0ff02a99a4e55c75bd9af5e28bf64a4ba19a636827888e37d9dfdb720",
       "sceneHeading": "품삯으로 건넨 볍씨 {#ep15}",
       "sceneExcerpt": "트럭을 몰고 신작로를 달리다가도 길섶을 걸어가는 동네 어르신이나 이웃이 보이면, 흙먼지가 날릴세라 저만치서 차를 멈추고 시동부터 껐다. 그러고는 차 문을 열고 내려 허리를 깊숙이 숙여 인사를 건넸다. 차창만 내리고 고개만 까딱하는 법이 결코 없었다.",
@@ -834,7 +834,7 @@
     {
       "id": "ep16-02",
       "episodeId": "ep16",
-      "master": "illustrations/source-images/ep16-02.png",
+      "master": "illustrations/source-images/white-watercolor/ep16-02.png",
       "masterSha256": "45518f39c2e0143172f0d7f3d1a5d92186d2ccd1b1c35af4a40d9a50ecb997b0",
       "sceneHeading": "부엌을 지킨 사람 {#ep16}",
       "sceneExcerpt": "정미소를 시작하기 전, 독정리의 열여덟 평 시멘트 기와집은 식솔들로 늘 비좁았다. 아내는 고향 안면도에서 함께 모시고 온 시어머니를 지극정성으로 봉양했다. 기력이 쇠해 자리에 누운 시어머니의 대소변을 받아내며 병구완을 도맡았다.",
@@ -872,7 +872,7 @@
     {
       "id": "ep17-02",
       "episodeId": "ep17",
-      "master": "illustrations/source-images/ep17-02.png",
+      "master": "illustrations/source-images/white-watercolor/ep17-02.png",
       "masterSha256": "464375a043d54bcff73ae487281fa5d6175197f0a65dcad7d2313976ecb918b6",
       "sceneHeading": "떼인 3억 {#ep17}",
       "sceneExcerpt": "어느 캄캄한 밤, 도둑들이 정미소 뒤편 곡식 창고 벽을 뚫고 침입했다. 창고 가득 쌓아두었던 쌀 수백 가마를 마당에 세워둔 화물 트럭에 몽땅 싣고 어둠 속으로 달아나 버렸다. 이튿날 아침 뻥 뚫린 창고 벽과 트럭마저 사라진 빈 마당을 마주한 배병희는 하늘이 무너져 내리는 듯 눈앞이 아득해졌다.",
@@ -906,7 +906,7 @@
     {
       "id": "side-02",
       "episodeId": "side",
-      "master": "illustrations/source-images/side-02.png",
+      "master": "illustrations/source-images/white-watercolor/side-02.png",
       "masterSha256": "454393a5471620fe9bd1270344ed56fb63e238f5e47a992ffd9000c626126fa3",
       "sceneHeading": "외전. 아버지의 밥상 {#side}",
       "sceneExcerpt": "손주들이 태어났을 때도 그랬다. 소식을 듣고는 전화로 그저 “그래, 고생했다” 하고 덤덤하게 끊었지만, 다음 날 새벽 첫차를 타고 서울 병원으로 불쑥 올라왔다. 갓난아이를 물끄러미 들여다보던 그 무뚝뚝한 얼굴을 가족들은 잊지 못한다. 손주가 아파 입원했다는 소식이 들리면 바쁜 일손을 멈추고 병원으로 달려와, 제 눈으로 괜찮은 것을 확인하고서야 안심하고 돌아섰다.",
@@ -941,7 +941,7 @@
     {
       "id": "ep19-01",
       "episodeId": "ep19",
-      "master": "illustrations/source-images/ep19-01.png",
+      "master": "illustrations/source-images/white-watercolor/ep19-01.png",
       "masterSha256": "59583e95421bb562cc8cb5ad3b32aa345b56c3284cd66a3b2080baad2fa16458",
       "sceneHeading": "밀려드는 벼, 커지는 정미소 {#ep19}",
       "sceneExcerpt": "농민들의 두터운 신뢰가 쌓이면서 1990년대 중후반 독정 정미소에는 장안면과 우정면, 남양만 일대 들녘에서 수확한 벼가 물밀듯이 쏟아져 들어왔다. 창고가 턱없이 부족해 넓은 마당과 인근 밭자락까지 볏가마니를 산더미처럼 쌓아두어야 할 지경이었다.\n\n이 시기 농촌에는 벼를 베면서 탈곡까지 한 번에 끝내는 ‘콤바인’이 널리 보급되었다. 수확 기간이 크게 단축되면서 가을 한철에 채 마르지 않은 ‘물벼(생벼)’가 대량으로 쏟아져 들어왔다. 물벼는 거두자마자 곧바로 말리지 않으면 자체 열과 습기 때문에 벼가 뜨고 변질되기 일쑤였다.\n\n배병희와 자녀들은 발 빠르게 설비 현대화에 나섰다. 대용량 연속식 곡물 건조기를 전격 도입하고, 건조된 곡식을 신선하게 보관할 저온·상온 사일로와 저장 창고를 대대적으로 늘렸다.",
@@ -996,7 +996,7 @@
     {
       "id": "ep21-01",
       "episodeId": "ep21",
-      "master": "illustrations/source-images/ep21-01.png",
+      "master": "illustrations/source-images/white-watercolor/ep21-01.png",
       "masterSha256": "ef25e2d9eef9746039fefc7842ca0e6e0a3c145dc80d9139e8588d13f9f5df88",
       "sceneHeading": "다섯 형제가 뭉쳤다 {#ep21}",
       "sceneExcerpt": "현재는 막내아들도 쇼핑몰을 운영하며 라이브커머스로 독정리 쌀을 홍보하고 있다. 도심의 소비자들에게 쌀을 알리며 고객층과 유통망을 넓히는 데 힘을 보태고 있다.",
@@ -1039,7 +1039,7 @@
     {
       "id": "ep11-01",
       "episodeId": "ep11",
-      "master": "illustrations/source-images/ep11-01.png",
+      "master": "illustrations/source-images/white-watercolor/ep11-01.png",
       "masterSha256": "8ed1c1533db0a454634981e2f5ef9ab9b9969afd50346e84eab7400219d2f2ba",
       "sceneHeading": "자식들만큼은 {#ep11}",
       "sceneExcerpt": "수원에서 자취하며 고등학교에 다니던 큰딸은 주말이면 집에 다녀갔다. 돌아갈 때마다 아내는 정성껏 담근 깍두기를 새지 않게 꽁꽁 싸매 들려주었다.",
@@ -1070,7 +1070,7 @@
     {
       "id": "ep11-family-care",
       "episodeId": "ep11",
-      "master": "illustrations/source-images/ep11-family-care.png",
+      "master": "illustrations/source-images/white-watercolor/ep11-family-care.png",
       "masterSha256": "3cff53c1c05aff9bb44daff847057c964da89350483e9702aeab1c13ebc2acdf",
       "sceneHeading": "자식들만큼은 {#ep11}",
       "sceneExcerpt": "아무리 일손이 바빠도 아이들 머리가 조금만 자라면 마당에 앉혀두고 손수 깎아주었다. 가위로 짧고 단정하게 다듬은 뒤 머리를 감겨주었다.",
@@ -1096,6 +1096,167 @@
       ],
       "prompt": "Use case: historical-scene.\nAsset type: one NEW representative opening illustration for episode 11, \"자식들만큼은\", in an established Korean family autobiography watercolor series.\nInput images: image 1 is the actual Bae Byung-hee, the adult seated in the CENTER of the photograph, facial identity only, not his child or suit. Image 2 is the approved watercolor portrait of the SAME man, identity and watercolor style. Image 3 is an existing illustration, reference only for the recognizable father's face, work clothes, countryside and watercolor family-scene treatment; do not copy its farewell action or its young girl.\nPrimary request: show the usually reserved father quietly caring for his children, through a scene directly in the manuscript: he trims a young son's hair by hand in the modest family courtyard.\nScene/backdrop: early 1980s rural Dokjeong-ri, Hwaseong, Korea. A compact ordinary one-storey Korean rural home, low wooden porch, unpaved courtyard, a small flowerbed the mother tends, and reclaimed rice fields softly visible beyond. Modest practical 1970s/early-1980s rural roof and plain walls, not an ornate hanok, palace, historic costume village or grand estate.\nSubjects: Bae Byung-hee in his mid-forties, familiar broad midface and rounded cheeks/jaw, narrow softly hooded eyes, rounded nose, restrained mouth, short black hair and grey cotton work shirt with blue trousers. The same father's identity as the photo and painted portrait must remain recognizable, painted coherently. He stands slightly bent beside his primary-school-age SON sitting on a low sturdy wooden stool, gently trimming the boy's short dark hair using a small ordinary metal hair-cutting scissors. One hand naturally steadies a section of hair and the other operates the scissors beside the crown, safely away from his face. The boy has a distinct child's face, a plain cotton shirt and trousers, a relaxed seated posture and naturally supported feet; a light plain cloth around his shoulders catches hair. The mother, a distinct middle-aged Korean woman in modest practical everyday clothes, tends the small flowerbed at a quiet distance near the house, secondary to the father and son. Exactly three people. No departing daughter in this scene.\nStyle/medium: hand-painted watercolor matching the established series, warm cold-pressed paper, transparent ochre and grey-blue washes, broad painted color masses, visible watercolor blooms, granulation and brush-shaped marks, lost edges with selective crisp strokes for the familiar father's face, the connected hands, scissors and the child's hair. Preserve paper highlights and understated domestic warmth, no photorealism, pasted photographic faces, glossy digital skin, uniform noisy filters, oil paint, cartoon or hard outlines.\nComposition/framing: one complete 16:9 landscape illustration, about 1536 by 864 pixels or higher. Medium-wide view, father and boy's care action clearly readable at thumbnail size, house and flowerbed give context without competing; no montage, panels or collage. Keep all essential heads, arms, scissors and feet inside the crop. A quiet ordinary afternoon, gentle natural light, no theatrical expressions.\nConstraints: illustration only, no lettering, captions, title, dates, symbols, logos, watermark, border, money, bus, school-uniformed child, electric clippers, modern salon tools, cloned faces, extra fingers or impossible disconnected limbs.",
       "manuscriptSha256AtGeneration": "899080cd74845e11639600ee1bfe37bb888673bf57264407545b62a0f7ff36f4"
+    },
+    {
+      "id": "prolog-01",
+      "episodeId": "prolog",
+      "master": "illustrations/source-images/white-watercolor/prolog-01.png",
+      "prompt": "Use case: precise-object-edit. Asset type: existing 16:9 watercolor autobiography illustration, edge-only finishing. Image 1 is the EDIT TARGET: a farmer's cupped hands holding rice grains. Image 2 is the approved STYLE REFERENCE, episode 9 blue moving truck; borrow ONLY its irregular white-paper watercolor perimeter, never its scene or objects. Primary request: minimally modify image 1 by letting the painted background at all four outer edges and especially the corners dissolve naturally into clean white watercolor paper, matching image 2. Use uneven translucent washes, organic dry-brush gaps, feathered pigment and visible light paper texture. Keep the border restrained and irregular; no straight rectangular frame or uniform blurred vignette. Preserve the exact composition, crop, scale, positions, colors, lighting, painted detail and original 16:9 canvas. Leave the farmer's hands, rice grains, sleeves and all central content unchanged; do not redraw or reinterpret them. Only alter the outer peripheral background; if a subject touches an edge, keep its contour and details and soften only adjacent background. Do not enlarge the canvas, zoom, move subjects, add/remove any objects, change faces, or add text, logos or watermark. Output one landscape image with opaque white paper, not transparency.",
+      "references": []
+    },
+    {
+      "id": "ep01-01",
+      "episodeId": "ep01",
+      "master": "illustrations/source-images/white-watercolor/ep01-01.png",
+      "prompt": "Use case: precise-object-edit. Asset type: existing 16:9 watercolor autobiography illustration, minimal edge-only finishing. Image 1 is the EDIT TARGET. Image 2 is the approved STYLE REFERENCE, episode 9 blue moving truck: borrow ONLY its irregular white-paper watercolor perimeter, never its scene or objects. Primary request: minimally edit image 1 so the painted background at all four outer edges and especially the corners dissolves naturally into clean white watercolor paper, like image 2. Use restrained uneven translucent washes, organic dry-brush gaps, feathered pigment and light paper texture in the outer perimeter, generally within the outer 3-8%, with a little more white at the corners where background allows. No straight rectangular frame or uniform blurred vignette. Treat all interior artwork as locked: preserve the exact composition, crop, scale, positions, original palette and lighting; preserve every person's identity, age, face, expression, hair, clothing, hands and physical action; preserve equipment, architecture, props and painted detail. Do not repaint, restyle or simplify the interior. If a subject touches an edge, protect its contour and details and soften only adjacent peripheral background. Do not enlarge the canvas, zoom, move subjects, change the number of people, add/remove objects, or add text, logos or watermark. Output one landscape image with the original 16:9 framing and opaque white paper, not transparency.\nEdit target ID: ep01-01. Existing scene for preservation: 수채화로 그린 갯벌에서 조새로 굴을 까는 어머니.",
+      "references": []
+    },
+    {
+      "id": "ep02-01",
+      "episodeId": "ep02",
+      "master": "illustrations/source-images/white-watercolor/ep02-01.png",
+      "prompt": "Use case: precise-object-edit. Asset type: existing 16:9 watercolor autobiography illustration, minimal edge-only finishing. Image 1 is the EDIT TARGET. Image 2 is the approved STYLE REFERENCE, episode 9 blue moving truck: borrow ONLY its irregular white-paper watercolor perimeter, never its scene or objects. Primary request: minimally edit image 1 so the painted background at all four outer edges and especially the corners dissolves naturally into clean white watercolor paper, like image 2. Use restrained uneven translucent washes, organic dry-brush gaps, feathered pigment and light paper texture in the outer perimeter, generally within the outer 3-8%, with a little more white at the corners where background allows. No straight rectangular frame or uniform blurred vignette. Treat all interior artwork as locked: preserve the exact composition, crop, scale, positions, original palette and lighting; preserve every person's identity, age, face, expression, hair, clothing, hands and physical action; preserve equipment, architecture, props and painted detail. Do not repaint, restyle or simplify the interior. If a subject touches an edge, protect its contour and details and soften only adjacent peripheral background. Do not enlarge the canvas, zoom, move subjects, change the number of people, add/remove objects, or add text, logos or watermark. Output one landscape image with the original 16:9 framing and opaque white paper, not transparency.\nEdit target ID: ep02-01. Existing scene for preservation: 수채화로 그린 책보 대신 지게를 지고 밭으로 향하는 소년.",
+      "references": []
+    },
+    {
+      "id": "ep03-02",
+      "episodeId": "ep03",
+      "master": "illustrations/source-images/white-watercolor/ep03-02.png",
+      "prompt": "Use case: precise-object-edit. Asset type: existing 16:9 watercolor autobiography illustration, minimal edge-only finishing. Image 1 is the EDIT TARGET. Image 2 is the approved STYLE REFERENCE, episode 9 blue moving truck: borrow ONLY its irregular white-paper watercolor perimeter, never its scene or objects. Primary request: minimally edit image 1 so the painted background at all four outer edges and especially the corners dissolves naturally into clean white watercolor paper, like image 2. Use restrained uneven translucent washes, organic dry-brush gaps, feathered pigment and light paper texture in the outer perimeter, generally within the outer 3-8%, with a little more white at the corners where background allows. No straight rectangular frame or uniform blurred vignette. Treat all interior artwork as locked: preserve the exact composition, crop, scale, positions, original palette and lighting; preserve every person's identity, age, face, expression, hair, clothing, hands and physical action; preserve equipment, architecture, props and painted detail. Do not repaint, restyle or simplify the interior. If a subject touches an edge, protect its contour and details and soften only adjacent peripheral background. Do not enlarge the canvas, zoom, move subjects, change the number of people, add/remove objects, or add text, logos or watermark. Output one landscape image with the original 16:9 framing and opaque white paper, not transparency.\nEdit target ID: ep03-02. Existing scene for preservation: 수채화로 그린 마당에서 홀로 도리깨로 보리를 타작하는 소년.",
+      "references": []
+    },
+    {
+      "id": "ep04-01",
+      "episodeId": "ep04",
+      "master": "illustrations/source-images/white-watercolor/ep04-01.png",
+      "prompt": "Use case: precise-object-edit. Asset type: existing 16:9 watercolor autobiography illustration, minimal edge-only finishing. Image 1 is the EDIT TARGET. Image 2 is the approved STYLE REFERENCE, episode 9 blue moving truck: borrow ONLY its irregular white-paper watercolor perimeter, never its scene or objects. Primary request: minimally edit image 1 so the painted background at all four outer edges and especially the corners dissolves naturally into clean white watercolor paper, like image 2. Use restrained uneven translucent washes, organic dry-brush gaps, feathered pigment and light paper texture in the outer perimeter, generally within the outer 3-8%, with a little more white at the corners where background allows. No straight rectangular frame or uniform blurred vignette. Treat all interior artwork as locked: preserve the exact composition, crop, scale, positions, original palette and lighting; preserve every person's identity, age, face, expression, hair, clothing, hands and physical action; preserve equipment, architecture, props and painted detail. Do not repaint, restyle or simplify the interior. If a subject touches an edge, protect its contour and details and soften only adjacent peripheral background. Do not enlarge the canvas, zoom, move subjects, change the number of people, add/remove objects, or add text, logos or watermark. Output one landscape image with the original 16:9 framing and opaque white paper, not transparency.\nEdit target ID: ep04-01. Existing scene for preservation: 수채화로 그린 돌풍 속에서 땔나무를 실은 목선의 노를 젓는 청년.",
+      "references": []
+    },
+    {
+      "id": "ep05-01",
+      "episodeId": "ep05",
+      "master": "illustrations/source-images/white-watercolor/ep05-01.png",
+      "prompt": "Use case: precise-object-edit. Asset type: existing 16:9 watercolor autobiography illustration, minimal edge-only finishing. Image 1 is the EDIT TARGET. Image 2 is the approved STYLE REFERENCE, episode 9 blue moving truck: borrow ONLY its irregular white-paper watercolor perimeter, never its scene or objects. Primary request: minimally edit image 1 so the painted background at all four outer edges and especially the corners dissolves naturally into clean white watercolor paper, like image 2. Use restrained uneven translucent washes, organic dry-brush gaps, feathered pigment and light paper texture in the outer perimeter, generally within the outer 3-8%, with a little more white at the corners where background allows. No straight rectangular frame or uniform blurred vignette. Treat all interior artwork as locked: preserve the exact composition, crop, scale, positions, original palette and lighting; preserve every person's identity, age, face, expression, hair, clothing, hands and physical action; preserve equipment, architecture, props and painted detail. Do not repaint, restyle or simplify the interior. If a subject touches an edge, protect its contour and details and soften only adjacent peripheral background. Do not enlarge the canvas, zoom, move subjects, change the number of people, add/remove objects, or add text, logos or watermark. Output one landscape image with the original 16:9 framing and opaque white paper, not transparency.\nEdit target ID: ep05-01. Existing scene for preservation: 수채화로 그린 가마솥에 미꾸라지 칼국수를 끓이는 아내의 손.",
+      "references": []
+    },
+    {
+      "id": "ep05-02",
+      "episodeId": "ep05",
+      "master": "illustrations/source-images/white-watercolor/ep05-02.png",
+      "prompt": "Use case: precise-object-edit. Asset type: existing 16:9 watercolor autobiography illustration, minimal edge-only finishing. Image 1 is the EDIT TARGET. Image 2 is the approved STYLE REFERENCE, episode 9 blue moving truck: borrow ONLY its irregular white-paper watercolor perimeter, never its scene or objects. Primary request: minimally edit image 1 so the painted background at all four outer edges and especially the corners dissolves naturally into clean white watercolor paper, like image 2. Use restrained uneven translucent washes, organic dry-brush gaps, feathered pigment and light paper texture in the outer perimeter, generally within the outer 3-8%, with a little more white at the corners where background allows. No straight rectangular frame or uniform blurred vignette. Treat all interior artwork as locked: preserve the exact composition, crop, scale, positions, original palette and lighting; preserve every person's identity, age, face, expression, hair, clothing, hands and physical action; preserve equipment, architecture, props and painted detail. Do not repaint, restyle or simplify the interior. If a subject touches an edge, protect its contour and details and soften only adjacent peripheral background. Do not enlarge the canvas, zoom, move subjects, change the number of people, add/remove objects, or add text, logos or watermark. Output one landscape image with the original 16:9 framing and opaque white paper, not transparency.\nEdit target ID: ep05-02. Existing scene for preservation: 수채화로 그린 겨울밤 고구마를 나누어 먹는 가족.",
+      "references": []
+    },
+    {
+      "id": "ep07-02",
+      "episodeId": "ep07",
+      "master": "illustrations/source-images/white-watercolor/ep07-02.png",
+      "prompt": "Use case: precise-object-edit. Asset type: existing 16:9 watercolor autobiography illustration, minimal edge-only finishing. Image 1 is the EDIT TARGET. Image 2 is the approved STYLE REFERENCE, episode 9 blue moving truck: borrow ONLY its irregular white-paper watercolor perimeter, never its scene or objects. Primary request: minimally edit image 1 so the painted background at all four outer edges and especially the corners dissolves naturally into clean white watercolor paper, like image 2. Use restrained uneven translucent washes, organic dry-brush gaps, feathered pigment and light paper texture in the outer perimeter, generally within the outer 3-8%, with a little more white at the corners where background allows. No straight rectangular frame or uniform blurred vignette. Treat all interior artwork as locked: preserve the exact composition, crop, scale, positions, original palette and lighting; preserve every person's identity, age, face, expression, hair, clothing, hands and physical action; preserve equipment, architecture, props and painted detail. Do not repaint, restyle or simplify the interior. If a subject touches an edge, protect its contour and details and soften only adjacent peripheral background. Do not enlarge the canvas, zoom, move subjects, change the number of people, add/remove objects, or add text, logos or watermark. Output one landscape image with the original 16:9 framing and opaque white paper, not transparency.\nEdit target ID: ep07-02. Existing scene for preservation: 수채화로 그린 갯가 자갈밭의 가마솥에서 멸치를 삶는 배병희.",
+      "references": []
+    },
+    {
+      "id": "ep08-01",
+      "episodeId": "ep08",
+      "master": "illustrations/source-images/white-watercolor/ep08-01.png",
+      "prompt": "Use case: precise-object-edit. Asset type: existing 16:9 watercolor autobiography illustration, minimal edge-only finishing. Image 1 is the EDIT TARGET. Image 2 is the approved STYLE REFERENCE, episode 9 blue moving truck: borrow ONLY its irregular white-paper watercolor perimeter, never its scene or objects. Primary request: minimally edit image 1 so the painted background at all four outer edges and especially the corners dissolves naturally into clean white watercolor paper, like image 2. Use restrained uneven translucent washes, organic dry-brush gaps, feathered pigment and light paper texture in the outer perimeter, generally within the outer 3-8%, with a little more white at the corners where background allows. No straight rectangular frame or uniform blurred vignette. Treat all interior artwork as locked: preserve the exact composition, crop, scale, positions, original palette and lighting; preserve every person's identity, age, face, expression, hair, clothing, hands and physical action; preserve equipment, architecture, props and painted detail. Do not repaint, restyle or simplify the interior. If a subject touches an edge, protect its contour and details and soften only adjacent peripheral background. Do not enlarge the canvas, zoom, move subjects, change the number of people, add/remove objects, or add text, logos or watermark. Output one landscape image with the original 16:9 framing and opaque white paper, not transparency.\nEdit target ID: ep08-01. Existing scene for preservation: 수채화로 그린 발동기 곁에서 숟가락의 납으로 베어링을 고치는 손.",
+      "references": []
+    },
+    {
+      "id": "ep10-01",
+      "episodeId": "ep10",
+      "master": "illustrations/source-images/white-watercolor/ep10-01.png",
+      "prompt": "Use case: precise-object-edit. Asset type: existing 16:9 watercolor autobiography illustration, minimal edge-only finishing. Image 1 is the EDIT TARGET. Image 2 is the approved STYLE REFERENCE, episode 9 blue moving truck: borrow ONLY its irregular white-paper watercolor perimeter, never its scene or objects. Primary request: minimally edit image 1 so the painted background at all four outer edges and especially the corners dissolves naturally into clean white watercolor paper, like image 2. Use restrained uneven translucent washes, organic dry-brush gaps, feathered pigment and light paper texture in the outer perimeter, generally within the outer 3-8%, with a little more white at the corners where background allows. No straight rectangular frame or uniform blurred vignette. Treat all interior artwork as locked: preserve the exact composition, crop, scale, positions, original palette and lighting; preserve every person's identity, age, face, expression, hair, clothing, hands and physical action; preserve equipment, architecture, props and painted detail. Do not repaint, restyle or simplify the interior. If a subject touches an edge, protect its contour and details and soften only adjacent peripheral background. Do not enlarge the canvas, zoom, move subjects, change the number of people, add/remove objects, or add text, logos or watermark. Output one landscape image with the original 16:9 framing and opaque white paper, not transparency.\nEdit target ID: ep10-01. Existing scene for preservation: 수채화로 그린 간척지 물길을 돌보며 소금기를 빼는 배병희.",
+      "references": []
+    },
+    {
+      "id": "ep12-01",
+      "episodeId": "ep12",
+      "master": "illustrations/source-images/white-watercolor/ep12-01.png",
+      "prompt": "Use case: precise-object-edit. Asset type: existing 16:9 watercolor autobiography illustration, minimal edge-only finishing. Image 1 is the EDIT TARGET. Image 2 is the approved STYLE REFERENCE, episode 9 blue moving truck: borrow ONLY its irregular white-paper watercolor perimeter, never its scene or objects. Primary request: minimally edit image 1 so the painted background at all four outer edges and especially the corners dissolves naturally into clean white watercolor paper, like image 2. Use restrained uneven translucent washes, organic dry-brush gaps, feathered pigment and light paper texture in the outer perimeter, generally within the outer 3-8%, with a little more white at the corners where background allows. No straight rectangular frame or uniform blurred vignette. Treat all interior artwork as locked: preserve the exact composition, crop, scale, positions, original palette and lighting; preserve every person's identity, age, face, expression, hair, clothing, hands and physical action; preserve equipment, architecture, props and painted detail. Do not repaint, restyle or simplify the interior. If a subject touches an edge, protect its contour and details and soften only adjacent peripheral background. Do not enlarge the canvas, zoom, move subjects, change the number of people, add/remove objects, or add text, logos or watermark. Output one landscape image with the original 16:9 framing and opaque white paper, not transparency.\nEdit target ID: ep12-01. Existing scene for preservation: 수채화로 그린 낡은 정미소 앞에 선 배병희.",
+      "references": []
+    },
+    {
+      "id": "ep13-01",
+      "episodeId": "ep13",
+      "master": "illustrations/source-images/white-watercolor/ep13-01.png",
+      "prompt": "Use case: precise-object-edit. Asset type: existing 16:9 watercolor autobiography illustration, minimal edge-only finishing. Image 1 is the EDIT TARGET. Image 2 is the approved STYLE REFERENCE, episode 9 blue moving truck: borrow ONLY its irregular white-paper watercolor perimeter, never its scene or objects. Primary request: minimally edit image 1 so the painted background at all four outer edges and especially the corners dissolves naturally into clean white watercolor paper, like image 2. Use restrained uneven translucent washes, organic dry-brush gaps, feathered pigment and light paper texture in the outer perimeter, generally within the outer 3-8%, with a little more white at the corners where background allows. No straight rectangular frame or uniform blurred vignette. Treat all interior artwork as locked: preserve the exact composition, crop, scale, positions, original palette and lighting; preserve every person's identity, age, face, expression, hair, clothing, hands and physical action; preserve equipment, architecture, props and painted detail. Do not repaint, restyle or simplify the interior. If a subject touches an edge, protect its contour and details and soften only adjacent peripheral background. Do not enlarge the canvas, zoom, move subjects, change the number of people, add/remove objects, or add text, logos or watermark. Output one landscape image with the original 16:9 framing and opaque white paper, not transparency.\nEdit target ID: ep13-01. Existing scene for preservation: 수채화로 그린 장대비 속에서 손전등으로 야적 가마니를 살피는 배병희.",
+      "references": []
+    },
+    {
+      "id": "ep14-01",
+      "episodeId": "ep14",
+      "master": "illustrations/source-images/white-watercolor/ep14-01.png",
+      "prompt": "Use case: precise-object-edit. Asset type: existing 16:9 watercolor autobiography illustration, minimal edge-only finishing. Image 1 is the EDIT TARGET. Image 2 is the approved STYLE REFERENCE, episode 9 blue moving truck: borrow ONLY its irregular white-paper watercolor perimeter, never its scene or objects. Primary request: minimally edit image 1 so the painted background at all four outer edges and especially the corners dissolves naturally into clean white watercolor paper, like image 2. Use restrained uneven translucent washes, organic dry-brush gaps, feathered pigment and light paper texture in the outer perimeter, generally within the outer 3-8%, with a little more white at the corners where background allows. No straight rectangular frame or uniform blurred vignette. Treat all interior artwork as locked: preserve the exact composition, crop, scale, positions, original palette and lighting; preserve every person's identity, age, face, expression, hair, clothing, hands and physical action; preserve equipment, architecture, props and painted detail. Do not repaint, restyle or simplify the interior. If a subject touches an edge, protect its contour and details and soften only adjacent peripheral background. Do not enlarge the canvas, zoom, move subjects, change the number of people, add/remove objects, or add text, logos or watermark. Output one landscape image with the original 16:9 framing and opaque white paper, not transparency.\nEdit target ID: ep14-01. Existing scene for preservation: 수채화로 그린 들판을 가로질러 정미소로 이어지는 배전 전봇대.",
+      "references": []
+    },
+    {
+      "id": "ep14-02",
+      "episodeId": "ep14",
+      "master": "illustrations/source-images/white-watercolor/ep14-02.png",
+      "prompt": "Use case: precise-object-edit. Asset type: existing 16:9 watercolor autobiography illustration, minimal edge-only finishing. Image 1 is the EDIT TARGET. Image 2 is the approved STYLE REFERENCE, episode 9 blue moving truck: borrow ONLY its irregular white-paper watercolor perimeter, never its scene or objects. Primary request: minimally edit image 1 so the painted background at all four outer edges and especially the corners dissolves naturally into clean white watercolor paper, like image 2. Use restrained uneven translucent washes, organic dry-brush gaps, feathered pigment and light paper texture in the outer perimeter, generally within the outer 3-8%, with a little more white at the corners where background allows. No straight rectangular frame or uniform blurred vignette. Treat all interior artwork as locked: preserve the exact composition, crop, scale, positions, original palette and lighting; preserve every person's identity, age, face, expression, hair, clothing, hands and physical action; preserve equipment, architecture, props and painted detail. Do not repaint, restyle or simplify the interior. If a subject touches an edge, protect its contour and details and soften only adjacent peripheral background. Do not enlarge the canvas, zoom, move subjects, change the number of people, add/remove objects, or add text, logos or watermark. Output one landscape image with the original 16:9 framing and opaque white paper, not transparency.\nEdit target ID: ep14-02. Existing scene for preservation: 수채화로 그린 장축과 평벨트로 기계를 돌리던 정미소 내부.",
+      "references": []
+    },
+    {
+      "id": "ep15-02",
+      "episodeId": "ep15",
+      "master": "illustrations/source-images/white-watercolor/ep15-02.png",
+      "prompt": "Use case: precise-object-edit. Asset type: existing 16:9 watercolor autobiography illustration, minimal edge-only finishing. Image 1 is the EDIT TARGET. Image 2 is the approved STYLE REFERENCE, episode 9 blue moving truck: borrow ONLY its irregular white-paper watercolor perimeter, never its scene or objects. Primary request: minimally edit image 1 so the painted background at all four outer edges and especially the corners dissolves naturally into clean white watercolor paper, like image 2. Use restrained uneven translucent washes, organic dry-brush gaps, feathered pigment and light paper texture in the outer perimeter, generally within the outer 3-8%, with a little more white at the corners where background allows. No straight rectangular frame or uniform blurred vignette. Treat all interior artwork as locked: preserve the exact composition, crop, scale, positions, original palette and lighting; preserve every person's identity, age, face, expression, hair, clothing, hands and physical action; preserve equipment, architecture, props and painted detail. Do not repaint, restyle or simplify the interior. If a subject touches an edge, protect its contour and details and soften only adjacent peripheral background. Do not enlarge the canvas, zoom, move subjects, change the number of people, add/remove objects, or add text, logos or watermark. Output one landscape image with the original 16:9 framing and opaque white paper, not transparency.\nEdit target ID: ep15-02. Existing scene for preservation: 수채화로 그린 볍씨를 가져가는 이웃을 보고 조용히 돌아서는 배병희.",
+      "references": []
+    },
+    {
+      "id": "ep16-01",
+      "episodeId": "ep16",
+      "master": "illustrations/source-images/white-watercolor/ep16-01.png",
+      "prompt": "Use case: precise-object-edit. Asset type: existing 16:9 watercolor autobiography illustration, minimal edge-only finishing. Image 1 is the EDIT TARGET. Image 2 is the approved STYLE REFERENCE, episode 9 blue moving truck: borrow ONLY its irregular white-paper watercolor perimeter, never its scene or objects. Primary request: minimally edit image 1 so the painted background at all four outer edges and especially the corners dissolves naturally into clean white watercolor paper, like image 2. Use restrained uneven translucent washes, organic dry-brush gaps, feathered pigment and light paper texture in the outer perimeter, generally within the outer 3-8%, with a little more white at the corners where background allows. No straight rectangular frame or uniform blurred vignette. Treat all interior artwork as locked: preserve the exact composition, crop, scale, positions, original palette and lighting; preserve every person's identity, age, face, expression, hair, clothing, hands and physical action; preserve equipment, architecture, props and painted detail. Do not repaint, restyle or simplify the interior. If a subject touches an edge, protect its contour and details and soften only adjacent peripheral background. Do not enlarge the canvas, zoom, move subjects, change the number of people, add/remove objects, or add text, logos or watermark. Output one landscape image with the original 16:9 framing and opaque white paper, not transparency.\nEdit target ID: ep16-01. Existing scene for preservation: 수채화로 그린 가마솥 밥을 떠서 일꾼들의 그릇에 담는 아내의 손.",
+      "references": []
+    },
+    {
+      "id": "ep17-01",
+      "episodeId": "ep17",
+      "master": "illustrations/source-images/white-watercolor/ep17-01.png",
+      "prompt": "Use case: precise-object-edit. Asset type: existing 16:9 watercolor autobiography illustration, minimal edge-only finishing. Image 1 is the EDIT TARGET. Image 2 is the approved STYLE REFERENCE, episode 9 blue moving truck: borrow ONLY its irregular white-paper watercolor perimeter, never its scene or objects. Primary request: minimally edit image 1 so the painted background at all four outer edges and especially the corners dissolves naturally into clean white watercolor paper, like image 2. Use restrained uneven translucent washes, organic dry-brush gaps, feathered pigment and light paper texture in the outer perimeter, generally within the outer 3-8%, with a little more white at the corners where background allows. No straight rectangular frame or uniform blurred vignette. Treat all interior artwork as locked: preserve the exact composition, crop, scale, positions, original palette and lighting; preserve every person's identity, age, face, expression, hair, clothing, hands and physical action; preserve equipment, architecture, props and painted detail. Do not repaint, restyle or simplify the interior. If a subject touches an edge, protect its contour and details and soften only adjacent peripheral background. Do not enlarge the canvas, zoom, move subjects, change the number of people, add/remove objects, or add text, logos or watermark. Output one landscape image with the original 16:9 framing and opaque white paper, not transparency.\nEdit target ID: ep17-01. Existing scene for preservation: 수채화로 그린 텅 빈 창고와 부도 수표 앞에 앉은 배병희.",
+      "references": []
+    },
+    {
+      "id": "ep20-01",
+      "episodeId": "ep20",
+      "master": "illustrations/source-images/white-watercolor/ep20-01.png",
+      "prompt": "Use case: precise-object-edit. Asset type: existing 16:9 watercolor autobiography illustration, minimal edge-only finishing. Image 1 is the EDIT TARGET. Image 2 is the approved STYLE REFERENCE, episode 9 blue moving truck: borrow ONLY its irregular white-paper watercolor perimeter, never its scene or objects. Primary request: minimally edit image 1 so the painted background at all four outer edges and especially the corners dissolves naturally into clean white watercolor paper, like image 2. Use restrained uneven translucent washes, organic dry-brush gaps, feathered pigment and light paper texture in the outer perimeter, generally within the outer 3-8%, with a little more white at the corners where background allows. No straight rectangular frame or uniform blurred vignette. Treat all interior artwork as locked: preserve the exact composition, crop, scale, positions, original palette and lighting; preserve every person's identity, age, face, expression, hair, clothing, hands and physical action; preserve equipment, architecture, props and painted detail. Do not repaint, restyle or simplify the interior. If a subject touches an edge, protect its contour and details and soften only adjacent peripheral background. Do not enlarge the canvas, zoom, move subjects, change the number of people, add/remove objects, or add text, logos or watermark. Output one landscape image with the original 16:9 framing and opaque white paper, not transparency.\nEdit target ID: ep20-01. Existing scene for preservation: 수채화로 그린 오랜 세월 밥을 짓던 부엌의 빈자리.",
+      "references": []
+    },
+    {
+      "id": "ep21-02",
+      "episodeId": "ep21",
+      "master": "illustrations/source-images/white-watercolor/ep21-02.png",
+      "prompt": "Use case: precise-object-edit. Asset type: existing 16:9 watercolor autobiography illustration, minimal edge-only finishing. Image 1 is the EDIT TARGET. Image 2 is the approved STYLE REFERENCE, episode 9 blue moving truck: borrow ONLY its irregular white-paper watercolor perimeter, never its scene or objects. Primary request: minimally edit image 1 so the painted background at all four outer edges and especially the corners dissolves naturally into clean white watercolor paper, like image 2. Use restrained uneven translucent washes, organic dry-brush gaps, feathered pigment and light paper texture in the outer perimeter, generally within the outer 3-8%, with a little more white at the corners where background allows. No straight rectangular frame or uniform blurred vignette. Treat all interior artwork as locked: preserve the exact composition, crop, scale, positions, original palette and lighting; preserve every person's identity, age, face, expression, hair, clothing, hands and physical action; preserve equipment, architecture, props and painted detail. Do not repaint, restyle or simplify the interior. If a subject touches an edge, protect its contour and details and soften only adjacent peripheral background. Do not enlarge the canvas, zoom, move subjects, change the number of people, add/remove objects, or add text, logos or watermark. Output one landscape image with the original 16:9 framing and opaque white paper, not transparency.\nEdit target ID: ep21-02. Existing scene for preservation: 수채화로 그린 공장 일을 마친 뒤 책을 펴고 공부하는 맏아들.",
+      "references": []
+    },
+    {
+      "id": "ep22-01",
+      "episodeId": "ep22",
+      "master": "illustrations/source-images/white-watercolor/ep22-01.png",
+      "prompt": "Use case: precise-object-edit. Asset type: existing 16:9 watercolor autobiography illustration, minimal edge-only finishing. Image 1 is the EDIT TARGET. Image 2 is the approved STYLE REFERENCE, episode 9 blue moving truck: borrow ONLY its irregular white-paper watercolor perimeter, never its scene or objects. Primary request: minimally edit image 1 so the painted background at all four outer edges and especially the corners dissolves naturally into clean white watercolor paper, like image 2. Use restrained uneven translucent washes, organic dry-brush gaps, feathered pigment and light paper texture in the outer perimeter, generally within the outer 3-8%, with a little more white at the corners where background allows. No straight rectangular frame or uniform blurred vignette. Treat all interior artwork as locked: preserve the exact composition, crop, scale, positions, original palette and lighting; preserve every person's identity, age, face, expression, hair, clothing, hands and physical action; preserve equipment, architecture, props and painted detail. Do not repaint, restyle or simplify the interior. If a subject touches an edge, protect its contour and details and soften only adjacent peripheral background. Do not enlarge the canvas, zoom, move subjects, change the number of people, add/remove objects, or add text, logos or watermark. Output one landscape image with the original 16:9 framing and opaque white paper, not transparency.\nEdit target ID: ep22-01. Existing scene for preservation: 수채화로 그린 계약재배 들판에서 익은 벼를 함께 살피는 농민들.",
+      "references": []
+    },
+    {
+      "id": "ep22-02",
+      "episodeId": "ep22",
+      "master": "illustrations/source-images/white-watercolor/ep22-02.png",
+      "prompt": "Use case: precise-object-edit. Asset type: existing 16:9 watercolor autobiography illustration, minimal edge-only finishing. Image 1 is the EDIT TARGET. Image 2 is the approved STYLE REFERENCE, episode 9 blue moving truck: borrow ONLY its irregular white-paper watercolor perimeter, never its scene or objects. Primary request: minimally edit image 1 so the painted background at all four outer edges and especially the corners dissolves naturally into clean white watercolor paper, like image 2. Use restrained uneven translucent washes, organic dry-brush gaps, feathered pigment and light paper texture in the outer perimeter, generally within the outer 3-8%, with a little more white at the corners where background allows. No straight rectangular frame or uniform blurred vignette. Treat all interior artwork as locked: preserve the exact composition, crop, scale, positions, original palette and lighting; preserve every person's identity, age, face, expression, hair, clothing, hands and physical action; preserve equipment, architecture, props and painted detail. Do not repaint, restyle or simplify the interior. If a subject touches an edge, protect its contour and details and soften only adjacent peripheral background. Do not enlarge the canvas, zoom, move subjects, change the number of people, add/remove objects, or add text, logos or watermark. Output one landscape image with the original 16:9 framing and opaque white paper, not transparency.\nEdit target ID: ep22-02. Existing scene for preservation: 수채화로 그린 독정RPC에서 출하를 기다리는 포장 쌀과 팔레트.",
+      "references": []
+    },
+    {
+      "id": "ep23-01",
+      "episodeId": "ep23",
+      "master": "illustrations/source-images/white-watercolor/ep23-01.png",
+      "prompt": "Use case: precise-object-edit. Asset type: existing 16:9 watercolor autobiography illustration, minimal edge-only finishing. Image 1 is the EDIT TARGET. Image 2 is the approved STYLE REFERENCE, episode 9 blue moving truck: borrow ONLY its irregular white-paper watercolor perimeter, never its scene or objects. Primary request: minimally edit image 1 so the painted background at all four outer edges and especially the corners dissolves naturally into clean white watercolor paper, like image 2. Use restrained uneven translucent washes, organic dry-brush gaps, feathered pigment and light paper texture in the outer perimeter, generally within the outer 3-8%, with a little more white at the corners where background allows. No straight rectangular frame or uniform blurred vignette. Treat all interior artwork as locked: preserve the exact composition, crop, scale, positions, original palette and lighting; preserve every person's identity, age, face, expression, hair, clothing, hands and physical action; preserve equipment, architecture, props and painted detail. Do not repaint, restyle or simplify the interior. If a subject touches an edge, protect its contour and details and soften only adjacent peripheral background. Do not enlarge the canvas, zoom, move subjects, change the number of people, add/remove objects, or add text, logos or watermark. Output one landscape image with the original 16:9 framing and opaque white paper, not transparency.\nEdit target ID: ep23-01. Existing scene for preservation: 수채화로 그린 도정공장에서 쌀포대를 팔레트에 쌓는 적재 로봇.",
+      "references": []
+    },
+    {
+      "id": "epilog-01",
+      "episodeId": "epilog",
+      "master": "illustrations/source-images/white-watercolor/epilog-01.png",
+      "prompt": "Use case: precise-object-edit. Asset type: existing 16:9 watercolor autobiography illustration, minimal edge-only finishing. Image 1 is the EDIT TARGET. Image 2 is the approved STYLE REFERENCE, episode 9 blue moving truck: borrow ONLY its irregular white-paper watercolor perimeter, never its scene or objects. Primary request: minimally edit image 1 so the painted background at all four outer edges and especially the corners dissolves naturally into clean white watercolor paper, like image 2. Use restrained uneven translucent washes, organic dry-brush gaps, feathered pigment and light paper texture in the outer perimeter, generally within the outer 3-8%, with a little more white at the corners where background allows. No straight rectangular frame or uniform blurred vignette. Treat all interior artwork as locked: preserve the exact composition, crop, scale, positions, original palette and lighting; preserve every person's identity, age, face, expression, hair, clothing, hands and physical action; preserve equipment, architecture, props and painted detail. Do not repaint, restyle or simplify the interior. If a subject touches an edge, protect its contour and details and soften only adjacent peripheral background. Do not enlarge the canvas, zoom, move subjects, change the number of people, add/remove objects, or add text, logos or watermark. Output one landscape image with the original 16:9 framing and opaque white paper, not transparency.\nEdit target ID: epilog-01. Existing scene for preservation: 수채화로 그린 해 질 무렵 남양만 들녘을 바라보는 노년의 배병희.",
+      "references": []
     }
   ],
   "revision": 6,
@@ -1200,5 +1361,6 @@
     "reason": "본문 윤문을 보존하고 제목과 큰딸의 고등학생 신분만 최소 수정. 기존 삽화의 큰딸 연령 교정 및 서두 대표 삽화 추가. 출생연도 미확정으로 본문과 이미지에 정확한 연도·나이 표기 없음.",
     "representativeId": "ep11-family-care",
     "preservedIllustrationId": "ep11-01"
-  }
+  },
+  "edgeEditRecord": "illustrations/source-images/white-watercolor-edits.json"
 }

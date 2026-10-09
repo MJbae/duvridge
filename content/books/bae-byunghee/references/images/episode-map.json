@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "manuscript_sha256": "3320ade338ebf179ed6779540a315cb8253cc0c9f71bccaa30ed17bbcbd266f4",
+  "manuscript_sha256": "5d88def59565bb38611c64ce0d36d33f4be51cb74c54568037f017be16ac106d",
   "episode_count": 26,
   "episodes": [
     {
@@ -220,7 +220,7 @@
       "id": "ep09",
       "number": 9,
       "type": "본편",
-      "title": "일곱 가구가 따라나선 길",
+      "title": "여섯 가구가 따라나선 길",
       "setting": "1977년 · 안면도에서 남양만으로",
       "suggested_representative_scene": "이삿짐 트럭으로 안면도에서 화성으로 이동하는 가족과 이웃들",
       "reference_ids": [
@@ -431,7 +431,7 @@
       "id": "ep18",
       "number": 18,
       "type": "본편",
-      "title": "5분의 1만 남은 들판",
+      "title": "장롱 속 땅문서",
       "setting": "1990년대 초 · 독정 정미소",
       "suggested_representative_scene": "마지막 1만 2천 평만 남기기로 결단하며 장롱에서 땅문서 봉투를 꺼내는 배병희",
       "reference_ids": [

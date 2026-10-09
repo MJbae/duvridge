@@ -70,6 +70,16 @@ npm run assets:episodes --workspace @duvridge/toldlife-novels -- ep01-02
 
 ## 편집 결과 확인
 
+### 흰 수채화 가장자리 통일
+
+모든 회차·본문·외전 삽화의 가장자리는 9화 대표 그림 `ep09-01`을 기준으로 합니다. 네 가장자리와 모서리가 흰 종이로 자연스럽게 풀리도록 옅은 번짐과 불규칙한 붓 자국을 사용합니다. 기존 그림의 얼굴·표정·손·행동·인원수·소품·설비·구도·색·빛을 유지하고 주변 배경만 최소 편집합니다. 화면 끝의 중요한 대상은 여백으로 지우지 않습니다.
+
+2026-10-09에 내장 `image_gen`으로 기준 그림을 제외한 회차 삽화 46장과 표지 초상 1장을 편집했습니다. 기준 그림은 그대로 보존했습니다. 편집 원본은 `content/books/bae-byunghee/illustrations/source-images/white-watercolor/`에 있으며, 입력 파일·커밋·해시와 실제 공통 프롬프트는 같은 상위 폴더의 `white-watercolor-edits.json`에 기록했습니다. 기존 개별 원본도 보존합니다. 원본 없이 공개 JPG만 있던 그림의 편집 전 파일은 기록된 입력 커밋에서 확인할 수 있습니다. 표지의 편집 전 원본은 `source-images/archive/home-cover-before-white-edges.png`에 보존했습니다.
+
+`regeneration-prompts.json`은 회차 삽화 47장 전체의 현재 원본을 등록합니다. `white-watercolor-edits.json`의 `commonPrompt` 또는 `firstPrompt`에 각 행의 `promptSuffix`를 붙이면 실제 편집 프롬프트가 됩니다. 표지 프롬프트는 별도 `cover` 항목에 있습니다. 향후 이미지 편집에는 현재 원본을 편집 대상으로, 9화 원본 `ep09-02.png`를 가장자리 참고로 사용하세요. `assets:episodes`는 등록된 완성 원본의 크기별 변환만 수행합니다. 표지는 `home-cover.png`를 책의 공개 원본 `bae-byunghee-hero-watercolor.png`에 반영한 뒤 `assets:cover`로 변환합니다.
+
+회차 공개 파일 276개와 표지 공개 파일 7개를 갱신했고, 9화 기준 그림의 공개 파일 6개는 보존했습니다. 전체 그림을 나란히 시각 검수하고 원본·변환 파일의 해시, 크기와 디코딩을 확인했습니다. 병행 작업과 분리한 코드 `90a06917e43d08fe2f5847ceba78b6a4a62b6efd`의 검증 공간에서 두 리더 빌드·타입 검사, 콘텐츠 검사 각 32건, 공유 정보 검사 각 6건, 관련 브라우저 검사 36건과 저장소 검사 JavaScript 15건·Python 4건을 통과했습니다. 기존 녹음의 삭제·교체 상태는 이 삽화 작업의 검증 기준에서 제외했습니다. 이 작업으로 별도 배포는 실행하지 않았습니다.
+
 저장소 루트에서 실행합니다.
 
 ```sh
