@@ -1,18 +1,22 @@
 {
-  "workflow": "https://github.com/MJbae/duvridge/actions/runs/37810209432",
+  "workflow": "https://github.com/MJbae/duvridge/actions/runs/37866920128",
   "production": {
-    "checkedAt": "2026-10-08T16:46:58.375Z",
+    "checkedAt": "2026-10-09T00:55:25.152Z",
+    "groupChecks": {
+      "company": "2026-10-09T00:55:25.152Z",
+      "toldlife": "2026-10-09T00:54:57.097Z"
+    },
     "results": [
       {
         "group": "company",
         "origin": "https://www.duvridge.com",
-        "sha": "fdc790b531c26a5156b51f6a30ef099853c49498",
+        "sha": "9645c6c805271297bd384d95224eda4abb6ede93",
         "routes": 7
       },
       {
         "group": "toldlife",
         "origin": "https://toldlife.duvridge.com",
-        "sha": "fdc790b531c26a5156b51f6a30ef099853c49498",
+        "sha": "9645c6c805271297bd384d95224eda4abb6ede93",
         "episodeRoutes": 52,
         "recordings": 4,
         "devices": [
@@ -23,8 +27,9 @@
     ]
   },
   "sceneAlignment": {
-    "checkedAt": "2026-10-08T16:47:18.888Z",
-    "sourceRevision": "fdc790b531c26a5156b51f6a30ef099853c49498",
+    "checkedAt": "2026-10-09T00:55:13.746Z",
+    "origin": "https://toldlife.duvridge.com",
+    "sourceRevision": "9645c6c805271297bd384d95224eda4abb6ede93",
     "results": [
       {
         "service": "novels",
@@ -34,7 +39,25 @@
           "ep06-01"
         ],
         "matchedScenes": true,
-        "originalAudioCover": false
+        "representativeId": "ep06-01",
+        "placements": [
+          {
+            "id": "ep06-02",
+            "precedingParagraphs": 10,
+            "precedingTag": "HR",
+            "currentSrc": "https://toldlife.duvridge.com/novels/images/episodes/ep06-02-720.webp",
+            "loaded": true
+          },
+          {
+            "id": "ep06-01",
+            "precedingParagraphs": 13,
+            "precedingTag": "HR",
+            "currentSrc": "https://toldlife.duvridge.com/novels/images/episodes/ep06-01-720.webp",
+            "loaded": true
+          }
+        ],
+        "originalAudioCover": false,
+        "audioArtwork": null
       },
       {
         "service": "novels",
@@ -45,7 +68,32 @@
           "ep08-01"
         ],
         "matchedScenes": true,
-        "originalAudioCover": false
+        "representativeId": "ep08-01",
+        "placements": [
+          {
+            "id": "ep08-02",
+            "precedingParagraphs": 8,
+            "precedingTag": "HR",
+            "currentSrc": "https://toldlife.duvridge.com/novels/images/episodes/ep08-02-720.webp",
+            "loaded": true
+          },
+          {
+            "id": "ep08-03",
+            "precedingParagraphs": 13,
+            "precedingTag": "HR",
+            "currentSrc": "https://toldlife.duvridge.com/novels/images/episodes/ep08-03-720.webp",
+            "loaded": true
+          },
+          {
+            "id": "ep08-01",
+            "precedingParagraphs": 18,
+            "precedingTag": "HR",
+            "currentSrc": "https://toldlife.duvridge.com/novels/images/episodes/ep08-01-720.webp",
+            "loaded": true
+          }
+        ],
+        "originalAudioCover": false,
+        "audioArtwork": null
       },
       {
         "service": "novels",
@@ -54,7 +102,18 @@
           "ep11-01"
         ],
         "matchedScenes": true,
-        "originalAudioCover": false
+        "representativeId": "ep11-01",
+        "placements": [
+          {
+            "id": "ep11-01",
+            "precedingParagraphs": 12,
+            "precedingTag": "HR",
+            "currentSrc": "https://toldlife.duvridge.com/novels/images/episodes/ep11-01-720.webp",
+            "loaded": true
+          }
+        ],
+        "originalAudioCover": false,
+        "audioArtwork": null
       },
       {
         "service": "novels",
@@ -64,7 +123,25 @@
           "ep13-01"
         ],
         "matchedScenes": true,
-        "originalAudioCover": false
+        "representativeId": "ep13-01",
+        "placements": [
+          {
+            "id": "ep13-02",
+            "precedingParagraphs": 7,
+            "precedingTag": "HR",
+            "currentSrc": "https://toldlife.duvridge.com/novels/images/episodes/ep13-02-720.webp",
+            "loaded": true
+          },
+          {
+            "id": "ep13-01",
+            "precedingParagraphs": 13,
+            "precedingTag": "HR",
+            "currentSrc": "https://toldlife.duvridge.com/novels/images/episodes/ep13-01-720.webp",
+            "loaded": true
+          }
+        ],
+        "originalAudioCover": false,
+        "audioArtwork": null
       },
       {
         "service": "novels",
@@ -74,7 +151,25 @@
           "ep14-01"
         ],
         "matchedScenes": true,
-        "originalAudioCover": false
+        "representativeId": "ep14-01",
+        "placements": [
+          {
+            "id": "ep14-02",
+            "precedingParagraphs": 0,
+            "precedingTag": "H1",
+            "currentSrc": "https://toldlife.duvridge.com/novels/images/episodes/ep14-02-720.webp",
+            "loaded": true
+          },
+          {
+            "id": "ep14-01",
+            "precedingParagraphs": 3,
+            "precedingTag": "HR",
+            "currentSrc": "https://toldlife.duvridge.com/novels/images/episodes/ep14-01-720.webp",
+            "loaded": true
+          }
+        ],
+        "originalAudioCover": false,
+        "audioArtwork": null
       },
       {
         "service": "novels",
@@ -85,7 +180,32 @@
           "ep15-03"
         ],
         "matchedScenes": true,
-        "originalAudioCover": false
+        "representativeId": "ep15-01",
+        "placements": [
+          {
+            "id": "ep15-02",
+            "precedingParagraphs": 0,
+            "precedingTag": "H1",
+            "currentSrc": "https://toldlife.duvridge.com/novels/images/episodes/ep15-02-720.webp",
+            "loaded": true
+          },
+          {
+            "id": "ep15-01",
+            "precedingParagraphs": 3,
+            "precedingTag": "HR",
+            "currentSrc": "https://toldlife.duvridge.com/novels/images/episodes/ep15-01-720.webp",
+            "loaded": true
+          },
+          {
+            "id": "ep15-03",
+            "precedingParagraphs": 18,
+            "precedingTag": "HR",
+            "currentSrc": "https://toldlife.duvridge.com/novels/images/episodes/ep15-03-720.webp",
+            "loaded": true
+          }
+        ],
+        "originalAudioCover": false,
+        "audioArtwork": null
       },
       {
         "service": "audiobooks",
@@ -95,7 +215,28 @@
           "ep06-01"
         ],
         "matchedScenes": true,
-        "originalAudioCover": true
+        "representativeId": "ep06-01",
+        "placements": [
+          {
+            "id": "ep06-02",
+            "precedingParagraphs": 10,
+            "precedingTag": "HR",
+            "currentSrc": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep06-02-720.webp",
+            "loaded": true
+          },
+          {
+            "id": "ep06-01",
+            "precedingParagraphs": 13,
+            "precedingTag": "HR",
+            "currentSrc": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep06-01-720.webp",
+            "loaded": true
+          }
+        ],
+        "originalAudioCover": true,
+        "audioArtwork": {
+          "thumb": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep06-01-720.webp",
+          "sheet": "/audiobooks/images/episodes/ep06-01-720.jpg"
+        }
       },
       {
         "service": "audiobooks",
@@ -106,7 +247,35 @@
           "ep08-01"
         ],
         "matchedScenes": true,
-        "originalAudioCover": true
+        "representativeId": "ep08-01",
+        "placements": [
+          {
+            "id": "ep08-02",
+            "precedingParagraphs": 8,
+            "precedingTag": "HR",
+            "currentSrc": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep08-02-720.webp",
+            "loaded": true
+          },
+          {
+            "id": "ep08-03",
+            "precedingParagraphs": 13,
+            "precedingTag": "HR",
+            "currentSrc": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep08-03-720.webp",
+            "loaded": true
+          },
+          {
+            "id": "ep08-01",
+            "precedingParagraphs": 18,
+            "precedingTag": "HR",
+            "currentSrc": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep08-01-720.webp",
+            "loaded": true
+          }
+        ],
+        "originalAudioCover": true,
+        "audioArtwork": {
+          "thumb": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep08-01-720.webp",
+          "sheet": "/audiobooks/images/episodes/ep08-01-720.jpg"
+        }
       },
       {
         "service": "audiobooks",
@@ -115,7 +284,21 @@
           "ep11-01"
         ],
         "matchedScenes": true,
-        "originalAudioCover": true
+        "representativeId": "ep11-01",
+        "placements": [
+          {
+            "id": "ep11-01",
+            "precedingParagraphs": 12,
+            "precedingTag": "HR",
+            "currentSrc": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep11-01-720.webp",
+            "loaded": true
+          }
+        ],
+        "originalAudioCover": true,
+        "audioArtwork": {
+          "thumb": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep11-01-720.webp",
+          "sheet": "/audiobooks/images/episodes/ep11-01-720.jpg"
+        }
       },
       {
         "service": "audiobooks",
@@ -125,7 +308,28 @@
           "ep13-01"
         ],
         "matchedScenes": true,
-        "originalAudioCover": true
+        "representativeId": "ep13-01",
+        "placements": [
+          {
+            "id": "ep13-02",
+            "precedingParagraphs": 7,
+            "precedingTag": "HR",
+            "currentSrc": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep13-02-720.webp",
+            "loaded": true
+          },
+          {
+            "id": "ep13-01",
+            "precedingParagraphs": 13,
+            "precedingTag": "HR",
+            "currentSrc": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep13-01-720.webp",
+            "loaded": true
+          }
+        ],
+        "originalAudioCover": true,
+        "audioArtwork": {
+          "thumb": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep13-01-720.webp",
+          "sheet": "/audiobooks/images/episodes/ep13-01-720.jpg"
+        }
       },
       {
         "service": "audiobooks",
@@ -135,7 +339,28 @@
           "ep14-01"
         ],
         "matchedScenes": true,
-        "originalAudioCover": true
+        "representativeId": "ep14-01",
+        "placements": [
+          {
+            "id": "ep14-02",
+            "precedingParagraphs": 0,
+            "precedingTag": "H1",
+            "currentSrc": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep14-02-720.webp",
+            "loaded": true
+          },
+          {
+            "id": "ep14-01",
+            "precedingParagraphs": 3,
+            "precedingTag": "HR",
+            "currentSrc": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep14-01-720.webp",
+            "loaded": true
+          }
+        ],
+        "originalAudioCover": true,
+        "audioArtwork": {
+          "thumb": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep14-01-720.webp",
+          "sheet": "/audiobooks/images/episodes/ep14-01-720.jpg"
+        }
       },
       {
         "service": "audiobooks",
@@ -146,8 +371,71 @@
           "ep15-03"
         ],
         "matchedScenes": true,
-        "originalAudioCover": true
+        "representativeId": "ep15-01",
+        "placements": [
+          {
+            "id": "ep15-02",
+            "precedingParagraphs": 0,
+            "precedingTag": "H1",
+            "currentSrc": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep15-02-720.webp",
+            "loaded": true
+          },
+          {
+            "id": "ep15-01",
+            "precedingParagraphs": 3,
+            "precedingTag": "HR",
+            "currentSrc": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep15-01-720.webp",
+            "loaded": true
+          },
+          {
+            "id": "ep15-03",
+            "precedingParagraphs": 18,
+            "precedingTag": "HR",
+            "currentSrc": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep15-03-720.webp",
+            "loaded": true
+          }
+        ],
+        "originalAudioCover": true,
+        "audioArtwork": {
+          "thumb": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep15-01-720.webp",
+          "sheet": "/audiobooks/images/episodes/ep15-01-720.jpg"
+        }
       }
-    ]
+    ],
+    "errors": [],
+    "deploymentBefore": {
+      "schemaVersion": 1,
+      "sourceRevision": "9645c6c805271297bd384d95224eda4abb6ede93",
+      "services": [
+        {
+          "base": "/novels/",
+          "files": 535
+        },
+        {
+          "base": "/audiobooks/",
+          "files": 539
+        }
+      ],
+      "sourceDirty": false,
+      "group": "toldlife"
+    },
+    "deploymentAfter": {
+      "schemaVersion": 1,
+      "sourceRevision": "9645c6c805271297bd384d95224eda4abb6ede93",
+      "services": [
+        {
+          "base": "/novels/",
+          "files": 535
+        },
+        {
+          "base": "/audiobooks/",
+          "files": 539
+        }
+      ],
+      "sourceDirty": false,
+      "group": "toldlife"
+    },
+    "passed": true,
+    "completedAt": "2026-10-09T00:55:36.939Z"
   }
 }

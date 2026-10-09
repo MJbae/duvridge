@@ -2,7 +2,7 @@
 
 2026-10-08~09 KST에 기존 프로젝트를 npm workspaces 모노레포로 이관했다. 소스 원본 두 경로는 수정하지 않았다.
 
-최종 운영 소스는 `fdc790b531c26a5156b51f6a30ef099853c49498`다. [Actions 실행 37810209432](https://github.com/MJbae/duvridge/actions/runs/37810209432)의 네 서비스 검증, 공통 검사, 두 Pages 배포와 배포 후 HTTP 검사가 모두 성공했다. 이후 공개 주소에서 회사 7경로, 두 앱 52회차와 음원 4개, 휴대폰·데스크톱 재생 조작, 조정한 6회차×2서비스의 삽화 위치·직후 문단·기존 오디오 대표 그림을 확인했다. [기계 판독 검증 결과](latest-deployment-check.json)에 커밋과 확인 시각을 보존한다.
+최종 운영 소스는 `9645c6c805271297bd384d95224eda4abb6ede93`다. [Actions 실행 37866920128](https://github.com/MJbae/duvridge/actions/runs/37866920128)의 네 서비스 검증, 공통 검사, 두 Pages 배포와 배포 후 HTTP 검사가 모두 성공했다. 이후 공개 주소에서 회사 7경로, 두 앱 52회차와 음원 4개, 휴대폰·데스크톱 재생 조작, 조정한 6회차×2서비스의 삽화 위치·직후 문단·기존 오디오 대표 그림을 확인했다. [기계 판독 검증 결과](latest-deployment-check.json)에 커밋과 확인 시각을 보존한다.
 
 ## 사전 검증
 
@@ -73,6 +73,10 @@ MP3·SRT 짝, 회차 ID, 비어 있는 음성, 안전한 파일 경로, 겹치�
 기존의 두 포괄적 패키지를 원고·자산 처리(`content-processing`), 읽기 UI(`reader-ui`), 반응·Firebase 저장(`reader-reactions`), 플랫폼 설정·Markdown 연동(`vitepress-reader`)으로 나누었다. 패키지에는 책 원본이나 미디어를 두지 않고 기능별 `src/manuscripts`, `src/components`, `src/persistence`, `src/markdown` 경계를 사용한다. 편집 자료 변경은 서비스 레지스트리의 책 연결로 두 리더와 ToldLife 전체 배포에 전파된다.
 
 순환 의존성·패키지 안의 원고/미디어 재유입·소비자 전파를 검사하는 저장소 테스트와 자료 변경 전파 검증을 추가했다. 공통 처리 5건, 플랫폼 설정 1건, 반응 상태 5건, 보안 규칙 26건, 제작 파서/자산 16건이 통과했다. 웹소설 브라우저 108건, 오디오북 148건 통과와 기존 모바일 새 탭 2건의 명시적 제외를 확인했다. 타입 검사와 공유 메타데이터 검사도 통과했다.
+
+구조 변경 커밋 `fa1748b49696080ff66ce0e3fc7144647cb39e68`의 [Actions 실행 37866445862](https://github.com/MJbae/duvridge/actions/runs/37866445862)에서 깨끗한 checkout의 루트 `npm ci`, 네 서비스 검증, 두 Pages 배포와 HTTP 검사를 모두 통과했다. 공개 운영 사이트에서도 새 SHA와 `sourceDirty=false`, 두 서비스의 동일한 목차·본문, 플레이어 재생·일시정지·1.25배속·다음 문장 이동을 확인했다.
+
+이어 공통 패키지 단위 검증을 CI에 자동 포함한 `9645c6c805271297bd384d95224eda4abb6ede93`의 [Actions 실행 37866920128](https://github.com/MJbae/duvridge/actions/runs/37866920128)도 모두 성공했다. 저장소 JavaScript 15건·Python 4건, 공통 패키지 11건, 제작 파서/자산 16건, Firebase 규칙 26건과 서비스 검증을 통과했다. 실제 업로드 주소는 회사 `https://5776fbf8.duvridge.pages.dev`, ToldLife `https://b65147d8.toldlife.pages.dev`이며 두 운영 도메인이 같은 최종 SHA를 제공한다. 조정한 여섯 회차를 두 서비스에서 다시 열어 삽화 26개 배치·이미지 로딩·직후 장면과 기존 오디오 대표 그림을 확인했다. 원고 수정 7줄 추가·5줄 삭제와 사용자 초안은 커밋·배포에 포함하지 않고 새 원고 위치의 작업 트리에 보존했다.
 
 ## 보존 범위와 제한
 
