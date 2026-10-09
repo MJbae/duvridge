@@ -24,7 +24,7 @@ async function startMusic(page: Page, src: string) {
   await page.keyboard.press('Escape')
 }
 async function fixedVolume(page: Page) {
-  expect(await backgroundAudio(page).evaluate((audio: HTMLAudioElement) => audio.volume)).toBe(0.03)
+  expect(await backgroundAudio(page).evaluate((audio: HTMLAudioElement) => audio.volume)).toBe(0.12)
 }
 
 test('작품 홈은 조용하고, 회차는 설정 안 스위치 하나로 그 회차의 곡을 켜고 끈다', async ({ page }) => {
@@ -50,7 +50,7 @@ test('작품 홈은 조용하고, 회차는 설정 안 스위치 하나로 그 �
   await expect(backgroundAudio(page)).not.toHaveAttribute('src')
 })
 
-test('하나의 재생기로 모든 회차의 곡을 3% 음량으로 이어 틀고, 마지막 회차 뒤에는 조용히 작품 홈으로 돌아온다', async ({ page }) => {
+test('하나의 재생기로 모든 회차의 곡을 12% 음량으로 이어 틀고, 마지막 회차 뒤에는 조용히 작품 홈으로 돌아온다', async ({ page }) => {
   test.setTimeout(120000)
   const errors: string[] = []
   const broken: string[] = []
@@ -106,7 +106,7 @@ test('음악을 받지 못하면 설정에만 알리고 다시 재생할 수 있
   await expect(page.locator('.story-content p').first()).toBeVisible()
 })
 
-test('기기의 기본 음량이 고정되어 있어도 3%로 재생하고 스위치로 중지한다', async ({ page }) => {
+test('기기의 기본 음량이 고정되어 있어도 12%로 재생하고 스위치로 중지한다', async ({ page }) => {
   await page.addInitScript(() => {
     Object.defineProperty(HTMLMediaElement.prototype, 'volume', { get: () => 1, set() {}, configurable: true })
     const original = AudioContext.prototype.createGain
@@ -119,11 +119,11 @@ test('기기의 기본 음량이 고정되어 있어도 3%로 재생하고 스�
   const gainValue = () => page.evaluate(() => (window as typeof window & { musicGain: GainNode }).musicGain.gain.value)
   await page.goto('prolog')
   await startMusic(page, '/works/bae-byunghee/music/prolog.mp3')
-  await expect.poll(gainValue).toBeCloseTo(0.03, 3)
+  await expect.poll(gainValue).toBeCloseTo(0.12, 3)
   await openSettings(page)
   await musicSwitch(page).click()
   await expect.poll(() => page.evaluate(() => (window as typeof window & { musicContext: AudioContext }).musicContext.state)).toBe('suspended')
   await musicSwitch(page).click()
   await playing(page, '/works/bae-byunghee/music/prolog.mp3')
-  await expect.poll(gainValue).toBeCloseTo(0.03, 3)
+  await expect.poll(gainValue).toBeCloseTo(0.12, 3)
 })

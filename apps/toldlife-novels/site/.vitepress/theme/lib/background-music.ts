@@ -4,7 +4,9 @@ import type { MusicTrack } from '../../shared/background-music.mjs'
 
 export type MusicStatus = 'paused' | 'loading' | 'playing' | 'blocked' | 'error'
 const storageKey = 'family-library:music'
-const musicVolume = 0.03
+// The tracks are mastered near -12 LUFS. A 0.12 gain (-18 dB) plays them near -30 LUFS: audible while reading,
+// yet well below the -16 LUFS audiobook narration.
+const musicVolume = 0.12
 
 export function useBackgroundMusic(track: ComputedRef<MusicTrack | undefined>) {
   const audio = ref<HTMLAudioElement>()
