@@ -1,24 +1,26 @@
 {
-  "workflow": "https://github.com/MJbae/duvridge/actions/runs/37866920128",
+  "workflow": "https://github.com/MJbae/duvridge/actions/runs/37871108054",
   "production": {
-    "checkedAt": "2026-10-09T00:55:25.152Z",
-    "groupChecks": {
-      "company": "2026-10-09T00:55:25.152Z",
-      "toldlife": "2026-10-09T00:54:57.097Z"
-    },
+    "checkedAt": "2026-10-09T02:09:02.351Z",
     "results": [
       {
         "group": "company",
         "origin": "https://www.duvridge.com",
-        "sha": "9645c6c805271297bd384d95224eda4abb6ede93",
+        "sha": "9efd8a82717da916488e0e4a58670b0738ca5d44",
         "routes": 7
       },
       {
         "group": "toldlife",
         "origin": "https://toldlife.duvridge.com",
-        "sha": "9645c6c805271297bd384d95224eda4abb6ede93",
+        "sha": "9efd8a82717da916488e0e4a58670b0738ca5d44",
         "episodeRoutes": 52,
         "recordings": 4,
+        "manuscript": {
+          "bookId": "bae-byunghee",
+          "sha256": "3320ade338ebf179ed6779540a315cb8253cc0c9f71bccaa30ed17bbcbd266f4",
+          "episodeCount": 26,
+          "paragraphChecks": 838
+        },
         "devices": [
           "phone",
           "desktop"
@@ -26,416 +28,350 @@
       }
     ]
   },
-  "sceneAlignment": {
-    "checkedAt": "2026-10-09T00:55:13.746Z",
+  "illustrationUpdate": {
+    "checkedAt": "2026-10-09T02:09:54.012Z",
     "origin": "https://toldlife.duvridge.com",
-    "sourceRevision": "9645c6c805271297bd384d95224eda4abb6ede93",
-    "results": [
+    "expectedSha": "9efd8a82717da916488e0e4a58670b0738ca5d44",
+    "deployment": {
+      "schemaVersion": 1,
+      "sourceRevision": "9efd8a82717da916488e0e4a58670b0738ca5d44",
+      "services": [
+        {
+          "base": "/novels/",
+          "files": 541
+        },
+        {
+          "base": "/audiobooks/",
+          "files": 545
+        }
+      ],
+      "sourceDirty": false,
+      "group": "toldlife"
+    },
+    "manuscriptSha256": "3320ade338ebf179ed6779540a315cb8253cc0c9f71bccaa30ed17bbcbd266f4",
+    "assets": [
       {
         "service": "novels",
-        "episode": "ep06",
-        "order": [
-          "ep06-02",
-          "ep06-01"
-        ],
-        "matchedScenes": true,
-        "representativeId": "ep06-01",
-        "placements": [
-          {
-            "id": "ep06-02",
-            "precedingParagraphs": 10,
-            "precedingTag": "HR",
-            "currentSrc": "https://toldlife.duvridge.com/novels/images/episodes/ep06-02-720.webp",
-            "loaded": true
-          },
-          {
-            "id": "ep06-01",
-            "precedingParagraphs": 13,
-            "precedingTag": "HR",
-            "currentSrc": "https://toldlife.duvridge.com/novels/images/episodes/ep06-01-720.webp",
-            "loaded": true
-          }
-        ],
-        "originalAudioCover": false,
-        "audioArtwork": null
+        "url": "https://toldlife.duvridge.com/novels/images/episodes/ep11-family-care-360.jpg",
+        "sha256": "ef6a35c8e07cd06ccf2eab6b0cce8308baa8904e7fd0cd73f5b1f3bffa0c5e3a",
+        "bytes": 23389,
+        "contentType": "image/jpeg",
+        "cacheStatus": "REVALIDATED",
+        "etag": "\"0771c48b342a7868a1cbc4fcdd5aa9c5\""
       },
       {
         "service": "novels",
-        "episode": "ep08",
-        "order": [
-          "ep08-02",
-          "ep08-03",
-          "ep08-01"
-        ],
-        "matchedScenes": true,
-        "representativeId": "ep08-01",
-        "placements": [
-          {
-            "id": "ep08-02",
-            "precedingParagraphs": 8,
-            "precedingTag": "HR",
-            "currentSrc": "https://toldlife.duvridge.com/novels/images/episodes/ep08-02-720.webp",
-            "loaded": true
-          },
-          {
-            "id": "ep08-03",
-            "precedingParagraphs": 13,
-            "precedingTag": "HR",
-            "currentSrc": "https://toldlife.duvridge.com/novels/images/episodes/ep08-03-720.webp",
-            "loaded": true
-          },
-          {
-            "id": "ep08-01",
-            "precedingParagraphs": 18,
-            "precedingTag": "HR",
-            "currentSrc": "https://toldlife.duvridge.com/novels/images/episodes/ep08-01-720.webp",
-            "loaded": true
-          }
-        ],
-        "originalAudioCover": false,
-        "audioArtwork": null
+        "url": "https://toldlife.duvridge.com/novels/images/episodes/ep11-family-care-720.jpg",
+        "sha256": "c875cbd563c3e52fa624323b5a111f0aedc4a6b1c81bd03dd0a3f06a95a457f4",
+        "bytes": 82902,
+        "contentType": "image/jpeg",
+        "cacheStatus": "MISS",
+        "etag": "\"9ce8d3d1751f5b4dc4a6d0bf356b5fc3\""
       },
       {
         "service": "novels",
-        "episode": "ep11",
-        "order": [
-          "ep11-01"
-        ],
-        "matchedScenes": true,
-        "representativeId": "ep11-01",
-        "placements": [
-          {
-            "id": "ep11-01",
-            "precedingParagraphs": 12,
-            "precedingTag": "HR",
-            "currentSrc": "https://toldlife.duvridge.com/novels/images/episodes/ep11-01-720.webp",
-            "loaded": true
-          }
-        ],
-        "originalAudioCover": false,
-        "audioArtwork": null
+        "url": "https://toldlife.duvridge.com/novels/images/episodes/ep11-family-care-1280.jpg",
+        "sha256": "7066606e5681f4f6bc9195469ea6925ff280b1f1ebac5ade1bece6e59122dd14",
+        "bytes": 244700,
+        "contentType": "image/jpeg",
+        "cacheStatus": "REVALIDATED",
+        "etag": "\"9780b759b7b2c5b8869d1e6e058e3a60\""
       },
       {
         "service": "novels",
-        "episode": "ep13",
-        "order": [
-          "ep13-02",
-          "ep13-01"
-        ],
-        "matchedScenes": true,
-        "representativeId": "ep13-01",
-        "placements": [
-          {
-            "id": "ep13-02",
-            "precedingParagraphs": 7,
-            "precedingTag": "HR",
-            "currentSrc": "https://toldlife.duvridge.com/novels/images/episodes/ep13-02-720.webp",
-            "loaded": true
-          },
-          {
-            "id": "ep13-01",
-            "precedingParagraphs": 13,
-            "precedingTag": "HR",
-            "currentSrc": "https://toldlife.duvridge.com/novels/images/episodes/ep13-01-720.webp",
-            "loaded": true
-          }
-        ],
-        "originalAudioCover": false,
-        "audioArtwork": null
+        "url": "https://toldlife.duvridge.com/novels/images/episodes/ep11-family-care-360.webp",
+        "sha256": "fe3cf6227c3c78e89614facea926b1674a65ceda64525eb5fcc93face3633072",
+        "bytes": 20804,
+        "contentType": "image/webp",
+        "cacheStatus": "REVALIDATED",
+        "etag": "\"197c2f12d6dec79cbe8c8bf6a2cda93f\""
       },
       {
         "service": "novels",
-        "episode": "ep14",
-        "order": [
-          "ep14-02",
-          "ep14-01"
-        ],
-        "matchedScenes": true,
-        "representativeId": "ep14-01",
-        "placements": [
-          {
-            "id": "ep14-02",
-            "precedingParagraphs": 0,
-            "precedingTag": "H1",
-            "currentSrc": "https://toldlife.duvridge.com/novels/images/episodes/ep14-02-720.webp",
-            "loaded": true
-          },
-          {
-            "id": "ep14-01",
-            "precedingParagraphs": 3,
-            "precedingTag": "HR",
-            "currentSrc": "https://toldlife.duvridge.com/novels/images/episodes/ep14-01-720.webp",
-            "loaded": true
-          }
-        ],
-        "originalAudioCover": false,
-        "audioArtwork": null
+        "url": "https://toldlife.duvridge.com/novels/images/episodes/ep11-family-care-720.webp",
+        "sha256": "c728761afbb5642367be9282464e748554952d5efa19d04b446d0cb48c3d362f",
+        "bytes": 69166,
+        "contentType": "image/webp",
+        "cacheStatus": "REVALIDATED",
+        "etag": "\"39492f212722819ed3e9fd7ac9357ce5\""
       },
       {
         "service": "novels",
-        "episode": "ep15",
-        "order": [
-          "ep15-02",
-          "ep15-01",
-          "ep15-03"
-        ],
-        "matchedScenes": true,
-        "representativeId": "ep15-01",
-        "placements": [
-          {
-            "id": "ep15-02",
-            "precedingParagraphs": 0,
-            "precedingTag": "H1",
-            "currentSrc": "https://toldlife.duvridge.com/novels/images/episodes/ep15-02-720.webp",
-            "loaded": true
-          },
-          {
-            "id": "ep15-01",
-            "precedingParagraphs": 3,
-            "precedingTag": "HR",
-            "currentSrc": "https://toldlife.duvridge.com/novels/images/episodes/ep15-01-720.webp",
-            "loaded": true
-          },
-          {
-            "id": "ep15-03",
-            "precedingParagraphs": 18,
-            "precedingTag": "HR",
-            "currentSrc": "https://toldlife.duvridge.com/novels/images/episodes/ep15-03-720.webp",
-            "loaded": true
-          }
-        ],
-        "originalAudioCover": false,
-        "audioArtwork": null
+        "url": "https://toldlife.duvridge.com/novels/images/episodes/ep11-family-care-1280.webp",
+        "sha256": "95d50e325c82197c3715338244fef3390f53a8a09fc07ec125dcb64ebfafcd83",
+        "bytes": 197572,
+        "contentType": "image/webp",
+        "cacheStatus": "MISS",
+        "etag": "\"057c80ad381187e83d9df198bf300f30\""
+      },
+      {
+        "service": "novels",
+        "url": "https://toldlife.duvridge.com/novels/images/episodes/ep11-01-360.jpg",
+        "sha256": "e9615d2561b660b5f1abff2dec39626e6b6a1f1680026e1febd3714671398ac1",
+        "bytes": 20971,
+        "contentType": "image/jpeg",
+        "cacheStatus": "REVALIDATED",
+        "etag": "\"d6e326b609227846641582bae0ee770d\""
+      },
+      {
+        "service": "novels",
+        "url": "https://toldlife.duvridge.com/novels/images/episodes/ep11-01-720.jpg",
+        "sha256": "dde71118cdfdc1b3a7d0167fc12e3b4e470b3a11e8dfb08f05a27df91e80de41",
+        "bytes": 76617,
+        "contentType": "image/jpeg",
+        "cacheStatus": "MISS",
+        "etag": "\"ef2bbd2c1097d693c4deea4fde30697a\""
+      },
+      {
+        "service": "novels",
+        "url": "https://toldlife.duvridge.com/novels/images/episodes/ep11-01-1280.jpg",
+        "sha256": "2a1d31a67d693ca79dd0953d56247e323a58bc2bc10574deb9f1fc9b2ba17a3b",
+        "bytes": 237219,
+        "contentType": "image/jpeg",
+        "cacheStatus": "REVALIDATED",
+        "etag": "\"8fe5ff100f95d0aa48a43e33d2d8cab9\""
+      },
+      {
+        "service": "novels",
+        "url": "https://toldlife.duvridge.com/novels/images/episodes/ep11-01-360.webp",
+        "sha256": "7189c3c9e85044357ba8620b42dd2bff806592ee092987f533ca0e1b66790786",
+        "bytes": 17470,
+        "contentType": "image/webp",
+        "cacheStatus": "MISS",
+        "etag": "\"5d6903a89733d47fdd4399ab6cbfaa4c\""
+      },
+      {
+        "service": "novels",
+        "url": "https://toldlife.duvridge.com/novels/images/episodes/ep11-01-720.webp",
+        "sha256": "cc6f7d16583ed365a1d8a092c82bf9b80e66bfb4ebbc78265e8050b16f2d4bcd",
+        "bytes": 63820,
+        "contentType": "image/webp",
+        "cacheStatus": "REVALIDATED",
+        "etag": "\"653d2e45b62b5328c93753b287d9da8c\""
+      },
+      {
+        "service": "novels",
+        "url": "https://toldlife.duvridge.com/novels/images/episodes/ep11-01-1280.webp",
+        "sha256": "0343d5c114edd32d6d54557327f9129654976448ec2e4f152f6ff0e517af250c",
+        "bytes": 192522,
+        "contentType": "image/webp",
+        "cacheStatus": "REVALIDATED",
+        "etag": "\"3ca8f25f74490ba389cbe57a38837ec5\""
       },
       {
         "service": "audiobooks",
-        "episode": "ep06",
-        "order": [
-          "ep06-02",
-          "ep06-01"
-        ],
-        "matchedScenes": true,
-        "representativeId": "ep06-01",
-        "placements": [
-          {
-            "id": "ep06-02",
-            "precedingParagraphs": 10,
-            "precedingTag": "HR",
-            "currentSrc": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep06-02-720.webp",
-            "loaded": true
-          },
-          {
-            "id": "ep06-01",
-            "precedingParagraphs": 13,
-            "precedingTag": "HR",
-            "currentSrc": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep06-01-720.webp",
-            "loaded": true
-          }
-        ],
-        "originalAudioCover": true,
-        "audioArtwork": {
-          "thumb": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep06-01-720.webp",
-          "sheet": "/audiobooks/images/episodes/ep06-01-720.jpg"
-        }
+        "url": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep11-family-care-360.jpg",
+        "sha256": "ef6a35c8e07cd06ccf2eab6b0cce8308baa8904e7fd0cd73f5b1f3bffa0c5e3a",
+        "bytes": 23389,
+        "contentType": "image/jpeg",
+        "cacheStatus": "MISS",
+        "etag": "\"0771c48b342a7868a1cbc4fcdd5aa9c5\""
       },
       {
         "service": "audiobooks",
-        "episode": "ep08",
-        "order": [
-          "ep08-02",
-          "ep08-03",
-          "ep08-01"
-        ],
-        "matchedScenes": true,
-        "representativeId": "ep08-01",
-        "placements": [
-          {
-            "id": "ep08-02",
-            "precedingParagraphs": 8,
-            "precedingTag": "HR",
-            "currentSrc": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep08-02-720.webp",
-            "loaded": true
-          },
-          {
-            "id": "ep08-03",
-            "precedingParagraphs": 13,
-            "precedingTag": "HR",
-            "currentSrc": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep08-03-720.webp",
-            "loaded": true
-          },
-          {
-            "id": "ep08-01",
-            "precedingParagraphs": 18,
-            "precedingTag": "HR",
-            "currentSrc": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep08-01-720.webp",
-            "loaded": true
-          }
-        ],
-        "originalAudioCover": true,
-        "audioArtwork": {
-          "thumb": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep08-01-720.webp",
-          "sheet": "/audiobooks/images/episodes/ep08-01-720.jpg"
-        }
+        "url": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep11-family-care-720.jpg",
+        "sha256": "c875cbd563c3e52fa624323b5a111f0aedc4a6b1c81bd03dd0a3f06a95a457f4",
+        "bytes": 82902,
+        "contentType": "image/jpeg",
+        "cacheStatus": "REVALIDATED",
+        "etag": "\"9ce8d3d1751f5b4dc4a6d0bf356b5fc3\""
       },
       {
         "service": "audiobooks",
-        "episode": "ep11",
-        "order": [
-          "ep11-01"
-        ],
-        "matchedScenes": true,
-        "representativeId": "ep11-01",
-        "placements": [
-          {
-            "id": "ep11-01",
-            "precedingParagraphs": 12,
-            "precedingTag": "HR",
-            "currentSrc": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep11-01-720.webp",
-            "loaded": true
-          }
-        ],
-        "originalAudioCover": true,
-        "audioArtwork": {
-          "thumb": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep11-01-720.webp",
-          "sheet": "/audiobooks/images/episodes/ep11-01-720.jpg"
-        }
+        "url": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep11-family-care-1280.jpg",
+        "sha256": "7066606e5681f4f6bc9195469ea6925ff280b1f1ebac5ade1bece6e59122dd14",
+        "bytes": 244700,
+        "contentType": "image/jpeg",
+        "cacheStatus": "REVALIDATED",
+        "etag": "\"9780b759b7b2c5b8869d1e6e058e3a60\""
       },
       {
         "service": "audiobooks",
-        "episode": "ep13",
-        "order": [
-          "ep13-02",
-          "ep13-01"
-        ],
-        "matchedScenes": true,
-        "representativeId": "ep13-01",
-        "placements": [
-          {
-            "id": "ep13-02",
-            "precedingParagraphs": 7,
-            "precedingTag": "HR",
-            "currentSrc": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep13-02-720.webp",
-            "loaded": true
-          },
-          {
-            "id": "ep13-01",
-            "precedingParagraphs": 13,
-            "precedingTag": "HR",
-            "currentSrc": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep13-01-720.webp",
-            "loaded": true
-          }
-        ],
-        "originalAudioCover": true,
-        "audioArtwork": {
-          "thumb": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep13-01-720.webp",
-          "sheet": "/audiobooks/images/episodes/ep13-01-720.jpg"
-        }
+        "url": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep11-family-care-360.webp",
+        "sha256": "fe3cf6227c3c78e89614facea926b1674a65ceda64525eb5fcc93face3633072",
+        "bytes": 20804,
+        "contentType": "image/webp",
+        "cacheStatus": "MISS",
+        "etag": "\"197c2f12d6dec79cbe8c8bf6a2cda93f\""
       },
       {
         "service": "audiobooks",
-        "episode": "ep14",
-        "order": [
-          "ep14-02",
-          "ep14-01"
-        ],
-        "matchedScenes": true,
-        "representativeId": "ep14-01",
-        "placements": [
-          {
-            "id": "ep14-02",
-            "precedingParagraphs": 0,
-            "precedingTag": "H1",
-            "currentSrc": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep14-02-720.webp",
-            "loaded": true
-          },
-          {
-            "id": "ep14-01",
-            "precedingParagraphs": 3,
-            "precedingTag": "HR",
-            "currentSrc": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep14-01-720.webp",
-            "loaded": true
-          }
-        ],
-        "originalAudioCover": true,
-        "audioArtwork": {
-          "thumb": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep14-01-720.webp",
-          "sheet": "/audiobooks/images/episodes/ep14-01-720.jpg"
-        }
+        "url": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep11-family-care-720.webp",
+        "sha256": "c728761afbb5642367be9282464e748554952d5efa19d04b446d0cb48c3d362f",
+        "bytes": 69166,
+        "contentType": "image/webp",
+        "cacheStatus": "REVALIDATED",
+        "etag": "\"39492f212722819ed3e9fd7ac9357ce5\""
       },
       {
         "service": "audiobooks",
-        "episode": "ep15",
-        "order": [
-          "ep15-02",
-          "ep15-01",
-          "ep15-03"
-        ],
-        "matchedScenes": true,
-        "representativeId": "ep15-01",
-        "placements": [
-          {
-            "id": "ep15-02",
-            "precedingParagraphs": 0,
-            "precedingTag": "H1",
-            "currentSrc": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep15-02-720.webp",
-            "loaded": true
-          },
-          {
-            "id": "ep15-01",
-            "precedingParagraphs": 3,
-            "precedingTag": "HR",
-            "currentSrc": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep15-01-720.webp",
-            "loaded": true
-          },
-          {
-            "id": "ep15-03",
-            "precedingParagraphs": 18,
-            "precedingTag": "HR",
-            "currentSrc": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep15-03-720.webp",
-            "loaded": true
-          }
-        ],
-        "originalAudioCover": true,
-        "audioArtwork": {
-          "thumb": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep15-01-720.webp",
-          "sheet": "/audiobooks/images/episodes/ep15-01-720.jpg"
-        }
+        "url": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep11-family-care-1280.webp",
+        "sha256": "95d50e325c82197c3715338244fef3390f53a8a09fc07ec125dcb64ebfafcd83",
+        "bytes": 197572,
+        "contentType": "image/webp",
+        "cacheStatus": "REVALIDATED",
+        "etag": "\"057c80ad381187e83d9df198bf300f30\""
+      },
+      {
+        "service": "audiobooks",
+        "url": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep11-01-360.jpg",
+        "sha256": "e9615d2561b660b5f1abff2dec39626e6b6a1f1680026e1febd3714671398ac1",
+        "bytes": 20971,
+        "contentType": "image/jpeg",
+        "cacheStatus": "MISS",
+        "etag": "\"d6e326b609227846641582bae0ee770d\""
+      },
+      {
+        "service": "audiobooks",
+        "url": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep11-01-720.jpg",
+        "sha256": "dde71118cdfdc1b3a7d0167fc12e3b4e470b3a11e8dfb08f05a27df91e80de41",
+        "bytes": 76617,
+        "contentType": "image/jpeg",
+        "cacheStatus": "MISS",
+        "etag": "\"ef2bbd2c1097d693c4deea4fde30697a\""
+      },
+      {
+        "service": "audiobooks",
+        "url": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep11-01-1280.jpg",
+        "sha256": "2a1d31a67d693ca79dd0953d56247e323a58bc2bc10574deb9f1fc9b2ba17a3b",
+        "bytes": 237219,
+        "contentType": "image/jpeg",
+        "cacheStatus": "MISS",
+        "etag": "\"8fe5ff100f95d0aa48a43e33d2d8cab9\""
+      },
+      {
+        "service": "audiobooks",
+        "url": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep11-01-360.webp",
+        "sha256": "7189c3c9e85044357ba8620b42dd2bff806592ee092987f533ca0e1b66790786",
+        "bytes": 17470,
+        "contentType": "image/webp",
+        "cacheStatus": "REVALIDATED",
+        "etag": "\"5d6903a89733d47fdd4399ab6cbfaa4c\""
+      },
+      {
+        "service": "audiobooks",
+        "url": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep11-01-720.webp",
+        "sha256": "cc6f7d16583ed365a1d8a092c82bf9b80e66bfb4ebbc78265e8050b16f2d4bcd",
+        "bytes": 63820,
+        "contentType": "image/webp",
+        "cacheStatus": "REVALIDATED",
+        "etag": "\"653d2e45b62b5328c93753b287d9da8c\""
+      },
+      {
+        "service": "audiobooks",
+        "url": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep11-01-1280.webp",
+        "sha256": "0343d5c114edd32d6d54557327f9129654976448ec2e4f152f6ff0e517af250c",
+        "bytes": 192522,
+        "contentType": "image/webp",
+        "cacheStatus": "REVALIDATED",
+        "etag": "\"3ca8f25f74490ba389cbe57a38837ec5\""
       }
     ],
-    "errors": [],
-    "deploymentBefore": {
-      "schemaVersion": 1,
-      "sourceRevision": "9645c6c805271297bd384d95224eda4abb6ede93",
-      "services": [
-        {
-          "base": "/novels/",
-          "files": 535
-        },
-        {
-          "base": "/audiobooks/",
-          "files": 539
-        }
-      ],
-      "sourceDirty": false,
-      "group": "toldlife"
-    },
-    "deploymentAfter": {
-      "schemaVersion": 1,
-      "sourceRevision": "9645c6c805271297bd384d95224eda4abb6ede93",
-      "services": [
-        {
-          "base": "/novels/",
-          "files": 535
-        },
-        {
-          "base": "/audiobooks/",
-          "files": 539
-        }
-      ],
-      "sourceDirty": false,
-      "group": "toldlife"
-    },
-    "passed": true,
-    "completedAt": "2026-10-09T00:55:36.939Z"
+    "views": [
+      {
+        "service": "novels",
+        "device": "phone",
+        "url": "https://toldlife.duvridge.com/novels/read/ep11.html",
+        "title": "11화 자식들만큼은 · 내 논을 파는 한이 있어도",
+        "figures": [
+          "ep11-family-care",
+          "ep11-01"
+        ],
+        "adjoiningParagraphs": "checked",
+        "loadedImages": [
+          {
+            "src": "https://toldlife.duvridge.com/novels/images/episodes/ep11-family-care-1280.webp",
+            "width": 342,
+            "height": 192
+          },
+          {
+            "src": "https://toldlife.duvridge.com/novels/images/episodes/ep11-01-1280.webp",
+            "width": 342,
+            "height": 192
+          }
+        ],
+        "horizontalOverflow": false,
+        "runtimeErrors": [],
+        "screenshot": "novels-phone-ep11.png"
+      },
+      {
+        "service": "audiobooks",
+        "device": "phone",
+        "url": "https://toldlife.duvridge.com/audiobooks/read/ep11.html",
+        "title": "11화 자식들만큼은 · 내 논을 파는 한이 있어도",
+        "figures": [
+          "ep11-family-care",
+          "ep11-01"
+        ],
+        "adjoiningParagraphs": "checked",
+        "loadedImages": [
+          {
+            "src": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep11-family-care-1280.webp",
+            "width": 342,
+            "height": 192
+          },
+          {
+            "src": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep11-01-1280.webp",
+            "width": 342,
+            "height": 192
+          }
+        ],
+        "horizontalOverflow": false,
+        "runtimeErrors": [],
+        "screenshot": "audiobooks-phone-ep11.png"
+      },
+      {
+        "service": "novels",
+        "device": "desktop",
+        "url": "https://toldlife.duvridge.com/novels/read/ep11.html",
+        "title": "11화 자식들만큼은 · 내 논을 파는 한이 있어도",
+        "figures": [
+          "ep11-family-care",
+          "ep11-01"
+        ],
+        "adjoiningParagraphs": "checked",
+        "loadedImages": [
+          {
+            "src": "https://toldlife.duvridge.com/novels/images/episodes/ep11-family-care-720.webp",
+            "width": 632,
+            "height": 355
+          },
+          {
+            "src": "https://toldlife.duvridge.com/novels/images/episodes/ep11-01-720.webp",
+            "width": 632,
+            "height": 355
+          }
+        ],
+        "horizontalOverflow": false,
+        "runtimeErrors": [],
+        "screenshot": "novels-desktop-ep11.png"
+      },
+      {
+        "service": "audiobooks",
+        "device": "desktop",
+        "url": "https://toldlife.duvridge.com/audiobooks/read/ep11.html",
+        "title": "11화 자식들만큼은 · 내 논을 파는 한이 있어도",
+        "figures": [
+          "ep11-family-care",
+          "ep11-01"
+        ],
+        "adjoiningParagraphs": "checked",
+        "loadedImages": [
+          {
+            "src": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep11-family-care-720.webp",
+            "width": 632,
+            "height": 355
+          },
+          {
+            "src": "https://toldlife.duvridge.com/audiobooks/images/episodes/ep11-01-720.webp",
+            "width": 632,
+            "height": 355
+          }
+        ],
+        "horizontalOverflow": false,
+        "runtimeErrors": [],
+        "screenshot": "audiobooks-desktop-ep11.png"
+      }
+    ]
   }
 }
