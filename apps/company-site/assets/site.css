@@ -36,10 +36,25 @@
   html.lang-ko .proof .lead, html.lang-ja .proof .lead, html.lang-zhHans .proof .lead, html.lang-zhHant .proof .lead{ max-width:32ch; }
   html.lang-ko .why .statement, html.lang-ja .why .statement, html.lang-zhHans .why .statement, html.lang-zhHant .why .statement{ max-width:32ch; }
   html.lang-ko .close h2, html.lang-ja .close h2, html.lang-zhHans .close h2, html.lang-zhHant .close h2{ max-width:26ch; }
-  /* CJK display glyphs read heavier at the same px — ease the big headings down and tighten prose measures */
+  /* CJK display glyphs read heavier at the same px — ease the big headings down */
   html.lang-ko .statement, html.lang-ja .statement, html.lang-zhHans .statement, html.lang-zhHant .statement{ font-size:clamp(1.45rem,1rem + 1.8vw,2.25rem); }
-  html.lang-ko .why .prose, html.lang-ja .why .prose, html.lang-zhHans .why .prose, html.lang-zhHant .why .prose{ max-width:30ch; }
-  html.lang-ko .proof .prose, html.lang-ja .proof .prose, html.lang-zhHans .proof .prose, html.lang-zhHant .proof .prose{ max-width:32ch; }
+  /* Prose measures count full-width glyphs. ch is a Latin zero, about half a Hangul or Han glyph, so 30ch left an
+     18-character column; these em widths match the English columns and hold some 25–28 characters a line. */
+  html.lang-ko .why .prose, html.lang-ja .why .prose, html.lang-zhHans .why .prose, html.lang-zhHant .why .prose{ max-width:27em; }
+  html.lang-ko .proof .prose, html.lang-ja .proof .prose, html.lang-zhHans .proof .prose, html.lang-zhHant .proof .prose{ max-width:29em; }
+  /* Browsers that can find Japanese phrases (文節) wrap the prose between them; others keep the usual character breaks */
+  html.lang-ja .prose{ word-break:auto-phrase; }
+  /* Japanese and Chinese may wrap between any two characters, which split words such as 人生 and 一生 in headings.
+     Display copy marks its phrase boundaries with <wbr>, and only those and punctuation end a line. */
+  html:is(.lang-ja, .lang-zhHans, .lang-zhHant) :is(.hero h1, .hero-sub, .statement, .lead, .proof-bridge, .studio-tagline, .close h2, .format-name){ word-break:keep-all; }
+  /* Whole phrases need a little more room: the bridge keeps to two lines, and on small phones the Chinese title's
+     opening (让一个人的一生，) and the Japanese closing line's (あなたの物語には、) each still fit on one line. */
+  html.lang-ja .proof-bridge, html.lang-zhHans .proof-bridge, html.lang-zhHant .proof-bridge{ max-width:16em; }
+  html.lang-zhHans .hero h1, html.lang-zhHant .hero h1{ font-size:clamp(2.1rem, min(1.4rem + 5.6vw, 10.5vw), 5.5rem); }
+  html.lang-ja .close h2{ font-size:clamp(1.85rem, 1.3rem + 3vw, 3.4rem); }
+  /* Display copy keeps phrases whole (Korean and English bind their words with &nbsp;). On a screen too narrow for
+     a whole phrase, the phrase breaks inside rather than running off the page. */
+  :is(.hero h1, .hero-sub, .statement, .lead, .proof-bridge, .studio-tagline, .close h2){ overflow-wrap:anywhere; }
 
   /* ---------- Base ---------- */
   *,*::before,*::after{ box-sizing:border-box; }
@@ -121,7 +136,7 @@
   .hero{ min-height:100svh; display:flex; flex-direction:column; justify-content:center; padding-block:7.5rem 4rem; text-align:center; }
   .hero .wrap{ display:flex; flex-direction:column; align-items:center; }
   .hero h1{ font-size:clamp(2.7rem,1.4rem + 5.6vw,5.5rem); line-height:1.03; max-width:16ch; }
-  .hero-sub{ margin:1.6rem auto 0; max-width:40ch; color:var(--muted); font-size:clamp(1.08rem,1rem + .4vw,1.3rem); line-height:1.55; }
+  .hero-sub{ margin:1.6rem auto 0; max-width:40ch; color:var(--muted); font-size:clamp(1.08rem,1rem + .4vw,1.3rem); line-height:1.55; text-wrap:balance; }
   .hero-cta{ display:flex; gap:1.6rem 2.2rem; flex-wrap:wrap; justify-content:center; margin-top:2.4rem; }
   .tlink{ font-family:var(--font-ui); font-size:.92rem; font-weight:600; letter-spacing:.01em; text-decoration:none; color:var(--ink); display:inline-flex; align-items:center; gap:.45em; }
   .tlink .arr{ transition:transform .25s ease; }
@@ -162,7 +177,8 @@
   .proof{ text-align:center; }
   .proof .lead{ max-width:20ch; margin-inline:auto; }
   .proof .prose{ max-width:50ch; margin:1.8rem auto 0; }
-  .proof .prose a.ilink{ color:var(--accent-dark); text-decoration:none; border-bottom:1px solid rgba(174,186,217,.45); transition:border-color .2s; }
+  /* the repository name stays whole instead of breaking at its hyphens */
+  .proof .prose a.ilink{ color:var(--accent-dark); text-decoration:none; border-bottom:1px solid rgba(174,186,217,.45); transition:border-color .2s; white-space:nowrap; }
   .proof .prose a.ilink:hover{ border-color:var(--accent-dark); }
   .stats{ display:flex; flex-wrap:wrap; gap:0; margin:3rem 0 2.4rem; border-top:1px solid var(--line-dark); border-bottom:1px solid var(--line-dark); }
   .stat{ flex:1 1 180px; padding:1.5rem 1.6rem 1.55rem; }

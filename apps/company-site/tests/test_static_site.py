@@ -15,6 +15,13 @@ import xml.etree.ElementTree as ET
 ROOT = Path(__file__).resolve().parents[1]
 PAGES = {"en": "/", "ko": "/ko/", "ja": "/ja/", "zhHans": "/zh-Hans/", "zhHant": "/zh-Hant/"}
 HTML_LANG = {"zhHans": "zh-Hans", "zhHant": "zh-Hant"}
+# Headings and short display lines, with the elements that show them.
+DISPLAY_COPY = ("hero_title", "hero_sub", "why_lead", "proof_lead", "proof_bridge", "studio_tagline", "cta_title")
+DISPLAY_SELECTORS = (".hero h1", ".hero-sub", ".statement", ".lead", ".proof-bridge", ".studio-tagline", ".close h2")
+
+
+def css_rules(css):
+    return re.findall(r"([^{}]+)\{([^{}]*)\}", css)
 
 
 class Snapshot(HTMLParser):
@@ -149,7 +156,7 @@ class StaticSiteTests(unittest.TestCase):
 
     def test_hero_content_stays_visible_without_motion(self):
         css = strip_motion_blocks((ROOT / "assets/site.css").read_text(encoding="utf-8"))
-        for selector, declarations in re.findall(r"([^{}]+)\{([^{}]*)\}", css):
+        for selector, declarations in css_rules(css):
             if ".lc-" in selector or ".hero" in selector:
                 with self.subTest(selector=selector.strip()):
                     self.assertIsNone(re.search(r"opacity:\s*0(?![.\d])", declarations))
@@ -160,6 +167,34 @@ class StaticSiteTests(unittest.TestCase):
         self.assertIsNotNone(rule)
         # A paragraph's 60ch measure would otherwise pin short eyebrows to the left of centered sections.
         self.assertIn("max-width:none", rule.group(1).replace(" ", ""))
+
+    def test_east_asian_prose_measures_count_full_width_glyphs(self):
+        css = (ROOT / "assets/site.css").read_text(encoding="utf-8")
+        covered = set()
+        for selector, declarations in css_rules(css):
+            width = re.search(r"max-width:\s*[\d.]+([a-z]+)", declarations)
+            if not width or ".prose" not in selector or ".lang-" not in selector:
+                continue
+            with self.subTest(selector=selector.strip()):
+                # ch is a Latin zero, about half a Hangul or Han glyph: 30ch left these paragraphs an 18-character column.
+                self.assertEqual(width.group(1), "em")
+            covered.update(
+                (language, section) for language in ("ko", "ja", "zhHans", "zhHant") for section in (".why", ".proof")
+                if f".lang-{language}" in selector and f"{section} .prose" in selector
+            )
+        self.assertEqual(len(covered), 8, covered)
+
+    def test_japanese_and_chinese_display_lines_break_between_phrases(self):
+        translations = json.loads((ROOT / "site/translations.json").read_text(encoding="utf-8"))
+        css = (ROOT / "assets/site.css").read_text(encoding="utf-8")
+        keep_whole = [selector for selector, declarations in css_rules(css) if "word-break:keep-all" in declarations.replace(" ", "")]
+        for language in ("ja", "zhHans", "zhHant"):
+            with self.subTest(language=language):
+                # These scripts may wrap between any two characters, which split words such as 人生 and 一生.
+                # Display copy marks its phrase boundaries with <wbr>, and only those may end a line.
+                self.assertTrue(any(f".lang-{language}" in selector and all(display in selector for display in DISPLAY_SELECTORS) for selector in keep_whole))
+                for key in DISPLAY_COPY:
+                    self.assertIn("<wbr>", translations[language][key], key)
 
     def test_navigation_and_resources_work_without_scripts(self):
         for path in PAGES.values():
