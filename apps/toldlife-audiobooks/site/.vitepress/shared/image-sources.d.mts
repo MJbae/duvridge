@@ -1,1 +1,1 @@
-export * from '@duvridge/story-reader/shared/image-sources.mjs'
+export * from '@duvridge/reader-ui/images/create-image-sources.mjs'

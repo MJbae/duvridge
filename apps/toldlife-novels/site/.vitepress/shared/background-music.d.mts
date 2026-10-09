@@ -1,1 +1,1 @@
-export * from '@duvridge/story-reader/shared/background-music.mjs'
+export * from '@duvridge/content-processing/background-music/load-music-manifest.mjs'

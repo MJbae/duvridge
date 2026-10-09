@@ -1,0 +1,19 @@
+{
+  "name": "@duvridge/vitepress-reader",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./*": "./src/*"
+  },
+  "dependencies": {
+    "@duvridge/content-processing": "*",
+    "@duvridge/reader-ui": "*",
+    "gray-matter": "^4.0.3",
+    "vitepress": "1.6.4",
+    "vite": "5.4.21"
+  },
+  "scripts": {
+    "test": "node --test tests/reader-config.test.mjs"
+  }
+}

@@ -1,4 +1,4 @@
-"""원고(배병희_자서전.md)에서 회차별 낭독 대본(JSON)을 만든다.
+"""책 원고(manuscript.md)에서 회차별 낭독 대본(JSON)을 만든다.
 
 usage: python3 -I build_narration_script.py <원고.md> <삽화.json> <회차ID>... --out <dir>
 각 줄: {"kind": title|dateline|para|break, "show": 화면 표기, "say": 발음 표기, "image": 삽화 ID}

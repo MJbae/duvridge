@@ -1,1 +1,1 @@
-export * from '@duvridge/story-reader/lib/reaction-store.ts'
+export * from '@duvridge/reader-reactions/state/create-reaction-store.ts'

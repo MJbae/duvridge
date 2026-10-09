@@ -1,0 +1,26 @@
+{
+  "name": "@duvridge/reader-reactions",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./firestore/rules/*": "./firestore/rules/*",
+    "./firestore/indexes/*": "./firestore/indexes/*",
+    "./firestore/tests/*": "./firestore/tests/*",
+    "./*": "./src/*"
+  },
+  "scripts": {
+    "test": "node --experimental-strip-types --test tests/*.test.mjs"
+  },
+  "dependencies": {
+    "@duvridge/reader-ui": "*"
+  },
+  "peerDependencies": {
+    "vue": "3.5.43",
+    "vitepress": "1.6.4",
+    "firebase": "12.19.0"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "5.0.2"
+  }
+}

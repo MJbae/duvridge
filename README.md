@@ -17,9 +17,19 @@ apps/
   toldlife-portal/          ToldLife 서비스 홈
   toldlife-novels/          웹소설 읽기, 배경음악
   toldlife-audiobooks/      오디오북 듣기, 플레이어, 낭독 동기화
+content/books/
+  bae-byunghee/
+    manuscript.md          웹 페이지의 원문
+    book.json              표지·공유 정보·이전 ID 등 책 설정
+    illustrations/         삽화 목록과 승인된 원본
+    music/                 배경음악 목록
+    public/                공개 이미지·음악·아이콘
+    references/            참고 사진과 원자료
 packages/
-  memoir-content/          최신 원고·목차 구조·삽화·음악의 정본
-  story-reader/            공통 읽기 UI, 회차 파싱, 반응·읽기 기록
+  content-processing/      원고 파싱·자료 검증·카탈로그/자산 생성
+  reader-ui/               공통 읽기 컴포넌트·스타일·읽기 상태
+  reader-reactions/        반응 UI·상태·Firebase 저장·보안 규칙
+  vitepress-reader/        VitePress 설정·Markdown 렌더링 연동
 tools/
   audiobook-production/    음성 제작 코드, 낭독 대본, 승인된 클립
 scripts/                   변경 영향 계산, 배포 조립과 검증
@@ -30,9 +40,10 @@ service-registry.json              서비스와 배포 그룹 등록
 
 - 앱은 다른 앱의 구현을 가져오지 않습니다. 공유가 필요하면 `packages/`로 추출하고 소비 앱의 `dependencies`에 명시합니다. Python 제작 도구의 정본 경로와 정적 브랜드 자산은 레지스트리 및 문서에 명시합니다.
 - 모든 workspace 이름은 `@duvridge/<이름>`으로 유일하게 정하고 내부 패키지는 `private: true`로 둡니다. 설치·의존성 갱신은 루트에서 실행하며 앱별 lockfile은 만들지 않습니다.
-- 원고, 터전별 목차, 공통 삽화·표지·음악은 `packages/memoir-content`에서만 수정합니다. 준비 단계가 만드는 앱 내부 사본은 Git에서 제외합니다. 최신 `autobio-bae` 작업 트리를 정본으로 가져왔습니다.
-- 공통 읽기 화면은 `story-reader`에서 수정하고 두 앱을 검증합니다. 오디오 플레이어의 배치, 재생·일시정지·속도·이어듣기·자동 다음 화·문장 이동은 오디오 앱 소유입니다.
-- 두 앱의 Firebase 보안 규칙과 인덱스도 `packages/story-reader/firebase`에서 한 번만 관리합니다. 에뮬레이터 설정은 루트 `firebase.json`을 사용합니다. 운영 Firebase 규칙 배포는 웹 배포와 별도 작업입니다.
+- 원고·삽화·표지·음악·참고 자료는 코드 패키지 밖의 `content/books/<책 ID>`에서 수정합니다. 현재 원문은 [manuscript.md](content/books/bae-byunghee/manuscript.md)입니다. 준비 단계가 만드는 앱 내부 사본은 Git에서 제외합니다.
+- 패키지는 기능별 코드만 포함합니다. 원고 처리, 읽기 UI, 반응 저장, 플랫폼 연동을 각각 분리하고 의존성을 명시합니다. 오디오 플레이어의 배치·재생·배속·이어듣기·문장 이동은 오디오 앱 소유입니다.
+- 책 제목·표지·공유 정보·이전 회차 대응표는 `content/books/<책 ID>/book.json`으로 관리합니다. 앱의 책 선택은 `service-registry.json`의 `books`와 각 서비스의 `book`으로 선언하며, `content` 변경도 소비하는 두 서비스의 CI 대상에 포함됩니다.
+- 두 앱의 Firebase 보안 규칙과 인덱스도 `packages/reader-reactions/firestore`에서 한 번만 관리합니다. 에뮬레이터 설정은 루트 `firebase.json`을 사용합니다. 운영 Firebase 규칙 배포는 웹 배포와 별도 작업입니다.
 - 서비스마다 `test`, `build`, 필요 시 `typecheck`를 제공합니다. 공유 코드와 소비 서비스를 같은 PR에서 검토하고, 배포 그룹별로 버전과 롤백을 관리합니다.
 - 비밀값은 Actions secrets 또는 로컬 `.env`에만 둡니다. `VITE_*`는 브라우저 공개 값이므로 서비스 계정 키를 넣지 않습니다. 빌드 결과·동영상·임시 제작 파일은 커밋하지 않습니다.
 
@@ -50,6 +61,8 @@ npm run test:rules  # Java 21 필요, demo 프로젝트의 로컬 Firestore 에�
 ```
 
 앱 하나의 명령은 `npm run <명령> --workspace @duvridge/toldlife-novels` 또는 `@duvridge/toldlife-audiobooks`으로 실행합니다. 브라우저 회귀 테스트는 각 앱의 `test:e2e`를 사용합니다. 회사 홈페이지 본문은 `apps/company-site/site/translations.json`, 구조는 `template.html`, 디자인은 `assets/site.css`에 있습니다. `python3 apps/company-site/scripts/build-company-site.py`로 언어별 HTML을 갱신합니다.
+
+원문을 저장한 뒤 개발 서버의 작업 사본을 새로 만들려면 `npm run prepare:content --workspace <서비스 이름>`을 실행합니다. Git에 반영한 원문은 CI 빌드에서 자동으로 읽어 새 배포에 포함합니다. 앱 안의 `manuscript.md`·`content/`·`site/read/`는 생성 결과이므로 수정하지 않습니다.
 
 서비스용 빌드에는 네 가지 `VITE_FIREBASE_*` 환경변수가 필요합니다. 기존 GitHub의 공개 설정은 다음 명령으로 가져올 수 있습니다. 배포 토큰은 가져오지 않습니다.
 
@@ -107,7 +120,7 @@ npm run check:deployment -- --company https://www.duvridge.com --toldlife https:
 
 현재 오디오는 최신 원고로 재생성할 예정이므로 기존 녹음과의 문장 일치율을 원고·삽화 편집의 제약으로 사용하지 않습니다. 일치율과 무관하게 웹 빌드와 기존 재생을 유지하고, 정확히 남아 있는 문장만 강조합니다. 음성·SRT 짝, 회차 ID, 파일 경로와 시각의 무결성은 계속 검사합니다. 새로 제작한 녹음을 `narration:sync`로 반영할 때는 최신 원고와의 일치를 검증합니다. 제작 도구와 음성·배속·검수 정책은 [오디오 제작 안내](docs/audio-production.md)를 따릅니다. 유료 TTS/STT는 CI에서 실행하지 않습니다.
 
-파일·폴더·workspace는 제품과 기능을 기준으로 이름을 맞춥니다. 웹 서비스는 `toldlife-*`, 공통 독자 기능은 `story-reader`, 오프라인 제작은 `audiobook-production`으로 구분합니다. Vue 컴포넌트와 도구의 상세 기준은 [네이밍 정책](docs/naming-policy.md)을 따릅니다. 공개 주소·회차 ID·녹음 캐시 ID는 이용자 상태와 자료 참조의 계약이므로 유지합니다.
+파일·폴더·workspace는 제품과 기능을 기준으로 이름을 맞춥니다. 웹 서비스는 `toldlife-*`, 공통 코드는 처리·UI·반응·플랫폼 연동의 네 패키지, 오프라인 제작은 `audiobook-production`으로 구분합니다. 패키지 내부의 `src/manuscripts`, `src/components`, `src/persistence`, `src/markdown`처럼 실제 책임이 보이는 위치를 사용합니다. 상세 기준은 [네이밍 정책](docs/naming-policy.md)을 따릅니다. 공개 주소·회차 ID·녹음 캐시 ID는 유지합니다.
 
 삽화는 원고의 원하는 위치에 `<!-- illustration: ep01-01 -->` 표식을 넣어 배치합니다. 본문 문구나 문단 번호를 다시 계산하지 않습니다. 자산 정보는 공통 삽화 manifest에서 관리하고 누락·중복 표식은 검증에서 거절합니다. 구체적인 추가·수정 방법은 [삽화 편집 안내](docs/illustration-authoring.md)에 있습니다.
 

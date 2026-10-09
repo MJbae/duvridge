@@ -10,7 +10,7 @@ import { alignSentences, findOutro, findSilences } from './narration-align.mjs'
 import { plainText } from './prepare-reader-content.mjs'
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
-const mainFilename = '배병희_자서전.md'
+const mainFilename = 'manuscript.md'
 const sampleRate = 16000
 const usage = '사용법: npm run narration:sync -- <회차 ID…> [--from <오디오북 out 폴더>]\n예: npm run narration:sync -- prolog ep01 ep02 ep03'
 

@@ -5,7 +5,7 @@ import { clock, spokenTime } from '../../shared/narration-cues.mjs'
 import type { PlayerMode } from '../../shared/playback-selection.mjs'
 import { catalog, representativeImageSrc, type Episode } from '../lib/reader-catalog'
 import { narrationFor, narrationKey, narrationRates } from '../lib/narration-controller'
-import ReaderIcon from '@duvridge/story-reader/components/ReaderIcon.vue'
+import ReaderIcon from '@duvridge/reader-ui/components/ReaderIcon.vue'
 
 const props = defineProps<{ episode: Episode; mode: PlayerMode; actionLabel: string; actionIcon?: string }>()
 const emit = defineEmits<{ act: [] }>()

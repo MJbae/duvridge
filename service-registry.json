@@ -95,7 +95,8 @@
       "siteBase": "/novels/",
       "requiredFiles": [
         "read/ep01.html"
-      ]
+      ],
+      "book": "bae-byunghee"
     },
     {
       "id": "toldlife-audiobooks",
@@ -113,7 +114,13 @@
       "requiredFiles": [
         "read/ep01.html",
         "record/prolog.mp3"
-      ]
+      ],
+      "book": "bae-byunghee"
     }
-  ]
+  ],
+  "books": {
+    "bae-byunghee": {
+      "path": "content/books/bae-byunghee"
+    }
+  }
 }

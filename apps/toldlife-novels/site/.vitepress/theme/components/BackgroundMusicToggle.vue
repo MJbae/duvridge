@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { MusicStatus } from '../lib/background-music'
-import ReaderIcon from '@duvridge/story-reader/components/ReaderIcon.vue'
+import ReaderIcon from '@duvridge/reader-ui/components/ReaderIcon.vue'
 
 const props = defineProps<{ enabled: boolean; status: MusicStatus }>()
 const emit = defineEmits<{ change: [enabled: boolean]; retry: [] }>()

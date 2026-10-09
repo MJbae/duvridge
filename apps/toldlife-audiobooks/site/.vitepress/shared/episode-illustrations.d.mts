@@ -1,1 +1,1 @@
-export * from '@duvridge/story-reader/shared/episode-illustrations.mjs'
+export * from '@duvridge/content-processing/illustrations/load-illustration-manifest.mjs'

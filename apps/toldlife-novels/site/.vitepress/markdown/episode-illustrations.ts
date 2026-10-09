@@ -1,1 +1,1 @@
-export * from '@duvridge/story-reader/markdown/episode-illustrations.ts'
+export * from '@duvridge/vitepress-reader/markdown/render-episode-illustrations.ts'

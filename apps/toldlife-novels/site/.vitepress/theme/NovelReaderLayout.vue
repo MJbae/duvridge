@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { Content, useData, useRoute, useRouter, withBase } from 'vitepress'
-import ReaderIcon from '@duvridge/story-reader/components/ReaderIcon.vue'
-import StoryHome from '@duvridge/story-reader/components/StoryHome.vue'
+import ReaderIcon from '@duvridge/reader-ui/components/ReaderIcon.vue'
+import StoryOverview from '@duvridge/reader-ui/components/StoryOverview.vue'
 import NovelEpisodeEnd from './components/NovelEpisodeEnd.vue'
 import BackgroundMusicToggle from './components/BackgroundMusicToggle.vue'
-import ReaderSettingsButton from '@duvridge/story-reader/components/ReaderSettingsButton.vue'
+import ReaderSettingsButton from '@duvridge/reader-ui/components/ReaderSettingsButton.vue'
 import { useBackgroundMusic } from './lib/background-music'
 import { catalog, type Episode } from './lib/reader-catalog'
 import { migrateReading, migrateCompleted, type SavedReading } from '../shared/reading-history.mjs'
@@ -143,9 +143,9 @@ onBeforeUnmount(() => { router.onBeforePageLoad = previousBeforeLoad; ++version;
   <div class="library" :class="[`font-${fontSize}`, `leading-${leading}`, `face-${face}`]">
     <a class="skip-link" href="#main">본문으로 건너뛰기</a>
     <audio ref="musicAudio" class="background-audio" loop preload="none" aria-hidden="true" />
-    <StoryHome v-if="isHome" :catalog="catalog" :last-id="lastRead?.id || null" :last-finished="lastFinished" :completed="completed" @resume="resumeReading">
+    <StoryOverview v-if="isHome" :catalog="catalog" :last-id="lastRead?.id || null" :last-finished="lastFinished" :completed="completed" @resume="resumeReading">
       <template #settings><ReaderSettingsButton @open="settingsDialog?.showModal()" /></template>
-    </StoryHome>
+    </StoryOverview>
     <main v-else-if="isMissing" id="main" tabindex="-1" class="not-found"><h1>이야기를 찾지 못했습니다.</h1><a class="text-link" :href="withBase('/')">목차로 돌아가기</a></main>
     <main v-else-if="frontmatter.kind === 'redirect'" id="main" class="not-found"><h1>이 이야기의 주소가 바뀌었습니다.</h1><Content /><a class="text-link" :href="withBase(frontmatter.redirect)">이 이야기 읽기</a></main>
     <template v-else>

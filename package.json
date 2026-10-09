@@ -15,7 +15,7 @@
   "scripts": {
     "test": "npm run test:repo && npm run test --workspaces --if-present",
     "test:repo": "node --test tests/*.test.mjs && python3 -m unittest discover -s tests -p 'test_*.py'",
-    "test:rules": "firebase emulators:exec --config firebase.json --only firestore --project demo-family-library \"node --test packages/story-reader/firebase/tests/firestore.rules.test.mjs\"",
+    "test:rules": "firebase emulators:exec --config firebase.json --only firestore --project demo-family-library \"node --test packages/reader-reactions/firestore/tests/firestore.rules.test.mjs\"",
     "test:production-parser": "python3 -I -m unittest discover -s tools/audiobook-production/tests",
     "build": "npm run build --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",

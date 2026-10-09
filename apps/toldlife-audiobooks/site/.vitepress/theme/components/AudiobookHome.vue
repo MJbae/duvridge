@@ -3,8 +3,8 @@ import { computed, inject } from 'vue'
 import { listenState, type ListenState } from '../../shared/playback-selection.mjs'
 import { catalog, type Episode } from '../lib/reader-catalog'
 import { followsHere, narrationKey } from '../lib/narration-controller'
-import StoryHome from '@duvridge/story-reader/components/StoryHome.vue'
-import ReaderIcon from '@duvridge/story-reader/components/ReaderIcon.vue'
+import StoryOverview from '@duvridge/reader-ui/components/StoryOverview.vue'
+import ReaderIcon from '@duvridge/reader-ui/components/ReaderIcon.vue'
 
 const props = defineProps<{ completed: string[] }>()
 const narration = inject(narrationKey)!
@@ -34,7 +34,7 @@ function listen(event: MouseEvent, episode: Episode) { if (followsHere(event)) n
 </script>
 
 <template>
-  <StoryHome :catalog="catalog" :last-id="currentId" :last-finished="false" :completed="completed"
+  <StoryOverview :catalog="catalog" :last-id="currentId" :last-finished="false" :completed="completed"
     :unavailable-ids="catalog.readingOrder.filter(episode => states[episode.id].kind === 'unavailable').map(episode => episode.id)" :show-reading-action="false" :returning="returning" completed-label="재생 완료" current-aria="true" @episode="listen">
     <template #settings><slot name="settings" /></template>
     <template #subtitle>오디오북 · {{ catalog.work.subtitle }}</template>
@@ -48,5 +48,5 @@ function listen(event: MouseEvent, episode: Episode) { if (followsHere(event)) n
         <span v-else-if="states[episode.id].kind !== 'playing'" class="chapter-cue chapter-play" aria-hidden="true"><ReaderIcon name="play" :size="12" filled :stroke="1.6" /></span>
       </span>
     </template>
-  </StoryHome>
+  </StoryOverview>
 </template>

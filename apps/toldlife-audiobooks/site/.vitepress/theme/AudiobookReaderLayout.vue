@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, provide, ref, watch } from 'vue'
 import { Content, useData, useRoute, withBase } from 'vitepress'
-import ReaderIcon from '@duvridge/story-reader/components/ReaderIcon.vue'
+import ReaderIcon from '@duvridge/reader-ui/components/ReaderIcon.vue'
 import AudiobookHome from './components/AudiobookHome.vue'
 import AudiobookEpisodeEnd from './components/AudiobookEpisodeEnd.vue'
-import ReaderSettingsButton from '@duvridge/story-reader/components/ReaderSettingsButton.vue'
+import ReaderSettingsButton from '@duvridge/reader-ui/components/ReaderSettingsButton.vue'
 import NarrationStartButton from './components/NarrationStartButton.vue'
 import AudiobookPlayerBar from './components/AudiobookPlayerBar.vue'
 import { narrationKey, useNarration } from './lib/narration-controller'

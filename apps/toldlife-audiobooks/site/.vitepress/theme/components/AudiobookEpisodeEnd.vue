@@ -4,8 +4,8 @@ import { withBase } from 'vitepress'
 import { isFirebaseConfigured } from '../lib/firebase-config'
 import { catalog, type Neighbor } from '../lib/reader-catalog'
 import { followsHere, narrationKey } from '../lib/narration-controller'
-import ReaderIcon from '@duvridge/story-reader/components/ReaderIcon.vue'
-import ReactionBar from '@duvridge/story-reader/components/ReactionBar.vue'
+import ReaderIcon from '@duvridge/reader-ui/components/ReaderIcon.vue'
+import ReaderReactionBar from '@duvridge/reader-reactions/components/ReaderReactionBar.vue'
 const props = defineProps<{ pageId: string; label: string; prev?: Neighbor | null; next?: Neighbor | null; homeHref: string }>()
 const narration = inject(narrationKey)!
 const enabled = isFirebaseConfigured()
@@ -32,7 +32,7 @@ function listen(event: MouseEvent, neighbor: Neighbor) {
     <p v-if="!next" class="story-end">끝</p>
     <div v-else class="story-break" aria-hidden="true"><span /></div>
     <section v-if="enabled" id="reactions" class="reactions-anchor" aria-label="이 회차에 반응 남기기">
-      <ClientOnly><ReactionBar v-if="ready" :page-id="props.pageId" /></ClientOnly>
+      <ClientOnly><ReaderReactionBar v-if="ready" :page-id="props.pageId" /></ClientOnly>
     </section>
     <nav id="episode-navigation" class="episode-navigation" aria-label="회차 이동">
       <a v-if="prev" class="previous-episode" :href="withBase(prev.url)" rel="prev" @click="listen($event, prev)"><ReaderIcon name="chevron-left" :size="22" />이전 화</a>

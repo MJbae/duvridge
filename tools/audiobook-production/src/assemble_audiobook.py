@@ -23,7 +23,7 @@ from generate_narration_clips import clip_path  # noqa: E402
 from resolve_illustration_assets import resolve_illustration_asset  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
-SITE = Path(os.environ.get("MEMOIR_CONTENT_ROOT", ROOT.parents[1] / "packages/memoir-content")).expanduser().resolve()
+SITE = Path(os.environ.get("MEMOIR_CONTENT_ROOT", ROOT.parents[1] / "content/books/bae-byunghee")).expanduser().resolve()
 SR = 44100
 LEAD = 4.0                  # 음성 전 음악만 나오는 시간
 GAP = {"cover": 2.0, "part": 1.6, "title": 1.3, "dateline": 1.6, "para": 0.9}
@@ -207,7 +207,7 @@ def main():
     a = ap.parse_args()
     eid = Path(a.script).stem
     lines = json.loads(Path(a.script).read_text(encoding="utf-8"))
-    music = SITE / "site/public/music" / f"{eid}.mp3"
+    music = SITE / "public/music" / f"{eid}.mp3"
     out, video_out = ROOT / "output", ROOT / "output" / "video"
     video_out.mkdir(parents=True, exist_ok=True)
 

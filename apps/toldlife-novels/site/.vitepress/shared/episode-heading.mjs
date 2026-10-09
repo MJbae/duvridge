@@ -1,1 +1,2 @@
-export * from '@duvridge/story-reader/shared/episode-heading.mjs'
+export * from '@duvridge/content-processing/manuscripts/parse-manuscript.mjs'
+export { legacyEpisodes } from './episode-ids.mjs'

@@ -5,7 +5,13 @@
     "commit": "0a047b47a35c6f63bd44eacf3ede9d5c558118a6",
     "dirty": [],
     "destination": "apps/toldlife-novels",
-    "sharedContentDestination": "packages/memoir-content"
+    "sharedContentDestination": "content/books/bae-byunghee",
+    "sharedCodePackages": [
+      "content-processing",
+      "reader-ui",
+      "reader-reactions",
+      "vitepress-reader"
+    ]
   },
   {
     "source": "/Users/baemanjin/orca/projects/autobio-audiobook",
@@ -14,6 +20,12 @@
     "dirty": [],
     "destination": "apps/toldlife-audiobooks",
     "productionDestination": "tools/audiobook-production",
-    "sharedContentDestination": "packages/memoir-content"
+    "sharedContentDestination": "content/books/bae-byunghee",
+    "sharedCodePackages": [
+      "content-processing",
+      "reader-ui",
+      "reader-reactions",
+      "vitepress-reader"
+    ]
   }
 ]

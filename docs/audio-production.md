@@ -1,10 +1,10 @@
 # 오디오북 제작과 모노레포
 
-제작 도구는 `tools/audiobook-production/src/`, 승인된 대본은 같은 제작 폴더의 `narration-scripts/`, 유료 생성 원본과 검수 기록은 `narration-clips/`에 있다. 원고·삽화·음악은 `packages/memoir-content/`에서 읽는다. 웹 앱은 `apps/toldlife-audiobooks/`에 있으며 웹 빌드와 배포는 TTS를 호출하지 않는다.
+제작 도구는 `tools/audiobook-production/src/`, 승인된 대본은 같은 제작 폴더의 `narration-scripts/`, 유료 생성 원본과 검수 기록은 `narration-clips/`에 있다. 원고·삽화·음악은 `content/books/bae-byunghee/`에서 읽는다. 웹 앱은 `apps/toldlife-audiobooks/`에 있으며 웹 빌드와 배포는 TTS를 호출하지 않는다.
 
 | 설정 | 기본값 | 용도 |
 | --- | --- | --- |
-| `MEMOIR_CONTENT_ROOT` | 모노레포의 `packages/memoir-content` | 제작용 공유 원고·삽화·음악 경로 |
+| `MEMOIR_CONTENT_ROOT` | `content/books/bae-byunghee` | 제작용 원고·삽화·음악 경로 |
 | `ELEVENLABS_SCRIPT` | `~/.claude-work/skills/showreel/scripts/eleven.py` | 사용자 환경에 설치한 외부 ElevenLabs helper |
 | `ELEVENLABS_ENV_FILE` | `tools/audiobook-production/.env` | `ELEVENLABS_API_KEY`가 들어 있는 로컬 키 파일 |
 | `ELEVENLABS_API_KEY` | 설정 없음 | 셸에서 전달하면 키 파일보다 우선 사용 |
@@ -29,4 +29,4 @@
 
 Rei 목소리, Eleven v4 모델, 시드 1936, 자동 재녹음 기본값 0, 받아쓰기 검수와 사람 승인 규칙을 유지한다. 웹 MP3는 1.0배속, 영상 MP4는 0.9배속이며 자막·쉼·음량·삽화 전환 규칙도 [제작 가이드](../tools/audiobook-production/README.md)를 따른다.
 
-공통 목차와 자서전 내용은 `memoir-content`, 읽기 UI는 `story-reader`에서 관리한다. 플레이어 막대·시트, 낭독 문장 표시, 자동 스크롤, 회차 이동 재생과 다음 화 이어 듣기는 오디오북 앱의 기존 동작을 유지한다. 웹 배포 정책은 [루트 README](../README.md)에서 관리한다.
+정본은 `content/books`에서 관리하고 코드 패키지는 콘텐츠 처리·읽기 UI·반응 저장·VitePress 연동으로 분리한다. 플레이어 막대·시트, 낭독 문장 표시, 자동 스크롤, 회차 이동 재생과 다음 화 이어 듣기는 오디오북 앱의 기존 동작을 유지한다. 웹 배포 정책은 [루트 README](../README.md)에서 관리한다.

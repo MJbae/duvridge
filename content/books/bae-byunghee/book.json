@@ -1,0 +1,126 @@
+{
+  "id": "bae-byunghee",
+  "manuscript": "manuscript.md",
+  "work": {
+    "title": "내 논을 파는 한이 있어도",
+    "subtitle": "배병희 자전소설"
+  },
+  "cover": {
+    "src": "/images/home-cover-720.jpg",
+    "sources": [
+      {
+        "src": "/images/home-cover-360.jpg",
+        "width": 360
+      },
+      {
+        "src": "/images/home-cover-720.jpg",
+        "width": 720
+      },
+      {
+        "src": "/images/home-cover-1280.jpg",
+        "width": 1280
+      }
+    ],
+    "webpSources": [
+      {
+        "src": "/images/home-cover-360.webp",
+        "width": 360
+      },
+      {
+        "src": "/images/home-cover-720.webp",
+        "width": 720
+      },
+      {
+        "src": "/images/home-cover-1280.webp",
+        "width": 1280
+      }
+    ],
+    "width": 1280,
+    "height": 720,
+    "alt": "가을 논을 배경으로 정장을 입은 배병희의 수채화 초상"
+  },
+  "sharing": {
+    "description": "배병희 자전소설 · 갯벌에서 들녘까지, 가족과 이웃을 위해 살아온 한평생.",
+    "image": {
+      "src": "/images/bae-byunghee-hero-watercolor.png",
+      "width": 1672,
+      "height": 941,
+      "alt": "가을 논을 배경으로 정장을 입은 배병희의 수채화 초상",
+      "type": "image/png"
+    }
+  },
+  "legacy": {
+    "headingIds": {
+      "prologue": "prolog",
+      "josae": "ep01",
+      "jige": "ep02",
+      "serial-number": "ep03",
+      "cheonsuman": "ep04",
+      "kalguksu": "ep05",
+      "laver": "ep06",
+      "anchovy": "ep07",
+      "bearing": "ep08",
+      "leaving": "ep09",
+      "reclaimed-land": "ep10",
+      "bus-fare": "ep11",
+      "rice-mill": "ep12",
+      "flashlight": "ep13",
+      "power-line": "ep14",
+      "seed-rice": "ep15",
+      "kitchen": "ep16",
+      "bad-debt": "ep17",
+      "last-land": "ep18",
+      "wet-rice": "ep19",
+      "farewell": "ep20",
+      "four-sons": "ep21",
+      "promise": "ep22",
+      "robot": "ep23",
+      "epilogue": "epilog",
+      "side-table": "side"
+    },
+    "decadeIds": {
+      "1930s": "ep01",
+      "1940s": "ep01",
+      "1950s": "ep03",
+      "1960s": "ep05",
+      "1970s": "ep07",
+      "1980s": "ep12",
+      "1990s": "ep17",
+      "2000s": "ep21",
+      "2010s": "ep23",
+      "2020s": "side"
+    }
+  },
+  "excludedEditorialFiles": [
+    "웹소설형_연재_개편_제안서.md"
+  ],
+  "assets": {
+    "coverSource": "public/images/bae-byunghee-hero-watercolor.png",
+    "coverOutputPrefix": "home-cover",
+    "readerManifest": {
+      "name": "내 논을 파는 한이 있어도",
+      "short_name": "내 논을 파는 한이 있어도",
+      "description": "내 논을 파는 한이 있어도 — 배병희 자전소설",
+      "lang": "ko",
+      "id": "./",
+      "start_url": "./",
+      "scope": "./",
+      "display": "standalone",
+      "background_color": "#ffffff",
+      "theme_color": "#ffffff"
+    }
+  },
+  "language": "ko-KR",
+  "webManifest": {
+    "name": "내 논을 파는 한이 있어도",
+    "short_name": "내 논을 파는 한이 있어도",
+    "description": "내 논을 파는 한이 있어도 — 배병희 자전소설",
+    "lang": "ko",
+    "id": "./",
+    "start_url": "./",
+    "scope": "./",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#ffffff"
+  }
+}

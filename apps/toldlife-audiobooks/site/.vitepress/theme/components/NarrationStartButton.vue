@@ -3,7 +3,7 @@ import { computed, inject, nextTick, ref, watch } from 'vue'
 import { clock } from '../../shared/narration-cues.mjs'
 import { narrationKey } from '../lib/narration-controller'
 import { cueElements } from '../lib/narration-dom'
-import ReaderIcon from '@duvridge/story-reader/components/ReaderIcon.vue'
+import ReaderIcon from '@duvridge/reader-ui/components/ReaderIcon.vue'
 
 const narration = inject(narrationKey)!
 const { state, pageTrack } = narration

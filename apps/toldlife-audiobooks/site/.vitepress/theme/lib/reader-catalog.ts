@@ -1,15 +1,14 @@
-import type { Place } from '../../shared/episode-heading.mjs'
+import type { ReaderCatalog, ReaderEpisode, Place, Illustration, ImageSource } from '@duvridge/content-processing/types'
 import rawCatalog from '../../generated/catalog.json'
 import type { NarrationTrack } from '../../shared/narration-catalog.mjs'
 export type { NarrationTrack }
 export type Reading = { id: string; title: string; url: string }
-export type Episode = Reading & { episodeId: string; label: string; number: number | null; time: string; place: Place | null }
+export type Episode = ReaderEpisode
 export type Neighbor = { title: string; label: string; url: string }
-export type IllustrationSource = { src: string; width: number }
-export type EpisodeImage = { id: string; representative?: boolean; position: { start?: boolean }; sources: IllustrationSource[] }
-export const catalog = rawCatalog as unknown as {
+export type IllustrationSource = ImageSource
+export type EpisodeImage = Illustration
+export const catalog = rawCatalog as unknown as ReaderCatalog & {
   title: string
-  work: { title: string; subtitle: string; synopsis: string[]; episodeCount: number; schedule: string }
   readingOrder: Episode[]
   legacyIds: Record<string, string>
   legacyScrollResetIds: string[]
@@ -27,5 +26,5 @@ export function representativeIllustration(id: string) {
 /** One width of the episode's representative painting, with a cover fallback. */
 export function representativeImageSrc(id: string, width: 360 | 720) {
   const sources = representativeIllustration(id)?.sources
-  return sources?.find(source => source.width === width)?.src ?? sources?.[0]?.src ?? `/images/home-cover-${width}.jpg`
+  return sources?.find(source => source.width === width)?.src ?? sources?.[0]?.src ?? catalog.work.cover?.sources.find(source => source.width === width)?.src ?? catalog.work.cover?.src ?? catalog.work.cover?.sources[0]?.src ?? ''
 }

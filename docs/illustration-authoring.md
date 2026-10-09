@@ -2,7 +2,7 @@
 
 삽화 위치는 원고의 고정 표시로 관리합니다. 표시 앞뒤의 문장을 고치거나 문단을 추가·삭제해도 위치 계산이나 JSON의 문단 문구 갱신이 필요하지 않습니다. 두 읽기 서비스와 오디오북 제작 도구가 같은 표시를 사용합니다.
 
-정본은 `packages/memoir-content/배병희_자서전.md`입니다. 앱 안의 원고와 자료는 자동으로 만든 작업 사본이므로 정본에서 편집하세요.
+정본은 `content/books/bae-byunghee/manuscript.md`입니다. 앱 안의 원고와 자료는 자동으로 만든 작업 사본이므로 정본에서 편집하세요.
 
 ## 기존 본문을 고칠 때
 
@@ -41,9 +41,9 @@
 ## 새 삽화를 등록할 때
 
 1. `ep01-oyster-work` 또는 `ep01-03`처럼 소속 회차 ID와 하이픈으로 시작하는 미사용 ID를 정합니다. 새 삽화에는 의미를 드러내는 이름을 권장하며 기존 번호 ID도 그대로 쓸 수 있습니다. 원고의 원하는 문단 앞에 해당 표시를 넣습니다. 기존 `ep01-01`과 `ep01-02` 사이에 `ep01-03`을 넣어도 기존 ID와 파일명을 바꾸지 않습니다. 숫자는 식별용이며 화면의 순서는 원고 표시 위치가 결정합니다.
-2. `packages/memoir-content/content/episode-illustrations.json`의 `images`에 같은 `id`와 `episodeId`, 설명 `alt`, 크기 `width: 1280`, `height: 720`, 공개 파일 목록을 등록합니다. 매니페스트는 `version: 2`이며 `position`, 문단 번호, 본문 문구는 넣지 않습니다. 매니페스트 행 순서는 삽화 표시 순서와 무관합니다. 회차마다 `representative: true`인 그림은 하나만 유지합니다.
-3. 승인된 이미지의 JPG를 `packages/memoir-content/site/public/images/episodes/<ID>-360.jpg`, `-720.jpg`, `-1280.jpg`로 준비합니다. WebP를 사용할 때는 같은 세 크기의 `.webp` 파일과 `webpSources`도 등록합니다.
-4. 기존 대체 원본 등록 방식을 쓰면 `packages/memoir-content/content/illustration-sources/regeneration-prompts.json`에 ID와 원본 경로를 등록하고, 루트에서 아래 명령을 실행해 승인된 원본을 크기별로 인코딩합니다.
+2. `content/books/bae-byunghee/illustrations/manifest.json`의 `images`에 같은 `id`와 `episodeId`, 설명 `alt`, 크기 `width: 1280`, `height: 720`, 공개 파일 목록을 등록합니다. 매니페스트는 `version: 2`이며 `position`, 문단 번호, 본문 문구는 넣지 않습니다. 매니페스트 행 순서는 삽화 표시 순서와 무관합니다. 회차마다 `representative: true`인 그림은 하나만 유지합니다.
+3. 승인된 이미지의 JPG를 `content/books/bae-byunghee/public/images/episodes/<ID>-360.jpg`, `-720.jpg`, `-1280.jpg`로 준비합니다. WebP를 사용할 때는 같은 세 크기의 `.webp` 파일과 `webpSources`도 등록합니다.
+4. 기존 대체 원본 등록 방식을 쓰면 `content/books/bae-byunghee/illustrations/source-images/regeneration-prompts.json`에 ID와 원본 경로를 등록하고, 루트에서 아래 명령을 실행해 승인된 원본을 크기별로 인코딩합니다.
 
 ```sh
 npm run assets:episodes --workspace @duvridge/toldlife-novels -- ep01-02

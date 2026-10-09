@@ -1,1 +1,1 @@
-export * from '@duvridge/story-reader/lib/reaction-firestore.ts'
+export * from '@duvridge/reader-reactions/persistence/firestore-reaction-store.ts'

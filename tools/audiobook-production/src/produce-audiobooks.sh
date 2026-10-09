@@ -5,7 +5,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-SITE="${MEMOIR_CONTENT_ROOT:-$ROOT/../../packages/memoir-content}"
+SITE="${MEMOIR_CONTENT_ROOT:-$ROOT/../../content/books/bae-byunghee}"
 cd "$ROOT"
 
 if [ $# -gt 0 ]; then
@@ -15,7 +15,7 @@ else
 fi
 
 # shellcheck disable=SC2086
-python3 -I src/build_narration_script.py "$SITE/배병희_자서전.md" "$SITE/content/episode-illustrations.json" $EPISODES --out narration-scripts
+python3 -I src/build_narration_script.py "$SITE/manuscript.md" "$SITE/illustrations/manifest.json" $EPISODES --out narration-scripts
 
 for e in $EPISODES; do
   echo "=== $e"

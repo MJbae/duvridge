@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 import { legacyEpisodes } from '../site/.vitepress/shared/episode-heading.mjs'
 import rawCatalog from '../site/.vitepress/generated/catalog.json' with { type: 'json' }
-import type { Illustration } from '../site/.vitepress/markdown/episode-illustrations'
+import type { Illustration } from '@duvridge/content-processing/types'
 async function noOverflow(page: Page) { expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true) }
 
 const player = (page: Page) => page.getByRole('region', { name: '오디오북 플레이어' })

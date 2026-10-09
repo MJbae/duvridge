@@ -3,8 +3,8 @@ import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { withBase } from 'vitepress'
 import { isFirebaseConfigured } from '../lib/firebase-config'
 import type { Neighbor } from '../lib/reader-catalog'
-import ReadingLink from '@duvridge/story-reader/components/ReadingLink.vue'
-import ReactionBar from '@duvridge/story-reader/components/ReactionBar.vue'
+import ReadingLink from '@duvridge/reader-ui/components/ReadingLink.vue'
+import ReaderReactionBar from '@duvridge/reader-reactions/components/ReaderReactionBar.vue'
 const props = defineProps<{ pageId: string; prev?: Neighbor | null; next?: Neighbor | null; homeHref: string; episode: boolean }>()
 const emit = defineEmits<{ complete: [] }>()
 const enabled = isFirebaseConfigured()
@@ -33,7 +33,7 @@ onBeforeUnmount(() => { loadObserver?.disconnect(); readObserver?.disconnect() }
     <p v-if="!next" class="story-end">끝</p>
     <div v-else class="story-break" aria-hidden="true"><span /></div>
     <section v-if="enabled && episode" id="reactions" class="reactions-anchor" aria-label="이 회차에 반응 남기기">
-      <ClientOnly><ReactionBar v-if="ready" :page-id="pageId" /></ClientOnly>
+      <ClientOnly><ReaderReactionBar v-if="ready" :page-id="pageId" /></ClientOnly>
     </section>
     <nav v-if="episode" id="episode-navigation" class="episode-navigation" :class="{ 'has-previous': prev }" aria-label="회차 이동">
       <ReadingLink

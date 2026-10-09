@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 import { legacyEpisodes } from '../site/.vitepress/shared/episode-heading.mjs'
 import rawCatalog from '../site/.vitepress/generated/catalog.json' with { type: 'json' }
-import type { Illustration } from '../site/.vitepress/markdown/episode-illustrations'
+import type { Illustration } from '@duvridge/content-processing/types'
 async function noOverflow(page: Page) { expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true) }
 
 test('작품 홈의 26편 목록과 처음부터 읽기에서 원고를 읽는다', async ({ page }, info) => {

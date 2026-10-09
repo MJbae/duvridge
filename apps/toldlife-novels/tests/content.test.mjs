@@ -1,1 +1,1 @@
-import '@duvridge/story-reader/tests/content.test.mjs'
+import '../../../tests/integration/reader-content.test.mjs'

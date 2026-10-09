@@ -1,1 +1,1 @@
-export * from '@duvridge/story-reader/lib/firebase-client.ts'
+export * from '@duvridge/reader-reactions/firebase/create-firebase-client.ts'

@@ -5,7 +5,7 @@ import { clock, listeningMinutes } from '../../shared/narration-cues.mjs'
 import { minutesLeft, playerTarget, type PlayerMode } from '../../shared/playback-selection.mjs'
 import { catalog, representativeIllustration, representativeImageSrc } from '../lib/reader-catalog'
 import { narrationFor, narrationKey } from '../lib/narration-controller'
-import ReaderIcon from '@duvridge/story-reader/components/ReaderIcon.vue'
+import ReaderIcon from '@duvridge/reader-ui/components/ReaderIcon.vue'
 import AudiobookPlayerSheet from './AudiobookPlayerSheet.vue'
 
 const props = defineProps<{ completed: string[] }>()

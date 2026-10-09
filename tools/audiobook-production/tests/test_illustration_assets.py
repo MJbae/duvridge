@@ -16,11 +16,14 @@ class IllustrationAssetTests(unittest.TestCase):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name).resolve()
-        (self.root / "content/illustration-sources").mkdir(parents=True)
-        (self.root / "site/public/images/episodes").mkdir(parents=True)
-        (self.root / "content/illustration-sources/ep09-01.png").write_bytes(b"old binder master")
-        self.public = self.root / "site/public/images/episodes/ep09-01-1280.jpg"
+        (self.root / "illustrations/source-images").mkdir(parents=True)
+        (self.root / "public/images/episodes").mkdir(parents=True)
+        (self.root / "illustrations/source-images/ep09-01.png").write_bytes(b"old binder master")
+        self.public = self.root / "public/images/episodes/ep09-01-1280.jpg"
         self.public.write_bytes(b"approved moving truck")
+        self.cover = self.root / "public/images/different-book-cover.png"
+        self.cover.write_bytes(b"approved generic cover")
+        (self.root / "book.json").write_text(json.dumps({"sharing": {"image": {"src": "/images/different-book-cover.png"}}}))
         self.manifest = {"version": 2, "images": [{"id": "ep09-01", "sources": [
             {"src": "/images/episodes/ep09-01-360.jpg", "width": 360},
             {"src": "/images/episodes/ep09-01-1280.jpg", "width": 1280},
@@ -28,10 +31,11 @@ class IllustrationAssetTests(unittest.TestCase):
         self.save_manifest()
 
     def save_manifest(self):
-        (self.root / "content/episode-illustrations.json").write_text(json.dumps(self.manifest))
+        (self.root / "illustrations/manifest.json").write_text(json.dumps(self.manifest))
 
     def test_same_id_old_binder_master_cannot_replace_the_approved_truck(self):
         self.assertEqual(assets.resolve_illustration_asset(self.root, "ep09-01"), self.public)
+        self.assertEqual(assets.resolve_illustration_asset(self.root, "cover"), self.cover)
 
     def test_before_the_first_marker_no_active_artwork_is_required(self):
         self.assertIsNone(assets.resolve_illustration_asset(self.root, None))

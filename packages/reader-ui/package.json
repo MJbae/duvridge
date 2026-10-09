@@ -1,0 +1,14 @@
+{
+  "name": "@duvridge/reader-ui",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./*": "./src/*"
+  },
+  "dependencies": {
+    "@duvridge/content-processing": "*",
+    "vue": "3.5.43",
+    "vitepress": "1.6.4"
+  }
+}

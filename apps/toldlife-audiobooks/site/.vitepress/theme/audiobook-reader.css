@@ -1,4 +1,4 @@
-@import '@duvridge/story-reader/reader.css';
+@import '@duvridge/reader-ui/styles/reader.css';
 
 .part-done { display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0; padding: 3px 11px 3px 8px; border-radius: 999px; background: var(--selected); color: var(--link); font-size: var(--font-meta); font-weight: 600; line-height: 1.6; }
 

@@ -1,0 +1,19 @@
+{
+  "name": "@duvridge/content-processing",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./types": "./src/types.ts",
+    "./*": "./src/*"
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.mjs"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.3"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0"
+  }
+}
