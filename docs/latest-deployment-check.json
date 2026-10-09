@@ -4,6 +4,13 @@
     "checkedAt": "2026-10-09T12:03:04.527Z",
     "results": [
       {
+        "group": "company",
+        "origin": "https://www.duvridge.com",
+        "sha": "f7e8798a0b96fa65465664af6e445f32ea3cdebf",
+        "routes": 7,
+        "checkedAt": "2026-10-09T12:13:34.620Z"
+      },
+      {
         "group": "toldlife",
         "origin": "https://toldlife.duvridge.com",
         "sha": "f7e8798a0b96fa65465664af6e445f32ea3cdebf",

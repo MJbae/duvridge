@@ -44,7 +44,7 @@ try {
     const page = await browser.newPage({ viewport: { width: 390, height: 844 } })
     await page.goto(new URL('/ko/', values.company).href)
     assert.equal(await page.locator('h1').count(), 1)
-    assert(await page.getByText('ToldLife', { exact: false }).count() > 0)
+    assert(await page.getByText('인생원작', { exact: false }).count() > 0)
     await page.screenshot({ path: `${output}/company-phone.png`, fullPage: true })
     await page.close()
     evidence.results.push({ group: 'company', origin: values.company, sha, routes: 7 })
