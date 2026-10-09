@@ -36,7 +36,7 @@
 
 컴포넌트 import 이름과 템플릿 이름은 파일 이름과 맞춘다. `ReaderIcon.vue`를 `ReaderIcon`으로, `AudiobookPlayerSheet.vue`를 `AudiobookPlayerSheet`로 사용한다. 프레임워크가 정한 속성명에는 명시적인 연결을 사용한다. VitePress의 `Layout` 속성은 앱의 `NovelReaderLayout.vue` 또는 `AudiobookReaderLayout.vue`를 연결한다.
 
-공통 기능에는 `Reader`, `Story`, `Reading`을 역할에 맞게 사용한다. 읽기 앱에만 필요한 기능은 `Novel`, 오디오 앱 화면은 `Audiobook`, 낭독 데이터·문장 강조·재생 제어는 `Narration`/`narration`, 재생 대상 선택은 `playback`으로 구분한다. 배경음악에는 `background-music`을 사용해 낭독 음성과 구별한다. 이미 기능이 명확한 `ResponsiveImage`, `ReadingLink`, `ReactionBar`에는 불필요한 접두사를 추가하지 않는다.
+공통 기능에는 `Reader`, `Story`, `Reading`을 역할에 맞게 사용한다. 읽기 앱에만 필요한 기능은 `Novel`, 오디오 앱 화면은 `Audiobook`, 낭독 데이터·문장 강조·재생 제어는 `Narration`/`narration`, 재생 대상 선택은 `playback`으로 구분한다. 독자 반응은 `ReaderReactionBar`, 배경음악은 `background-music`으로 이름을 맞춘다. 이미 기능이 명확한 `ResponsiveImage`, `ReadingLink`에는 불필요한 접두사를 추가하지 않는다.
 
 ## 책임별 이름
 

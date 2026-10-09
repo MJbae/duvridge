@@ -62,6 +62,8 @@ jobs:
       - run: npm ci
       - name: Test dependency impact and deployment assembly
         run: npm run test:repo
+      - name: Check shared package contracts
+        run: npm run test --workspace packages --if-present
       - name: Check narration scripts against stable illustration markers
         run: npm run test:production-parser
       - name: Check canonical Firebase rules in the isolated emulator

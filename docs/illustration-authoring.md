@@ -22,7 +22,7 @@
 
 ## 대표 그림과 본문 첫 삽화
 
-`episode-illustrations.json`에서 회차마다 한 그림에 `representative: true`를 지정합니다. 대표 그림은 플레이어 썸네일과 메타데이터 로딩에 쓰며, 본문 표식 위치와 분리해 관리합니다. 기존 대표 그림의 ID는 그대로 두고 본문 표시만 해당 장면 앞으로 옮길 수 있습니다.
+`content/books/bae-byunghee/illustrations/manifest.json`에서 회차마다 한 그림에 `representative: true`를 지정합니다. 대표 그림은 플레이어 썸네일과 메타데이터 로딩에 쓰며, 본문 표식 위치와 분리해 관리합니다. 기존 대표 그림의 ID는 그대로 두고 본문 표시만 해당 장면 앞으로 옮길 수 있습니다.
 
 본문 첫 문단 앞에 삽화를 넣고 싶다면 회차 제목과 시점 줄 다음에 표시를 둡니다. 회차 시작에 그림을 강제로 넣을 필요는 없습니다. 먼저 서두를 읽고 나중의 장면에서 첫 삽화가 나와도 됩니다.
 
@@ -49,7 +49,7 @@
 npm run assets:episodes --workspace @duvridge/toldlife-novels -- ep01-02
 ```
 
-이 명령은 기존 이미지 파일을 변환하며 이미지 생성 API를 호출하지 않습니다. 표지와 공유 아이콘을 다시 인코딩하는 명령은 각각 `assets:cover`, `assets:share`입니다. 어느 읽기 앱에서 실행해도 정본 패키지에 결과를 씁니다.
+이 명령은 기존 이미지 파일을 변환하며 이미지 생성 API를 호출하지 않습니다. 표지와 공유 아이콘을 다시 인코딩하는 명령은 각각 `assets:cover`, `assets:share`입니다. 어느 읽기 앱에서 실행해도 연결된 책의 `content/books/<책 ID>/`에 결과를 씁니다.
 
 등록 예시는 다음과 같습니다. JPG 세 크기는 필수이고 WebP 목록은 선택입니다.
 
