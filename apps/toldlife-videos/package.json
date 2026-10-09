@@ -1,0 +1,39 @@
+{
+  "name": "@duvridge/toldlife-videos",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "prepare:content": "node scripts/prepare-reader-content.mjs",
+    "predev": "npm run prepare:content",
+    "dev": "vitepress dev site --host 127.0.0.1",
+    "prebuild": "npm run prepare:content",
+    "build": "vitepress build site",
+    "preview": "vitepress preview site --host 127.0.0.1",
+    "typecheck": "vue-tsc --noEmit",
+    "pretest": "npm run prepare:content",
+    "test": "node --test tests/catalog.test.mjs",
+    "test:sharing": "node --test tests/sharing.test.mjs",
+    "test:e2e": "playwright test",
+    "pretypecheck": "npm run prepare:content"
+  },
+  "dependencies": {
+    "firebase": "12.19.0",
+    "vue": "3.5.43",
+    "@duvridge/content-processing": "*",
+    "@duvridge/reader-ui": "*",
+    "@duvridge/reader-reactions": "*",
+    "@duvridge/vitepress-reader": "*"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@types/node": "^22.0.0",
+    "gray-matter": "^4.0.3",
+    "typescript": "^5.9.3",
+    "vitepress": "1.6.4",
+    "vue-tsc": "3.3.11"
+  }
+}

@@ -5,7 +5,7 @@
 export const seriesTabs = [
   { key: 'novel', label: '오리지널 시리즈', hash: 'novels' },
   { key: 'audio', label: '오디오북', hash: 'audiobooks' },
-  { key: 'video', label: '영상', hash: 'video' },
+  { key: 'video', label: '영상', hash: 'videos' },
 ]
 
 /** Links back to the platform home, outside every reader's own base path. */

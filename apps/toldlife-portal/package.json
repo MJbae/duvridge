@@ -4,5 +4,8 @@
   "private": true,
   "scripts": {
     "test": "node --test ../../tests/toldlife-portal.test.mjs"
+  },
+  "dependencies": {
+    "@duvridge/reader-ui": "*"
   }
 }

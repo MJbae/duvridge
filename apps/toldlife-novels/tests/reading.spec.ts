@@ -14,7 +14,7 @@ test('작품 홈은 키아트·제목·큰 버튼 하나와 회차 목록만 보
   await expect(page).toHaveTitle(rawCatalog.work.title)
   await expect(page.getByRole('heading', { level: 1, name: rawCatalog.work.title })).toBeVisible()
   await expect(bigButton(page)).toHaveText('처음부터 읽기')
-  await expect(bigButton(page)).toHaveAttribute('href', '/novels/read/prolog.html')
+  await expect(bigButton(page)).toHaveAttribute('href', '/novels/bae-byunghee/prolog')
   await expect(page.locator('.episode-item')).toHaveCount(26)
   await expect(page.locator('.episode-item:visible')).toHaveCount(5)
   await expect(page.locator('.round-action.is-current')).toHaveCount(0)
@@ -27,25 +27,25 @@ test('작품 홈은 키아트·제목·큰 버튼 하나와 회차 목록만 보
 
 test('읽기 화면 위 막대는 뒤로·회차 제목·설정뿐이고, 제목을 누르면 목차가 열린다', async ({ page }) => {
   await quiet(page)
-  await page.goto('read/ep03.html')
+  await page.goto('ep03')
   await expect(page).toHaveTitle(`3화 열두 자리 숫자 · ${rawCatalog.work.title}`)
   await expect(page.locator('.reader-bar a, .reader-bar button')).toHaveCount(3)
   await expect(page.locator('.reader-title')).toHaveText('3화 열두 자리 숫자')
-  await expect(page.locator('.reader-back')).toHaveAttribute('href', '/novels/#episode-ep03')
+  await expect(page.locator('.reader-back')).toHaveAttribute('href', '/novels/bae-byunghee/#episode-ep03')
   await page.locator('.reader-title').click()
   const toc = page.getByRole('dialog', { name: '목차' })
   await expect(toc).toBeVisible()
   await expect(toc.getByRole('link')).toHaveCount(26)
   await expect(toc.locator('[aria-current="page"]')).toHaveText('3화 열두 자리 숫자')
   await toc.getByRole('link', { name: '4화 천수만의 돌풍' }).click()
-  await expect(page).toHaveURL(/read\/ep04\.html$/)
+  await expect(page).toHaveURL(/bae-byunghee\/ep04$/)
   await expect(page.locator('.reader-title')).toHaveText('4화 천수만의 돌풍')
   await noOverflow(page)
 })
 
 test('설정은 글자 크기·종이와 밤·배경음악만 바꾸고 다시 와도 유지한다', async ({ page }) => {
   await quiet(page)
-  await page.goto('read/ep01.html')
+  await page.goto('ep01')
   const before = await fontSize(page)
   await page.getByRole('button', { name: '설정', exact: true }).click()
   const sheet = page.getByRole('dialog', { name: '읽기 설정' })
@@ -70,7 +70,7 @@ test('설정은 글자 크기·종이와 밤·배경음악만 바꾸고 다시 �
 
 test('본문을 누르면 위아래 막대가 숨고 얇은 진행선만 남는다', async ({ page }) => {
   await quiet(page)
-  await page.goto('read/ep02.html')
+  await page.goto('ep02')
   await page.locator('.story-content p').nth(1).click()
   await expect(page.locator('.library')).toHaveClass(/chrome-hidden/)
   await expect.poll(() => page.locator('.reader-thin').evaluate(element => getComputedStyle(element).opacity)).toBe('1')
@@ -80,15 +80,15 @@ test('본문을 누르면 위아래 막대가 숨고 얇은 진행선만 남는�
 
 test('회차 끝에는 다음 화 그림·제목과 큰 버튼만 있고, 다 읽으면 작품 홈이 다음 화를 권한다', async ({ page }) => {
   await quiet(page)
-  await page.goto('read/ep01.html')
+  await page.goto('ep01')
   await page.locator('.episode-end').scrollIntoViewIfNeeded()
   const next = page.locator('.next-episode')
   await expect(next.locator('.next-title')).toHaveText('2화 책보 대신 지게')
   await expect(next.locator('.big-button')).toHaveText('2화 읽기')
-  await expect(next.locator('.big-button')).toHaveAttribute('href', '/novels/read/ep02.html')
+  await expect(next.locator('.big-button')).toHaveAttribute('href', '/novels/bae-byunghee/ep02')
   await expect(next.locator('img')).toHaveAttribute('alt', /책보 대신 지게/)
   await expect(page.locator('.previous-episode')).toHaveCount(0)
-  await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('family-library:completed') || '[]'))).toContain('ep01')
+  await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('family-library:bae-byunghee:completed') || '[]'))).toContain('ep01')
   await page.goto('./')
   await expect(bigButton(page)).toHaveText('2화 읽기')
   await expect(page.locator('#episode-ep02')).toHaveAttribute('aria-current', 'true')
@@ -97,9 +97,9 @@ test('회차 끝에는 다음 화 그림·제목과 큰 버튼만 있고, 다 �
 
 test('읽던 곳은 작품 홈 버튼과 진행 막대에 남고, 이어 읽으면 그 위치에서 시작한다', async ({ page }) => {
   await quiet(page)
-  await page.goto('read/ep03.html')
+  await page.goto('ep03')
   await page.evaluate(() => window.scrollTo(0, 900))
-  await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('family-library:reading') || '{}').scroll)).toBeGreaterThan(800)
+  await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('family-library:bae-byunghee:reading') || '{}').scroll)).toBeGreaterThan(800)
   await page.goto('./')
   await expect(bigButton(page)).toHaveText('3화 이어 읽기')
   const row = page.locator('#episode-ep03')
@@ -107,13 +107,13 @@ test('읽던 곳은 작품 홈 버튼과 진행 막대에 남고, 이어 읽으�
   await expect(row.locator('.round-action')).toHaveClass(/is-current/)
   expect(await row.locator('.episode-progress span').evaluate(element => parseFloat((element as HTMLElement).style.width))).toBeGreaterThan(0)
   await bigButton(page).click()
-  await expect(page).toHaveURL(/read\/ep03\.html$/)
+  await expect(page).toHaveURL(/bae-byunghee\/ep03$/)
   await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(800)
 })
 
 test('마지막 회차는 끝 표시와 전체 회차 보기로 마친다', async ({ page }) => {
   await quiet(page)
-  await page.goto('read/side.html')
+  await page.goto('side')
   await page.locator('.episode-end').scrollIntoViewIfNeeded()
   await expect(page.locator('.story-end')).toHaveText('끝')
   await expect(page.locator('.next-episode .big-button')).toHaveText('전체 회차 보기')
@@ -122,18 +122,18 @@ test('마지막 회차는 끝 표시와 전체 회차 보기로 마친다', asyn
 
 test('옛 연대 읽기 기록을 새 회차의 제목과 주소로 이어 읽는다', async ({ page }) => {
   await quiet(page)
-  await page.addInitScript(() => localStorage.setItem('family-library:reading', JSON.stringify({ id: 'life-1980s', title: '옛 제목', url: '/read/1980s.html', scroll: 1800 })))
+  await page.addInitScript(() => localStorage.setItem('family-library:reading', JSON.stringify({ id: 'life-1980s', title: '옛 제목', url: '/1980s', scroll: 1800 })))
   await page.goto('./')
   await expect(bigButton(page)).toHaveText('12화 이어 읽기')
   await expect(page.locator('#episode-ep12')).toHaveAttribute('aria-current', 'true')
-  await expect(bigButton(page)).toHaveAttribute('href', '/novels/read/ep12.html')
+  await expect(bigButton(page)).toHaveAttribute('href', '/novels/bae-byunghee/ep12')
   await bigButton(page).click()
   await expect(page.locator('.reader-title')).toHaveText('12화 망해가는 정미소를 사다')
 })
 
 test('끝까지 읽은 옛 연대 기록은 다 읽은 회차로 두고 다음 화를 권한다', async ({ page }) => {
   await quiet(page)
-  await page.addInitScript(() => localStorage.setItem('family-library:reading', JSON.stringify({ id: 'life-1980s', title: '옛 제목', url: '/read/1980s.html', scroll: 1800, finished: true })))
+  await page.addInitScript(() => localStorage.setItem('family-library:reading', JSON.stringify({ id: 'life-1980s', title: '옛 제목', url: '/1980s', scroll: 1800, finished: true })))
   await page.goto('./')
   await expect(bigButton(page)).toHaveText('13화 읽기')
   await expect(page.locator('#episode-ep12 .episode-progress span')).toHaveAttribute('style', /width: 100%/)
@@ -141,24 +141,24 @@ test('끝까지 읽은 옛 연대 기록은 다 읽은 회차로 두고 다음 �
 
 test('옛 제목 ID의 읽기·완독·이어 읽기 기록을 번호로 바꾸고 읽던 위치를 보존한다', async ({ page }) => {
   await page.addInitScript(() => {
-    if (localStorage.getItem('family-library:reading')) return
-    localStorage.setItem('family-library:reading', JSON.stringify({ id: 'ep-josae', title: '어머니의 조새', url: '/novels/read/josae.html', scroll: 480, finished: false }))
+    if (localStorage.getItem('family-library:bae-byunghee:reading')) return
+    localStorage.setItem('family-library:reading', JSON.stringify({ id: 'ep-josae', title: '어머니의 조새', url: '/novels/bae-byunghee/josae', scroll: 480, finished: false }))
     localStorage.setItem('family-library:completed', JSON.stringify(['ep-jige', 'life-epilogue', 'ep02', 'unknown']))
-    localStorage.setItem('family-library:resume', JSON.stringify({ id: 'ep-josae', title: '어머니의 조새', url: '/novels/read/josae.html', scroll: 480, finished: false }))
+    localStorage.setItem('family-library:resume', JSON.stringify({ id: 'ep-josae', title: '어머니의 조새', url: '/novels/bae-byunghee/josae', scroll: 480, finished: false }))
     localStorage.setItem('family-library:music', JSON.stringify({ enabled: false }))
   })
   await page.goto('./#episode-josae')
   await expect(page).toHaveURL(/#episode-ep01$/)
   await expect(page.locator('#episode-ep01')).toHaveAttribute('aria-current', 'true')
-  await expect(bigButton(page)).toHaveAttribute('href', '/novels/read/ep01.html')
-  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('family-library:completed')!))).toEqual(['ep02', 'epilog'])
-  for (const key of ['family-library:reading', 'family-library:resume']) {
-    expect(await page.evaluate(key => JSON.parse(localStorage.getItem(key)!), key)).toMatchObject({ id: 'ep01', title: '어머니의 쇠갈고리', url: '/novels/read/ep01.html', scroll: 480 })
+  await expect(bigButton(page)).toHaveAttribute('href', '/novels/bae-byunghee/ep01')
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('family-library:bae-byunghee:completed')!))).toEqual(['ep02', 'epilog'])
+  for (const key of ['family-library:bae-byunghee:reading', 'family-library:bae-byunghee:resume']) {
+    expect(await page.evaluate(key => JSON.parse(localStorage.getItem(key)!), key)).toMatchObject({ id: 'ep01', title: '어머니의 쇠갈고리', url: '/novels/bae-byunghee/ep01', scroll: 480 })
   }
   await bigButton(page).click()
-  await expect(page).toHaveURL(/read\/ep01\.html$/)
+  await expect(page).toHaveURL(/bae-byunghee\/ep01$/)
   await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(400)
-  expect(await page.evaluate(() => localStorage.getItem('family-library:resume'))).toBeNull()
+  expect(await page.evaluate(() => localStorage.getItem('family-library:bae-byunghee:resume'))).toBeNull()
 })
 
 for (const [episodeId, oldTitle] of [['ep05', '미꾸라지 칼국수'], ['ep11', '차비 잘 챙겨라']]) {
@@ -179,31 +179,12 @@ for (const [episodeId, oldTitle] of [['ep05', '미꾸라지 칼국수'], ['ep11'
     await expect(page.locator('.reader-title')).toHaveText(`${episode.label} ${episode.title}`)
     await expect(page).toHaveTitle(`${episode.label} ${episode.title} · ${rawCatalog.work.title}`)
     await expect(page.locator(`[data-illustration="${episodeId}-01"]`)).toBeVisible()
-    await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('family-library:reading') || '{}').title)).toBe(episode.title)
+    await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('family-library:bae-byunghee:reading') || '{}').title)).toBe(episode.title)
     await noOverflow(page)
     await page.locator('.reader-back').click()
     await expect(page).toHaveTitle(rawCatalog.work.title)
   })
 }
-
-test('옛 주소 36개는 자바스크립트 없이 번호 회차로 이동한다', async ({ browser }) => {
-  test.setTimeout(90000)
-  const context = await browser.newContext({ javaScriptEnabled: false })
-  const page = await context.newPage()
-  try {
-    for (const [old, id] of Object.entries(legacyEpisodes)) {
-      await page.goto(`http://127.0.0.1:4183/novels/read/${old}.html`)
-      await expect(page).toHaveURL(new RegExp(`read/${id}\\.html$`))
-      await expect(page.locator('.story-content')).toBeVisible()
-    }
-  } finally { await context.close() }
-})
-
-test('옛 회차 주소의 반응 위치 링크도 번호 주소에서 유지한다', async ({ page }) => {
-  await page.goto('read/josae.html#reactions')
-  await expect(page).toHaveURL(/read\/ep01\.html#reactions$/)
-  await expect(page.locator('.reader-title')).toHaveText('1화 어머니의 쇠갈고리')
-})
 
 test('모든 회차의 삽화를 불러오며 16:9 전체 그림을 화면 폭에 맞춘다', async ({ page }, info) => {
   test.setTimeout(90000)
@@ -216,7 +197,7 @@ test('모든 회차의 삽화를 불러오며 16:9 전체 그림을 화면 폭�
     if (response.url().includes('/images/episodes/') && response.status() >= 400) broken.push(response.url())
   })
   for (const [episodeId, illustrations] of Object.entries(images)) {
-    await page.goto(`read/${episodeId}.html`)
+    await page.goto(`${episodeId}`)
     const body = await page.locator('.story-content').innerText()
     expect(body, `${episodeId} 본문에 마크다운 기호가 노출되지 않아야 합니다.`).not.toMatch(/\*\*|__|~~|`|\[[^\]]+\]\(/)
     if (episodeId === 'ep08') expect(body).toContain('‘메다르(메탈 베어링)’가')
@@ -254,7 +235,7 @@ test('모든 회차의 삽화를 불러오며 16:9 전체 그림을 화면 폭�
     await noOverflow(page)
   }
   expect(broken).toEqual([])
-  await page.goto('read/ep01.html')
+  await page.goto('ep01')
   await page.screenshot({ path: `test-results/reading/${info.project.name}-illustrated-reader.png`, fullPage: true })
 })
 
@@ -262,15 +243,12 @@ test('삽화는 자바스크립트 없이 회차에서 표시된다', async ({ b
   const context = await browser.newContext({ javaScriptEnabled: false })
   const page = await context.newPage()
   try {
-    await page.goto('http://127.0.0.1:4183/novels/read/ep01.html')
+    await page.goto('http://127.0.0.1:4183/novels/bae-byunghee/ep01')
     await expect(page.locator('.episode-illustration')).toHaveCount(2)
     const first = page.locator('.episode-illustration img').first()
     await expect.poll(() => first.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true)
-    await page.goto('http://127.0.0.1:4183/novels/read/ep05.html')
+    await page.goto('http://127.0.0.1:4183/novels/bae-byunghee/ep05')
     await expect(page.locator('.episode-illustration')).toHaveCount(2)
-    await page.goto('http://127.0.0.1:4183/novels/read/life-story.html')
-    await expect(page).toHaveURL('http://127.0.0.1:4183/novels/')
-    await expect(page.locator('.episode-item')).toHaveCount(26)
   } finally { await context.close() }
 })
 
@@ -283,7 +261,7 @@ test('첫 삽화는 화면에 맞는 파일 하나를 사전 로딩하고 기다
   })
   await page.route('**/images/episodes/*', async route => { await pending; await route.continue() })
   try {
-    await page.goto('read/ep01.html', { waitUntil: 'domcontentloaded' })
+    await page.goto('ep01', { waitUntil: 'domcontentloaded' })
     const figure = page.locator('[data-illustration="ep01-01"]')
     const preload = page.locator('head link[rel="preload"][as="image"]')
     await expect(preload).toHaveCount(1)
@@ -305,7 +283,7 @@ test('첫 삽화는 화면에 맞는 파일 하나를 사전 로딩하고 기다
 
 test('WebP 전송이 실패하면 JPG로 복구하고 모두 실패하면 다시 불러올 수 있다', async ({ page }) => {
   await page.route('**/images/episodes/ep01-01-*.webp', route => route.abort())
-  await page.goto('read/ep01.html')
+  await page.goto('ep01')
   const figure = page.locator('[data-illustration="ep01-01"]')
   await expect.poll(() => figure.locator('img').evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true)
   expect(await figure.locator('img').evaluate((img: HTMLImageElement) => img.currentSrc)).toMatch(/-720\.jpg$/)
@@ -333,7 +311,7 @@ test('여섯 회차의 삽화는 해당 장면에서 시작하고 대표 그림�
     ['ep15', 'ep15-01', '이튿날에도 배병희는 아무 일 없었다는 듯', ['ep15-02', 'ep15-01', 'ep15-03']],
   ] as const
   for (const [episode, representativeId, followingText, order] of targets) {
-    await page.goto(`read/${episode}.html`)
+    await page.goto(`${episode}`)
     expect(await page.locator('.episode-illustration').evaluateAll(figures => figures.map(figure => figure.getAttribute('data-illustration')))).toEqual(order)
     const representative = page.locator(`[data-illustration="${representativeId}"]`)
     await expect(representative.locator('xpath=following-sibling::p[1]')).toContainText(followingText)

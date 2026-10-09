@@ -7,10 +7,11 @@ type ExtensionContext = {
   toText: typeof plainText
   warn: (message: string) => void
 }
+export const reservedWorkIds: Set<string>
 export function plainText(markdown: unknown): string
 export function prepareContent(options?: {
   root?: string
   book?: BookConfig
   logger?: { log?: (message: string) => void; warn?: (message: string) => void }
   extendCatalog?: (context: ExtensionContext) => { catalog?: Record<string, unknown>; generated?: [string, unknown][] }
-}): { catalog: ReaderCatalog; manifest: { version: number; files: string[]; sources: { source: string; id: string; filename: string }[] }; warnings: string[] }
+}): { catalog: ReaderCatalog; manifest: { version: number; directory: string; files: string[]; sources: { source: string; id: string; filename: string }[] }; warnings: string[] }

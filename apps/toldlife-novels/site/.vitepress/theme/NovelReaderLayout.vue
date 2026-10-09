@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { workStorageKey, migrateWorkStorage } from '@duvridge/reader-ui/state/work-storage.mjs'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { Content, useData, useRoute, useRouter, withBase } from 'vitepress'
 import ReaderIcon from '@duvridge/reader-ui/components/ReaderIcon.vue'
@@ -10,8 +11,10 @@ import { imageSrcset } from '@duvridge/reader-ui/images/create-image-sources.mjs
 import NovelEpisodeEnd from './components/NovelEpisodeEnd.vue'
 import BackgroundMusicToggle from './components/BackgroundMusicToggle.vue'
 import { useBackgroundMusic } from './lib/background-music'
-import { catalog, type Episode } from './lib/reader-catalog'
+import { useCatalog, type Episode } from './lib/reader-catalog'
 import { migrateReading, migrateCompleted, type SavedReading } from '../shared/reading-history.mjs'
+const catalog = useCatalog()
+const key = (kind: string) => workStorageKey(catalog.work.id, kind)
 const { frontmatter, page, site } = useData()
 const route = useRoute()
 const router = useRouter()
@@ -27,7 +30,9 @@ const { audio: musicAudio, enabled: musicEnabled, status: musicStatus, setEnable
 const pageId = computed(() => String(frontmatter.value.pageId || ''))
 const episode = computed(() => catalog.readingOrder.find(entry => entry.id === pageId.value))
 const barTitle = computed(() => (episode.value ? episodeName(episode.value) : String(frontmatter.value.title || '이야기')))
-const homeHref = computed(() => withBase('/') + (frontmatter.value.episodeId ? `#episode-${frontmatter.value.episodeId}` : ''))
+// The work's home is its folder; the series root itself belongs to the platform home.
+const workHome = withBase(`/${catalog.work.id}/`)
+const homeHref = computed(() => workHome + (frontmatter.value.episodeId ? `#episode-${frontmatter.value.episodeId}` : ''))
 const fontSize = ref(1)
 const screenMode = ref('auto')
 const prefersNight = ref(false)
@@ -39,7 +44,7 @@ const chrome = ref(true)
 const progress = ref(0)
 const toc = ref<InstanceType<typeof ReaderSheet>>()
 const settings = ref<InstanceType<typeof ReaderSheet>>()
-const storageKey = 'family-library:reading'
+const storageKey = key('reading')
 let activeEpisode: Episode | undefined, activeScroll = 0, activeFinished = false, version = 0
 let saveTimer: ReturnType<typeof setTimeout> | undefined
 let mounted = false
@@ -75,11 +80,11 @@ function complete() {
   activeFinished = true
   if (!completed.value.includes(activeEpisode.id)) {
     completed.value = [...completed.value, activeEpisode.id]
-    writeStorage('family-library:completed', JSON.stringify(completed.value))
+    writeStorage(key('completed'), JSON.stringify(completed.value))
   }
   saveReading()
 }
-function resumeReading() { if (lastRead.value) writeStorage('family-library:resume', JSON.stringify(lastRead.value)) }
+function resumeReading() { if (lastRead.value) writeStorage(key('resume'), JSON.stringify(lastRead.value)) }
 function setFont(size: number) { fontSize.value = Math.min(3, Math.max(0, size)); writeStorage('family-library:font', String(fontSize.value)) }
 function setMode(mode: string) {
   screenMode.value = mode
@@ -154,12 +159,12 @@ async function setupPage() {
   activeFinished = false
   progress.value = 0
   try {
-    const saved = restoreReading('family-library:resume')
+    const saved = restoreReading(key('resume'))
     if (saved?.id === activeEpisode.id && Number.isFinite(saved.scroll)) {
       await new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
       if (current !== version) return
       window.scrollTo({ top: Math.max(0, saved.scroll), behavior: 'instant' }); activeScroll = window.scrollY
-      try { localStorage.removeItem('family-library:resume') } catch { /* optional */ }
+      try { localStorage.removeItem(key('resume')) } catch { /* optional */ }
     }
   } catch { /* optional */ }
   measureProgress()
@@ -167,6 +172,7 @@ async function setupPage() {
 }
 function onNightChange(event: MediaQueryListEvent) { prefersNight.value = event.matches; syncThemeColor() }
 onMounted(() => {
+  try { migrateWorkStorage(localStorage, catalog.work) } catch { /* Browser storage is optional. */ }
   mounted = true
   router.onBeforePageLoad = async (href) => {
     if (activeEpisode) { activeScroll = window.scrollY; saveReading(); activeEpisode = undefined }
@@ -179,11 +185,11 @@ onMounted(() => {
   if ([0, 1, 2, 3].includes(preferred)) fontSize.value = preferred
   const mode = readStorage('family-library:theme')
   setMode(['auto', 'light', 'dark'].includes(mode ?? '') ? mode! : 'auto')
-  completed.value = migrateCompleted(catalog, readJson('family-library:completed'))
+  completed.value = migrateCompleted(catalog, readJson(key('completed')))
   lastRead.value = restoreReading(storageKey)
   if (lastRead.value?.finished && !completed.value.includes(lastRead.value.id)) completed.value.push(lastRead.value.id)
-  writeStorage('family-library:completed', JSON.stringify(completed.value))
-  restoreReading('family-library:resume')
+  writeStorage(key('completed'), JSON.stringify(completed.value))
+  restoreReading(key('resume'))
   const oldAnchor = window.location.hash.match(/^#episode-([a-z0-9-]+)$/)?.[1]
   const anchorId = oldAnchor && catalog.legacyIds[oldAnchor]
   if (anchorId && catalog.readingOrder.some(entry => entry.id === anchorId)) {
@@ -207,8 +213,8 @@ onBeforeUnmount(() => {
     <audio ref="musicAudio" class="background-audio" loop preload="none" aria-hidden="true" />
     <WorkHome v-if="isHome" series="novel" :title="catalog.work.title" :art="art"
       :action="{ label: action.label, href: withBase(action.episode.url) }" :rows="rows" @action="openAction" @select="openRow" />
-    <main v-else-if="isMissing" id="main" tabindex="-1" class="not-found"><h1>이야기를 찾지 못했습니다.</h1><a class="text-link" :href="withBase('/')">작품 홈으로</a></main>
-    <main v-else-if="frontmatter.kind === 'redirect'" id="main" class="not-found"><h1>이 이야기의 주소가 바뀌었습니다.</h1><Content /><a class="text-link" :href="withBase(frontmatter.redirect)">이 이야기 읽기</a></main>
+    <main v-else-if="isMissing" id="main" tabindex="-1" class="not-found"><h1>이야기를 찾지 못했습니다.</h1><a class="text-link" :href="workHome">작품 홈으로</a></main>
+    <main v-else-if="frontmatter.kind === 'redirect'" id="main" class="not-found"><h1>홈으로 이동합니다.</h1><a class="text-link" :href="frontmatter.redirectTo" target="_self">홈으로</a></main>
     <template v-else>
       <header class="reader-bar" @focusin="chrome = true">
         <nav class="reader-bar-inner" aria-label="읽기 도구">
@@ -219,7 +225,7 @@ onBeforeUnmount(() => {
       </header>
       <main id="main" tabindex="-1" class="reader-main" @click="toggleChrome">
         <article class="story-content"><Content /></article>
-        <NovelEpisodeEnd v-if="isEpisode" :key="pageId" :page-id="pageId" :next="frontmatter.next" :home-href="withBase('/')" @complete="complete" />
+        <NovelEpisodeEnd v-if="isEpisode" :key="pageId" :page-id="pageId" :next="frontmatter.next" :home-href="workHome" @complete="complete" />
       </main>
       <div class="reader-foot" aria-hidden="true"><div class="reader-foot-inner"><span class="reader-track"><span :style="{ width: `${progressPercent(progress)}%` }" /></span><span>{{ progressPercent(progress) }}%</span></div></div>
       <span class="reader-thin" aria-hidden="true"><span :style="{ width: `${progressPercent(progress)}%` }" /></span>

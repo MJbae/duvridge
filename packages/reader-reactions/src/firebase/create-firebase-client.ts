@@ -4,7 +4,7 @@ import { connectFirestoreEmulator, getFirestore, type Firestore } from 'firebase
 import { configuration, isFirebaseConfigured } from './read-firebase-config.ts'
 
 const VALID_ID = /^[A-Za-z0-9_-]{1,120}$/
-export const storedPageId = (pageId: string) => `memoir-${pageId}`
+export { storedPageId } from '../model/reaction-document-id.mjs'
 export function createFirebaseClient() {
   let clients: { auth: Auth; db: Firestore } | undefined
   let signingIn: ReturnType<typeof signInAnonymously> | undefined

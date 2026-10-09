@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import matter from 'gray-matter'
+import { listBookSources } from './list-book-sources.mjs'
 
 /** Resolve an app's declared editorial source; package code never embeds a particular book. */
 export function resolveBookSource({ repositoryRoot, appRoot, registryFile = 'service-registry.json' }) {
@@ -8,6 +9,9 @@ export function resolveBookSource({ repositoryRoot, appRoot, registryFile = 'ser
   const registry = JSON.parse(readFileSync(path.join(root, registryFile), 'utf8'))
   const appPath = path.relative(root, path.resolve(appRoot)).split(path.sep).join('/')
   const service = registry.services.find(service => service.path === appPath)
+  const works = registry.bookCatalog ? listBookSources(root, { directory: registry.bookCatalog.path, ids: service?.books }) : []
+  const primary = works.find(({ book }) => book.legacy?.servedAtRoot) ?? works[0]
+  if (service?.bookCatalog && primary) return primary
   const binding = registry.books?.[service?.book]
   if (!binding?.path) throw new Error(`앱에 연결된 책 원본을 등록하세요: ${appPath}`)
   const source = path.resolve(root, binding.path)

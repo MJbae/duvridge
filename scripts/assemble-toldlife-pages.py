@@ -9,6 +9,7 @@ import shutil
 import subprocess
 import tempfile
 from xml.sax.saxutils import escape
+from urllib.parse import urlsplit
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -40,7 +41,7 @@ def check_build(dist, base):
     if not (dist / "index.html").is_file():
         raise ValueError(f"No built home page at {dist}")
     source = (dist / "index.html").read_text(encoding="utf-8")
-    expected = f'<link rel="canonical" href="{SITE_ORIGIN}{base}">'
+    expected = f'<link rel="canonical" href="{SITE_ORIGIN}/">'
     if expected not in source:
         raise ValueError(f"{base}: build has the wrong canonical URL; build with SITE_BASE and SITE_ORIGIN.")
     service = next(service for service in REGISTRY["services"] if service["siteBase"] == base and service["deployGroup"] == "toldlife")
@@ -52,6 +53,38 @@ def check_build(dist, base):
             raise ValueError(f"Source/config file cannot be published: {file}")
         if file.is_file() and file.stat().st_size > 25 * 1024 * 1024:
             raise ValueError(f"Asset exceeds Cloudflare Pages' 25 MiB limit: {file}")
+
+
+def redirect_rules(staged, services):
+    rules = {}
+    for base, dist in services:
+        tab = base.strip("/")
+        for source in (base, base.rstrip("/"), base + "index.html"):
+            rules[source] = "/?tab=" + tab
+        manifest = dist / "moved-pages.json"
+        if not manifest.is_file():
+            raise ValueError(f"{base}: missing moved-pages.json")
+        moved = json.loads(manifest.read_text(encoding="utf-8"))
+        if moved.get("version") != 1 or not isinstance(moved.get("pages"), list):
+            raise ValueError("Invalid moved-pages manifest")
+        for row in moved["pages"]:
+            source, target = row["from"], row["to"]
+            if source in rules and rules[source] != target:
+                raise ValueError(f"Conflicting redirect: {source}")
+            rules[source] = target
+    if len(rules) > 2000:
+        raise ValueError("Too many static Pages redirects")
+    for source, target in rules.items():
+        if not source.startswith("/") or not target.startswith("/") or any(char.isspace() for char in source + target) or len(source + target) > 990:
+            raise ValueError(f"Unsafe redirect: {source}")
+        destination = urlsplit(target).path
+        if destination in rules:
+            raise ValueError(f"Redirect chain: {source} -> {target}")
+        file = staged / destination.lstrip("/")
+        exists = (file / "index.html").is_file() if destination.endswith("/") else file.with_suffix(".html").is_file()
+        if not exists:
+            raise ValueError(f"Redirect target is missing: {source} -> {target}")
+    return [{"from": source, "to": target, "status": 301} for source, target in sorted(rules.items())]
 
 
 def assemble(output, services):
@@ -67,7 +100,9 @@ def assemble(output, services):
     output.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="toldlife-", dir=output.parent) as temporary:
         staged = Path(temporary)
-        shutil.copyfile(PORTAL / "index.html", staged / "index.html")
+        audio_dist = next(dist for base, dist in services if base == "/audiobooks/")
+        portal = subprocess.check_output(["node", str(ROOT / "scripts/render-toldlife-portal.mjs"), str(audio_dist / "work-index.json")], text=True)
+        (staged / "index.html").write_text(portal, encoding="utf-8")
         shutil.copyfile(PORTAL / "404.html", staged / "404.html")
         for folder in ("brand", "social"):
             shutil.copytree(BRAND / folder, staged / folder)
@@ -94,7 +129,9 @@ def assemble(output, services):
         )
         # Pages serves extensionless HTML and directory indexes automatically. A root 404
         # disables its SPA fallback so an unknown route cannot silently become the portal.
-        (staged / "_redirects").write_text("/novels /novels/ 301\n/audiobooks /audiobooks/ 301\n")
+        redirects = redirect_rules(staged, services)
+        (staged / "_redirects").write_text("".join(f"{row['from']} {row['to']} 301\n" for row in redirects), encoding="utf-8")
+        (staged / "redirects.json").write_text(json.dumps(redirects, indent=2) + "\n", encoding="utf-8")
         (staged / "_headers").write_text(
             "/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n",
             encoding="utf-8",
@@ -102,7 +139,8 @@ def assemble(output, services):
         revision = os.environ.get("GITHUB_SHA") or subprocess.check_output(
             ["git", "-C", str(ROOT), "rev-parse", "HEAD"], text=True).strip()
         (staged / "deployment.json").write_text(json.dumps({
-            "schemaVersion": 1, "sourceRevision": revision,
+            "schemaVersion": 1, "group": "toldlife", "sourceRevision": revision,
+            "sourceDirty": bool(subprocess.check_output(["git", "-C", str(ROOT), "status", "--porcelain"], text=True).strip()),
             "services": [{"base": base, "files": sum(file.is_file() for file in dist.rglob("*"))}
                          for base, dist in services],
         }, indent=2) + "\n", encoding="utf-8")
@@ -123,6 +161,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--novels-source", type=Path, default=ROOT / "apps/toldlife-novels")
     parser.add_argument("--audiobooks-source", type=Path, default=ROOT / "apps/toldlife-audiobooks")
+    parser.add_argument("--videos-source", type=Path, default=ROOT / "apps/toldlife-videos")
     parser.add_argument("--github-vars", action="store_true", help="Load public Firebase settings from the monorepo's GitHub variables.")
     parser.add_argument("--skip-build", action="store_true", help="Assemble already-built and checked service outputs.")
     parser.add_argument("--output", type=Path, default=ROOT / REGISTRY["deployGroups"]["toldlife"]["output"])
@@ -132,7 +171,7 @@ def main():
         if service["deployGroup"] != "toldlife" or not service.get("artifactPath"):
             continue
         base = service["siteBase"]
-        source = ({"toldlife-novels": args.novels_source, "toldlife-audiobooks": args.audiobooks_source}
+        source = ({"toldlife-novels": args.novels_source, "toldlife-audiobooks": args.audiobooks_source, "toldlife-videos": args.videos_source}
                   .get(service["id"], ROOT / service["path"]))
         source = source.resolve()
         if not args.skip_build:

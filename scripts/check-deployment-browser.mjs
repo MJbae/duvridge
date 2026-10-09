@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { createHash } from 'node:crypto'
-import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { parseArgs } from 'node:util'
@@ -9,6 +9,7 @@ import matter from 'gray-matter'
 import { createMarkdownRenderer, disposeMdItInstance } from 'vitepress'
 import { parseManuscript } from '@duvridge/content-processing/manuscripts/parse-manuscript.mjs'
 import { createLegacyEpisodeMaps } from '@duvridge/content-processing/manuscripts/episode-ids.mjs'
+import { listBookSources } from '@duvridge/content-processing/source-files/list-book-sources.mjs'
 import { stripIllustrationMarkers } from '@duvridge/content-processing/illustrations/parse-illustration-markers.mjs'
 
 const { values } = parseArgs({ options: {
@@ -53,10 +54,12 @@ try {
     const sha = await marker(values.toldlife)
     const repositoryRoot = fileURLToPath(new URL('../', import.meta.url))
     const registry = JSON.parse(await readFile(resolve(repositoryRoot, 'service-registry.json'), 'utf8'))
-    const books = [...new Set(registry.services.filter(service => service.deployGroup === 'toldlife' && service.book).map(service => service.book))]
-    assert.equal(books.length, 1, 'ToldLife readers must select the same canonical book for this check')
-    const bookId = books[0]
-    const sourceRoot = resolve(repositoryRoot, registry.books[bookId].path)
+    const sources = listBookSources(repositoryRoot, { directory: registry.bookCatalog.path })
+    const summaries = await (await request(values.toldlife, '/audiobooks/work-index.json')).json()
+    assert.deepEqual(summaries.map(work => work.id), sources.map(({ book }) => book.id), 'Published work catalog differs from canonical sources')
+    const selected = sources.find(({ book }) => book.legacy?.servedAtRoot) ?? sources[0]
+    const bookId = selected.book.id
+    const sourceRoot = selected.source
     const book = JSON.parse(await readFile(resolve(sourceRoot, 'book.json'), 'utf8'))
     const manuscript = await readFile(resolve(sourceRoot, book.manuscript ?? 'manuscript.md'))
     const sourceHash = createHash('sha256').update(manuscript).digest('hex')
@@ -75,35 +78,40 @@ try {
     // Only the novel publishes the text; the audiobook and the video show the narration, not the prose.
     for (const episode of structure.episodes) {
       const { id } = episode
-      const text = await (await request(values.toldlife, `/novels/read/${id}.html`)).text()
+      const text = await (await request(values.toldlife, `/novels/${bookId}/${id}`)).text()
       assert(text.includes('story-content'), `novels/${id}: no reader body`)
       assert(!text.includes('<!-- illustration:'), `novels/${id}: raw illustration marker leaked`)
-      assert(text.includes(`https://toldlife.duvridge.com/novels/read/${id}.html`), 'Wrong canonical')
+      assert(text.includes(`https://toldlife.duvridge.com/novels/${bookId}/${id}`), 'Wrong canonical')
       const published = await headOf(text)
       const expected = await inspector.evaluate(html => [...new DOMParser().parseFromString(html, 'text/html').querySelectorAll('p')].map(paragraph => paragraph.textContent),
         markdown.render(stripIllustrationMarkers(episode.body)))
       assert.equal(published.title, `${episode.label} ${episode.title} · ${title}`, `novels/${id}: stale title`)
       assert.deepEqual(published.paragraphs, expected, `novels/${id}: published prose differs from the canonical manuscript`)
       paragraphChecks += expected.length
-      const listen = await (await request(values.toldlife, `/audiobooks/read/${id}.html`)).text()
-      assert(listen.includes(`https://toldlife.duvridge.com/audiobooks/read/${id}.html`), `audiobooks/${id}: wrong canonical`)
+      const listen = await (await request(values.toldlife, `/audiobooks/${bookId}/${id}`)).text()
+      assert(listen.includes(`https://toldlife.duvridge.com/audiobooks/${bookId}/${id}`), `audiobooks/${id}: wrong canonical`)
       assert.equal((await headOf(listen)).title, `${episode.label} ${episode.title} · ${title}`, `audiobooks/${id}: stale title`)
     }
-    // Episodes are recorded one at a time; check the ones this revision publishes, in reading order.
-    const audiobooks = registry.services.find(service => service.id === 'toldlife-audiobooks')
-    const recorded = new Set((await readdir(resolve(repositoryRoot, audiobooks.path, 'site/public/record'))).filter(name => name.endsWith('.mp3')).map(name => name.slice(0, -4)))
-    const recordings = episodes.filter(id => recorded.has(id))
-    assert(recordings.length > 0, 'No recorded episode to check')
+    // Every additional work exposes its own canonical homes and episode paths in all formats.
+    for (const summary of summaries.filter(work => work.id !== bookId)) {
+      for (const format of ['novels', 'audiobooks', 'videos']) {
+        for (const route of [`/${format}/${summary.id}/`, ...summary.episodes.map(episode => `/${format}/${summary.id}/${episode.id}`)]) {
+          const html = await (await request(values.toldlife, route)).text()
+          assert(html.includes(`https://toldlife.duvridge.com${route}`), `${route}: wrong canonical`)
+        }
+      }
+    }
+    const recordings = summaries.find(work => work.id === bookId).episodes.filter(episode => episode.recorded).map(episode => episode.id)
     for (const id of recordings) {
       const episode = structure.episodes.find(entry => entry.id === id)
-      const watch = await (await request(values.toldlife, `/audiobooks/watch/${id}.html`)).text()
-      assert(watch.includes(`https://toldlife.duvridge.com/audiobooks/watch/${id}.html`), `watch/${id}: wrong canonical`)
+      const watch = await (await request(values.toldlife, `/videos/${bookId}/${id}`)).text()
+      assert(watch.includes(`https://toldlife.duvridge.com/videos/${bookId}/${id}`), `watch/${id}: wrong canonical`)
       assert.equal((await headOf(watch)).title, `${episode.label} ${episode.title} · ${title}`, `watch/${id}: stale title`)
     }
     await inspector.close()
     disposeMdItInstance()
     for (const id of recordings) {
-      const response = await request(values.toldlife, `/audiobooks/record/${id}.mp3`, { headers: { Range: 'bytes=0-255' } })
+      const response = await request(values.toldlife, `/audiobooks/works/${bookId}/record/${id}.mp3`, { headers: { Range: 'bytes=0-255' } })
       assert((await response.arrayBuffer()).byteLength > 0, `Empty recording: ${id}`)
     }
     const missing = await fetch(new URL('/missing-monorepo-route', values.toldlife))
@@ -137,7 +145,7 @@ try {
       }
       assert(!await overflows(), 'platform home overflows')
       await page.screenshot({ path: `${output}/home-${device}.png`, fullPage: true })
-      for (const [name, path] of [['novels', '/novels/'], ['audiobooks', '/audiobooks/'], ['video', '/audiobooks/watch/']]) {
+      for (const [name, path] of [['novels', `/novels/${bookId}/`], ['audiobooks', `/audiobooks/${bookId}/`], ['video', `/videos/${bookId}/`]]) {
         await page.goto(new URL(path, values.toldlife).href)
         await page.locator('.episode-item').first().waitFor({ state: 'attached' })
         assert.equal(await page.locator('.episode-item').count(), episodes.length, `${name}: episode list`)
@@ -145,7 +153,7 @@ try {
         assert(!await overflows(), `${name} work page overflows`)
         await page.screenshot({ path: `${output}/${name}-${device}-home.png`, fullPage: true })
       }
-      await page.goto(new URL('/novels/read/ep02.html', values.toldlife).href)
+      await page.goto(new URL(`/novels/${bookId}/${episodes[1] ?? episodes[0]}`, values.toldlife).href)
       await page.locator('.story-content p').first().waitFor()
       assert.equal(await page.locator('.reader-bar a, .reader-bar button').count(), 3, 'reader bar controls')
       await expect(async () => {
@@ -154,7 +162,7 @@ try {
       }).toPass({ timeout: 30000 })
       assert(!await overflows(), 'novel reader overflows')
       await page.screenshot({ path: `${output}/novels-${device}-reader.png`, fullPage: true })
-      await page.goto(new URL(`/audiobooks/read/${recordings[0]}.html`, values.toldlife).href)
+      await page.goto(new URL(`/audiobooks/${bookId}/${recordings[0]}`, values.toldlife).href)
       console.log(`Checking ${device} playback at ${page.url()}`)
       await startPlayback(page, device)
       assert(await page.getByRole('button', { name: '일시 정지', exact: true }).isVisible())
@@ -168,7 +176,7 @@ try {
       await page.screenshot({ path: `${output}/audiobooks-${device}-player.png`, fullPage: true })
       await page.getByRole('button', { name: '일시 정지', exact: true }).click()
       assert(await audio(page).evaluate(element => element.paused))
-      await page.goto(new URL(`/audiobooks/watch/${recordings[0]}.html`, values.toldlife).href)
+      await page.goto(new URL(`/videos/${bookId}/${recordings[0]}`, values.toldlife).href)
       await startPlayback(page, device)
       assert((await page.locator('.subtitle-band').textContent()).trim().length > 0, 'no video subtitle')
       assert(!await overflows(), 'video overflows')

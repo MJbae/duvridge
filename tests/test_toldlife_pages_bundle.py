@@ -26,14 +26,19 @@ class ToldLifeAssemblyTests(unittest.TestCase):
             (self.brand / folder).mkdir(parents=True)
             (self.brand / folder / "image.png").write_bytes(b"image")
         self.services = []
-        for name, base in (("novels", "/novels/"), ("audio", "/audiobooks/")):
+        for name, base in (("novels", "/novels/"), ("audio", "/audiobooks/"), ("videos", "/videos/")):
             dist = self.root / name
-            (dist / "read").mkdir(parents=True)
-            (dist / "index.html").write_text(f'<link rel="canonical" href="{build.SITE_ORIGIN}{base}">')
-            (dist / "read/ep01.html").write_text("<html>first episode</html>")
-            if name == "audio":
-                (dist / "record").mkdir()
-                (dist / "record/prolog.mp3").write_bytes(b"ID3audio")
+            (dist / "bae-byunghee").mkdir(parents=True)
+            (dist / "index.html").write_text(f'<link rel="canonical" href="{build.SITE_ORIGIN}/">')
+            (dist / "bae-byunghee/ep01.html").write_text("<html>first episode</html>")
+            (dist / "bae-byunghee/index.html").write_text("<html>work</html>")
+            (dist / "bae-byunghee/prolog.html").write_text("<html>prologue</html>")
+            folder = "/audiobooks/watch/" if name == "videos" else base + "read/"
+            (dist / "moved-pages.json").write_text(json.dumps({"version": 1, "pages": [{"from": folder + "old.html", "to": base + "bae-byunghee/ep01"}]}))
+            (dist / "work-index.json").write_text(json.dumps([{"id": "bae-byunghee", "title": "Example", "legacyRoot": True, "legacyIds": {}, "cover": {"alt": "Cover", "width": 720, "height": 405, "sources": [{"src": "/works/bae-byunghee/images/cover.jpg", "width": 720}]}, "episodes": [{"id": "prolog", "label": "프롤로그", "recorded": True}]}]))
+            if name in {"audio", "videos"}:
+                (dist / "works/bae-byunghee/record").mkdir(parents=True)
+                (dist / "works/bae-byunghee/record/prolog.mp3").write_bytes(b"ID3audio")
             self.services.append((base, dist))
         self.output = self.root / "output"
         self.patches = [patch.object(build, "PORTAL", self.portal), patch.object(build, "BRAND", self.brand)]
@@ -46,14 +51,18 @@ class ToldLifeAssemblyTests(unittest.TestCase):
         (self.output / "obsolete.html").write_text("old")
         build.assemble(self.output, self.services)
         self.assertFalse((self.output / "obsolete.html").exists())
-        self.assertTrue((self.output / "novels/read/ep01.html").exists())
-        self.assertEqual((self.output / "audiobooks/record/prolog.mp3").read_bytes(), b"ID3audio")
+        self.assertTrue((self.output / "novels/bae-byunghee/ep01.html").exists())
+        self.assertEqual((self.output / "audiobooks/works/bae-byunghee/record/prolog.mp3").read_bytes(), b"ID3audio")
         self.assertTrue((self.output / "404.html").exists())
         sitemap = (self.output / "sitemap.xml").read_text()
-        self.assertIn("/novels/read/ep01", sitemap)
-        self.assertIn("/audiobooks/read/ep01", sitemap)
+        self.assertIn("/novels/bae-byunghee/ep01", sitemap)
+        self.assertIn("/audiobooks/bae-byunghee/ep01", sitemap)
+        self.assertIn("/videos/bae-byunghee/ep01", sitemap)
+        redirects = (self.output / "_redirects").read_text()
+        self.assertIn("/novels/read/old.html /novels/bae-byunghee/ep01 301", redirects)
+        self.assertIn("/videos/ /?tab=videos 301", redirects)
         marker = json.loads((self.output / "deployment.json").read_text())
-        self.assertEqual([entry["base"] for entry in marker["services"]], ["/novels/", "/audiobooks/"])
+        self.assertEqual([entry["base"] for entry in marker["services"]], ["/novels/", "/audiobooks/", "/videos/"])
         self.assertEqual(len(marker["sourceRevision"]), 40)
 
     def test_partial_upload_is_rejected_before_replacing_current_snapshot(self):
@@ -69,9 +78,19 @@ class ToldLifeAssemblyTests(unittest.TestCase):
             build.assemble(self.output, self.services)
         self.assertFalse(self.output.exists())
         base, dist = self.services[1]
-        (dist / "index.html").write_text(f'<link rel="canonical" href="{build.SITE_ORIGIN}{base}">')
-        (dist / "record/prolog.mp3").unlink()
+        (dist / "index.html").write_text(f'<link rel="canonical" href="{build.SITE_ORIGIN}/">')
+        (dist / "works/bae-byunghee/record/prolog.mp3").unlink()
         with self.assertRaisesRegex(ValueError, "prolog.mp3"):
+            build.assemble(self.output, self.services)
+
+    def test_missing_target_and_conflicting_redirect_fail_atomically(self):
+        base, dist = self.services[0]
+        (dist / "moved-pages.json").write_text(json.dumps({"version": 1, "pages": [{"from": "/old", "to": "/novels/missing"}]}))
+        with self.assertRaisesRegex(ValueError, "target is missing"):
+            build.assemble(self.output, self.services)
+        self.assertFalse(self.output.exists())
+        (dist / "moved-pages.json").write_text(json.dumps({"version": 1, "pages": [{"from": "/novels/", "to": "/novels/bae-byunghee/"}]}))
+        with self.assertRaisesRegex(ValueError, "Conflicting"):
             build.assemble(self.output, self.services)
 
     def test_configuration_and_oversized_assets_are_rejected(self):

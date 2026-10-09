@@ -289,7 +289,7 @@ test('콘텐츠를 준비하면 낭독 회차를 목록에 넣고 본문은 따�
   assert.equal(catalog.narration.prolog.texts.length, catalog.narration.prolog.cues.length)
   assert.deepEqual(warnings, [])
   assert.equal(existsSync(path.join(root, 'site/.vitepress/generated/narration.json')), false)
-  assert.equal(matter(readFileSync(path.join(root, 'site/read/prolog.md'), 'utf8')).data.narration, undefined)
+  assert.equal(matter(readFileSync(path.join(root, 'site/bae-byunghee/prolog.md'), 'utf8')).data.narration, undefined)
 })
 
 test('모든 회차의 낭독 음성과 문장 시각, 장면이 같은 회차 ID로 연결된다', () => {

@@ -1,14 +1,14 @@
 # duvridge 모노레포
 
-회사 홈페이지와 ToldLife 웹소설·오디오북을 이 저장소에서 관리합니다. 외부 서비스 저장소를 빌드 때 체크아웃하지 않습니다. 원고와 공통 읽기 화면을 한 번 수정하면 두 서비스에 함께 반영하고, 오디오 기능은 오디오북 서비스에서 독립적으로 관리합니다.
+회사 홈페이지와 ToldLife 웹소설·오디오북·영상을 이 저장소에서 관리합니다. 외부 서비스 저장소를 빌드 때 체크아웃하지 않습니다. 원고와 공통 읽기 화면을 한 번 수정하면 세 리더에 함께 반영하고, 오디오 기능은 오디오북 서비스에서 독립적으로 관리합니다.
 
-| 서비스 | 소스 | 운영 주소 | 배포 단위 |
+| 서비스 | 소스 | 배포 후 주소 | 배포 단위 |
 | --- | --- | --- | --- |
 | 회사 홈페이지 | `apps/company-site` | https://www.duvridge.com | Pages `duvridge` |
 | 플랫폼 홈 | `apps/toldlife-portal` | https://toldlife.duvridge.com | Pages `toldlife` |
-| 오리지널 시리즈(소설) | `apps/toldlife-novels` | https://toldlife.duvridge.com/novels/ | `toldlife`에 함께 업로드 |
-| 오디오북 | `apps/toldlife-audiobooks` | https://toldlife.duvridge.com/audiobooks/ | `toldlife`에 함께 업로드 |
-| 영상 | `apps/toldlife-audiobooks` | https://toldlife.duvridge.com/audiobooks/watch/ | `toldlife`에 함께 업로드 |
+| 오리지널 시리즈(소설) | `apps/toldlife-novels` | https://toldlife.duvridge.com/novels/bae-byunghee/ | `toldlife`에 함께 업로드 |
+| 오디오북 | `apps/toldlife-audiobooks` | https://toldlife.duvridge.com/audiobooks/bae-byunghee/ | `toldlife`에 함께 업로드 |
+| 영상 | `apps/toldlife-videos` | https://toldlife.duvridge.com/videos/bae-byunghee/ | `toldlife`에 함께 업로드 |
 
 ## 구조와 공통 코드 정책
 
@@ -17,7 +17,8 @@ apps/
   company-site/            회사 홈페이지, 언어별 HTML, 가이드북
   toldlife-portal/          플랫폼 홈: 오리지널 시리즈·오디오북·영상 탭
   toldlife-novels/          웹소설 읽기, 배경음악
-  toldlife-audiobooks/      오디오북 듣기와 영상 보기, 플레이어, 낭독 동기화
+  toldlife-audiobooks/      오디오북 듣기, 플레이어, 낭독 동기화
+  toldlife-videos/         장면 그림·자막으로 영상 보기
 content/books/
   bae-byunghee/
     manuscript.md          웹 페이지의 원문
@@ -43,8 +44,8 @@ service-registry.json              서비스와 배포 그룹 등록
 - 모든 workspace 이름은 `@duvridge/<이름>`으로 유일하게 정하고 내부 패키지는 `private: true`로 둡니다. 설치·의존성 갱신은 루트에서 실행하며 앱별 lockfile은 만들지 않습니다.
 - 원고·삽화·표지·음악·참고 자료는 코드 패키지 밖의 `content/books/<책 ID>`에서 수정합니다. 현재 원문은 [manuscript.md](content/books/bae-byunghee/manuscript.md)입니다. 준비 단계가 만드는 앱 내부 사본은 Git에서 제외합니다.
 - 패키지는 기능별 코드만 포함합니다. 원고 처리, 읽기 UI, 반응 저장, 플랫폼 연동을 각각 분리하고 의존성을 명시합니다. 오디오 플레이어의 배치·재생·배속·이어듣기·문장 이동은 오디오 앱 소유입니다.
-- 책 제목·표지·공유 정보·이전 회차 대응표는 `content/books/<책 ID>/book.json`으로 관리합니다. 앱의 책 선택은 `service-registry.json`의 `books`와 각 서비스의 `book`으로 선언하며, `content` 변경도 소비하는 두 서비스의 CI 대상에 포함됩니다.
-- 두 앱의 Firebase 보안 규칙과 인덱스도 `packages/reader-reactions/firestore`에서 한 번만 관리합니다. 에뮬레이터 설정은 루트 `firebase.json`을 사용합니다. 운영 Firebase 규칙 배포는 웹 배포와 별도 작업입니다.
+- 책 제목·표지·공유 정보·이전 회차 대응표는 `content/books/<책 ID>/book.json`으로 관리합니다. 앱의 책 선택은 `service-registry.json`의 `bookCatalog.path`와 소비 서비스의 `bookCatalog: true`로 선언하며, `content` 변경도 소비하는 세 리더의 CI 대상에 포함됩니다.
+- 세 앱의 Firebase 보안 규칙과 인덱스도 `packages/reader-reactions/firestore`에서 한 번만 관리합니다. 에뮬레이터 설정은 루트 `firebase.json`을 사용합니다. 운영 Firebase 규칙 배포는 웹 배포와 별도 작업입니다.
 - 서비스마다 `test`, `build`, 필요 시 `typecheck`를 제공합니다. 공유 코드와 소비 서비스를 같은 PR에서 검토하고, 배포 그룹별로 버전과 롤백을 관리합니다.
 - 비밀값은 Actions secrets 또는 로컬 `.env`에만 둡니다. `VITE_*`는 브라우저 공개 값이므로 서비스 계정 키를 넣지 않습니다. 빌드 결과·동영상·임시 제작 파일은 커밋하지 않습니다.
 
@@ -55,15 +56,17 @@ nvm use
 npm ci
 npm run dev:novels
 npm run dev:audiobooks
+npm run dev:videos
 npm run test:repo
 npm test
 npm run typecheck
+npm run test:urls  # 두 작품의 로컬 Pages 주소·기록·포털 검증
 npm run test:rules  # Java 21 필요, demo 프로젝트의 로컬 Firestore 에뮬레이터만 사용
 ```
 
 앱 하나의 명령은 `npm run <명령> --workspace @duvridge/toldlife-novels` 또는 `@duvridge/toldlife-audiobooks`으로 실행합니다. 브라우저 회귀 테스트는 각 앱의 `test:e2e`를 사용합니다. 회사 홈페이지 본문은 `apps/company-site/site/translations.json`, 구조는 `template.html`, 디자인은 `assets/site.css`에 있습니다. `python3 apps/company-site/scripts/build-company-site.py`로 언어별 HTML을 갱신합니다.
 
-원문을 저장한 뒤 개발 서버의 작업 사본을 새로 만들려면 `npm run prepare:content --workspace <서비스 이름>`을 실행합니다. Git에 반영한 원문은 CI 빌드에서 자동으로 읽어 새 배포에 포함합니다. 앱 안의 `manuscript.md`·`content/`·`site/read/`는 생성 결과이므로 수정하지 않습니다.
+원문을 저장한 뒤 개발 서버의 작업 사본을 새로 만들려면 `npm run prepare:content --workspace <서비스 이름>`을 실행합니다. Git에 반영한 원문은 CI 빌드에서 자동으로 읽어 새 배포에 포함합니다. 앱 안의 `manuscript.md`·`content/`·`site/<작품 ID>/`는 생성 결과이므로 수정하지 않습니다.
 
 원문은 기존 오디오나 테스트에 맞춰 고치지 않습니다. 준비 단계는 원문의 문장·문단·줄바꿈을 보존하고 제목·목차·앞뒤 회차 링크를 갱신합니다. 문단 길이를 이유로 게시를 막거나 자동 분할하지 않으며, `editorial-notes/`의 파일은 웹에 게시하지 않습니다. 배포 검증은 공개된 모든 회차의 제목·본문 문단을 정본과 직접 대조하고 원문 해시를 기록합니다.
 
@@ -82,7 +85,7 @@ npm run build --workspace @duvridge/company-site
 
 PR에서는 테스트·빌드만 수행합니다. 운영 배포는 `main` 검증 성공 후에만 수행하며 Cloudflare 토큰은 업로드 단계에만 전달합니다. 검증된 배포 artifact를 업로드하고 회사 홈페이지와 ToldLife의 대기열을 분리합니다. 진행 중인 운영 배포를 취소하지 않으며, 오래된 커밋이 최신 운영 버전을 덮지 않도록 업로드 전후 `main` 리비전을 확인합니다.
 
-**ToldLife는 한 Pages 프로젝트의 전체 스냅샷을 배포합니다.** 웹소설만 변경되어도 배포 폴더에는 홈과 웹소설·오디오북이 모두 있어야 합니다. 한 하위 폴더만 업로드하면 다른 서비스가 사라질 수 있으므로 배포 준비 단계에서는 두 앱을 같은 SHA로 검증·빌드하고 완성된 artifact를 업로드합니다. 회사 홈페이지는 별도로 배포합니다. [Cloudflare Direct Upload](https://developers.cloudflare.com/pages/get-started/direct-upload/)와 [GitHub Actions 동시 실행 제어](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency)를 기준으로 운영합니다.
+**ToldLife는 한 Pages 프로젝트의 전체 스냅샷을 배포합니다.** 웹소설만 변경되어도 배포 폴더에는 홈과 웹소설·오디오북이 모두 있어야 합니다. 한 하위 폴더만 업로드하면 다른 서비스가 사라질 수 있으므로 배포 준비 단계에서는 세 앱을 같은 SHA로 검증·빌드하고 완성된 artifact를 업로드합니다. 회사 홈페이지는 별도로 배포합니다. [Cloudflare Direct Upload](https://developers.cloudflare.com/pages/get-started/direct-upload/)와 [GitHub Actions 동시 실행 제어](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency)를 기준으로 운영합니다.
 
 저장소 `MJbae/duvridge`에 필요한 설정:
 
@@ -90,7 +93,7 @@ PR에서는 테스트·빌드만 수행합니다. 운영 배포는 `main` 검증
 | --- | --- | --- |
 | Secret | `CLOUDFLARE_API_TOKEN` | Pages 편집 권한을 가진 배포 전용 토큰 |
 | Variable | `CLOUDFLARE_ACCOUNT_ID` | 배포 계정 |
-| Variables | `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_APP_ID` | 두 앱의 동일한 Firebase 공개 설정 |
+| Variables | `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_APP_ID` | 세 앱의 동일한 Firebase 공개 설정 |
 
 이전 두 저장소의 ToldLife 호출 워크플로와 회사 Pages의 네이티브 Git 자동 배포는 전환 시 중지합니다. 배포 실행자는 이 저장소의 Actions로 통일합니다. 기존 GitHub Pages 사이트는 이전 버전 참고용이며 새 변경은 이 모노레포에서 관리합니다. 상세 정책은 [CI/CD 문서](docs/ci-cd.md)에 있습니다.
 
@@ -107,7 +110,7 @@ npx --yes wrangler@4.148.0 pages deploy .deploy/toldlife --project-name toldlife
 npm run check:deployment -- --company https://www.duvridge.com --toldlife https://toldlife.duvridge.com
 ```
 
-롤백은 각 Pages 프로젝트에서 이전 정상 배포를 선택합니다. ToldLife 롤백은 두 서비스가 함께 이전 스냅샷으로 돌아갑니다. 원고와 녹음을 별도로 수정하지 말고 같은 커밋으로 다시 빌드합니다.
+롤백은 각 Pages 프로젝트에서 이전 정상 배포를 선택합니다. ToldLife 롤백은 세 리더가 함께 이전 스냅샷으로 돌아갑니다. 원고와 녹음을 별도로 수정하지 말고 같은 커밋으로 다시 빌드합니다.
 
 ## 서비스 추가
 
@@ -130,3 +133,5 @@ npm run check:deployment -- --company https://www.duvridge.com --toldlife https:
 대표 그림은 `representative: true`로 따로 지정합니다. 본문 삽화를 해당 장면으로 옮겨도 오디오 플레이어의 기존 썸네일과 표지는 유지됩니다. 이번에는 6·8·11·13·14·15화의 표식 8개만 조정했고 본문·문단 순서·그림 파일을 보존했습니다. [회차별 변경 기록](docs/illustration-story-alignment.md)에서 전후 배치를 확인할 수 있습니다.
 
 실제 배포 결과와 검증 범위는 [배포 검증 기록](docs/deployment-verification.md)에 기록합니다.
+
+공개 회차 주소는 `/novels/<작품>/<회차>`, `/audiobooks/<작품>/<회차>`, `/videos/<작품>/<회차>`이며 `.html`을 붙이지 않습니다. 형식 첫 주소는 포털의 해당 탭으로 301 이동합니다. 첫 작품의 옛 회차 주소는 조립 단계에서 만든 `_redirects`로 새 회차에 직접 301 이동합니다. 미디어는 이번 작업에서 Pages에 유지합니다.

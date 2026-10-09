@@ -42,15 +42,16 @@
       ],
       "smokePaths": [
         "/",
-        "/novels/",
-        "/novels/read/ep01",
-        "/audiobooks/",
-        "/audiobooks/read/ep01",
-        "/audiobooks/watch/",
-        "/audiobooks/watch/ep01"
+        "/novels/bae-byunghee/",
+        "/novels/bae-byunghee/ep01",
+        "/audiobooks/bae-byunghee/",
+        "/audiobooks/bae-byunghee/prolog",
+        "/videos/bae-byunghee/",
+        "/videos/bae-byunghee/prolog"
       ],
       "audioPaths": [
-        "/audiobooks/record/prolog.mp3"
+        "/audiobooks/works/bae-byunghee/record/prolog.mp3",
+        "/videos/works/bae-byunghee/record/prolog.mp3"
       ]
     }
   },
@@ -80,7 +81,8 @@
         "test"
       ],
       "artifactPath": "",
-      "siteBase": "/"
+      "siteBase": "/",
+      "bookCatalog": true
     },
     {
       "id": "toldlife-novels",
@@ -96,9 +98,10 @@
       "artifactPath": "apps/toldlife-novels/site/.vitepress/dist",
       "siteBase": "/novels/",
       "requiredFiles": [
-        "read/ep01.html"
+        "bae-byunghee/index.html",
+        "bae-byunghee/ep01.html"
       ],
-      "book": "bae-byunghee"
+      "bookCatalog": true
     },
     {
       "id": "toldlife-audiobooks",
@@ -114,15 +117,38 @@
       "artifactPath": "apps/toldlife-audiobooks/site/.vitepress/dist",
       "siteBase": "/audiobooks/",
       "requiredFiles": [
-        "read/ep01.html",
-        "record/prolog.mp3"
+        "bae-byunghee/index.html",
+        "bae-byunghee/ep01.html",
+        "works/bae-byunghee/record/prolog.mp3"
       ],
-      "book": "bae-byunghee"
+      "bookCatalog": true
+    },
+    {
+      "id": "toldlife-videos",
+      "path": "apps/toldlife-videos",
+      "workspace": "@duvridge/toldlife-videos",
+      "deployGroup": "toldlife",
+      "bookCatalog": true,
+      "watchedPaths": [
+        "apps/toldlife-audiobooks/content/narration/",
+        "apps/toldlife-audiobooks/site/public/record/"
+      ],
+      "checks": [
+        "test",
+        "build",
+        "test:sharing",
+        "typecheck"
+      ],
+      "artifactPath": "apps/toldlife-videos/site/.vitepress/dist",
+      "siteBase": "/videos/",
+      "requiredFiles": [
+        "bae-byunghee/index.html",
+        "bae-byunghee/prolog.html",
+        "works/bae-byunghee/record/prolog.mp3"
+      ]
     }
   ],
-  "books": {
-    "bae-byunghee": {
-      "path": "content/books/bae-byunghee"
-    }
+  "bookCatalog": {
+    "path": "content/books"
   }
 }

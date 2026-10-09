@@ -23,7 +23,9 @@
     "dev:audiobooks": "npm run dev --workspace @duvridge/toldlife-audiobooks",
     "build:toldlife": "python3 scripts/assemble-toldlife-pages.py",
     "plan:services": "node scripts/select-affected-services.mjs",
-    "check:deployment": "node scripts/check-deployment-browser.mjs"
+    "check:deployment": "node scripts/check-deployment-browser.mjs",
+    "test:urls": "playwright test --config playwright.urls.config.ts",
+    "dev:videos": "npm run dev --workspace @duvridge/toldlife-videos"
   },
   "devDependencies": {
     "@playwright/test": "1.63.0",

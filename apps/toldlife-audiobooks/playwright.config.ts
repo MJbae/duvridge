@@ -8,7 +8,7 @@ export default defineConfig({
   retries: 0,
   reporter: 'list',
   outputDir: 'test-results/reading',
-  use: { baseURL: 'http://127.0.0.1:4184/audiobooks/', trace: 'retain-on-failure' },
+  use: { baseURL: 'http://127.0.0.1:4184/audiobooks/bae-byunghee/', trace: 'retain-on-failure' },
   projects: [
     { name: 'phone', use: { ...devices['iPhone 13'], defaultBrowserType: 'chromium' } },
     {

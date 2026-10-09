@@ -1,11 +1,13 @@
 <script setup lang="ts">
+import { reactionPageId } from '@duvridge/reader-ui/state/work-storage.mjs'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { withBase } from 'vitepress'
 import { isFirebaseConfigured } from '../lib/firebase-config'
-import { catalog, type Neighbor } from '../lib/reader-catalog'
+import { useCatalog, type Neighbor } from '../lib/reader-catalog'
 import EpisodeNext from '@duvridge/reader-ui/components/EpisodeNext.vue'
 import { episodeName, episodeThumb } from '@duvridge/reader-ui/series/work-rows.mjs'
 import ReaderReactionBar from '@duvridge/reader-reactions/components/ReaderReactionBar.vue'
+const catalog = useCatalog()
 const props = defineProps<{ pageId: string; next?: Neighbor | null; homeHref: string }>()
 const emit = defineEmits<{ complete: [] }>()
 const enabled = isFirebaseConfigured()
@@ -38,7 +40,7 @@ onBeforeUnmount(() => { loadObserver?.disconnect(); readObserver?.disconnect() }
     <p v-if="!next" class="story-end">끝</p>
     <span v-else class="end-rule" aria-hidden="true" />
     <section v-if="enabled" id="reactions" class="reactions-anchor" aria-label="마음 남기기">
-      <ClientOnly><ReaderReactionBar v-if="ready" :page-id="pageId" /></ClientOnly>
+      <ClientOnly><ReaderReactionBar v-if="ready" :page-id="reactionPageId(catalog.work, pageId)" /></ClientOnly>
     </section>
     <EpisodeNext series="novel" :next="card" :action="action" />
   </div>

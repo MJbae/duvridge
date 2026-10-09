@@ -1,6 +1,6 @@
 이 서비스는 Duvridge 모노레포의 `@duvridge/toldlife-audiobooks` 워크스페이스입니다. 설치는 저장소 루트에서 `npm ci`로 한 번만 합니다. 개발·빌드는 루트에서 `npm run dev --workspace @duvridge/toldlife-audiobooks`, `npm run build --workspace @duvridge/toldlife-audiobooks`로 실행합니다. 배포 정책은 [루트 README](../../README.md)를 따릅니다.
 
-서비스 이름은 `toldlife-audiobooks`로 통일합니다. 플랫폼 홈의 `오디오북` 탭(`/audiobooks/`)과 `영상` 탭(`/audiobooks/watch/`)을 함께 담당합니다. 두 형식은 같은 낭독을 쓰므로 재생 위치 하나를 함께 씁니다. `AudiobookReaderLayout.vue`가 화면을 고르고, 작품 홈은 공통 `WorkHome.vue`에 청취 상태를 연결합니다. `AudiobookPlayer.vue`는 낭독 문장을 앞뒤 문장과 함께 보여 주는 전체 화면 플레이어, `TheaterPlayer.vue`는 장면 그림과 자막으로 보는 극장형 영상입니다. 영상 회차는 `site/watch/[id].md` 동적 경로가 녹음된 회차마다 만듭니다. 네이밍 기준은 [네이밍 정책](../../docs/naming-policy.md)을 따릅니다. 기본 공개 경로는 `/audiobooks/`이며 `SITE_BASE`로 별도 테스트 경로를 지정할 수 있습니다.
+서비스 이름은 `toldlife-audiobooks`입니다. 작품 홈은 `/audiobooks/<작품 ID>/`, 회차는 `/audiobooks/<작품 ID>/<회차 ID>`입니다. 영상은 별도 `apps/toldlife-videos` 서비스가 `/videos/`에서 제공합니다. 두 형식은 작품별 낭독 위치를 공유합니다. 재생 제어와 자막 상호작용은 각 앱이 소유하며 다른 앱 구현을 import하지 않습니다. 첫 작품의 승인된 MP3/SRT는 현재 경로에서 읽기 전용으로 사용하고 웹 빌드에서는 생성하지 않습니다.
 
 원고는 `content/books/bae-byunghee/manuscript.md`, 공통 자료·음악·삽화는 `content/books/bae-byunghee/`와 `content/books/bae-byunghee/public/`에서만 수정합니다. 앱 안의 동일 경로는 준비 단계에서 만든 무시된 작업 사본이며 다음 실행 때 교체됩니다. 공통 문체·본문·목차·기본 컴포넌트는 `packages/reader-ui/`에서 관리합니다. 삭제·이름 변경한 공통 입력은 생성 목록에 따라 작업 사본에서도 제거되며, 오디오 앱의 낭독 음성·자막은 보존됩니다.
 
@@ -46,7 +46,7 @@
   </tr>
 </table>
 
-원고·목차·주소·음악·삽화는 음악 파일명과 같은 회차 ID를 사용합니다. 본편은 `ep01`~`ep23`, 소개는 `intro`, 프롤로그는 `prolog`, 에필로그는 `epilog`, 외전은 `side`입니다. 예를 들어 원고 `{#ep01}`, 주소 `/read/ep01.html`, 음악 `/music/ep01.mp3`, 반응 저장 경로 `pages/memoir-ep01`이 같은 1화를 가리킵니다.
+원고·목차·주소·음악·삽화는 음악 파일명과 같은 회차 ID를 사용합니다. 본편은 `ep01`~`ep23`, 소개는 `intro`, 프롤로그는 `prolog`, 에필로그는 `epilog`, 외전은 `side`입니다. 예를 들어 원고 `{#ep01}`, 주소 `/audiobooks/bae-byunghee/ep01`, 음악 `/music/ep01.mp3`, 반응 저장 경로 `pages/memoir-ep01`이 같은 1화를 가리킵니다.
 
 회차 음악은 `content/books/bae-byunghee/public/music/`에 두고 `content/books/bae-byunghee/music/manifest.json`의 `tracks[].id`로 연결합니다. 사이트에서 배경음악으로 틀지는 않고, 오디오북 제작 도구(`tools/audiobook-production/src/assemble_audiobook.py`)가 낭독 앞뒤 음악으로 씁니다. 삽화는 `ep08-01`, `ep08-02`처럼 회차 ID에 장 번호를 붙이고 `content/books/bae-byunghee/illustrations/manifest.json`에서 연결합니다. 두 번째 외전부터는 `side-02`, `side-03`을 사용합니다. 원고 순서를 바꾸면 회차 ID와 관련 음악·삽화도 함께 정리해야 하며, 번호나 파일명이 어긋나면 빌드가 중단됩니다.
 

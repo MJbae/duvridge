@@ -63,6 +63,28 @@ def check(group_id, origin=None, revision=None):
         if not body or "text/html" in response_headers.get("Content-Type", ""):
             raise ValueError(f"{path}: missing audio data")
         print(f"OK audio {origin}{path}")
+    if group_id == "toldlife":
+        class NoRedirect(urllib.request.HTTPRedirectHandler):
+            def redirect_request(self, req, fp, code, msg, headers, newurl):
+                return None
+        opener = urllib.request.build_opener(NoRedirect)
+        manifest, _ = fetch("/redirects.json")
+        redirects = json.loads(manifest)
+        for row in redirects:
+            req = urllib.request.Request(urljoin(origin + "/", row["from"]), headers=headers)
+            try:
+                opener.open(req, timeout=30)
+                raise ValueError(f"{row['from']}: expected one 301")
+            except urllib.error.HTTPError as response:
+                expected = urljoin(origin + "/", row["to"])
+                actual = urljoin(origin + "/", response.headers.get("Location", ""))
+                if response.code != 301 or actual != expected:
+                    raise ValueError(f"{row['from']}: HTTP {response.code}, Location {actual}; expected {expected}")
+            destination = urllib.request.Request(urljoin(origin + "/", row["to"]), headers=headers)
+            with opener.open(destination, timeout=30) as response:
+                if response.status != 200:
+                    raise ValueError(f"{row['to']}: expected 200 without another redirect")
+        print(f"OK {len(redirects)} one-hop permanent redirects")
     return deployed
 
 

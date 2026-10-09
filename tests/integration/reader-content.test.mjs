@@ -37,6 +37,8 @@ const illustratedOriginal = readFileSync(path.join(bookSource, sourceBook.manusc
 // Fixtures without an illustration manifest deliberately contain prose only.
 const original = stripIllustrationMarkers(illustratedOriginal)
 const silent = { log() {}, warn() {} }
+// Each work's pages live in its own folder: /{work}/ is the home, /{work}/{page} each page.
+const work = book.id
 
 test('앱 작업 사본과 생성된 모든 회차가 현재 정본의 본문·제목·앞뒤 회차를 반영한다', () => {
   assert.equal(readFileSync(path.join(repo, mainFilename), 'utf8'), illustratedOriginal)
@@ -49,7 +51,7 @@ test('앱 작업 사본과 생성된 모든 회차가 현재 정본의 본문·�
   assert.deepEqual(generated.readingOrder.map(episode => episode.id), structure.episodes.map(episode => episode.id))
   for (const [index, episode] of structure.episodes.entries()) {
     const entry = generated.readingOrder[index]
-    const page = matter(readFileSync(path.join(repo, 'site/read', `${episode.id}.md`), 'utf8'))
+    const page = matter(readFileSync(path.join(repo, 'site', work, `${episode.id}.md`), 'utf8'))
     assert.equal(entry.title, episode.title)
     assert.equal(entry.time, episode.time)
     assert.equal(entry.label, episode.label)
@@ -143,7 +145,7 @@ function fixture(t, { excludedEditorialFiles = book.excludedEditorialFiles } = {
   }
   const run = () => prepareContent({ root, book: { ...book, excludedEditorialFiles }, logger: silent })
   const readPage = (filename) =>
-    matter(readFileSync(path.join(root, 'site/read', filename), 'utf8'))
+    matter(readFileSync(path.join(root, 'site', work, filename), 'utf8'))
   return { root, write, run, readPage }
 }
 
@@ -244,7 +246,7 @@ test('두 살림 회차의 제목 변경을 목차·공유·이웃 회차에 반
     assert.deepEqual(music.episodes[id], originalMusic.episodes[id])
     assert.deepEqual(images[id], originalImages[id])
   }
-  assert.ok(readPage('1960s.md').content.includes('안면도 살림의 하루'))
+  assert.equal(catalog.formerPages['1960s'], 'ep05')
 })
 
 test('정본의 살림 회차 ID를 가리키는 링크는 제목을 바꾸어도 해당 회차로 연결한다', t => {
@@ -276,13 +278,13 @@ id: family
   write(mainFilename, manuscript)
   const { warnings } = run()
   const content = readPage('family.md').content
-  assert.ok(content.includes('[안면도의 살림](/read/ep05.html)'))
-  assert.ok(content.includes('[독정리의 살림](/read/ep11.html)'))
-  assert.ok(content.includes('[family]: /read/ep11.html "독정리"'))
+  assert.ok(content.includes(`[안면도의 살림](/${work}/ep05)`))
+  assert.ok(content.includes(`[독정리의 살림](/${work}/ep11)`))
+  assert.ok(content.includes(`[family]: /${work}/ep11 "독정리"`))
   assert.ok(content.includes('[이 문서 안의 기억](#ep11)'))
-  assert.ok(content.includes('[작품 소개](/)'))
+  assert.ok(content.includes(`[작품 소개](/${work}/)`))
   assert.ok(content.includes('[원본 예시](../manuscript.md#ep05)'))
-  assert.ok(readPage('ep05.md').content.includes('[독정리의 살림](/read/ep11.html)'))
+  assert.ok(readPage('ep05.md').content.includes(`[독정리의 살림](/${work}/ep11)`))
   assert.ok(readPage('ep05.md').content.includes('[이 회차 안의 기억](#memory)'))
   assert.deepEqual(warnings, [])
 })
@@ -338,26 +340,53 @@ test('회차 안의 소제목은 본문을 보존하고 경고한다', (t) => {
   assert.match(run().warnings.join('\n'), /소제목/)
 })
 
-test('옛 주소 36개와 읽기 기록 ID를 번호 회차로 대응한다', (t) => {
-  const { run, readPage } = fixture(t)
+test('옛 주소 36개와 읽기 기록 ID를 번호 회차로 대응하고, 옛 주소는 페이지 대신 대응표로 남긴다', (t) => {
+  const { root, run } = fixture(t)
   const { catalog } = run()
   for (const [old, id] of Object.entries(legacyEpisodes)) {
-    const page = readPage(`${old}.md`)
-    assert.equal(page.data.redirect, `/read/${id}.html`)
-    assert.equal(page.data.pageId, '')
-    assert.ok(page.content.includes(`/read/${id}.html`))
+    assert.equal(existsSync(path.join(root, 'site', work, `${old}.md`)), false)
+    assert.equal(catalog.formerPages[old], id)
     assert.equal(catalog.legacyIds[old], id)
   }
   assert.equal(Object.keys(legacyEpisodes).length, 36)
+  for (const episode of catalog.readingOrder) assert.equal(catalog.formerPages[episode.id], episode.id)
+  assert.equal(Object.keys(catalog.formerPages).length, 36 + catalog.readingOrder.length + 1)
   for (const [old, id] of Object.entries(legacyPageIds)) assert.equal(catalog.legacyIds[old], id)
+})
+
+test('작품마다 폴더 하나에 작품 홈과 회차를 만들고, 처음부터 그 폴더에 둔 작품은 옛 주소가 없다', (t) => {
+  const { root, run, readPage } = fixture(t)
+  const { catalog } = run()
+  assert.equal(catalog.work.id, work)
+  assert.equal(readPage('index.md').data.layout, 'home')
+  assert.equal(catalog.readingOrder[0].url, `/${work}/prolog`)
+  const other = { ...book, id: 'another-work', legacy: { headingIds: book.legacy.headingIds, decadeIds: book.legacy.decadeIds } }
+  const { catalog: otherCatalog } = prepareSharedContent({ root, book: other, logger: silent })
+  assert.equal(otherCatalog.readingOrder[0].url, '/another-work/prolog')
+  assert.ok(existsSync(path.join(root, 'site/another-work/index.md')))
+  assert.ok(!Object.hasOwn(otherCatalog, 'formerPages'))
+  assert.throws(() => prepareSharedContent({ root, book: { ...book, id: '../escape' }, logger: silent }), /작품 주소로 쓸 책 id/)
+})
+
+test('예전 read 폴더에 만든 페이지는 작품 폴더로 옮길 때 한 번 지운다', (t) => {
+  const { root, write, run } = fixture(t)
+  write('site/read/ep01.md', '# 예전 생성 페이지')
+  write('site/read/assets/0123abcd.png', 'image')
+  write('site/read/manual.md', '# 직접 작성한 페이지')
+  write('site/.vitepress/generated/content-manifest.json', JSON.stringify({ version: 1, files: ['ep01.md', 'assets/0123abcd.png'] }))
+  run()
+  assert.equal(existsSync(path.join(root, 'site/read/ep01.md')), false)
+  assert.equal(existsSync(path.join(root, 'site/read/assets')), false)
+  assert.equal(readFileSync(path.join(root, 'site/read/manual.md'), 'utf8'), '# 직접 작성한 페이지')
+  assert.ok(existsSync(path.join(root, 'site', work, 'ep01.md')))
 })
 
 test('옛 제목 ID로 쓴 정본 링크도 번호 주소로 직접 연결한다', t => {
   const { write, run, readPage } = fixture(t)
   write('content/legacy.md', '---\nid: family\n---\n# 가족\n\n[어머니](../manuscript.md#josae)\n\n[에필로그](../manuscript.md#epilogue)')
   run()
-  assert.ok(readPage('family.md').content.includes('[어머니](/read/ep01.html)'))
-  assert.ok(readPage('family.md').content.includes('[에필로그](/read/epilog.html)'))
+  assert.ok(readPage('family.md').content.includes(`[어머니](/${work}/ep01)`))
+  assert.ok(readPage('family.md').content.includes(`[에필로그](/${work}/epilog)`))
 })
 
 test('번호로 바꾼 읽기·완독·이어 읽기 기록은 위치를 보존하고 연대 기록만 처음부터 읽는다', t => {
@@ -428,14 +457,11 @@ test('콘텐츠를 준비할 때 참고 인덱스와 목록 화면도 원고의 
   assert.deepEqual(embedded.episodeMap, updated)
 })
 
-test('한 번에 읽기 주소는 본문 없이 작품 홈으로 연결하고 목록에서 제거한다', t => {
-  const { run, readPage } = fixture(t)
+test('한 번에 읽기 주소는 페이지 없이 작품 홈으로 대응하고 목록에서 제거한다', t => {
+  const { root, run } = fixture(t)
   const { catalog } = run()
-  const retired = readPage('life-story.md')
-  assert.equal(retired.data.kind, 'redirect')
-  assert.equal(retired.data.redirect, '/')
-  assert.equal(retired.data.pageId, '')
-  assert.equal(retired.content.trim(), '[작품 소개와 회차 목록으로 이동하기](/)')
+  assert.equal(existsSync(path.join(root, 'site', work, 'life-story.md')), false)
+  assert.equal(catalog.formerPages['life-story'], '')
   assert.ok(!Object.hasOwn(catalog, 'fullStory'))
 })
 
@@ -457,7 +483,7 @@ test('루트와 content의 자료를 자동 발견하고 내용 수정에도 문
   write('content/사진/이삿날.md', '---\nid: moving-day\n---\n# 고정 아이디\n\n내용도 바뀝니다.\n')
   const updated = run().catalog.documents
   assert.equal(updated.find(({ title }) => title === '바뀐 제목').id, automatic.id)
-  assert.ok(existsSync(path.join(root, 'site/read', `${automatic.id}.md`)))
+  assert.ok(existsSync(path.join(root, 'site', work, `${automatic.id}.md`)))
 })
 
 test('임시글, 운영 문서, 프로젝트 내부와 심볼릭 링크의 Markdown은 게시하지 않는다', (t) => {
@@ -541,8 +567,11 @@ test('중복 ID, 예약된 회차 ID와 충돌, 안전하지 않은 경로를 �
   assert.throws(run, /문서 id 중복: repeated/)
   write('content/b.md', '---\nid: ep01\n---\n# 둘')
   assert.throws(run, /문서 id 중복: ep01/)
-  write('content/b.md', '---\nid: 1930s\n---\n# 둘')
-  assert.throws(run, /생성 경로 중복: 1930s.md/)
+  // Old addresses and the work home keep their names, so no document can take them.
+  for (const id of ['1930s', 'life-story', 'index']) {
+    write('content/b.md', `---\nid: ${id}\n---\n# 둘`)
+    assert.throws(run, new RegExp(`예약된 문서 id: ${id}`))
+  }
   for (const id of ['../escape', '/absolute', 'has space', '<script>', '한글', 'a'.repeat(81)]) {
     write('content/b.md', `---\nid: ${JSON.stringify(id)}\n---\n# 둘`)
     assert.throws(run, /안전하지 않은 문서 id/)
@@ -559,13 +588,13 @@ test('자료와 첨부파일의 상대 링크를 게시 경로로 바꾸고 코�
   write('content/사진/a.png', Buffer.from([137, 80, 78, 71]))
   const { manifest, warnings } = run()
   const content = readPage('one.md').content
-  assert.ok(content.includes('[둘](/read/two.html#추억)'))
-  assert.ok(content.includes('[전체](/)'))
-  assert.ok(content.includes('[two]: /read/two.html "둘"'))
+  assert.ok(content.includes(`[둘](/${work}/two#추억)`))
+  assert.ok(content.includes(`[전체](/${work}/)`))
+  assert.ok(content.includes(`[two]: /${work}/two "둘"`))
   assert.ok(content.includes('[예시](not-real.md)'))
   const attachment = manifest.files.find((filename) => filename.startsWith('assets/'))
   assert.ok(content.includes(`![사진](./${attachment})`))
-  assert.ok(existsSync(path.join(root, 'site/read', attachment)))
+  assert.ok(existsSync(path.join(root, 'site', work, attachment)))
   assert.deepEqual(warnings, [])
 })
 
@@ -573,11 +602,11 @@ test('삭제된 생성 자료만 지우고 직접 작성한 페이지는 보존�
   const { root, write, run } = fixture(t)
   write('content/extra.md', '---\nid: extra\n---\n# 별도 자료')
   run()
-  write('site/read/manual.md', '# 직접 작성한 페이지')
+  write(`site/${work}/manual.md`, '# 직접 작성한 페이지')
   rmSync(path.join(root, 'content/extra.md'))
   run()
-  assert.equal(existsSync(path.join(root, 'site/read/extra.md')), false)
-  assert.equal(readFileSync(path.join(root, 'site/read/manual.md'), 'utf8'), '# 직접 작성한 페이지')
+  assert.equal(existsSync(path.join(root, 'site', work, 'extra.md')), false)
+  assert.equal(readFileSync(path.join(root, 'site', work, 'manual.md'), 'utf8'), '# 직접 작성한 페이지')
   write('content/manual.md', '---\nid: manual\n---\n# 자료')
   assert.throws(run, /직접 작성한 파일을 덮어쓰지 않습니다/)
 })

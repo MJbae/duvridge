@@ -41,7 +41,7 @@ test('UI and reaction changes reach only their declared reader consumers', () =>
   const graph = workspaceGraph(root, registry)
   for (const directory of ['content-processing', 'reader-ui', 'reader-reactions', 'vitepress-reader']) {
     const plan = affected([`packages/${directory}/src/example.ts`], registry, graph)
-    assert.deepEqual(plan.services, ['toldlife-novels', 'toldlife-audiobooks'])
+    assert.deepEqual(plan.services, [...(['content-processing', 'reader-ui'].includes(directory) ? ['toldlife-portal'] : []), 'toldlife-novels', 'toldlife-audiobooks', 'toldlife-videos'])
     assert.deepEqual(plan.deployGroups, ['toldlife'])
   }
 })

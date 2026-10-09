@@ -1,27 +1,27 @@
 import { fileURLToPath } from 'node:url'
-import { createReaderConfig } from '@duvridge/vitepress-reader/config/create-reader-config.mts'
-import catalog from './generated/catalog.json'
-
-const workTitle = catalog.work.title
-
+import { createReaderConfig, formerPageRules } from '@duvridge/vitepress-reader/config/create-reader-config.mts'
+import catalogs from './generated/catalogs.json'
+const series: string = 'audiobooks'
+const catalog = Object.values(catalogs)[0]
 export default createReaderConfig({
   root: fileURLToPath(new URL('../../', import.meta.url)),
-  defaultOrigin: 'https://toldlife.duvridge.com',
-  defaultBase: '/audiobooks/',
-  catalog,
-  siteNames: { '/audiobooks/': 'ToldLife Audiobooks' },
-  // The video pages come from one dynamic route; each takes its episode's titles from the route parameters.
+  defaultOrigin: 'https://toldlife.duvridge.com', defaultBase: `/${series}/`, catalog, catalogs,
+  siteNames: { '/novels/': 'ToldLife Novels', '/audiobooks/': 'ToldLife Audiobooks', '/videos/': 'ToldLife Videos' },
+  themeConfig: { series },
   preparePage(pageData) {
-    if (pageData.frontmatter.layout === 'watch-home') {
-      pageData.frontmatter.shareTitle = `${workTitle} · 영상`
-      return
+    const entry = catalogs[pageData.frontmatter.workId as keyof typeof catalogs]
+    if (series === 'videos' && entry && pageData.frontmatter.layout === 'home') pageData.frontmatter.shareTitle = `${entry.work.title} · 영상`
+  },
+  movedPages({ base, work }) {
+    const entry = catalogs[work as keyof typeof catalogs]
+    const pages = entry?.formerPages
+    if (!pages) return []
+    const home = `${base}${work}/`
+    if (series === 'videos') {
+      const episodes = Object.fromEntries(Object.entries(pages).filter(([, target]) => target && entry.readingOrder.some(episode => episode.id === target)))
+      return [{ from: '/audiobooks/watch/', to: home }, { from: '/audiobooks/watch', to: home }, { from: '/audiobooks/watch/index.html', to: home },
+        ...formerPageRules({ folder: '/audiobooks/watch/', home, pages: episodes })]
     }
-    const params = pageData.params
-    if (pageData.frontmatter.kind !== 'watch' || !params) return
-    Object.assign(pageData.frontmatter, {
-      pageId: params.id, episodeId: params.episodeId, label: params.label,
-      shareTitle: `${params.label} ${params.title} · ${workTitle}`,
-    })
-    pageData.title = params.title
+    return formerPageRules({ folder: `/${series}/read/`, home, pages })
   },
 })

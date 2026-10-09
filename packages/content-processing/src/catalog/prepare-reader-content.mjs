@@ -23,6 +23,7 @@ const projectRoot = process.cwd()
 const excludedRootFiles =
   /^(?:readme(?:[._-].*)?|agents|setup(?:[._-].*)?|deployment|deploy|contributing|changelog|license|security|code_of_conduct|운영안내|설치안내)\.md$/i
 const validId = /^[a-z0-9][a-z0-9_-]{0,79}$/
+export const reservedWorkIds = new Set(['index', 'public', 'read', 'watch', 'assets', 'images', 'music', 'record', 'works', 'brand', 'social', 'novels', 'audiobooks', 'videos', '404', 'memoir'])
 const assetExtensions = new Set([
   '.png',
   '.jpg',
@@ -181,7 +182,11 @@ export function prepareContent({ root = projectRoot, book, logger = console, ext
   if (typeof mainFilename !== 'string' || !/^[^/\\]+\.md$/u.test(mainFilename) || mainFilename.startsWith('.'))
     throw new Error('원고 파일은 앱 루트의 Markdown 파일이어야 합니다.')
   const { legacyEpisodes, legacyReadingIds, legacyScrollResetIds } = createLegacyEpisodeMaps(book.legacy)
-  const outputDir = path.join(root, 'site/read')
+  // Each work owns one folder of pages: /{work}/ is its home and /{work}/{episode} its episodes.
+  const workId = book.id
+  if (typeof workId !== 'string' || (!validId.test(workId) || reservedWorkIds.has(workId)))
+    throw new Error(`작품 주소로 쓸 책 id가 필요합니다: ${workId}. 영문 소문자·숫자·하이픈·밑줄로 정하세요.`)
+  const outputDir = path.join(root, 'site', workId)
   const generatedDir = path.join(root, 'site/.vitepress/generated')
   const manifestFile = path.join(generatedDir, 'content-manifest.json')
   const warnings = []
@@ -211,6 +216,8 @@ export function prepareContent({ root = projectRoot, book, logger = console, ext
   const illustrations = loadEpisodeIllustrations(root, structure.episodes)
   const music = loadMusic(root, structure.episodes)
   const work = {
+    id: workId,
+    legacyRoot: Boolean(book.legacy?.servedAtRoot),
     title: plainText(main.data.title || book.work?.title || ''),
     subtitle: plainText(main.data.subtitle || book.work?.subtitle || ''),
     synopsis: (Array.isArray(main.data.synopsis) ? main.data.synopsis : [main.data.synopsis || '']).map(plainText).filter(Boolean),
@@ -220,6 +227,7 @@ export function prepareContent({ root = projectRoot, book, logger = console, ext
     sharing: book.sharing,
   }
   const extension = extendCatalog?.({ root, structure, work, toText: plainText, warn }) ?? { catalog: {}, generated: [] }
+  const reservedPageIds = new Set(['index', '404', 'assets', 'life-story', ...Object.keys(legacyEpisodes)])
   const usedIds = new Map()
   const usedFiles = new Map()
   const pages = []
@@ -229,6 +237,8 @@ export function prepareContent({ root = projectRoot, book, logger = console, ext
       throw new Error(
         `안전하지 않은 문서 id: ${page.id}. 영문 소문자·숫자·하이픈·밑줄로 1~80자 이내로 정하세요.`
       )
+    if (!book.legacy?.servedAtRoot && `${workId}-${page.id}`.length > 120) throw new Error(`작품·문서 id가 반응 문서의 120자 한도를 넘습니다: ${workId}-${page.id}`)
+    if (page.kind === 'document' && reservedPageIds.has(page.id)) throw new Error(`예약된 문서 id: ${page.id}`)
     if (usedIds.has(page.id))
       throw new Error(`문서 id 중복: ${page.id} (${usedIds.get(page.id)}, ${page.source})`)
     if (usedFiles.has(page.filename))
@@ -251,7 +261,7 @@ export function prepareContent({ root = projectRoot, book, logger = console, ext
       time: episode.time,
       place: episode.place,
       description: episode.time,
-      url: `/read/${episode.id}.html`,
+      url: `/${workId}/${episode.id}`,
     }
     register({ ...chapter, filename: `${episode.id}.md`, body: `# ${episode.title}\n\n${episode.body}\n`, kind: 'episode', source: mainFilename })
     return chapter
@@ -261,17 +271,8 @@ export function prepareContent({ root = projectRoot, book, logger = console, ext
   for (const [old, id] of Object.entries(legacyEpisodes)) {
     if (episodeUrls.has(id)) episodeUrls.set(old, episodeUrls.get(id))
   }
-  const redirects = Object.entries(legacyEpisodes).filter(([, id]) => readingOrder.some(e => e.episodeId === id)).map(([old, id]) => {
-    const target = readingOrder.find(e => e.episodeId === id)
-    return register({ id: `legacy-${old}`, filename: `${old}.md`, title: '이 이야기의 주소가 바뀌었습니다',
-      body: `이 이야기는 [${target.label} ${target.title}](${target.url})에서 읽으실 수 있습니다.`,
-      description: `${target.label} ${target.title}`, kind: 'redirect', redirect: target.url, source: mainFilename })
-  })
   const legacyIds = Object.fromEntries(Object.entries(legacyReadingIds).filter(([, id]) => readingOrder.some(e => e.id === id)))
-  register({ id: 'life-story', filename: 'life-story.md', title: work.title,
-    body: '[작품 소개와 회차 목록으로 이동하기](/)',
-    kind: 'redirect', redirect: '/', source: mainFilename, description: work.subtitle })
-  sourceUrls.set(mainFilename, '/')
+  sourceUrls.set(mainFilename, `/${workId}/`)
 
   const documents = loaded
     .filter(({ source }) => source !== mainFilename)
@@ -288,7 +289,7 @@ export function prepareContent({ root = projectRoot, book, logger = console, ext
         id,
         title,
         description: summary(data.description ?? firstParagraph(body)),
-        url: `/read/${id}.html`,
+        url: `/${workId}/${id}`,
         minutes: readingMinutes(body),
         category: plainText(data.category ?? '가족 자료'),
       }
@@ -377,12 +378,14 @@ export function prepareContent({ root = projectRoot, book, logger = console, ext
     )
   }
 
-  const outputs = new Map(
-    pages.map((page) => {
+  const outputs = new Map([
+    ['index.md', frontmatter({ layout: 'home', workId, pageId: 'intro', titleTemplate: false }, '')],
+    ...pages.map((page) => {
       const index = readingOrder.findIndex(({ id }) => id === page.id)
       const neighbor = (chapter) => chapter ? { title: chapter.title, label: chapter.label, url: chapter.url } : null
       const metadata = {
         title: page.title,
+        workId,
         description: page.description,
         pageId: page.kind === 'redirect' ? '' : page.id,
         episodeId: page.episodeId || '',
@@ -397,16 +400,32 @@ export function prepareContent({ root = projectRoot, book, logger = console, ext
       }
       if (page.date !== undefined) metadata.date = page.date
       return [page.filename, frontmatter(metadata, rewriteLinks(page.body, page.source))]
-    })
-  )
+    }),
+  ])
   const catalog = { title: work.title, work, places: structure.places, chapters, readingOrder, legacyIds, legacyScrollResetIds, documents, illustrations, music, ...extension.catalog }
+  // A work first published before works had their own folder kept its pages at read/{page}.html;
+  // the deployment sends those addresses on, so name each one with the page that replaced it.
+  if (book.legacy?.servedAtRoot) {
+    const kept = new Set(pages.map(page => page.id))
+    catalog.formerPages = Object.fromEntries([
+      ...pages.map(page => [page.id, page.id]),
+      ...Object.entries(legacyEpisodes).filter(([old, id]) => kept.has(id) && !kept.has(old)),
+      ['life-story', ''],
+    ])
+  }
 
   syncReferenceIndex(root, structure.episodes, mainFilename, legacyEpisodes)
 
   let previousFiles = []
+  let previousDir = outputDir
   if (existsSync(manifestFile)) {
     const previous = JSON.parse(readFileSync(manifestFile, 'utf8'))
     previousFiles = Array.isArray(previous.files) ? previous.files : []
+    // Manifests written before works had folders listed pages in site/read.
+    const directory = previous.directory ?? 'read'
+    if (typeof directory !== 'string' || !validId.test(directory))
+      throw new Error('이전 생성 목록의 폴더가 안전하지 않습니다. content-manifest.json을 확인하세요.')
+    previousDir = path.join(root, 'site', directory)
     for (const filename of previousFiles) {
       if (
         typeof filename !== 'string' ||
@@ -419,10 +438,11 @@ export function prepareContent({ root = projectRoot, book, logger = console, ext
     }
   }
   const generatedFiles = [...outputs.keys(), ...assets.keys()]
+  const ownedBefore = previousDir === outputDir ? previousFiles : []
   for (const filename of generatedFiles) {
-    if (existsSync(path.join(outputDir, filename)) && !previousFiles.includes(filename)) {
+    if (existsSync(path.join(outputDir, filename)) && !ownedBefore.includes(filename)) {
       throw new Error(
-        `직접 작성한 파일을 덮어쓰지 않습니다: site/read/${filename}. 원본은 루트 또는 content/에 두세요.`
+        `직접 작성한 파일을 덮어쓰지 않습니다: site/${workId}/${filename}. 원본은 루트 또는 content/에 두세요.`
       )
     }
   }
@@ -433,10 +453,14 @@ export function prepareContent({ root = projectRoot, book, logger = console, ext
     mkdirSync(path.dirname(path.join(outputDir, filename)), { recursive: true })
     copyFileSync(source, path.join(outputDir, filename))
   }
-  for (const stale of previousFiles.filter((filename) => !generatedFiles.includes(filename)))
-    rmSync(path.join(outputDir, stale), { force: true })
+  for (const stale of previousFiles.filter((filename) => previousDir !== outputDir || !generatedFiles.includes(filename)))
+    rmSync(path.join(previousDir, stale), { force: true })
+  if (previousDir !== outputDir)
+    for (const directory of [path.join(previousDir, 'assets'), previousDir])
+      if (existsSync(directory) && readdirSync(directory).length === 0) rmSync(directory, { recursive: true })
   const manifest = {
     version: 1,
+    directory: workId,
     files: generatedFiles,
     sources: pages.map(({ source, id, filename }) => ({ source, id, filename })),
   }

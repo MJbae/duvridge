@@ -113,8 +113,8 @@ class StaticSiteTests(unittest.TestCase):
                 self.assertNotIn("ToldLife", source)
                 self.assertIn("services", ids)
                 self.assertNotIn("trust", ids)
-                self.assertIn("https://toldlife.duvridge.com/novels/", links)
-                self.assertIn("https://toldlife.duvridge.com/audiobooks/", links)
+                self.assertIn("https://toldlife.duvridge.com/novels/bae-byunghee/", links)
+                self.assertIn("https://toldlife.duvridge.com/audiobooks/bae-byunghee/", links)
                 self.assertTrue(any(link.startswith("mailto:contact@duvridge.com?subject=") for link in links))
 
     def test_product_is_shown_as_a_book_with_its_cover(self):
@@ -126,9 +126,9 @@ class StaticSiteTests(unittest.TestCase):
                 books = [attrs for tag, attrs in product if tag == "a" and "book" in class_names(attrs)]
                 covers = [attrs for tag, attrs in product if tag == "img" and "book-art" in class_names(attrs)]
                 self.assertEqual([mark.get("lang") for mark in marks], ["ko"])
-                self.assertEqual([(book["href"], book.get("lang")) for book in books], [("https://toldlife.duvridge.com/novels/", "ko")])
+                self.assertEqual([(book["href"], book.get("lang")) for book in books], [("https://toldlife.duvridge.com/novels/bae-byunghee/", "ko")])
                 self.assertEqual(len(covers), 1)
-                self.assertTrue(covers[0]["src"].startswith("https://toldlife.duvridge.com/novels/images/"))
+                self.assertTrue(covers[0]["src"].startswith("https://toldlife.duvridge.com/novels/works/bae-byunghee/images/"))
                 # Decorative: the cover's own Korean title text names the work.
                 self.assertEqual(covers[0].get("alt"), "")
                 self.assertEqual(covers[0].get("loading"), "lazy")

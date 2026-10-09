@@ -3,9 +3,9 @@ import { episodeImageSizes, imageSrcset } from '@duvridge/reader-ui/images/creat
 import { illustrationMarkerId } from '@duvridge/content-processing/illustrations/parse-illustration-markers.mjs'
 
 type Markdown = Parameters<NonNullable<MarkdownOptions['config']>>[0]
-import type { Illustration } from '@duvridge/content-processing/types'
+import type { Illustration, ReaderCatalog } from '@duvridge/content-processing/types'
 
-export function episodeIllustrations(md: Markdown, options: { base: string; images: Record<string, Illustration[]> }) {
+export function episodeIllustrations(md: Markdown, options: { base: string; images: Record<string, Illustration[]>; works?: Record<string, ReaderCatalog> }) {
   // A narrow block rule works with html:false; it does not enable arbitrary source HTML.
   md.block.ruler.before('html_block', 'illustration_marker', (state, startLine, _endLine, silent) => {
     if (state.sCount[startLine] - state.blkIndent >= 4) return false
@@ -23,7 +23,7 @@ export function episodeIllustrations(md: Markdown, options: { base: string; imag
   md.core.ruler.after('inline', 'episode_illustrations', state => {
     const frontmatter = state.env.frontmatter
     const episodeId = frontmatter?.kind === 'episode' ? String(frontmatter.episodeId || '') : ''
-    const images = options.images[episodeId] ?? []
+    const images = (options.works?.[String(frontmatter?.workId || '')]?.illustrations ?? options.images)[episodeId] ?? []
     const byId = new Map(images.map(image => [image.id, image]))
     const seen = new Set<string>()
     const tokens: typeof state.tokens = []

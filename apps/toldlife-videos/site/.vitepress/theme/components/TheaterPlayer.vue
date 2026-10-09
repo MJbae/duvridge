@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { withBase } from 'vitepress'
 import ReaderIcon from '@duvridge/reader-ui/components/ReaderIcon.vue'
 import EpisodeNext from '@duvridge/reader-ui/components/EpisodeNext.vue'
 import { episodeName } from '@duvridge/reader-ui/series/work-rows.mjs'
 import { clock, cueIndexAt, spokenTime } from '../../shared/narration-cues.mjs'
 import { lyricLines, sceneAt, sceneStarts } from '../../shared/playback-selection.mjs'
-import { catalog, episodeImage, sceneImage } from '../lib/reader-catalog'
-import { episodePath, followsHere, narrationFor, narrationKey } from '../lib/narration-controller'
+import { useCatalogHelpers } from '../lib/reader-catalog'
+import { followsHere, narrationKey } from '../lib/narration-controller'
 import SceneArt from './SceneArt.vue'
 import EpisodeReactions from './EpisodeReactions.vue'
+const { catalog, episodeImage, sceneImage, workHome, episodePath, narrationFor } = useCatalogHelpers()
 
 const props = defineProps<{ episodeId: string }>()
 const narration = inject(narrationKey)!
@@ -35,7 +35,7 @@ const caption = computed(() => {
 const imageId = computed(() => (ended.value ? track.value?.scenes.at(-1)?.[1] : sceneAt(track.value?.scenes ?? [], cue.value)))
 const image = computed(() => sceneImage(imageId.value) ?? episodeImage(props.episodeId))
 const percent = computed(() => (duration.value ? (ended.value ? 100 : (time.value / duration.value) * 100) : 0))
-const homeHref = computed(() => `${withBase('/watch/')}#episode-${episode.value?.episodeId || props.episodeId}`)
+const homeHref = computed(() => workHome(episode.value?.episodeId || props.episodeId))
 // The scene list names each painting by what it shows.
 const sceneTitle = (id: string) => (id === 'cover' ? catalog.work.title : (sceneImage(id)?.alt ?? '').replace(/^수채화로 그린\s*/, ''))
 const scenes = computed(() => (track.value ? sceneStarts(track.value.scenes, track.value.cues) : []).map(scene => ({ ...scene, title: sceneTitle(scene.image) })))
@@ -47,9 +47,9 @@ const next = computed(() => order[index.value + 1])
 const nextPlayable = computed(() => (next.value && narrationFor(next.value.id) ? next.value : undefined))
 const nextCard = computed(() => (next.value ? { name: episodeName(next.value), image: episodeImage(next.value.id) } : undefined))
 const nextAction = computed(() => {
-  if (!next.value) return { label: '전체 회차 보기', href: withBase('/watch/') }
+  if (!next.value) return { label: '전체 회차 보기', href: workHome() }
   return nextPlayable.value
-    ? { label: `${next.value.label} 보기`, href: episodePath(next.value.id, 'watch') }
+    ? { label: `${next.value.label} 보기`, href: episodePath(next.value.id) }
     : { label: `${next.value.label} 보기 · 준비 중` }
 })
 
@@ -185,7 +185,7 @@ onBeforeUnmount(() => {
             <div class="theater-episodes">
               <template v-for="row in neighbours" :key="row.id">
                 <span v-if="row.current" class="theater-episode is-current" aria-current="page">{{ row.name }}</span>
-                <a v-else-if="row.playable" class="theater-episode" :href="episodePath(row.id, 'watch')" @click="goEpisode($event, row.id)">{{ row.name }}</a>
+                <a v-else-if="row.playable" class="theater-episode" :href="episodePath(row.id)" @click="goEpisode($event, row.id)">{{ row.name }}</a>
                 <span v-else class="theater-episode is-waiting"><span>{{ row.name }}</span><span class="pending-pill">준비 중</span></span>
               </template>
             </div>

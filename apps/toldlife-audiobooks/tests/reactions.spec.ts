@@ -33,7 +33,7 @@ test.beforeEach(async ({ request }) => {
 async function openReactions(page: Page, id = 'prolog') {
   // Reactions belong to the end of an episode: play it out, and stay there instead of moving on.
   await page.addInitScript(() => localStorage.setItem('family-library:narration-autoplay', '0'))
-  await page.goto(`/read/${id}.html`)
+  await page.goto(`/bae-byunghee/${id}`)
   // The dev server may reload a page once while it prepares dependencies; then the episode plays out again.
   await expect(async () => {
     if (await page.locator('.listen-end').isVisible()) return
@@ -69,7 +69,7 @@ test('Firebase가 연결되어도 댓글 화면과 요청은 없고 회차 반�
   page.on('request', request => {
     if (/\/comments(?:\/|\?|$)/.test(request.url())) commentRequests.push(request.url())
   })
-  await page.goto('/')
+  await page.goto('/bae-byunghee/')
   await expect(page.getByRole('link', { name: '한 번에 읽기', exact: true })).toHaveCount(0)
   await openReactions(page)
   await page.locator('.listen-end').screenshot({ path: 'test-results/reactions/reactions-390.png' })
@@ -114,7 +114,7 @@ test('episode reactions coalesce clicks, persist across browsers, switch, cancel
     await expect(page.locator('.reaction-options button[aria-pressed="false"] svg[fill="currentColor"]')).toHaveCount(0)
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
     await page.screenshot({ path: 'test-results/reactions/reactions-320.png', fullPage: true })
-    // Only the prologue is recorded, so leave through the player's link to the work page instead of the next episode.
+    // Returning to the work home keeps the episode reaction and its pending writes.
     await page.getByRole('link', { name: '플레이어 접기' }).click()
     await expect(page).toHaveURL(/#episode-prolog$/)
     await expect.poll(async () => (await storedReactions(request))[0]?.fields.wow.integerValue).toBe('1')

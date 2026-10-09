@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { computed, inject, ref } from 'vue'
-import { withBase } from 'vitepress'
 import ReaderIcon from '@duvridge/reader-ui/components/ReaderIcon.vue'
 import EpisodeNext from '@duvridge/reader-ui/components/EpisodeNext.vue'
 import { episodeName } from '@duvridge/reader-ui/series/work-rows.mjs'
 import { clock, cueIndexAt, spokenTime } from '../../shared/narration-cues.mjs'
 import { lyricLines, sceneAt, sleepLabel } from '../../shared/playback-selection.mjs'
-import { catalog, episodeImage, sceneImage } from '../lib/reader-catalog'
-import { episodePath, followsHere, narrationFor, narrationKey } from '../lib/narration-controller'
+import { useCatalogHelpers } from '../lib/reader-catalog'
+import { followsHere, narrationKey } from '../lib/narration-controller'
 import SceneArt from './SceneArt.vue'
 import EpisodeSheet from './EpisodeSheet.vue'
 import EpisodeReactions from './EpisodeReactions.vue'
+const { catalog, episodeImage, sceneImage, workHome, episodePath, narrationFor } = useCatalogHelpers()
 
 const props = defineProps<{ episodeId: string }>()
 const narration = inject(narrationKey)!
@@ -31,7 +31,7 @@ const failed = computed(() => isCurrent.value && state.failed)
 const ended = computed(() => state.ended === props.episodeId)
 const lines = computed(() => lyricLines(texts.value, cue.value))
 const image = computed(() => sceneImage(sceneAt(track.value?.scenes ?? [], cue.value)) ?? episodeImage(props.episodeId))
-const homeHref = computed(() => `${withBase('/')}#episode-${episode.value?.episodeId || props.episodeId}`)
+const homeHref = computed(() => workHome(episode.value?.episodeId || props.episodeId))
 const previous = computed(() => order.slice(0, Math.max(0, index.value)).reverse().find(entry => narrationFor(entry.id)))
 const next = computed(() => order[index.value + 1])
 const nextPlayable = computed(() => (next.value && narrationFor(next.value.id) ? next.value : undefined))
@@ -40,9 +40,9 @@ const rateLabel = computed(() => `${state.rate.toFixed(state.rate * 100 % 10 ? 2
 const closing = computed(() => texts.value.map((text, position) => ({ text, position })).filter(entry => entry.text).slice(-3))
 const nextCard = computed(() => (next.value ? { name: episodeName(next.value), image: episodeImage(next.value.id) } : undefined))
 const nextAction = computed(() => {
-  if (!next.value) return { label: '전체 회차 보기', href: withBase('/') }
+  if (!next.value) return { label: '전체 회차 보기', href: workHome() }
   return nextPlayable.value
-    ? { label: `${next.value.label} 듣기`, href: episodePath(next.value.id, 'listen') }
+    ? { label: `${next.value.label} 듣기`, href: episodePath(next.value.id) }
     : { label: `${next.value.label} 듣기 · 준비 중` }
 })
 
@@ -88,14 +88,14 @@ function goNext(event: MouseEvent) { if (nextPlayable.value) goEpisode(event, ne
           <span class="seek-times"><span>{{ clock(time) }}</span><span>{{ clock(duration) }}</span></span>
         </div>
         <div class="transport">
-          <a v-if="previous" class="transport-step" :href="episodePath(previous.id, 'listen')" aria-label="이전 회차" @click="goEpisode($event, previous.id)"><ReaderIcon name="previous" :size="22" :stroke="1.9" /></a>
+          <a v-if="previous" class="transport-step" :href="episodePath(previous.id)" aria-label="이전 회차" @click="goEpisode($event, previous.id)"><ReaderIcon name="previous" :size="22" :stroke="1.9" /></a>
           <span v-else class="transport-step is-off" aria-hidden="true"><ReaderIcon name="previous" :size="22" :stroke="1.9" /></span>
           <button type="button" class="transport-skip" aria-label="10초 뒤로" @click="skip(-10)"><ReaderIcon name="back-10" :size="30" :stroke="1.6" /><span aria-hidden="true">10</span></button>
           <button type="button" class="transport-play" :aria-label="failed ? '다시 시도' : playing ? '일시 정지' : '재생'" @click="togglePlay">
             <ReaderIcon :name="failed ? 'retry' : playing ? 'pause' : 'play'" :size="26" :stroke="2" />
           </button>
           <button type="button" class="transport-skip" aria-label="10초 앞으로" @click="skip(10)"><ReaderIcon name="forward-10" :size="30" :stroke="1.6" /><span aria-hidden="true">10</span></button>
-          <a v-if="nextPlayable" class="transport-step" :href="episodePath(nextPlayable.id, 'listen')" aria-label="다음 회차" @click="goEpisode($event, nextPlayable.id)"><ReaderIcon name="next" :size="22" :stroke="1.9" /></a>
+          <a v-if="nextPlayable" class="transport-step" :href="episodePath(nextPlayable.id)" aria-label="다음 회차" @click="goEpisode($event, nextPlayable.id)"><ReaderIcon name="next" :size="22" :stroke="1.9" /></a>
           <span v-else class="transport-step is-off" aria-hidden="true"><ReaderIcon name="next" :size="22" :stroke="1.9" /></span>
         </div>
         <div class="listen-tools">
@@ -114,6 +114,6 @@ function goNext(event: MouseEvent) { if (nextPlayable.value) goEpisode(event, ne
         </div>
       </template>
     </main>
-    <EpisodeSheet ref="sheet" :current="episodeId" mode="listen" @choose="id => narration.open(id)" />
+    <EpisodeSheet ref="sheet" :current="episodeId" @choose="id => narration.open(id)" />
   </div>
 </template>

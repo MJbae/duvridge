@@ -50,6 +50,7 @@
     }
   },
   "legacy": {
+    "servedAtRoot": true,
     "headingIds": {
       "prologue": "prolog",
       "josae": "ep01",

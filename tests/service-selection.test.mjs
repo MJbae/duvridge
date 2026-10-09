@@ -87,7 +87,7 @@ test('editorial book sources outside packages validate both declared readers and
   const workspace = workspaceGraph(root, actual)
   for (const filename of ['manuscript.md', 'book.json', 'illustrations/manifest.json', 'public/images/episodes/ep01-01-720.jpg']) {
     const plan = affected([`content/books/bae-byunghee/${filename}`], actual, workspace)
-    assert.deepEqual(plan.services, ['toldlife-novels', 'toldlife-audiobooks'])
+    assert.deepEqual(plan.services, ['toldlife-portal', 'toldlife-novels', 'toldlife-audiobooks', 'toldlife-videos'])
     assert.deepEqual(plan.deployGroups, ['toldlife'])
   }
 })

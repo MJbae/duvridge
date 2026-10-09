@@ -62,7 +62,7 @@ export function affected(paths, registry, graph, { all = false } = {}) {
   }
   const services = registry.services.filter(service => global || impacted.has(service.workspace)
     || changed.some(file => (service.watchedPaths ?? []).some(path => contains(file, path)))
-    || changed.some(file => registry.books?.[service.book]?.path && contains(file, registry.books[service.book].path)))
+    || changed.some(file => service.bookCatalog && contains(file, registry.bookCatalog.path)))
   const deployGroups = [...new Set(services.map(service => service.deployGroup))]
   // A Pages deployment replaces a project snapshot, so build all members of each affected group.
   const buildServices = registry.services.filter(service => deployGroups.includes(service.deployGroup))

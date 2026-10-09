@@ -32,16 +32,19 @@ export type BookConfig = {
   work?: { title?: string; subtitle?: string }
   cover?: Cover
   sharing?: Sharing
-  legacy?: { headingIds?: Record<string, string>; decadeIds?: Record<string, string> }
+  /** `servedAtRoot`: the work was published at each format's root before works had their own folder. */
+  legacy?: { headingIds?: Record<string, string>; decadeIds?: Record<string, string>; servedAtRoot?: boolean }
   excludedEditorialFiles?: string[]
   assets?: { coverSource?: string }
 }
 export type ReaderEpisode = { id: string; episodeId: string; title: string; url: string; label: string; number: number | null; time: string; place: Place | null }
 export type ReaderCatalog = {
-  work: { title: string; subtitle: string; synopsis: string[]; schedule: string; cover?: Cover; sharing?: Sharing }
+  work: { id: string; legacyRoot?: boolean; title: string; subtitle: string; synopsis: string[]; schedule: string; cover?: Cover; sharing?: Sharing }
   readingOrder: ReaderEpisode[]
   documents: { id: string; title: string; url: string }[]
   illustrations?: Record<string, Illustration[]>
   legacyIds?: Record<string, string>
   legacyScrollResetIds?: readonly string[]
+  /** Former read/{page} names and the page in the work's folder that replaced each ('' is the work home). */
+  formerPages?: Record<string, string>
 }

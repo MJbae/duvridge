@@ -1,23 +1,43 @@
 import { defineConfig, type MarkdownOptions, type UserConfig } from 'vitepress'
 import { loadEnv, searchForWorkspaceRoot } from 'vite'
+import { writeFileSync } from 'node:fs'
+import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { episodeIllustrations } from '../markdown/render-episode-illustrations.ts'
 import type { ReaderCatalog, Cover, Sharing } from '@duvridge/content-processing/types'
 import { coverImageSizes, episodeImageSizes, imagePreload } from '@duvridge/reader-ui/images/create-image-sources.mjs'
 
+/** An address from an earlier site layout and the page that now answers it. */
+export type MovedPage = { from: string; to: string }
+
+/**
+ * Pages once published in `folder` as `{page}.html` (or without the extension) and the page in the
+ * work's home folder that replaced each; an empty target is the work home itself.
+ */
+export function formerPageRules({ folder, home, pages }: { folder: string; home: string; pages: Record<string, string> }): MovedPage[] {
+  return Object.entries(pages).flatMap(([page, target]) => [
+    { from: `${folder}${page}.html`, to: `${home}${target}` },
+    { from: `${folder}${page}`, to: `${home}${target}` },
+  ])
+}
+
 type ReaderConfigOptions = {
   root: string
   defaultBase?: string
   defaultOrigin: string
-  catalog: Pick<ReaderCatalog, 'illustrations'> & { work: ReaderCatalog['work'] & { cover: Cover; sharing: Sharing } }
+  catalog: Partial<ReaderCatalog> & { work: ReaderCatalog['work'] & { cover: Cover; sharing: Sharing } }
+  catalogs?: Record<string, ReaderCatalog & { work: ReaderCatalog['work'] & { cover: Cover; sharing: Sharing } }>
   siteNames?: Record<string, string>
   configureMarkdown?: NonNullable<MarkdownOptions['config']>
-  /** Fills in a service's own page kinds (for example per-episode pages from dynamic routes) before the shared metadata is written. */
+  /** Fills in a service's own page kinds before the shared metadata is written. */
   preparePage?: (pageData: Parameters<NonNullable<UserConfig['transformPageData']>>[0]) => void
+  /** Earlier addresses this build replaces; the deployment turns the list into permanent redirects. */
+  movedPages?: (context: { base: string; work: string }) => MovedPage[]
+  themeConfig?: Record<string, unknown>
 }
 
 /** One reading/metadata configuration; services add their own Markdown features. */
-export function createReaderConfig({ root, catalog, defaultBase = '/', defaultOrigin, siteNames = {}, configureMarkdown, preparePage }: ReaderConfigOptions) {
+export function createReaderConfig({ root, catalog, catalogs, defaultBase = '/', defaultOrigin, siteNames = {}, configureMarkdown, preparePage, movedPages, themeConfig }: ReaderConfigOptions) {
   const sharedRoot = fileURLToPath(new URL('../../', import.meta.url))
   const env = loadEnv(process.env.NODE_ENV || 'production', root, '')
   const base = process.env.SITE_BASE || env.SITE_BASE || defaultBase
@@ -25,9 +45,7 @@ export function createReaderConfig({ root, catalog, defaultBase = '/', defaultOr
   const siteName = siteNames[base] || workTitle
   const siteDescription = catalog.work.sharing.description
   const siteOrigin = process.env.SITE_ORIGIN || env.SITE_ORIGIN || defaultOrigin
-  const share = catalog.work.sharing.image
-  const shareImage = new URL(`${base}${share.src.replace(/^\//, '')}`, siteOrigin).href
-  const shareImageAlt = share.alt
+
 
   return defineConfig({
     lang: 'ko-KR',
@@ -35,9 +53,11 @@ export function createReaderConfig({ root, catalog, defaultBase = '/', defaultOr
     titleTemplate: `:title · ${workTitle}`,
     description: siteDescription,
     base,
+    ...(process.env.SITE_OUT_DIR ? { outDir: path.resolve(process.env.SITE_OUT_DIR) } : {}),
     lastUpdated: false,
-    cleanUrls: false,
+    cleanUrls: true,
     appearance: false,
+    themeConfig,
     head: [
       ['script', {}, "try{const m=localStorage.getItem('family-library:theme');if(['auto','light','dark'].includes(m))document.documentElement.dataset.theme=m}catch(e){}"],
       ['meta', { name: 'theme-color', content: '#111318' }],
@@ -59,22 +79,13 @@ export function createReaderConfig({ root, catalog, defaultBase = '/', defaultOr
       ['meta', { property: 'og:type', content: 'website' }],
       ['meta', { property: 'og:locale', content: 'ko_KR' }],
       ['meta', { property: 'og:site_name', content: siteName }],
-      ['meta', { property: 'og:image', content: shareImage }],
-      ['meta', { property: 'og:image:secure_url', content: shareImage }],
-      ['meta', { property: 'og:image:type', content: share.type || 'image/png' }],
-      ['meta', { property: 'og:image:width', content: String(share.width) }],
-      ['meta', { property: 'og:image:height', content: String(share.height) }],
-      ['meta', { property: 'og:image:alt', content: shareImageAlt }],
-      ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
-      ['meta', { name: 'twitter:image', content: shareImage }],
-      ['meta', { name: 'twitter:image:alt', content: shareImageAlt }],
     ],
     markdown: {
       headers: { level: [2, 3] },
       // 원고의 일반 Markdown과 사진을 지원하며 임의 HTML 실행은 허용하지 않습니다.
       config(md) {
         md.set({ html: false })
-        md.use(episodeIllustrations, { base, images: catalog.illustrations || {} })
+        md.use(episodeIllustrations, { base, images: catalog.illustrations || {}, works: catalogs })
         configureMarkdown?.(md)
       },
     },
@@ -84,9 +95,19 @@ export function createReaderConfig({ root, catalog, defaultBase = '/', defaultOr
       build: { chunkSizeWarningLimit: 650 },
     },
     transformPageData(pageData) {
+      const selected = catalogs?.[String(pageData.frontmatter.workId || '')]
+      const activeCatalog = selected ?? catalog
+      const workTitle = activeCatalog.work.title
+      const siteDescription = activeCatalog.work.sharing.description
+      const share = activeCatalog.work.sharing.image
+      const shareImage = new URL(`${base}${share.src.replace(/^\//, '')}`, siteOrigin).href
+      const shareImageAlt = share.alt
       preparePage?.(pageData)
       const isHome = pageData.frontmatter.layout === 'home'
-      const title = isHome ? workTitle : String(pageData.frontmatter.shareTitle || `${pageData.title} · ${workTitle}`)
+      // A work home is named after the work unless its series names it (the video home adds "영상").
+      const title = pageData.frontmatter.formatRoot ? workTitle
+        : isHome ? String(pageData.frontmatter.shareTitle || workTitle)
+        : String(pageData.frontmatter.shareTitle || `${pageData.title} · ${workTitle}`)
       // The client reads PageData.titleTemplate; the static head reads frontmatter.
       pageData.titleTemplate = false
       pageData.frontmatter.titleTemplate = false
@@ -96,17 +117,33 @@ export function createReaderConfig({ root, catalog, defaultBase = '/', defaultOr
         : String(pageData.frontmatter.description || siteDescription)
       const relative = pageData.relativePath
         .replace(/(^|\/)index\.md$/, '$1')
-        .replace(/\.md$/, '.html')
-      const url = new URL(`${base}${pageData.frontmatter.redirect ? String(pageData.frontmatter.redirect).replace(/^\//, '') : relative}`, siteOrigin).href
+        .replace(/\.md$/, '')
+      // A series root belongs to the platform home, which opens on that series' tab.
+      const formatRoot = Boolean(pageData.frontmatter.formatRoot)
+      const redirectTo = formatRoot
+        ? `/?tab=${base.replaceAll('/', '')}`
+        : pageData.frontmatter.redirect ? `${base}${String(pageData.frontmatter.redirect).replace(/^\//, '')}` : ''
+      const url = new URL(formatRoot ? '/' : redirectTo || `${base}${relative}`, siteOrigin).href
       pageData.description = description
       pageData.frontmatter.description = description
       pageData.frontmatter.head ??= []
+      pageData.frontmatter.head.push(
+      ['meta', { property: 'og:image', content: shareImage }],
+      ['meta', { property: 'og:image:secure_url', content: shareImage }],
+      ['meta', { property: 'og:image:type', content: share.type || 'image/png' }],
+      ['meta', { property: 'og:image:width', content: String(share.width) }],
+      ['meta', { property: 'og:image:height', content: String(share.height) }],
+      ['meta', { property: 'og:image:alt', content: shareImageAlt }],
+      ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
+      ['meta', { name: 'twitter:image', content: shareImage }],
+      ['meta', { name: 'twitter:image:alt', content: shareImageAlt }]
+      )
       if (isHome) {
-        const cover = catalog.work.cover
+        const cover = activeCatalog.work.cover
         pageData.frontmatter.head.push(imagePreload(cover.webpSources?.length ? cover.webpSources : cover.sources,
           base, coverImageSizes, cover.webpSources?.length ? 'image/webp' : 'image/jpeg'))
       } else if (pageData.frontmatter.kind === 'episode') {
-        const images = catalog.illustrations || {}
+        const images = activeCatalog.illustrations || {}
         const episodeImages = images[String(pageData.frontmatter.episodeId)] ?? []
         const first = episodeImages.find(image => image.representative) ?? episodeImages[0]
         if (first) {
@@ -114,11 +151,11 @@ export function createReaderConfig({ root, catalog, defaultBase = '/', defaultOr
             base, episodeImageSizes, first.webpSources?.length ? 'image/webp' : 'image/jpeg'))
         }
       }
-      if (pageData.frontmatter.redirect) {
-        const destination = `${base}${String(pageData.frontmatter.redirect).replace(/^\//, '')}`
+      if (redirectTo) {
+        pageData.frontmatter.redirectTo = redirectTo
         pageData.frontmatter.head.push(
-          ['script', {}, `location.replace(${JSON.stringify(destination)}+location.hash)`],
-          ['meta', { 'http-equiv': 'refresh', content: `0;url=${destination}` }]
+          ['script', {}, `location.replace(${JSON.stringify(redirectTo)}+location.hash)`],
+          ['meta', { 'http-equiv': 'refresh', content: `0;url=${redirectTo}` }]
         )
       }
       pageData.frontmatter.head.push(
@@ -129,6 +166,16 @@ export function createReaderConfig({ root, catalog, defaultBase = '/', defaultOr
         ['meta', { name: 'twitter:title', content: title }],
         ['meta', { name: 'twitter:description', content: description }]
       )
+    },
+    buildEnd({ outDir }) {
+      const works = Object.values(catalogs ?? { single: catalog }).map(entry => ({
+        id: entry.work.id, legacyRoot: entry.work.legacyRoot, title: entry.work.title, cover: entry.work.cover,
+        legacyIds: entry.legacyIds ?? {}, episodes: entry.readingOrder?.map(episode => ({ id: episode.id, label: episode.label,
+          recorded: Boolean((entry as ReaderCatalog & { narration?: Record<string, unknown> }).narration?.[episode.id]) })) ?? [],
+      }))
+      writeFileSync(path.join(outDir, 'work-index.json'), JSON.stringify(works) + '\n')
+      const pages = Object.values(catalogs ?? { single: catalog }).flatMap(entry => movedPages?.({ base, work: entry.work.id }) ?? [])
+      writeFileSync(path.join(outDir, 'moved-pages.json'), `${JSON.stringify({ version: 1, pages }, null, 2)}\n`)
     },
   })
 

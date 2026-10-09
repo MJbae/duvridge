@@ -91,11 +91,11 @@ jobs:
           python-version: '3.12'
       - run: npm ci
       - name: Install browser for audiobook interaction checks
-        if: matrix.service == 'toldlife-audiobooks'
+        if: matrix.service == 'toldlife-audiobooks' || matrix.service == 'toldlife-videos'
         run: npx playwright install --with-deps chromium
       - name: Protect desktop and phone audio interaction
-        if: matrix.service == 'toldlife-audiobooks'
-        working-directory: apps/toldlife-audiobooks
+        if: matrix.service == 'toldlife-audiobooks' || matrix.service == 'toldlife-videos'
+        working-directory: apps/${{ matrix.service }}
         run: npx playwright test tests/narration.spec.ts --project=phone --project=desktop
       - name: Validate and build the service with its production base
         env:
@@ -122,9 +122,31 @@ jobs:
           if-no-files-found: error
           retention-days: 3
 
+  urls:
+    needs: plan
+    if: contains(needs.plan.outputs.matrix, 'toldlife')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Rehearse both works and all legacy endpoints in an isolated Pages fixture
+        run: npm run test:urls
+
   required:
     name: Monorepo required
-    needs: [plan, repository, service]
+    needs: [plan, repository, service, urls]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -133,10 +155,12 @@ jobs:
           PLAN_RESULT: ${{ needs.plan.result }}
           REPOSITORY_RESULT: ${{ needs.repository.result }}
           SERVICE_RESULT: ${{ needs.service.result }}
+          URL_RESULT: ${{ needs.urls.result }}
           HAS_SERVICES: ${{ needs.plan.outputs.has_services }}
         run: |
           test "$PLAN_RESULT" = success
           test "$REPOSITORY_RESULT" = success
+          test "$URL_RESULT" = success || test "$URL_RESULT" = skipped
           if [ "$HAS_SERVICES" = true ]; then
             test "$SERVICE_RESULT" = success
           else

@@ -37,7 +37,7 @@ test('썸네일은 대표 그림의 작은 크기를 쓰고 없으면 비워 둔
 
 test('탭 링크는 플랫폼 홈의 해당 탭으로 돌아간다', () => {
   assert.deepEqual(seriesLinks('audio').map(link => [link.label, link.href, link.current]), [
-    ['오리지널 시리즈', '/#novels', false], ['오디오북', '/#audiobooks', true], ['영상', '/#video', false],
+    ['오리지널 시리즈', '/#novels', false], ['오디오북', '/#audiobooks', true], ['영상', '/#videos', false],
   ])
-  assert.equal(seriesHomeHref('video'), '/#video')
+  assert.equal(seriesHomeHref('video'), '/#videos')
 })

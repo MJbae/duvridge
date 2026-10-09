@@ -1,5 +1,8 @@
 node_modules/
-site/read/
+# Generated pages: one folder per work beside the hand-written config and public files.
+site/*/
+!site/.vitepress/
+!site/public/
 site/.vitepress/generated/
 site/.vitepress/cache/
 site/.vitepress/dist/
@@ -14,7 +17,7 @@ playwright-report/
 test-results/
 .DS_Store
 
-# Materialized from @duvridge/memoir-content; edit packages/memoir-content instead.
+# Materialized from content/books; edit the canonical editorial sources there.
 /*.md
 !/README.md
 /원자료/
@@ -25,3 +28,5 @@ test-results/
 /.memoir-content-manifest.json
 
 /.book-content-inputs.json
+
+/.work-inputs/

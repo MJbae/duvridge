@@ -1,45 +1,43 @@
 <script setup lang="ts">
+import { workStorageKey, migrateWorkStorage } from '@duvridge/reader-ui/state/work-storage.mjs'
 import { computed, onMounted, provide, ref } from 'vue'
-import { Content, useData, withBase } from 'vitepress'
+import { useData, withBase } from 'vitepress'
 import ReaderIcon from '@duvridge/reader-ui/components/ReaderIcon.vue'
 import WorkHome, { type WorkRow } from '@duvridge/reader-ui/components/WorkHome.vue'
 import { episodeName, episodeThumb, progressPercent } from '@duvridge/reader-ui/series/work-rows.mjs'
 import { imageSrcset } from '@duvridge/reader-ui/images/create-image-sources.mjs'
 import { listenAction } from '../shared/playback-selection.mjs'
 import AudiobookPlayer from './components/AudiobookPlayer.vue'
-import TheaterPlayer from './components/TheaterPlayer.vue'
 import SceneArt from './components/SceneArt.vue'
-import { episodePath, followsHere, narrationFor, narrationKey, useNarration, type NarrationMode } from './lib/narration-controller'
-import { catalog, episodeImage } from './lib/reader-catalog'
+import { followsHere, narrationKey, useNarration, type NarrationMode } from './lib/narration-controller'
+import { useCatalogHelpers } from './lib/reader-catalog'
 import { migrateCompleted, migrateReading } from '../shared/reading-history.mjs'
-const { frontmatter, page, params, site } = useData()
+const { catalog, episodeImage, workHome, episodePath, narrationFor } = useCatalogHelpers()
+const key = (kind: string) => workStorageKey(catalog.work.id, kind)
+const { frontmatter, page, site } = useData()
+// This app owns audiobook playback; the video app owns its separate theater layout.
+const mode = computed<NarrationMode>(() => 'listen')
 const isMissing = computed(() => Boolean(page.value.isNotFound))
 const view = computed(() => {
   if (isMissing.value) return 'missing'
-  if (frontmatter.value.layout === 'home') return 'listen-home'
-  if (frontmatter.value.layout === 'watch-home') return 'watch-home'
+  if (frontmatter.value.layout === 'home') return 'home'
   if (frontmatter.value.kind === 'redirect') return 'redirect'
-  if (frontmatter.value.kind === 'watch') return 'watch'
-  return frontmatter.value.kind === 'episode' ? 'listen' : 'missing'
+  return frontmatter.value.kind === 'episode' ? 'episode' : 'missing'
 })
-const mode = computed<NarrationMode>(() => (view.value === 'watch' || view.value === 'watch-home' ? 'watch' : 'listen'))
-const pageEpisode = computed(() => {
-  if (view.value === 'watch') return String(params.value?.id || frontmatter.value.pageId || '')
-  return view.value === 'listen' ? String(frontmatter.value.pageId || '') : ''
-})
+const pageEpisode = computed(() => (view.value === 'episode' ? String(frontmatter.value.pageId || '') : ''))
 const narrationAudio = ref<HTMLAudioElement>()
 const completed = ref<string[]>([])
 const narration = useNarration({ audio: narrationAudio, page: pageEpisode, mode, onFinish: markCompleted })
 provide(narrationKey, narration)
 const { state } = narration
-const pendingEpisode = computed(() => (view.value === 'listen' && !narrationFor(pageEpisode.value) ? catalog.readingOrder.find(entry => entry.id === pageEpisode.value) : undefined))
+const pendingEpisode = computed(() => (view.value === 'episode' && !narrationFor(pageEpisode.value) ? catalog.readingOrder.find(entry => entry.id === pageEpisode.value) : undefined))
 function writeStorage(key: string, value: string) { try { localStorage.setItem(key, value) } catch { /* optional */ } }
 function readJson(key: string) { try { return JSON.parse(localStorage.getItem(key) || 'null') } catch { return null } }
 // Hearing an episode to its end marks it heard, also when the next episode starts on its own.
 function markCompleted(id: string) {
   if (completed.value.includes(id)) return
   completed.value = [...completed.value, id]
-  writeStorage('family-library:completed', JSON.stringify(completed.value))
+  writeStorage(key('completed'), JSON.stringify(completed.value))
 }
 
 // The audiobook and the video share one place in the story: where the narration stopped.
@@ -59,7 +57,7 @@ const rows = computed<WorkRow[]>(() => catalog.readingOrder.map(entry => {
   return {
     id: entry.episodeId || entry.id,
     name: episodeName(entry),
-    href: track ? episodePath(entry.id, mode.value) : undefined,
+    href: track ? episodePath(entry.id) : undefined,
     thumb: episodeThumb(catalog.illustrations, entry.episodeId || entry.id, withBase),
     progress: heard && !resume ? 100 : resume && track ? progressPercent(position.value!.time / track.duration) : 0,
     current: action.value.current && action.value.id === entry.id,
@@ -84,34 +82,34 @@ function openRow(event: MouseEvent, row: WorkRow) {
 }
 
 onMounted(() => {
-  completed.value = migrateCompleted(catalog, readJson('family-library:completed'))
+  try { migrateWorkStorage(localStorage, catalog.work) } catch { /* Browser storage is optional. */ }
+  completed.value = migrateCompleted(catalog, readJson(key('completed')))
   // Earlier visits kept a finished episode only with the reading position; it still counts once.
-  const legacy = migrateReading(catalog, readJson('family-library:reading'))
+  const legacy = migrateReading(catalog, readJson(key('reading')))
   if (legacy?.finished && !completed.value.includes(legacy.id)) completed.value = [...completed.value, legacy.id]
-  writeStorage('family-library:completed', JSON.stringify(completed.value))
+  writeStorage(key('completed'), JSON.stringify(completed.value))
 })
 </script>
 <template>
   <div class="library page-theater">
     <a class="skip-link" href="#main">본문으로 건너뛰기</a>
     <audio ref="narrationAudio" class="narration-audio" preload="none" />
-    <WorkHome v-if="view === 'listen-home' || view === 'watch-home'" :key="view" :series="mode === 'watch' ? 'video' : 'audio'" :title="catalog.work.title" :art="art"
-      :action="{ label: action.label, href: action.id ? episodePath(action.id, mode) : undefined }" :rows="rows" @action="openAction" @select="openRow" />
-    <TheaterPlayer v-else-if="view === 'watch'" :key="pageEpisode" :episode-id="pageEpisode" />
-    <AudiobookPlayer v-else-if="view === 'listen' && !pendingEpisode" :key="pageEpisode" :episode-id="pageEpisode" />
+    <WorkHome v-if="view === 'home'" :series="mode === 'watch' ? 'video' : 'audio'" :title="catalog.work.title" :art="art"
+      :action="{ label: action.label, href: action.id ? episodePath(action.id) : undefined }" :rows="rows" @action="openAction" @select="openRow" />
+    <AudiobookPlayer v-else-if="view === 'episode' && !pendingEpisode" :key="pageEpisode" :episode-id="pageEpisode" />
     <div v-else-if="pendingEpisode" class="listen-page">
       <header class="listen-bar">
-        <a class="listen-icon" :href="`${withBase('/')}#episode-${pendingEpisode.episodeId || pendingEpisode.id}`" aria-label="작품 홈으로"><ReaderIcon name="chevron-down" :size="24" :stroke="1.9" /></a>
+        <a class="listen-icon" :href="workHome(pendingEpisode.episodeId || pendingEpisode.id)" aria-label="작품 홈으로"><ReaderIcon name="chevron-down" :size="24" :stroke="1.9" /></a>
         <span class="listen-label">{{ pendingEpisode.label }}</span><span class="listen-icon" aria-hidden="true" />
       </header>
       <main id="main" tabindex="-1" class="listen-main">
         <SceneArt class="listen-art" :image="episodeImage(pendingEpisode.id)" sizes="(min-width: 720px) 640px, calc(100vw - 40px)" eager />
         <div class="listen-heading"><h1>{{ pendingEpisode.title }}</h1><p>{{ catalog.work.title }}</p></div>
         <div class="listen-spacer" />
-        <button type="button" class="big-button is-pending" disabled><ReaderIcon name="headphones" :size="20" :stroke="1.9" />{{ pendingEpisode.label }} 듣기 · 준비 중</button>
+        <button type="button" class="big-button is-pending" disabled><ReaderIcon :name="mode === 'watch' ? 'play' : 'headphones'" :size="20" :stroke="1.9" />{{ pendingEpisode.label }} {{ verb }} · 준비 중</button>
       </main>
     </div>
-    <main v-else-if="view === 'redirect'" id="main" class="not-found"><h1>이 이야기의 주소가 바뀌었습니다.</h1><Content /><a class="text-link" :href="withBase(frontmatter.redirect)">이 이야기 듣기</a></main>
-    <main v-else id="main" tabindex="-1" class="not-found"><h1>이야기를 찾지 못했습니다.</h1><a class="text-link" :href="withBase('/')">작품 홈으로</a></main>
+    <main v-else-if="view === 'redirect'" id="main" class="not-found"><h1>홈으로 이동합니다.</h1><a class="text-link" :href="frontmatter.redirectTo" target="_self">홈으로</a></main>
+    <main v-else id="main" tabindex="-1" class="not-found"><h1>이야기를 찾지 못했습니다.</h1><a class="text-link" :href="workHome()">작품 홈으로</a></main>
   </div>
 </template>
