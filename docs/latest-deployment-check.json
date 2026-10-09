@@ -1,25 +1,19 @@
 {
-  "workflow": "https://github.com/MJbae/duvridge/actions/runs/37871108054",
+  "workflow": "https://github.com/MJbae/duvridge/actions/runs/37926878727",
   "production": {
-    "checkedAt": "2026-10-09T02:09:02.351Z",
+    "checkedAt": "2026-10-09T12:03:04.527Z",
     "results": [
-      {
-        "group": "company",
-        "origin": "https://www.duvridge.com",
-        "sha": "9efd8a82717da916488e0e4a58670b0738ca5d44",
-        "routes": 7
-      },
       {
         "group": "toldlife",
         "origin": "https://toldlife.duvridge.com",
-        "sha": "9efd8a82717da916488e0e4a58670b0738ca5d44",
-        "episodeRoutes": 52,
+        "sha": "f7e8798a0b96fa65465664af6e445f32ea3cdebf",
+        "episodeRoutes": 56,
         "recordings": 4,
         "manuscript": {
           "bookId": "bae-byunghee",
           "sha256": "3320ade338ebf179ed6779540a315cb8253cc0c9f71bccaa30ed17bbcbd266f4",
           "episodeCount": 26,
-          "paragraphChecks": 838
+          "paragraphChecks": 419
         },
         "devices": [
           "phone",
