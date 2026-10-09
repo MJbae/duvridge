@@ -122,7 +122,25 @@ class StaticSiteTests(unittest.TestCase):
                 self.assertNotIn("trust", ids)
                 self.assertIn("https://toldlife.duvridge.com/novels/bae-byunghee/", links)
                 self.assertIn("https://toldlife.duvridge.com/audiobooks/bae-byunghee/", links)
+                self.assertIn("https://toldlife.duvridge.com/videos/bae-byunghee/", links)
                 self.assertTrue(any(link.startswith("mailto:contact@duvridge.com?subject=") for link in links))
+
+    def test_product_comes_right_after_the_hero(self):
+        for path in PAGES.values():
+            snapshot = Snapshot(page_file(path).read_text(encoding="utf-8"))
+            sections = [attrs.get("id") for tag, attrs in snapshot.elements if tag == "section"]
+            with self.subTest(path=path):
+                self.assertEqual(sections[:2], ["hero", "services"])
+
+    def test_finished_work_opens_in_every_format(self):
+        for path in PAGES.values():
+            product = section_elements(Snapshot(page_file(path).read_text(encoding="utf-8")), "services")
+            with self.subTest(path=path):
+                formats = [attrs["href"] for tag, attrs in product if tag == "a" and "format" in class_names(attrs)]
+                self.assertEqual(formats, [f"https://toldlife.duvridge.com/{kind}/bae-byunghee/" for kind in ("novels", "audiobooks", "videos")])
+                # One status line says the work is finished; the formats no longer repeat their episode counts.
+                self.assertEqual(sum("work-status" in class_names(attrs) for _, attrs in product), 1)
+                self.assertFalse(any("format-meta" in class_names(attrs) for _, attrs in product))
 
     def test_product_is_shown_as_a_book_with_its_cover(self):
         for path in PAGES.values():

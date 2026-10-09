@@ -76,8 +76,48 @@
     </div>
   </section>
 
+  <!-- PRODUCT: the company's one product, shown through its first work as a book -->
+  <section class="band band--tint product" id="services" aria-labelledby="product-name">
+    <div class="wrap">
+      <div class="product-head" data-reveal>
+        <h2 class="product-mark" id="product-name" lang="ko">인생원작<span class="product-stop" aria-hidden="true">.</span></h2>
+        <p class="product-genre">{{product_genre}}</p>
+      </div>
+
+      <!-- The cover is served by the reader site; this page keeps no copy of book content. -->
+      <a class="book" href="https://toldlife.duvridge.com/novels/bae-byunghee/" lang="ko" data-reveal>
+        <picture>
+          <source type="image/webp" srcset="https://toldlife.duvridge.com/novels/works/bae-byunghee/images/home-cover-1280.webp">
+          <img class="book-art" src="https://toldlife.duvridge.com/novels/works/bae-byunghee/images/home-cover-1280.jpg" width="1280" height="720" alt="" loading="lazy" decoding="async">
+        </picture>
+        <span class="book-label">
+          <span class="book-title"><span>내 논을 파는</span> <span>한이 있어도</span></span>
+          <span class="book-meta"><span>1936–2010년대 · 실화</span> <span class="book-imprint">인생원작<span class="product-stop" aria-hidden="true">.</span></span></span>
+        </span>
+      </a>
+
+      <div class="product-formats" data-reveal>
+        <p class="work-status">{{work_status}}</p>
+        <div class="formats">
+          <a class="format" href="https://toldlife.duvridge.com/novels/bae-byunghee/"><span class="format-name">{{novel_cta}}</span> <span class="arr" aria-hidden="true">→</span></a>
+          <a class="format" href="https://toldlife.duvridge.com/audiobooks/bae-byunghee/"><span class="format-name">{{audio_cta}}</span> <span class="arr" aria-hidden="true">→</span></a>
+          <a class="format" href="https://toldlife.duvridge.com/videos/bae-byunghee/"><span class="format-name">{{video_cta}}</span> <span class="arr" aria-hidden="true">→</span></a>
+        </div>
+        <p class="ai-note">{{ai_note}}</p>
+      </div>
+
+      <div class="studio" data-reveal>
+        <div class="studio-text">
+          <p class="studio-label"><span lang="ko">인생원작</span> {{studio_word}}</p>
+          <p class="studio-tagline">{{studio_tagline}}</p>
+        </div>
+        <a class="tlink tlink--accent studio-cta" href="mailto:contact@duvridge.com?subject=%EC%9D%B8%EC%83%9D%EC%9B%90%EC%9E%91%20%EC%8A%A4%ED%8A%9C%EB%94%94%EC%98%A4%20%EC%9D%98%EB%A2%B0"><span>{{studio_cta}}</span> <span class="arr" aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
+
   <!-- WHY -->
-  <section class="band band--tint why" id="why">
+  <section class="band why" id="why">
     <div class="wrap">
       <p class="eyebrow" data-reveal>{{why_eyebrow}}</p>
       <p class="statement" data-reveal>{{why_lead}}</p>
@@ -106,44 +146,6 @@
       <a class="proof-link" href="https://github.com/MJbae/awesome-novel-studio" target="_blank" rel="noopener" data-reveal><span>{{proof_link}}</span> <span class="arr">→</span></a>
 
       <p class="proof-bridge" data-reveal>{{proof_bridge}}</p>
-    </div>
-  </section>
-
-  <!-- PRODUCT: the company's one product, shown through its first work as a book -->
-  <section class="band product" id="services" aria-labelledby="product-name">
-    <div class="wrap">
-      <div class="product-head" data-reveal>
-        <h2 class="product-mark" id="product-name" lang="ko">인생원작<span class="product-stop" aria-hidden="true">.</span></h2>
-        <p class="product-genre">{{product_genre}}</p>
-      </div>
-
-      <!-- The cover is served by the reader site; this page keeps no copy of book content. -->
-      <a class="book" href="https://toldlife.duvridge.com/novels/bae-byunghee/" lang="ko" data-reveal>
-        <picture>
-          <source type="image/webp" srcset="https://toldlife.duvridge.com/novels/works/bae-byunghee/images/home-cover-1280.webp">
-          <img class="book-art" src="https://toldlife.duvridge.com/novels/works/bae-byunghee/images/home-cover-1280.jpg" width="1280" height="720" alt="" loading="lazy" decoding="async">
-        </picture>
-        <span class="book-label">
-          <span class="book-title"><span>내 논을 파는</span> <span>한이 있어도</span></span>
-          <span class="book-meta"><span>1936–2010년대 · 실화</span> <span class="book-imprint">인생원작<span class="product-stop" aria-hidden="true">.</span></span></span>
-        </span>
-      </a>
-
-      <div class="product-formats" data-reveal>
-        <div class="formats">
-          <a class="format" href="https://toldlife.duvridge.com/novels/bae-byunghee/"><span class="format-name">{{novel_cta}}</span> <span class="format-meta">{{novel_meta}}</span> <span class="arr" aria-hidden="true">→</span></a>
-          <a class="format" href="https://toldlife.duvridge.com/audiobooks/bae-byunghee/"><span class="format-name">{{audio_cta}}</span> <span class="format-meta">{{audio_meta}}</span> <span class="arr" aria-hidden="true">→</span></a>
-        </div>
-        <p class="ai-note">{{ai_note}}</p>
-      </div>
-
-      <div class="studio" data-reveal>
-        <div class="studio-text">
-          <p class="studio-label"><span lang="ko">인생원작</span> {{studio_word}}</p>
-          <p class="studio-tagline">{{studio_tagline}}</p>
-        </div>
-        <a class="tlink tlink--accent studio-cta" href="mailto:contact@duvridge.com?subject=%EC%9D%B8%EC%83%9D%EC%9B%90%EC%9E%91%20%EC%8A%A4%ED%8A%9C%EB%94%94%EC%98%A4%20%EC%9D%98%EB%A2%B0"><span>{{studio_cta}}</span> <span class="arr" aria-hidden="true">→</span></a>
-      </div>
     </div>
   </section>
 

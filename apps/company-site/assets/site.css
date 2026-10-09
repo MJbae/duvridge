@@ -214,12 +214,13 @@
   .book-imprint{ font-family:var(--font-brand); font-weight:800; font-size:.72rem; letter-spacing:.02em; color:var(--brand-ink); }
 
   .product-formats{ display:flex; flex-direction:column; align-items:center; width:100%; }
-  .formats{ display:flex; flex-wrap:wrap; justify-content:center; gap:.5rem 3.5rem; margin-top:2.5rem; }
-  .format{ display:grid; grid-template-columns:auto auto; grid-template-areas:"name arrow" "meta meta"; justify-content:center; align-items:center; column-gap:.45em; row-gap:3px; min-height:48px; padding:0 4px; font-family:var(--font-ui); color:var(--accent); text-decoration:none; }
+  /* the work is finished: one line says so, and every format opens the whole work */
+  .work-status{ margin:1.75rem auto 0; font-family:var(--font-ui); font-size:.8125rem; font-weight:500; letter-spacing:.04em; line-height:1.5; color:var(--muted); }
+  .formats{ display:flex; flex-wrap:wrap; justify-content:center; gap:.5rem 3rem; margin-top:.875rem; }
+  .format{ display:grid; grid-template-columns:auto auto; grid-template-areas:"name arrow"; justify-content:center; align-items:center; column-gap:.45em; min-height:48px; padding:0 4px; font-family:var(--font-ui); color:var(--accent); text-decoration:none; }
   .format-name{ grid-area:name; font-size:.94rem; font-weight:600; letter-spacing:.01em; line-height:1.5; }
   .format .arr{ grid-area:arrow; font-size:.94rem; transition:transform .25s ease; }
   .format:hover .arr{ transform:translateX(4px); }
-  .format-meta{ grid-area:meta; font-size:.8125rem; line-height:1.5; color:var(--muted); }
   .ai-note{ margin:.625rem auto 0; font-family:var(--font-ui); font-size:.75rem; line-height:1.5; color:var(--muted); }
 
   .studio{ display:flex; align-items:center; justify-content:space-between; gap:.75rem 1.5rem; width:100%; max-width:640px; margin-top:3.5rem; padding-top:1.375rem; border-top:1px solid var(--line); text-align:left; }
@@ -235,9 +236,10 @@
     .book-title{ font-size:1.03rem; }
     .book-meta{ font-size:.6875rem; }
     .book-imprint{ font-size:.63rem; }
-    /* formats become full-width rows: name, count, arrow */
-    .formats{ flex-direction:column; flex-wrap:nowrap; gap:0; width:100%; margin-top:2rem; border-bottom:1px solid var(--line); }
-    .format{ grid-template-columns:minmax(0,1fr) auto auto; grid-template-areas:"name meta arrow"; justify-content:stretch; column-gap:12px; min-height:60px; border-top:1px solid var(--line); text-align:left; }
+    .work-status{ margin-top:1.5rem; }
+    /* formats become full-width rows: name, arrow */
+    .formats{ flex-direction:column; flex-wrap:nowrap; gap:0; width:100%; margin-top:1rem; border-bottom:1px solid var(--line); }
+    .format{ grid-template-columns:minmax(0,1fr) auto; grid-template-areas:"name arrow"; justify-content:stretch; column-gap:12px; min-height:60px; border-top:1px solid var(--line); text-align:left; }
     .format-name{ font-size:1rem; color:var(--ink); }
     .format .arr{ font-size:1rem; }
     .ai-note{ margin-top:.75rem; }
