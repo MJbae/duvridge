@@ -1,57 +1,49 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { listenState, minutesLeft, playerTarget, resumeStart } from '../site/.vitepress/shared/playback-selection.mjs'
+import { listenAction, lyricLines, nextSleepChoice, resumeStart, sceneAt, sceneStarts, sleepLabel } from '../site/.vitepress/shared/playback-selection.mjs'
 
 const readingOrder = ['prolog', 'ep01', 'ep02', 'ep03', 'ep04'].map(id => ({ id }))
 const track = duration => ({ src: '', duration, cues: [[0, 5, 'title'], [5, 20], [20, duration - 10], [duration - 10, duration, 'music']] })
 const narration = { prolog: track(115), ep01: track(220), ep02: track(170), ep03: track(213) }
-const base = { readingOrder, narration, page: '', session: null, saved: null, completed: [] }
+const base = { readingOrder, narration, saved: null, completed: [] }
 
-test('듣고 있는 회차가 있으면 아래 막대는 어느 화면에서나 그 회차를 보여 준다', () => {
-  assert.deepEqual(playerTarget({ ...base, page: 'ep03', session: { id: 'ep01', playing: true, failed: false } }), { id: 'ep01', mode: 'playing' })
-  assert.deepEqual(playerTarget({ ...base, session: { id: 'ep01', playing: false, failed: false } }), { id: 'ep01', mode: 'paused' })
-  assert.deepEqual(playerTarget({ ...base, session: { id: 'ep01', playing: false, failed: true } }), { id: 'ep01', mode: 'error' })
+test('작품 홈 버튼은 이어 들을 회차, 다음에 들을 회차, 처음 회차 순으로 정한다', () => {
+  assert.deepEqual(listenAction(base), { id: 'prolog', kind: 'start' })
+  assert.deepEqual(listenAction({ ...base, saved: { id: 'ep01', time: 82 } }), { id: 'ep01', kind: 'resume' })
+  assert.deepEqual(listenAction({ ...base, completed: ['prolog', 'ep01'] }), { id: 'ep02', kind: 'next' })
+  assert.deepEqual(listenAction({ ...base, completed: ['ep01'] }), { id: 'ep02', kind: 'next' })
+  assert.deepEqual(listenAction({ ...base, completed: ['ep02', 'ep01'] }), { id: 'ep03', kind: 'next' })
+  assert.deepEqual(listenAction({ ...base, completed: ['prolog', 'ep01', 'ep02', 'ep03'] }), { id: 'prolog', kind: 'again' })
+  assert.deepEqual(listenAction({ ...base, saved: { id: 'gone', time: 3 } }), { id: 'prolog', kind: 'start' })
+  // 소설로만 읽은 회차는 들은 회차가 아니다.
+  assert.deepEqual(listenAction({ ...base, completed: ['ep09'] }), { id: 'prolog', kind: 'start' })
+  assert.equal(listenAction({ ...base, narration: {} }), null)
 })
 
-test('회차 화면에서는 그 회차를 듣기·이어 듣기·다시 듣기·준비 중으로 보여 준다', () => {
-  assert.deepEqual(playerTarget({ ...base, page: 'ep02' }), { id: 'ep02', mode: 'idle' })
-  assert.deepEqual(playerTarget({ ...base, page: 'ep02', saved: { id: 'ep02', time: 82 } }), { id: 'ep02', mode: 'resume', time: 82 })
-  assert.deepEqual(playerTarget({ ...base, page: 'ep02', saved: { id: 'ep01', time: 82 } }), { id: 'ep02', mode: 'idle' })
-  assert.deepEqual(playerTarget({ ...base, page: 'ep02', completed: ['ep02'] }), { id: 'ep02', mode: 'replay' })
-  assert.deepEqual(playerTarget({ ...base, page: 'ep04' }), { id: 'ep04', mode: 'unavailable' })
-})
-
-test('홈에서는 이어 들을 회차, 없으면 아직 안 들은 첫 회차를 보여 준다', () => {
-  assert.deepEqual(playerTarget(base), { id: 'prolog', mode: 'idle' })
-  assert.deepEqual(playerTarget({ ...base, saved: { id: 'ep01', time: 82 } }), { id: 'ep01', mode: 'resume', time: 82 })
-  assert.deepEqual(playerTarget({ ...base, completed: ['prolog', 'ep01'] }), { id: 'ep02', mode: 'idle' })
-  assert.deepEqual(playerTarget({ ...base, completed: ['prolog', 'ep01', 'ep02', 'ep03'] }), { id: 'prolog', mode: 'replay' })
-  assert.deepEqual(playerTarget({ ...base, saved: { id: 'gone', time: 3 } }), { id: 'prolog', mode: 'idle' })
-  assert.equal(playerTarget({ ...base, narration: {} }), null)
-})
-
-test('홈은 마지막으로 다 들은 회차의 다음 화를 먼저 권하고, 건너뛴 회차는 그 뒤에 권한다', () => {
-  assert.deepEqual(playerTarget({ ...base, completed: ['ep01'] }), { id: 'ep02', mode: 'idle' })
-  assert.deepEqual(playerTarget({ ...base, completed: ['ep02', 'ep01'] }), { id: 'ep03', mode: 'idle' })
-  assert.deepEqual(playerTarget({ ...base, completed: ['ep01', 'ep02', 'ep03'] }), { id: 'prolog', mode: 'idle' })
-  assert.deepEqual(playerTarget({ ...base, completed: ['ep09'] }), { id: 'prolog', mode: 'idle' })
-})
-
-test('이어 들을 때는 멈춘 문장의 처음부터, 남은 시간은 분 단위로 올려 센다', () => {
+test('이어 들을 때는 멈춘 문장의 처음부터 시작한다', () => {
   assert.equal(resumeStart(narration.ep01.cues, 12), 5)
   assert.equal(resumeStart(narration.ep01.cues, 0), 0)
   assert.equal(resumeStart(narration.ep01.cues, 999), 210)
-  assert.equal(minutesLeft(220, 82), 3)
-  assert.equal(minutesLeft(220, 219.5), 1)
-  assert.equal(minutesLeft(220, 300), 1)
 })
 
-test('목차는 회차마다 재생 중·남은 시간·재생 완료·준비 중을 알려 준다', () => {
-  const state = { narration, session: { id: 'ep01', playing: true, time: 30 }, saved: { id: 'ep01', time: 82 }, completed: ['prolog'] }
-  assert.deepEqual(listenState('ep01', state), { kind: 'playing' })
-  assert.deepEqual(listenState('ep01', { ...state, session: { id: 'ep01', playing: false, time: 30 } }), { kind: 'progress', minutes: 4 })
-  assert.deepEqual(listenState('ep01', { ...state, session: null }), { kind: 'progress', minutes: 3 })
-  assert.deepEqual(listenState('prolog', state), { kind: 'done', minutes: 2 })
-  assert.deepEqual(listenState('ep02', state), { kind: 'ready', minutes: 3 })
-  assert.deepEqual(listenState('ep04', state), { kind: 'unavailable' })
+test('타이머는 끔 → 15분 → 30분 → 회차 끝 → 끔으로 바뀐다', () => {
+  assert.deepEqual([0, 15, 30, -1].map(nextSleepChoice), [15, 30, -1, 0])
+  assert.deepEqual([0, 15, 30, -1].map(sleepLabel), ['타이머', '15분', '30분', '회차 끝'])
+})
+
+test('낭독 문장은 앞뒤 문장과 함께 보이고, 끝 음악에서는 마지막 문장이 남는다', () => {
+  const texts = ['3화 열두 자리 숫자', '1950년대 · 안면도 중장리', '첫 문장.', '둘째 문장.', '']
+  assert.deepEqual(lyricLines(texts, -1), { previous: -1, current: 0, next: 1 })
+  assert.deepEqual(lyricLines(texts, 2), { previous: 1, current: 2, next: 3 })
+  assert.deepEqual(lyricLines(texts, 4), { previous: 2, current: 3, next: -1 })
+})
+
+test('장면은 시작한 마지막 그림을 보여 주고, 목록은 장면이 시작하는 시각을 안다', () => {
+  const scenes = [[0, 'ep03-01'], [12, 'ep03-02']]
+  assert.equal(sceneAt(scenes, -1), 'ep03-01')
+  assert.equal(sceneAt(scenes, 11), 'ep03-01')
+  assert.equal(sceneAt(scenes, 12), 'ep03-02')
+  assert.equal(sceneAt([], 3), undefined)
+  const cues = Array.from({ length: 14 }, (_, index) => [index * 5, index * 5 + 5])
+  assert.deepEqual(sceneStarts(scenes, cues), [{ image: 'ep03-01', start: 0 }, { image: 'ep03-02', start: 60 }])
 })

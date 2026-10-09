@@ -75,7 +75,7 @@ function assertPreviewImage(head) {
   assert.equal(head.meta('twitter:image:alt'), head.meta('og:image:alt'))
 }
 
-test('home sharing uses the short life description while the visible synopsis stays unchanged', async () => {
+test('home sharing uses the short life description and the static work page lists the episodes', async () => {
   const head = await staticHead('index.html')
   assert.equal(head.title, title)
   assert.equal(head.meta('description'), description)
@@ -87,14 +87,11 @@ test('home sharing uses the short life description while the visible synopsis st
   assert.equal(head.link('canonical').href, siteUrl)
   assert.equal(head.meta('og:url'), siteUrl)
   assertPreviewImage(head)
+  // Without JavaScript the work page still names every episode and links to it.
   const html = await readFile(new URL('index.html', dist), 'utf8')
-  const synopsis = html.match(/<div\b[^>]*class="work-synopsis"[^>]*>([\s\S]*?)<\/div>/)?.[1]
-  assert.ok(synopsis, 'the home page must retain its visible synopsis')
-  assert.deepEqual(
-    [...synopsis.matchAll(/<p\b[^>]*>([\s\S]*?)<\/p>/g)].map(([, paragraph]) => decodeHtml(paragraph)),
-    catalog.work.synopsis,
-    'the visible synopsis must remain unchanged when the sharing description changes'
-  )
+  const links = [...html.matchAll(/<a\b[^>]*class="episode-item"[^>]*href="([^"]+)"/g)].map(([, href]) => href)
+  assert.deepEqual(links, catalog.readingOrder.map(episode => `${base}${episode.url.replace(/^\//, '')}`))
+  for (const episode of catalog.readingOrder) assert.ok(decodeHtml(html).includes(episode.title), episode.title)
 })
 
 test('each episode link uses its current manuscript title and stable canonical URL', async () => {

@@ -1,12 +1,12 @@
 이 서비스는 Duvridge 모노레포의 `@duvridge/toldlife-audiobooks` 워크스페이스입니다. 설치는 저장소 루트에서 `npm ci`로 한 번만 합니다. 개발·빌드는 루트에서 `npm run dev --workspace @duvridge/toldlife-audiobooks`, `npm run build --workspace @duvridge/toldlife-audiobooks`로 실행합니다. 배포 정책은 [루트 README](../../README.md)를 따릅니다.
 
-서비스 이름은 `toldlife-audiobooks`로 통일합니다. `AudiobookReaderLayout.vue`가 화면을 구성하고 `AudiobookHome.vue`가 공통 `StoryOverview.vue`에 청취 상태를 연결합니다. `AudiobookPlayerBar.vue`·`AudiobookPlayerSheet.vue`는 플레이어, `NarrationStartButton.vue`는 선택한 문장부터 듣는 버튼입니다. 네이밍 기준은 [네이밍 정책](../../docs/naming-policy.md)을 따릅니다. 기본 공개 경로는 `/audiobooks/`이며 `SITE_BASE`로 별도 테스트 경로를 지정할 수 있습니다.
+서비스 이름은 `toldlife-audiobooks`로 통일합니다. 플랫폼 홈의 `오디오북` 탭(`/audiobooks/`)과 `영상` 탭(`/audiobooks/watch/`)을 함께 담당합니다. 두 형식은 같은 낭독을 쓰므로 재생 위치 하나를 함께 씁니다. `AudiobookReaderLayout.vue`가 화면을 고르고, 작품 홈은 공통 `WorkHome.vue`에 청취 상태를 연결합니다. `AudiobookPlayer.vue`는 낭독 문장을 앞뒤 문장과 함께 보여 주는 전체 화면 플레이어, `TheaterPlayer.vue`는 장면 그림과 자막으로 보는 극장형 영상입니다. 영상 회차는 `site/watch/[id].md` 동적 경로가 녹음된 회차마다 만듭니다. 네이밍 기준은 [네이밍 정책](../../docs/naming-policy.md)을 따릅니다. 기본 공개 경로는 `/audiobooks/`이며 `SITE_BASE`로 별도 테스트 경로를 지정할 수 있습니다.
 
 원고는 `content/books/bae-byunghee/manuscript.md`, 공통 자료·음악·삽화는 `content/books/bae-byunghee/`와 `content/books/bae-byunghee/public/`에서만 수정합니다. 앱 안의 동일 경로는 준비 단계에서 만든 무시된 작업 사본이며 다음 실행 때 교체됩니다. 공통 문체·본문·목차·기본 컴포넌트는 `packages/reader-ui/`에서 관리합니다. 삭제·이름 변경한 공통 입력은 생성 목록에 따라 작업 사본에서도 제거되며, 오디오 앱의 낭독 음성·자막은 보존됩니다.
 
-낭독 MP3/SRT와 플레이어·문장 선택·자동 재생·청취 상태는 이 앱이 소유합니다. 최신 본문은 읽기 서비스와 같고 목차는 1936 안면도, 1977 남양만 간척지, 1983 독정 정미소, 2003 독정 RPC의 터전 구분을 따릅니다.
+낭독 MP3/SRT와 플레이어·자막·장면·자동 재생·타이머·청취 상태는 이 앱이 소유합니다. 오디오북과 영상 화면에는 본문 전체를 싣지 않습니다. 자막 문장은 들리는 그대로 SRT에서 가져오고, 장면은 `content/narration/<id>.scenes.json`에 기록합니다. 이 장면 정보는 제작 도구의 낭독 대본(`tools/audiobook-production/narration-scripts/`)을 SRT 순서에 맞춰 만들며, `narration:sync`가 함께 갱신하고 `npm run narration:scenes --workspace @duvridge/toldlife-audiobooks`로 다시 만들 수 있습니다.
 
-현재 오디오는 최신 정본으로 재생성할 예정이므로 기존 녹음과의 일치율은 원고·삽화 편집이나 웹 빌드를 막지 않습니다. 일치하는 문장만 강조하고 나머지 시각에도 기존 오디오는 계속 재생합니다. MP3·SRT 짝, 회차 ID, 파일 경로, 비어 있는 음성과 겹친 시각의 검증은 유지합니다. 새 녹음은 `narration:sync`로 반영할 때 최신 원고와 일치하는지 검사하며, 웹 빌드는 음성이나 시각 파일을 재생성하지 않습니다.
+현재 오디오는 최신 정본으로 재생성할 예정이므로 기존 녹음과의 일치율은 원고·삽화 편집이나 웹 빌드를 막지 않습니다. MP3·SRT 짝, 회차 ID, 파일 경로, 비어 있는 음성과 겹친 시각의 검증은 유지합니다. 새 녹음은 `narration:sync`로 반영할 때 최신 원고와 일치하는지 검사하며, 웹 빌드는 음성이나 시각 파일을 재생성하지 않습니다.
 
 <p align="center">
   <img src="../../content/books/bae-byunghee/public/images/home-cover-1280.jpg" alt="가을 논을 배경으로 정장을 입은 배병희의 수채화 초상" width="100%">

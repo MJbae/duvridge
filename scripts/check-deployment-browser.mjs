@@ -66,103 +66,114 @@ try {
     const episodes = structure.episodes.map(episode => episode.id)
     const markdown = await createMarkdownRenderer(sourceRoot, { html: false })
     const inspector = await browser.newPage()
+    const title = sourceData.title || book.work.title
+    const headOf = published => inspector.evaluate(html => {
+      const page = new DOMParser().parseFromString(html, 'text/html')
+      return { title: page.querySelector('meta[property="og:title"]')?.getAttribute('content'), paragraphs: [...page.querySelectorAll('.story-content p')].map(paragraph => paragraph.textContent) }
+    }, published)
     let paragraphChecks = 0
-    for (const service of ['novels', 'audiobooks']) {
-      for (const episode of structure.episodes) {
-        const { id } = episode
-        const text = await (await request(values.toldlife, `/${service}/read/${id}.html`)).text()
-        assert(text.includes('story-content'), `${service}/${id}: no reader body`)
-        assert(!text.includes('<!-- illustration:'), `${service}/${id}: raw illustration marker leaked`)
-        assert(text.includes(`https://toldlife.duvridge.com/${service}/read/${id}.html`), 'Wrong canonical')
-        const rendered = markdown.render(stripIllustrationMarkers(episode.body))
-        const comparison = await inspector.evaluate(({ published, authored }) => {
-          const parser = new DOMParser()
-          const actual = parser.parseFromString(published, 'text/html')
-          const expected = parser.parseFromString(authored, 'text/html')
-          return {
-            title: actual.querySelector('meta[property="og:title"]')?.getAttribute('content'),
-            paragraphs: [...actual.querySelectorAll('.story-content p')].map(paragraph => paragraph.textContent),
-            expected: [...expected.querySelectorAll('p')].map(paragraph => paragraph.textContent),
-          }
-        }, { published: text, authored: rendered })
-        assert.equal(comparison.title, `${episode.label} ${episode.title} · ${sourceData.title || book.work.title}`, `${service}/${id}: stale title`)
-        assert.deepEqual(comparison.paragraphs, comparison.expected, `${service}/${id}: published prose differs from the canonical manuscript`)
-        paragraphChecks += comparison.expected.length
-      }
+    // Only the novel publishes the text; the audiobook and the video show the narration, not the prose.
+    for (const episode of structure.episodes) {
+      const { id } = episode
+      const text = await (await request(values.toldlife, `/novels/read/${id}.html`)).text()
+      assert(text.includes('story-content'), `novels/${id}: no reader body`)
+      assert(!text.includes('<!-- illustration:'), `novels/${id}: raw illustration marker leaked`)
+      assert(text.includes(`https://toldlife.duvridge.com/novels/read/${id}.html`), 'Wrong canonical')
+      const published = await headOf(text)
+      const expected = await inspector.evaluate(html => [...new DOMParser().parseFromString(html, 'text/html').querySelectorAll('p')].map(paragraph => paragraph.textContent),
+        markdown.render(stripIllustrationMarkers(episode.body)))
+      assert.equal(published.title, `${episode.label} ${episode.title} · ${title}`, `novels/${id}: stale title`)
+      assert.deepEqual(published.paragraphs, expected, `novels/${id}: published prose differs from the canonical manuscript`)
+      paragraphChecks += expected.length
+      const listen = await (await request(values.toldlife, `/audiobooks/read/${id}.html`)).text()
+      assert(listen.includes(`https://toldlife.duvridge.com/audiobooks/read/${id}.html`), `audiobooks/${id}: wrong canonical`)
+      assert.equal((await headOf(listen)).title, `${episode.label} ${episode.title} · ${title}`, `audiobooks/${id}: stale title`)
+    }
+    const recordings = ['prolog', 'ep01', 'ep02', 'ep03']
+    for (const id of recordings) {
+      const episode = structure.episodes.find(entry => entry.id === id)
+      const watch = await (await request(values.toldlife, `/audiobooks/watch/${id}.html`)).text()
+      assert(watch.includes(`https://toldlife.duvridge.com/audiobooks/watch/${id}.html`), `watch/${id}: wrong canonical`)
+      assert.equal((await headOf(watch)).title, `${episode.label} ${episode.title} · ${title}`, `watch/${id}: stale title`)
     }
     await inspector.close()
     disposeMdItInstance()
-    for (const id of ['prolog', 'ep01', 'ep02', 'ep03']) {
+    for (const id of recordings) {
       const response = await request(values.toldlife, `/audiobooks/record/${id}.mp3`, { headers: { Range: 'bytes=0-255' } })
       assert((await response.arrayBuffer()).byteLength > 0, `Empty recording: ${id}`)
     }
     const missing = await fetch(new URL('/missing-monorepo-route', values.toldlife))
     assert.equal(missing.status, 404, 'Unknown routes must return 404')
+    const audio = page => page.locator('.narration-audio')
+    async function startPlayback(page, device) {
+      // Server-rendered buttons exist before hydration; retry until the narration really plays.
+      await expect(async () => {
+        await page.getByRole('button', { name: '재생', exact: true }).click({ timeout: 2000 })
+        await page.waitForFunction(() => {
+          const media = document.querySelector('.narration-audio')
+          return media && !media.paused && media.readyState >= 2
+        }, undefined, { timeout: 15000 })
+      }).toPass({ timeout: 60000 }).catch(async error => {
+        const media = await audio(page).evaluate(element => ({ src: element.currentSrc, paused: element.paused, readyState: element.readyState, error: element.error?.message }))
+        console.error(JSON.stringify({ device, url: page.url(), media }))
+        throw error
+      })
+    }
     for (const [device, viewport] of [['phone', { width: 390, height: 844 }], ['desktop', { width: 1440, height: 1000 }]]) {
       const context = await browser.newContext({ viewport })
       const page = await context.newPage()
       const errors = []
       page.on('pageerror', error => errors.push(error.message))
-      await page.addInitScript(() => localStorage.setItem('family-library:read-along-tip', '1'))
-      const headings = []
-      const contents = []
-      for (const service of ['novels', 'audiobooks']) {
-        await page.goto(new URL(`/${service}/`, values.toldlife).href)
-        await page.locator('.chapter-row').first().waitFor()
-        assert.equal(await page.locator('.chapter-row').count(), episodes.length)
-        headings.push(await page.locator('.place-heading').allTextContents())
-        assert(headings.at(-1).length > 0, 'Missing latest place timeline')
-        assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${service} home overflows`)
-        await page.screenshot({ path: `${output}/${service}-${device}-home.png`, fullPage: true })
-        await page.goto(new URL(`/${service}/read/ep02.html`, values.toldlife).href)
-        await page.locator('.story-content').waitFor()
-        contents.push(await page.locator('.story-content').textContent())
-        assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${service} reader overflows`)
-        if (service === 'novels') assert.equal(await page.locator('.player-bar').count(), 0)
-        else {
-          const bar = page.getByRole('region', { name: '오디오북 플레이어' })
-          await page.locator('.narration-audio').waitFor({ state: 'attached' })
-          const sheet = page.getByRole('dialog', { name: '펼친 플레이어' })
-          // SSR controls exist before hydration; opening the sheet proves their handlers are ready.
-          await expect(async () => {
-            await bar.locator('.player-expand').click()
-            await expect(sheet).toBeVisible({ timeout: 2000 })
-          }).toPass({ timeout: 30000 })
-          await sheet.getByRole('button', { name: '접기' }).click()
-          console.log(`Checking ${device} playback at ${page.url()}`)
-          await bar.locator('.player-action').click()
-          try {
-            await page.waitForFunction(() => {
-              const audio = document.querySelector('.narration-audio')
-              return audio && !audio.paused && audio.readyState >= 2
-            }, undefined, { timeout: 60000 })
-          } catch (error) {
-            const media = await page.locator('.narration-audio').evaluate(audio => ({
-              src: audio.currentSrc, paused: audio.paused, readyState: audio.readyState,
-              networkState: audio.networkState, error: audio.error?.message,
-            }))
-            console.error(JSON.stringify({ device, media, player: await bar.innerText(), errors }))
-            throw error
-          }
-          assert((await bar.locator('.player-action').textContent()).includes('일시 정지'))
-          await bar.locator('.player-expand').click()
-          await sheet.waitFor({ state: 'visible' })
-          await sheet.getByRole('button', { name: '1.25배 빠르게' }).click()
-          assert.equal(await page.locator('.narration-audio').evaluate(audio => audio.playbackRate), 1.25)
-          await sheet.getByRole('button', { name: '다음 문장' }).click()
-          await page.screenshot({ path: `${output}/audio-sheet-${device}.png`, fullPage: true })
-          await sheet.getByRole('button', { name: '접기' }).click()
-          await bar.locator('.player-action').click()
-          assert(await page.locator('.narration-audio').evaluate(audio => audio.paused))
-        }
-        await page.screenshot({ path: `${output}/${service}-${device}-reader.png`, fullPage: true })
+      const overflows = () => page.evaluate(() => document.documentElement.scrollWidth > innerWidth)
+      // The platform home: three tabs, each with its own work and button.
+      await page.goto(new URL('/', values.toldlife).href)
+      for (const [tab, verb] of [['오디오북', '듣기'], ['영상', '보기'], ['오리지널 시리즈', '읽기']]) {
+        await page.getByRole('link', { name: tab, exact: true }).click()
+        assert((await page.locator('.panel.is-active .big-button').textContent()).includes(verb), `home ${tab}: wrong button`)
       }
-      assert.deepEqual(headings[0], headings[1], 'Shared chapter grouping differs')
-      assert.equal(contents[0].replace(/\s+/g, ''), contents[1].replace(/\s+/g, ''), 'Canonical story differs')
+      assert(!await overflows(), 'platform home overflows')
+      await page.screenshot({ path: `${output}/home-${device}.png`, fullPage: true })
+      for (const [name, path] of [['novels', '/novels/'], ['audiobooks', '/audiobooks/'], ['video', '/audiobooks/watch/']]) {
+        await page.goto(new URL(path, values.toldlife).href)
+        await page.locator('.episode-item').first().waitFor({ state: 'attached' })
+        assert.equal(await page.locator('.episode-item').count(), episodes.length, `${name}: episode list`)
+        assert((await page.locator('.work-action .big-button').textContent()).trim().length > 0, `${name}: no main action`)
+        assert(!await overflows(), `${name} work page overflows`)
+        await page.screenshot({ path: `${output}/${name}-${device}-home.png`, fullPage: true })
+      }
+      await page.goto(new URL('/novels/read/ep02.html', values.toldlife).href)
+      await page.locator('.story-content p').first().waitFor()
+      assert.equal(await page.locator('.reader-bar a, .reader-bar button').count(), 3, 'reader bar controls')
+      await expect(async () => {
+        await page.getByRole('button', { name: '설정', exact: true }).click({ timeout: 2000 })
+        await expect(page.getByRole('dialog', { name: '읽기 설정' })).toBeVisible({ timeout: 2000 })
+      }).toPass({ timeout: 30000 })
+      assert(!await overflows(), 'novel reader overflows')
+      await page.screenshot({ path: `${output}/novels-${device}-reader.png`, fullPage: true })
+      await page.goto(new URL('/audiobooks/read/ep02.html', values.toldlife).href)
+      console.log(`Checking ${device} playback at ${page.url()}`)
+      await startPlayback(page, device)
+      assert(await page.getByRole('button', { name: '일시 정지', exact: true }).isVisible())
+      const before = await audio(page).evaluate(element => element.currentTime)
+      await page.getByRole('button', { name: '10초 앞으로' }).click()
+      await expect.poll(() => audio(page).evaluate(element => element.currentTime), { message: 'skip forward' }).toBeGreaterThan(before + 5)
+      await page.getByRole('button', { name: /^재생 속도/ }).click()
+      assert.equal(await audio(page).evaluate(element => element.playbackRate), 1.25)
+      assert((await page.locator('.lyric-current').textContent()).trim().length > 0, 'no narration sentence')
+      assert(!await overflows(), 'audiobook player overflows')
+      await page.screenshot({ path: `${output}/audiobooks-${device}-player.png`, fullPage: true })
+      await page.getByRole('button', { name: '일시 정지', exact: true }).click()
+      assert(await audio(page).evaluate(element => element.paused))
+      await page.goto(new URL('/audiobooks/watch/ep02.html', values.toldlife).href)
+      await startPlayback(page, device)
+      assert((await page.locator('.subtitle-band').textContent()).trim().length > 0, 'no video subtitle')
+      assert(!await overflows(), 'video overflows')
+      await page.screenshot({ path: `${output}/video-${device}-player.png` })
+      await page.evaluate(() => document.querySelector('.narration-audio').pause())
       assert.deepEqual(errors, [], 'Browser runtime errors')
       await context.close()
     }
-    evidence.results.push({ group: 'toldlife', origin: values.toldlife, sha, episodeRoutes: episodes.length * 2, recordings: 4,
+    evidence.results.push({ group: 'toldlife', origin: values.toldlife, sha, episodeRoutes: episodes.length * 2 + recordings.length, recordings: recordings.length,
       manuscript: { bookId, sha256: sourceHash, episodeCount: episodes.length, paragraphChecks }, devices: ['phone', 'desktop'] })
   }
 } finally {

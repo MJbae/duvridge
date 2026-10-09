@@ -1,5 +1,5 @@
 export const episodeImageSizes = '(min-width: 680px) 632px, (max-width: 360px) calc(100vw - 40px), calc(100vw - 48px)'
-export const coverImageSizes = '(min-width: 700px) 632px, 100vw'
+export const coverImageSizes = '100vw'
 
 export function imageSrcset(sources, base) {
   const prefix = base.endsWith('/') ? base : `${base}/`

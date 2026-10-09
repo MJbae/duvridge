@@ -1,28 +1,18 @@
 import type { NarrationCue } from './narration-cues.mjs'
 
-type Track = { duration: number; cues: readonly NarrationCue[] }
-type Saved = { id: string; time: number }
-type Session = { id: string; playing: boolean; failed: boolean }
-type SessionTime = { id: string; playing: boolean; time: number }
-export type PlayerMode = 'playing' | 'paused' | 'error' | 'resume' | 'idle' | 'replay' | 'unavailable'
-export type PlayerTarget = { id: string; mode: PlayerMode; time?: number }
-export type ListenState =
-  | { kind: 'playing' }
-  | { kind: 'progress' | 'done' | 'ready'; minutes: number }
-  | { kind: 'unavailable' }
-export function playerTarget(input: {
-  readingOrder: readonly { id: string }[]
+type Episode = { id: string }
+type Track = { cues: NarrationCue[] }
+export type ListenAction = { id: string; kind: 'resume' | 'next' | 'start' | 'again' }
+export function listenAction(options: {
+  readingOrder: readonly Episode[]
   narration: Record<string, Track>
-  page: string
-  session: Session | null
-  saved: Saved | null
+  saved: { id: string; time: number } | null
   completed: readonly string[]
-}): PlayerTarget | null
+}): ListenAction | null
 export function resumeStart(cues: readonly NarrationCue[], time: number): number
-export function minutesLeft(duration: number, time: number): number
-export function listenState(id: string, state: {
-  narration: Record<string, Track>
-  session: SessionTime | null
-  saved: Saved | null
-  completed: readonly string[]
-}): ListenState
+export const sleepChoices: readonly number[]
+export function nextSleepChoice(value: number): number
+export function sleepLabel(value: number): string
+export function lyricLines(texts: readonly string[], cueIndex: number): { previous: number; current: number; next: number }
+export function sceneAt(scenes: readonly [number, string][], cueIndex: number): string | undefined
+export function sceneStarts(scenes: readonly [number, string][], cues: readonly NarrationCue[]): { image: string; start: number }[]

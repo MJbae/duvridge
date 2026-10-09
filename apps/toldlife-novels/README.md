@@ -1,6 +1,6 @@
 이 서비스는 Duvridge 모노레포의 `@duvridge/toldlife-novels` 워크스페이스입니다. 설치는 저장소 루트에서 `npm ci`로 한 번만 합니다. 개발·빌드는 루트에서 `npm run dev --workspace @duvridge/toldlife-novels`, `npm run build --workspace @duvridge/toldlife-novels`로 실행합니다. 배포 정책은 [루트 README](../../README.md)를 따릅니다.
 
-서비스 이름은 작품별 임시 이름 대신 `toldlife-novels`로 통일합니다. `NovelReaderLayout.vue`가 읽기 화면을 구성하고, 공통 `StoryOverview.vue`가 작품 소개와 목차를 그립니다. 회차 끝은 `NovelEpisodeEnd.vue`, 배경음악 버튼은 `BackgroundMusicToggle.vue`가 담당합니다. 네이밍 기준은 [네이밍 정책](../../docs/naming-policy.md)을 따릅니다. 기본 공개 경로는 `/novels/`이며 `SITE_BASE`로 별도 테스트 경로를 지정할 수 있습니다.
+서비스 이름은 작품별 임시 이름 대신 `toldlife-novels`로 통일합니다. 플랫폼 홈의 `오리지널 시리즈` 탭이 이 서비스입니다. `NovelReaderLayout.vue`가 작품 홈(공통 `WorkHome.vue`)과 읽기 화면을 구성합니다. 읽기 화면은 위 막대(뒤로·회차 제목으로 여는 목차·설정)와 아래 진행선을 둡니다. 설정은 글자 크기·종이와 밤·배경음악만 바꿉니다. 회차 끝은 `NovelEpisodeEnd.vue`, 배경음악 스위치는 `BackgroundMusicToggle.vue`가 담당합니다. 배경음악은 회차에서만 틀고 작품 홈은 조용히 둡니다. 네이밍 기준은 [네이밍 정책](../../docs/naming-policy.md)을 따릅니다. 기본 공개 경로는 `/novels/`이며 `SITE_BASE`로 별도 테스트 경로를 지정할 수 있습니다.
 
 원고는 `content/books/bae-byunghee/manuscript.md`, 공통 자료·음악·삽화는 `content/books/bae-byunghee/`와 `content/books/bae-byunghee/public/`에서만 수정합니다. 앱 안의 동일 경로는 준비 단계에서 만든 무시된 작업 사본이며 다음 실행 때 교체됩니다. 공통 문체·본문·목차·기본 컴포넌트는 `packages/reader-ui/`에서 관리합니다. 삭제·이름 변경한 공통 입력은 생성 목록에 따라 작업 사본에서도 제거되며, 오디오 앱의 낭독 음성·자막은 보존됩니다.
 

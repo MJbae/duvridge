@@ -1,4 +1,4 @@
-import { defineConfig, type MarkdownOptions } from 'vitepress'
+import { defineConfig, type MarkdownOptions, type UserConfig } from 'vitepress'
 import { loadEnv, searchForWorkspaceRoot } from 'vite'
 import { fileURLToPath } from 'node:url'
 import { episodeIllustrations } from '../markdown/render-episode-illustrations.ts'
@@ -12,10 +12,12 @@ type ReaderConfigOptions = {
   catalog: Pick<ReaderCatalog, 'illustrations'> & { work: ReaderCatalog['work'] & { cover: Cover; sharing: Sharing } }
   siteNames?: Record<string, string>
   configureMarkdown?: NonNullable<MarkdownOptions['config']>
+  /** Fills in a service's own page kinds (for example per-episode pages from dynamic routes) before the shared metadata is written. */
+  preparePage?: (pageData: Parameters<NonNullable<UserConfig['transformPageData']>>[0]) => void
 }
 
 /** One reading/metadata configuration; services add their own Markdown features. */
-export function createReaderConfig({ root, catalog, defaultBase = '/', defaultOrigin, siteNames = {}, configureMarkdown }: ReaderConfigOptions) {
+export function createReaderConfig({ root, catalog, defaultBase = '/', defaultOrigin, siteNames = {}, configureMarkdown, preparePage }: ReaderConfigOptions) {
   const sharedRoot = fileURLToPath(new URL('../../', import.meta.url))
   const env = loadEnv(process.env.NODE_ENV || 'production', root, '')
   const base = process.env.SITE_BASE || env.SITE_BASE || defaultBase
@@ -38,16 +40,16 @@ export function createReaderConfig({ root, catalog, defaultBase = '/', defaultOr
     appearance: false,
     head: [
       ['script', {}, "try{const m=localStorage.getItem('family-library:theme');if(['auto','light','dark'].includes(m))document.documentElement.dataset.theme=m}catch(e){}"],
-      ['meta', { name: 'theme-color', content: '#ffffff' }],
+      ['meta', { name: 'theme-color', content: '#111318' }],
       ['meta', { name: 'color-scheme', content: 'light dark' }],
       [
         'meta',
         { name: 'viewport', content: 'width=device-width, initial-scale=1, viewport-fit=cover' },
       ],
-      // The serif face is the default reading font, so it loads with the page instead of on demand.
+      // Titles and the novel's text use Hahmlet, the interface IBM Plex Sans KR; both load with the page.
       ['link', { rel: 'preconnect', href: 'https://fonts.googleapis.com' }],
       ['link', { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' }],
-      ['link', { id: 'serif-font', rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap' }],
+      ['link', { id: 'reader-fonts', rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Hahmlet:wght@400;500;700;800&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap' }],
       ['link', { rel: 'icon', type: 'image/svg+xml', href: `${base}favicon.svg` }],
       ['link', { rel: 'icon', type: 'image/png', sizes: '32x32', href: `${base}favicon-32.png` }],
       ['link', { rel: 'apple-touch-icon', sizes: '180x180', href: `${base}apple-touch-icon.png` }],
@@ -82,6 +84,7 @@ export function createReaderConfig({ root, catalog, defaultBase = '/', defaultOr
       build: { chunkSizeWarningLimit: 650 },
     },
     transformPageData(pageData) {
+      preparePage?.(pageData)
       const isHome = pageData.frontmatter.layout === 'home'
       const title = isHome ? workTitle : String(pageData.frontmatter.shareTitle || `${pageData.title} · ${workTitle}`)
       // The client reads PageData.titleTemplate; the static head reads frontmatter.

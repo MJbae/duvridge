@@ -42,12 +42,12 @@ async function openReactions(page: Page) {
   await expect(page.locator('.reaction-options button svg')).toHaveCount(4)
   expect(await page.locator('.reaction-options').innerText()).not.toMatch(/\p{Extended_Pictographic}/u)
   await expect(page.locator('.story-end')).toHaveCount(0)
-  await expect(page.getByRole('heading', { name: '이 이야기, 어떠셨나요?' })).toBeVisible()
-  // Title, reactions and episode navigation keep the 32 / 12 / 40px rhythm from the break.
+  await expect(page.getByRole('group', { name: '마음 남기기' })).toBeVisible()
+  // The rule, the reactions and the next episode keep the 36 / 40px rhythm.
   expect(await page.evaluate(() => {
     const box = (selector: string) => document.querySelector(selector)!.getBoundingClientRect()
-    return [box('.reaction-title').top - box('.story-break').bottom, box('.reaction-options').top - box('.reaction-title').bottom, box('.episode-navigation').top - box('.reaction-options').bottom].map(Math.round)
-  })).toEqual([32, 12, 40])
+    return [box('.reaction-options').top - box('.end-rule').bottom, box('.next-episode').top - box('.reaction-options').bottom].map(Math.round)
+  })).toEqual([36, 40])
 }
 async function storedReactions(request: APIRequestContext) {
   const response = await request.get(`${documentsBase}/pages/memoir-ep01/reactions`, { headers: { Authorization: 'Bearer owner' } })
@@ -66,8 +66,9 @@ test('Firebase가 연결되어도 댓글 화면과 요청은 없고 회차 반�
   await page.locator('.episode-end').screenshot({ path: 'test-results/reactions/reactions-390.png' })
   await expect(page.locator('#comments, .family-comments, .comment-composer')).toHaveCount(0)
   await expect(page.getByRole('textbox')).toHaveCount(0)
-  await page.locator('.next-episode').click()
+  await page.locator('.next-episode .big-button').click()
   await expect(page).toHaveURL(/ep02\.html$/)
+  await expect(page.locator('.reader-title')).toHaveText('2화 책보 대신 지게')
   await page.locator('#reactions').scrollIntoViewIfNeeded()
   await expect(page.getByRole('button', { name: '좋아요', exact: true })).toBeEnabled()
   await expect(page.locator('#comments, .family-comments, .comment-composer')).toHaveCount(0)
@@ -109,7 +110,7 @@ test('episode reactions coalesce clicks, persist across browsers, switch, cancel
     await expect(page.locator('.reaction-options button[aria-pressed="false"] svg[fill="currentColor"]')).toHaveCount(0)
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
     await page.screenshot({ path: 'test-results/reactions/reactions-320.png', fullPage: true })
-    await page.locator('.next-episode').click()
+    await page.locator('.next-episode .big-button').click()
     await expect(page).toHaveURL(/ep02\.html$/)
     await expect.poll(async () => (await storedReactions(request))[0]?.fields.wow.integerValue).toBe('1')
     expect((await storedReactions(request))[0].fields.remember.integerValue).toBe('0')
@@ -119,7 +120,7 @@ test('episode reactions coalesce clicks, persist across browsers, switch, cancel
 test('초기 서버 연결이 늦어도 반응을 즉시 선택하고 늦은 조회가 선택을 덮어쓰지 않는다', async ({ page, request }) => {
   let release!: () => void, requested = false
   const pending = new Promise<void>(resolve => { release = resolve })
-  await page.route(/\/reaction-firestore\.ts(?:\?|$)/, async route => {
+  await page.route(/\/firestore-reaction-store\.ts(?:\?|$)/, async route => {
     requested = true
     await pending
     await route.continue()
@@ -171,7 +172,7 @@ test('저장 요청 중에도 선택을 바꾸고 마지막 선택만 순서대�
 })
 
 test('미전송 선택을 보관하고 다른 화에서 새로고침해도 이어서 저장한다', async ({ page, request }) => {
-  await page.route(/\/reaction-firestore\.ts(?:\?|$)/, async route => {
+  await page.route(/\/firestore-reaction-store\.ts(?:\?|$)/, async route => {
     await new Promise(resolve => setTimeout(resolve, 1800))
     await route.continue().catch(() => { /* The old document's request is cancelled on navigation. */ })
   })
@@ -179,7 +180,7 @@ test('미전송 선택을 보관하고 다른 화에서 새로고침해도 이�
   await page.locator('.reaction-options button').first().click()
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem('family-library:reaction:ep01')!)))
     .toMatchObject({ selected: 'heart', pending: true })
-  await page.locator('.next-episode').click()
+  await page.locator('.next-episode .big-button').click()
   await expect(page).toHaveURL(/ep02\.html$/)
   await page.reload()
   await page.locator('#reactions').scrollIntoViewIfNeeded()

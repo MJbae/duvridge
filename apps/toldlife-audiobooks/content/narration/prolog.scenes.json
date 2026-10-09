@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "scenes": [
+    {
+      "cue": 0,
+      "image": "cover"
+    },
+    {
+      "cue": 1,
+      "image": "prolog-01"
+    }
+  ]
+}

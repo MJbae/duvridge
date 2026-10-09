@@ -10,9 +10,9 @@ export function prepareContent(options = {}) {
   const root = path.resolve(options.root ?? projectRoot)
   const editorial = resolveBookSource({ repositoryRoot: path.resolve(projectRoot, '../..'), appRoot: projectRoot })
   if (root === projectRoot) materializeBookContent(root, editorial)
-  return prepareShared({ ...options, root, book: editorial.book, extendCatalog({ root, structure, work, toText, warn }) {
-    const narration = loadNarration(root, structure.episodes, { work, toText, warn })
-    return { catalog: { narration: narration.tracks }, generated: [['narration.json', narration.sentences]] }
+  return prepareShared({ ...options, root, book: editorial.book, extendCatalog({ root, structure, work }) {
+    const narration = loadNarration(root, structure.episodes, { work })
+    return { catalog: { narration: narration.tracks } }
   } })
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {

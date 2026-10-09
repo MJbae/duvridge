@@ -45,7 +45,9 @@
         "/novels/",
         "/novels/read/ep01",
         "/audiobooks/",
-        "/audiobooks/read/ep01"
+        "/audiobooks/read/ep01",
+        "/audiobooks/watch/",
+        "/audiobooks/watch/ep01"
       ],
       "audioPaths": [
         "/audiobooks/record/prolog.mp3"

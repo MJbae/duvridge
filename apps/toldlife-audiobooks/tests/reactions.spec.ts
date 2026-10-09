@@ -30,10 +30,20 @@ test.beforeEach(async ({ request }) => {
   expect(clearAccounts.ok()).toBeTruthy()
 })
 
-async function openReactions(page: Page) {
-  await page.goto('/read/ep01.html#reactions')
-  await page.locator('#reactions').scrollIntoViewIfNeeded()
-  await expect(page.getByRole('button', { name: '응원해요', exact: true })).toBeEnabled()
+async function openReactions(page: Page, id = 'ep01') {
+  // Reactions belong to the end of an episode: play it out, and stay there instead of moving on.
+  await page.addInitScript(() => localStorage.setItem('family-library:narration-autoplay', '0'))
+  await page.goto(`/read/${id}.html`)
+  // The dev server may reload a page once while it prepares dependencies; then the episode plays out again.
+  await expect(async () => {
+    if (await page.locator('.listen-end').isVisible()) return
+    await page.getByRole('button', { name: '재생', exact: true }).click({ timeout: 2000 })
+    await expect.poll(() => page.locator('.narration-audio').evaluate((media: HTMLAudioElement) => !media.paused && media.readyState >= 2), { timeout: 5000 }).toBe(true)
+    await page.locator('.narration-audio').evaluate((media: HTMLAudioElement) => { media.currentTime = media.duration - 1 })
+    await expect(page.locator('.listen-end')).toBeVisible({ timeout: 8000 })
+  }).toPass({ timeout: 60000 })
+  // A reaction already left shows its count in the button's name, so the first button is found by place.
+  await expect(page.locator('.reaction-options button').first()).toBeEnabled()
   await expect(page.locator('.reaction-options button')).toHaveCount(4)
   await expect(page.getByRole('button', { name: '기억나요', exact: true })).toHaveCount(0)
   await expect(page.locator('.reaction-error')).toHaveCount(0)
@@ -41,13 +51,12 @@ async function openReactions(page: Page) {
   // Line icons match the rest of the interface; emoji vary by device.
   await expect(page.locator('.reaction-options button svg')).toHaveCount(4)
   expect(await page.locator('.reaction-options').innerText()).not.toMatch(/\p{Extended_Pictographic}/u)
-  await expect(page.locator('.story-end')).toHaveCount(0)
-  await expect(page.getByRole('heading', { name: '이 이야기, 어떠셨나요?' })).toBeVisible()
-  // Title, reactions and episode navigation keep the 32 / 12 / 40px rhythm from the break.
+  await expect(page.getByRole('group', { name: '마음 남기기' })).toBeVisible()
+  // The reactions and the next episode keep the 40px gap of every episode end.
   expect(await page.evaluate(() => {
     const box = (selector: string) => document.querySelector(selector)!.getBoundingClientRect()
-    return [box('.reaction-title').top - box('.story-break').bottom, box('.reaction-options').top - box('.reaction-title').bottom, box('.episode-navigation').top - box('.reaction-options').bottom].map(Math.round)
-  })).toEqual([32, 12, 40])
+    return Math.round(box('.next-episode').top - box('.reaction-options').bottom)
+  })).toBe(40)
 }
 async function storedReactions(request: APIRequestContext) {
   const response = await request.get(`${documentsBase}/pages/memoir-ep01/reactions`, { headers: { Authorization: 'Bearer owner' } })
@@ -63,12 +72,12 @@ test('Firebase가 연결되어도 댓글 화면과 요청은 없고 회차 반�
   await page.goto('/')
   await expect(page.getByRole('link', { name: '한 번에 읽기', exact: true })).toHaveCount(0)
   await openReactions(page)
-  await page.locator('.episode-end').screenshot({ path: 'test-results/reactions/reactions-390.png' })
+  await page.locator('.listen-end').screenshot({ path: 'test-results/reactions/reactions-390.png' })
   await expect(page.locator('#comments, .family-comments, .comment-composer')).toHaveCount(0)
   await expect(page.getByRole('textbox')).toHaveCount(0)
-  await page.locator('.next-episode').click()
+  await page.locator('.next-episode .big-button').click()
   await expect(page).toHaveURL(/ep02\.html$/)
-  await page.locator('#reactions').scrollIntoViewIfNeeded()
+  await openReactions(page, 'ep02')
   await expect(page.getByRole('button', { name: '좋아요', exact: true })).toBeEnabled()
   await expect(page.locator('#comments, .family-comments, .comment-composer')).toHaveCount(0)
   expect(commentRequests).toEqual([])
@@ -89,7 +98,7 @@ test('episode reactions coalesce clicks, persist across browsers, switch, cancel
     const other = await context.newPage()
     await openReactions(other)
     await expect(other.getByRole('button', { name: '좋아요 1', exact: true })).toHaveAttribute('aria-pressed', 'false')
-    await page.reload(); await page.locator('#reactions').scrollIntoViewIfNeeded()
+    await openReactions(page)
     await expect(page.getByRole('button', { name: '좋아요 1', exact: true })).toHaveAttribute('aria-pressed', 'true')
     await page.getByRole('button', { name: '좋아요 1', exact: true }).click()
     await expect.poll(async () => (await storedReactions(request))[0]?.fields.like.integerValue).toBe('0')
@@ -100,7 +109,7 @@ test('episode reactions coalesce clicks, persist across browsers, switch, cancel
       data: { fields: { heart: { integerValue: '0' }, like: { integerValue: '0' }, moved: { integerValue: '0' }, wow: { integerValue: '0' }, remember: { integerValue: '1' }, updatedAt: { timestampValue: new Date(Date.now() - 2000).toISOString() } } },
     })
     expect(seeded.ok()).toBeTruthy()
-    await page.reload(); await page.locator('#reactions').scrollIntoViewIfNeeded()
+    await openReactions(page)
     await expect(page.locator('.reaction-options button[aria-pressed="true"]')).toHaveCount(0)
     await expect(page.locator('.remember-hint')).toHaveCount(0)
     await page.getByRole('button', { name: '대단해요', exact: true }).click()
@@ -109,7 +118,7 @@ test('episode reactions coalesce clicks, persist across browsers, switch, cancel
     await expect(page.locator('.reaction-options button[aria-pressed="false"] svg[fill="currentColor"]')).toHaveCount(0)
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
     await page.screenshot({ path: 'test-results/reactions/reactions-320.png', fullPage: true })
-    await page.locator('.next-episode').click()
+    await page.locator('.next-episode .big-button').click()
     await expect(page).toHaveURL(/ep02\.html$/)
     await expect.poll(async () => (await storedReactions(request))[0]?.fields.wow.integerValue).toBe('1')
     expect((await storedReactions(request))[0].fields.remember.integerValue).toBe('0')
@@ -119,7 +128,7 @@ test('episode reactions coalesce clicks, persist across browsers, switch, cancel
 test('초기 서버 연결이 늦어도 반응을 즉시 선택하고 늦은 조회가 선택을 덮어쓰지 않는다', async ({ page, request }) => {
   let release!: () => void, requested = false
   const pending = new Promise<void>(resolve => { release = resolve })
-  await page.route(/\/reaction-firestore\.ts(?:\?|$)/, async route => {
+  await page.route(/\/firestore-reaction-store\.ts(?:\?|$)/, async route => {
     requested = true
     await pending
     await route.continue()
@@ -171,7 +180,7 @@ test('저장 요청 중에도 선택을 바꾸고 마지막 선택만 순서대�
 })
 
 test('미전송 선택을 보관하고 다른 화에서 새로고침해도 이어서 저장한다', async ({ page, request }) => {
-  await page.route(/\/reaction-firestore\.ts(?:\?|$)/, async route => {
+  await page.route(/\/firestore-reaction-store\.ts(?:\?|$)/, async route => {
     await new Promise(resolve => setTimeout(resolve, 1800))
     await route.continue().catch(() => { /* The old document's request is cancelled on navigation. */ })
   })
@@ -179,16 +188,15 @@ test('미전송 선택을 보관하고 다른 화에서 새로고침해도 이�
   await page.locator('.reaction-options button').first().click()
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem('family-library:reaction:ep01')!)))
     .toMatchObject({ selected: 'heart', pending: true })
-  await page.locator('.next-episode').click()
+  await page.locator('.next-episode .big-button').click()
   await expect(page).toHaveURL(/ep02\.html$/)
   await page.reload()
-  await page.locator('#reactions').scrollIntoViewIfNeeded()
+  await openReactions(page, 'ep02')
   await expect(page.locator('.reaction-options button')).toHaveCount(4)
   await expect(page.locator('.reaction-options button[aria-pressed="true"]')).toHaveCount(0)
   await expect.poll(async () => (await storedReactions(request))[0]?.fields.heart.integerValue).toBe('1')
   await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('family-library:reaction:ep01')!).pending)).toBe(false)
-  await page.goto('/read/ep01.html#reactions')
-  await page.locator('#reactions').scrollIntoViewIfNeeded()
+  await openReactions(page)
   await expect(page.locator('.reaction-options button').first()).toHaveAttribute('aria-pressed', 'true')
 })
 
@@ -220,7 +228,7 @@ test('기존 반응을 UID·선택·시각 그대로 이관하고 재실행해�
   expect(await migrateReactionIds({ ...options, apply: true })).toMatchObject({ plannedWrites: 0, copied: 0, alreadyCurrent: 2 })
   const migrated = (await storedReactions(request)).find((doc: { name: string }) => doc.name.endsWith(`/${uid}`))
   expect(migrated.fields).toMatchObject(fields('like', older))
-  await page.reload(); await page.locator('#reactions').scrollIntoViewIfNeeded()
+  await openReactions(page)
   await expect(page.getByRole('button', { name: '좋아요 1', exact: true })).toHaveAttribute('aria-pressed', 'true')
   await expect(page.getByRole('button', { name: '대단해요 1', exact: true })).toHaveAttribute('aria-pressed', 'false')
   await page.getByRole('button', { name: '좋아요 1', exact: true }).click()

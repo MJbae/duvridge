@@ -12,6 +12,8 @@ export function migrateReading(catalog, saved) {
     id, title: entry.title, url: entry.url,
     scroll: catalog.legacyScrollResetIds.includes(saved.id) ? 0 : Math.max(0, saved.scroll),
     ...(typeof saved.finished === 'boolean' ? { finished: saved.finished } : {}),
+    // How far through the episode, from 0 to 1, for the work page's progress bar.
+    ...(Number.isFinite(saved.progress) && saved.progress >= 0 && saved.progress <= 1 ? { progress: saved.progress } : {}),
   }
 }
 

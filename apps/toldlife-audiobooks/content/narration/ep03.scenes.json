@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "scenes": [
+    {
+      "cue": 0,
+      "image": "ep03-01"
+    },
+    {
+      "cue": 12,
+      "image": "ep03-02"
+    }
+  ]
+}

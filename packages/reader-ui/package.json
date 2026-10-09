@@ -10,5 +10,8 @@
     "@duvridge/content-processing": "*",
     "vue": "3.5.43",
     "vitepress": "1.6.4"
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.mjs"
   }
 }

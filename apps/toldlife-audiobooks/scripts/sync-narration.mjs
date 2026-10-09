@@ -7,6 +7,7 @@ import { parseManuscript } from '../site/.vitepress/shared/episode-heading.mjs'
 import { clock, formatSrt, locateSentences, musicCueText, parseSrt } from '../site/.vitepress/shared/narration-cues.mjs'
 import { classifyCues, episodeParagraphs, recordDirectory, timingDirectory } from '../site/.vitepress/shared/narration-catalog.mjs'
 import { alignSentences, findOutro, findSilences } from './narration-align.mjs'
+import { writeScenes } from './build-narration-scenes.mjs'
 import { plainText } from './prepare-reader-content.mjs'
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
@@ -84,6 +85,8 @@ export function syncNarration({ root = projectRoot, from, ids, decodeAudio = dec
     const average = moved.length ? (moved.reduce((sum, value) => sum + value, 0) / moved.length).toFixed(2) : '0'
     logger.log?.(`[narration] ${id}: 문장 ${sentences}개 · ${clock(aligned.at(-1).end)} · 문단 안 문장 ${estimated.size}개를 평균 ${average}초 보정`)
   }
+  // The player and the video change pictures where the narration script does.
+  writeScenes({ root, ids, logger, skipMissing: true })
 }
 
 function parseArguments(args) {

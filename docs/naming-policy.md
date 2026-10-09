@@ -27,20 +27,20 @@
 
 | 대상 | 형식 | 예시 |
 | --- | --- | --- |
-| Vue 컴포넌트 | 기능을 나타내는 PascalCase | `StoryOverview.vue`, `AudiobookPlayerBar.vue` |
+| Vue 컴포넌트 | 기능을 나타내는 PascalCase | `WorkHome.vue`, `AudiobookPlayer.vue` |
 | JS·TS 모듈과 CSS | 기능을 나타내는 kebab-case | `reader-catalog.ts`, `narration-controller.ts`, `reader.css` |
 | JS·셸 작업 스크립트 | 동사 + 대상의 kebab-case | `select-affected-services.mjs`, `prepare-reader-content.mjs`, `produce-audiobooks.sh` |
 | Python 모듈 | import에 맞는 snake_case | `assemble_audiobook.py`, `render_caption_frames.py` |
 | 문서 | 주제를 나타내는 kebab-case | `naming-policy.md`, `deployment-verification.md` |
 | 테스트 | 검증 대상 + 테스트 도구 접미사 | `content.test.mjs`, `narration.spec.ts`, `test_static_site.py` |
 
-컴포넌트 import 이름과 템플릿 이름은 파일 이름과 맞춘다. `ReaderIcon.vue`를 `ReaderIcon`으로, `AudiobookPlayerSheet.vue`를 `AudiobookPlayerSheet`로 사용한다. 프레임워크가 정한 속성명에는 명시적인 연결을 사용한다. VitePress의 `Layout` 속성은 앱의 `NovelReaderLayout.vue` 또는 `AudiobookReaderLayout.vue`를 연결한다.
+컴포넌트 import 이름과 템플릿 이름은 파일 이름과 맞춘다. `ReaderIcon.vue`를 `ReaderIcon`으로, `AudiobookPlayer.vue`를 `AudiobookPlayer`로 사용한다. 프레임워크가 정한 속성명에는 명시적인 연결을 사용한다. VitePress의 `Layout` 속성은 앱의 `NovelReaderLayout.vue` 또는 `AudiobookReaderLayout.vue`를 연결한다.
 
-공통 기능에는 `Reader`, `Story`, `Reading`을 역할에 맞게 사용한다. 읽기 앱에만 필요한 기능은 `Novel`, 오디오 앱 화면은 `Audiobook`, 낭독 데이터·문장 강조·재생 제어는 `Narration`/`narration`, 재생 대상 선택은 `playback`으로 구분한다. 독자 반응은 `ReaderReactionBar`, 배경음악은 `background-music`으로 이름을 맞춘다. 이미 기능이 명확한 `ResponsiveImage`, `ReadingLink`에는 불필요한 접두사를 추가하지 않는다.
+공통 기능에는 `Reader`, `Story`, `Reading`을 역할에 맞게 사용한다. 읽기 앱에만 필요한 기능은 `Novel`, 오디오 앱 화면은 `Audiobook`, 낭독 데이터·문장 강조·재생 제어는 `Narration`/`narration`, 재생 대상 선택은 `playback`으로 구분한다. 독자 반응은 `ReaderReactionBar`, 배경음악은 `background-music`으로 이름을 맞춘다. 이미 기능이 명확한 `ResponsiveImage`, `WorkHome`, `EpisodeNext`에는 불필요한 접두사를 추가하지 않는다. 영상 화면은 `Theater`로 부른다.
 
 ## 책임별 이름
 
-공통 `reader-ui/src/components/StoryOverview.vue`는 작품 소개와 터전별 목차를 그린다. `AudiobookHome.vue`는 공통 화면에 청취 상태를 연결한다. `NovelReaderLayout.vue`와 `AudiobookReaderLayout.vue`는 각 앱의 화면을 구성하고, `NovelEpisodeEnd.vue`와 `AudiobookEpisodeEnd.vue`는 각 앱의 회차 끝 동작을 관리한다.
+공통 `reader-ui/src/components/WorkHome.vue`는 세 탭이 함께 쓰는 작품 홈(키아트·큰 버튼·회차 목록)을, `EpisodeNext.vue`는 회차 끝의 다음 화 카드와 버튼을, `ReaderSheet.vue`는 아래에서 올라오는 시트를 그린다. 탭 이름과 링크는 `reader-ui/src/series/series-tabs.mjs`에서 한 번만 정한다. `NovelReaderLayout.vue`와 `AudiobookReaderLayout.vue`는 각 앱의 화면을 구성하고, `NovelEpisodeEnd.vue`는 읽기 회차 끝, `AudiobookPlayer.vue`와 `TheaterPlayer.vue`는 오디오북과 영상의 재생과 회차 끝을 관리한다.
 
 `reader-reactions/src/model`은 반응 종류와 자료형, `src/state`는 브라우저 상태·구독·재시도, `src/persistence`는 Firestore 조회·저장, `src/firebase`는 연결 설정을 담당한다. `content-processing/src/manuscripts`는 본문 구조, `src/illustrations`는 표식과 삽화 목록, `src/source-files`는 작업 사본, `src/assets`는 이미지 인코딩을 담당한다. `vitepress-reader/src/config`와 `src/markdown`은 플랫폼 연동이다. `lib`, `shared`, `utils` 같은 포괄적 폴더에 서로 다른 기능을 모으지 않는다.
 

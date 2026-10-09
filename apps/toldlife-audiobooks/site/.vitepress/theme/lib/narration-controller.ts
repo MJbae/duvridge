@@ -1,25 +1,19 @@
-import { computed, nextTick, onBeforeUnmount, onMounted, reactive, watch, type ComputedRef, type InjectionKey, type Ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, reactive, watch, type ComputedRef, type InjectionKey, type Ref } from 'vue'
 import { useRouter, withBase } from 'vitepress'
-import { cueIndexAt, nextCueStart, previousCueStart } from '../../shared/narration-cues.mjs'
-import { resumeStart } from '../../shared/playback-selection.mjs'
+import { cueIndexAt } from '../../shared/narration-cues.mjs'
+import { nextSleepChoice, resumeStart } from '../../shared/playback-selection.mjs'
 import { catalog, type NarrationTrack } from './reader-catalog'
 import { createWakeLock, describeEpisode, reportPosition, reportState, setMediaControls } from './narration-device-controls'
-import { bringIntoView, cueElements, placement, setMark, showElement } from './narration-dom'
 
-export const narrationRates = [
-  { value: 0.8, label: '느리게' },
-  { value: 1, label: '보통' },
-  { value: 1.25, label: '빠르게' },
-  { value: 1.5, label: '더 빠르게' },
-] as const
+export const narrationRates = [0.8, 1, 1.25, 1.5] as const
 const keys = {
   session: 'family-library:narration',
   rate: 'family-library:narration-rate',
   autoplay: 'family-library:narration-autoplay',
-  tip: 'family-library:read-along-tip',
 }
-const scrollKeys = new Set(['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '])
 const skipSeconds = 10
+/** How long an episode's end stays on screen before the next episode starts by itself. */
+export const advanceDelay = 5000
 
 export const narrationFor = (id: string): NarrationTrack | undefined => catalog.narration?.[id]
 /** Only a plain click follows a link in this tab; a modified click opens it elsewhere and leaves playback alone. */
@@ -51,42 +45,52 @@ function listen(target: EventTarget, entries: [string, EventListener, AddEventLi
   return () => { for (const [name, handler] of entries) target.removeEventListener(name, handler) }
 }
 
-type Options = { audio: Ref<HTMLAudioElement | undefined>; page: ComputedRef<string>; onFinish: (id: string) => void }
+/** The audiobook and the video play the same narration; only the page that shows it differs. */
+export type NarrationMode = 'listen' | 'watch'
+type Options = { audio: Ref<HTMLAudioElement | undefined>; page: ComputedRef<string>; mode: ComputedRef<NarrationMode>; onFinish: (id: string) => void }
 export type Narration = ReturnType<typeof useNarration>
 export const narrationKey: InjectionKey<Narration> = Symbol('narration')
 
+/** Where an episode opens in each format. */
+export function episodePath(id: string, mode: NarrationMode) {
+  const episode = catalog.readingOrder.find(entry => entry.id === id)
+  if (!episode) return withBase('/')
+  return withBase(mode === 'watch' ? `/watch/${id}.html` : episode.url)
+}
+
 /**
- * One recording at a time. It keeps playing while the listener browses, and the episode page it
- * belongs to reads along with it.
+ * One recording at a time, for the audiobook player and the video alike. It keeps playing while the
+ * listener moves between pages, resumes from the sentence where it stopped, and at an episode's end
+ * shows that end before the next episode starts.
  */
-export function useNarration({ audio, page, onFinish }: Options) {
+export function useNarration({ audio, page, mode, onFinish }: Options) {
   const router = useRouter()
   const state = reactive({
     episodeId: '', active: false, playing: false, waiting: false, failed: false,
-    time: 0, cue: -1, follow: true, away: 0 as -1 | 0 | 1, rate: 1, autoplay: true, pick: -1, advancing: '',
+    time: 0, cue: -1, rate: 1, autoplay: true,
+    /** 0: no timer; minutes; -1: stop when this episode ends. */
+    sleep: 0,
+    /** The episode whose end is on screen. */
+    ended: '',
+    /** When the next episode starts by itself, in ms since the epoch; 0 when it does not. */
+    advanceAt: 0,
     saved: null as { id: string; time: number } | null,
-    // Assumed seen until the browser says otherwise, so the tip never flashes before it is known.
-    tipSeen: true,
   })
   const wakeLock = createWakeLock()
-  let marked: Element[] = []
   let pendingSeek: number | null = null
   let savedAt = 0
   let reported = ''
-  let frame = 0
+  let sleepTimer: ReturnType<typeof setTimeout> | undefined
+  let advanceTimer: ReturnType<typeof setTimeout> | undefined
   let unbind: (() => void)[] = []
 
   const track = computed(() => narrationFor(state.episodeId))
-  const pageTrack = computed(() => narrationFor(page.value))
-  const onPage = computed(() => state.active && state.episodeId === page.value)
   const outroStart = computed(() => outroAt(track.value))
-  const closing = computed(() => state.active && state.time >= outroStart.value)
   const next = computed(() => {
     const index = catalog.readingOrder.findIndex(episode => episode.id === state.episodeId)
     return index < 0 ? undefined : catalog.readingOrder[index + 1]
   })
   const nextTrack = computed(() => (next.value ? narrationFor(next.value.id) : undefined))
-  const countdown = computed(() => Math.max(0, Math.ceil(((track.value?.duration ?? 0) - state.time) / state.rate)))
   const element = () => audio.value
   const loaded = () => Boolean(track.value && element()?.getAttribute('src') === withBase(track.value.src))
   const now = () => (loaded() ? element()!.currentTime : state.time)
@@ -147,7 +151,6 @@ export function useNarration({ audio, page, onFinish }: Options) {
     if (!state.active || (!loaded() && !load(state.time))) return
     state.failed = false
     claimMedia()
-    if (state.follow && onPage.value) bringIntoView(marked)
     element()!.play()?.catch((error: unknown) => {
       const name = error instanceof DOMException ? error.name : ''
       if (name === 'AbortError') return
@@ -158,62 +161,40 @@ export function useNarration({ audio, page, onFinish }: Options) {
 
   function pause() { element()?.pause() }
 
-  function mark() {
-    setMark(marked, 'is-reading', false)
-    const cue = track.value?.cues[state.cue]
-    marked = onPage.value && cue ? cueElements(state.cue, cue[2]) : []
-    setMark(marked, 'is-reading', true)
-  }
-
-  /** What the reader should see now: the sentence read aloud, or the way on once the closing music plays. */
-  function focusElements(): Element[] {
-    if (marked.length) return marked
-    const navigation = closing.value ? document.querySelector('.episode-navigation') : null
-    return navigation ? [navigation] : []
-  }
-
-  function setCue(index: number, force = false) {
-    if (index === state.cue && !force) return
-    state.cue = index
-    mark()
-    if (!onPage.value) return
-    if (state.follow) bringIntoView(marked)
-    else state.away = placement(focusElements())
-  }
-
   function save() {
     savedAt = Date.now()
     if (!state.active || !state.episodeId) return
     // Once the closing music plays the episode is heard, so there is no place left in it to come back to.
-    if (closing.value) return clearSaved()
+    if (state.time >= outroStart.value) return clearSaved()
     state.saved = { id: state.episodeId, time: Math.round(state.time * 100) / 100 }
     writeStorage(keys.session, JSON.stringify(state.saved))
   }
 
-  /** Once the closing music starts, the episode counts as heard and the way on comes into view. */
+  /** Once the closing music starts, the episode counts as heard. */
   function closeEpisode() {
     reported = state.episodeId
     onFinish(state.episodeId)
-    void nextTick(() => {
-      if (!onPage.value) return
-      if (state.follow) showElement(document.querySelector('.episode-navigation'))
-      else measure()
-    })
   }
 
   function tick() {
     const current = track.value
     if (!current || !state.active || !loaded()) return
     state.time = element()!.currentTime
-    setCue(cueIndexAt(current.cues, state.time))
+    state.cue = cueIndexAt(current.cues, state.time)
     if (state.time >= outroStart.value && reported !== state.episodeId) closeEpisode()
     if (Date.now() - savedAt > 3000) save()
     reportPosition(current.duration, state.time, state.rate)
   }
 
+  function cancelAdvance() {
+    clearTimeout(advanceTimer)
+    state.advanceAt = 0
+  }
+
   function begin(id: string, time: number) {
-    closePick()
-    Object.assign(state, { episodeId: id, active: true, failed: false, follow: true, away: 0, time, cue: -1 })
+    cancelAdvance()
+    Object.assign(state, { episodeId: id, active: true, failed: false, time, ended: '' })
+    state.cue = cueIndexAt(track.value?.cues ?? [], time)
     reported = time >= outroStart.value ? id : ''
     load(time)
   }
@@ -222,7 +203,6 @@ export function useNarration({ audio, page, onFinish }: Options) {
     if (!narrationFor(id)) return
     begin(id, time)
     play()
-    setCue(cueIndexAt(track.value!.cues, time), true)
     save()
   }
 
@@ -233,11 +213,10 @@ export function useNarration({ audio, page, onFinish }: Options) {
   function open(id: string, time?: number) {
     const current = narrationFor(id)
     if (!current) return false
-    if (state.active && state.episodeId === id) {
+    if (state.active && state.episodeId === id && !state.ended) {
       if (time !== undefined) seek(time)
       play()
     } else start(id, time ?? (state.saved?.id === id ? resumeStart(current.cues, state.saved.time) : 0))
-    state.advancing = id === page.value ? '' : id
     return true
   }
 
@@ -252,41 +231,17 @@ export function useNarration({ audio, page, onFinish }: Options) {
     if (!current) return
     state.time = Math.min(Math.max(0, time), current.duration)
     if (loaded()) moveTo(state.time)
-    setCue(cueIndexAt(current.cues, state.time))
+    state.cue = cueIndexAt(current.cues, state.time)
     save()
   }
 
   function seekBy(seconds: number) { seek(now() + seconds) }
 
-  function previousSentence() {
-    if (!track.value) return
-    state.follow = true
-    seek(previousCueStart(track.value.cues, now()))
-  }
-
-  function nextSentence() {
-    const target = track.value ? nextCueStart(track.value.cues, now()) : null
-    if (target === null) return
-    state.follow = true
-    seek(target)
-  }
-
-  /** A tapped sentence plays from its start, also before anything was playing on this page. */
-  function playFrom(index: number) {
-    const cue = pageTrack.value?.cues[index]
+  /** A tapped sentence plays from its start. */
+  function playCue(id: string, index: number) {
+    const cue = narrationFor(id)?.cues[index]
     if (!cue) return
-    closePick()
-    if (!onPage.value) return void open(page.value, cue[0])
-    state.follow = true
-    seek(cue[0])
-    play()
-  }
-
-  function returnToCue() {
-    Object.assign(state, { follow: true, away: 0 })
-    mark()
-    if (marked.length) bringIntoView(marked, true)
-    else showElement(document.querySelector('.episode-navigation'))
+    open(id, cue[0])
   }
 
   function clearSaved() {
@@ -296,94 +251,45 @@ export function useNarration({ audio, page, onFinish }: Options) {
 
   /** Stopping keeps the place, so the listener can carry on later from the same sentence. */
   function stop() {
-    closePick()
+    cancelAdvance()
     save()
-    Object.assign(state, { active: false, playing: false, waiting: false, advancing: '' })
+    Object.assign(state, { active: false, playing: false, waiting: false })
     release()
-    mark()
   }
 
-  /** The last episode with a recording has played out: nothing is left to resume in it. */
+  /** Nothing plays on after this episode; its end stays on screen. */
   function finish() {
-    closePick()
-    Object.assign(state, { active: false, playing: false, waiting: false, advancing: '', cue: -1 })
+    cancelAdvance()
+    Object.assign(state, { active: false, playing: false, waiting: false })
     clearSaved()
     release()
-    mark()
   }
 
-  /** The next episode plays at once; a listener following the text is taken to its page. */
+  /** The next episode plays at once, on the next episode's page of the same format. */
   function advance() {
+    cancelAdvance()
     const following = next.value
-    if (!following || !narrationFor(following.id)) return finish()
-    const navigate = onPage.value
+    if (!following || !narrationFor(following.id)) return
+    const showing = page.value === state.episodeId
     start(following.id, 0)
-    if (!navigate) return
-    state.advancing = following.id
-    void router.go(withBase(following.url))
+    if (showing) void router.go(episodePath(following.id, mode.value))
   }
 
   function onEnded() {
     if (reported !== state.episodeId) closeEpisode()
-    if (state.autoplay && nextTrack.value) return advance()
-    finish()
+    const stopHere = state.sleep === -1
+    if (stopHere) setSleep(0)
+    const carryOn = !stopHere && state.autoplay && Boolean(nextTrack.value)
+    state.ended = state.episodeId
+    state.playing = false
+    if (!carryOn) return finish()
+    state.advanceAt = Date.now() + advanceDelay
+    advanceTimer = setTimeout(advance, advanceDelay)
   }
 
   function retry() {
     element()?.removeAttribute('src')
     play()
-  }
-
-  /** Called once an episode's text is on screen. */
-  function attach() {
-    mark()
-    if (onPage.value && state.playing && state.follow) bringIntoView(marked)
-    else state.away = placement(focusElements())
-  }
-
-  function closePick() {
-    if (state.pick < 0) return
-    setMark(cueElements(state.pick), 'is-picked', false)
-    state.pick = -1
-  }
-
-  function dismissTip() {
-    if (state.tipSeen) return
-    state.tipSeen = true
-    writeStorage(keys.tip, '1')
-  }
-
-  /** Tapping a sentence of an episode with a recording offers to play from it. */
-  function choose(event: Event) {
-    const target = event.target instanceof Element ? event.target : null
-    if (target?.closest('.narration-pick')) return
-    const cue = pageTrack.value ? target?.closest('.story-content .cue') : null
-    closePick()
-    if (!cue || !window.getSelection()?.isCollapsed) return
-    state.pick = Number(cue.getAttribute('data-cue'))
-    setMark(cueElements(state.pick), 'is-picked', true)
-    dismissTip()
-  }
-
-  function measure() {
-    cancelAnimationFrame(frame)
-    frame = requestAnimationFrame(() => { state.away = placement(focusElements()) })
-  }
-
-  /** Reading elsewhere pauses the page's movement until the reader comes back. */
-  function leaveFollow(event: Event) {
-    if (!onPage.value || !state.follow) return
-    if (event.target instanceof Element && event.target.closest('.player-bar, dialog, .narration-pick')) return
-    state.follow = false
-    measure()
-  }
-
-  function onKey(event: Event) {
-    if (!(event instanceof KeyboardEvent)) return
-    if (event.key === 'Escape') return closePick()
-    if (!scrollKeys.has(event.key)) return
-    if (event.target instanceof Element && event.target.closest('button, a, input, textarea, select, [contenteditable="true"]')) return
-    leaveFollow(event)
   }
 
   function setRate(value: number) {
@@ -392,28 +298,30 @@ export function useNarration({ audio, page, onFinish }: Options) {
     writeStorage(keys.rate, String(value))
   }
 
-  function setAutoplay(value: boolean) {
-    state.autoplay = value
-    writeStorage(keys.autoplay, value ? '1' : '0')
+  function cycleRate() {
+    const index = narrationRates.findIndex(rate => rate === state.rate)
+    setRate(narrationRates[(index + 1) % narrationRates.length])
   }
+
+  /** The sleep timer pauses after a while, or stops at this episode's end instead of going on. */
+  function setSleep(value: number) {
+    clearTimeout(sleepTimer)
+    state.sleep = value
+    if (value > 0) sleepTimer = setTimeout(() => { pause(); state.sleep = 0 }, value * 60_000)
+  }
+
+  function cycleSleep() { setSleep(nextSleepChoice(state.sleep)) }
 
   const controls = { play, pause, stop, seek, back: () => seekBy(-skipSeconds), forward: () => seekBy(skipSeconds) }
 
-  // Another page takes over the screen: marks on the old text go, and the recording plays on.
-  watch(page, id => {
-    closePick()
-    setMark(marked, 'is-reading', false)
-    marked = []
-    if (state.advancing && state.advancing === id) state.follow = true
-    state.advancing = ''
-  })
+  // Leaving an episode's end for another page: the end screen goes, and anything planned to start stays.
+  watch(page, id => { if (state.ended && state.ended !== id) { state.ended = ''; cancelAdvance() } })
 
   onMounted(() => {
     const rate = Number(readStorage(keys.rate))
-    if (narrationRates.some(option => option.value === rate)) state.rate = rate
+    if (narrationRates.some(option => option === rate)) state.rate = rate
     state.autoplay = readStorage(keys.autoplay) !== '0'
     state.saved = savedSession()
-    state.tipSeen = readStorage(keys.tip) === '1'
     unbind = [
       listen(element()!, [
         ['play', () => { state.playing = true; wakeLock.hold(); reportState('playing') }],
@@ -436,27 +344,22 @@ export function useNarration({ audio, page, onFinish }: Options) {
           wakeLock.release()
         }],
       ]),
-      listen(window, [
-        ['wheel', leaveFollow, { passive: true }],
-        ['touchmove', leaveFollow, { passive: true }],
-        ['keydown', onKey],
-        ['scroll', () => { if (!state.follow && onPage.value) measure() }, { passive: true }],
-        ['pagehide', save],
-      ]),
-      listen(document, [['click', choose], ['visibilitychange', wakeLock.refresh]]),
+      listen(window, [['pagehide', save]]),
+      listen(document, [['visibilitychange', wakeLock.refresh]]),
     ]
   })
 
   onBeforeUnmount(() => {
     for (const remove of unbind) remove()
-    cancelAnimationFrame(frame)
+    clearTimeout(sleepTimer)
+    cancelAdvance()
     wakeLock.release()
     setMediaControls(null)
   })
 
   return {
-    state, page, track, pageTrack, next, nextTrack, countdown, closing, onPage,
-    open, play, pause, toggle, seek, previousSentence, nextSentence, playFrom, returnToCue, stop, retry,
-    attach, setRate, setAutoplay, dismissTip,
+    state, page, mode, track, next, nextTrack,
+    open, play, pause, toggle, seek, seekBy, playCue, stop, retry, advance, cancelAdvance,
+    setRate, cycleRate, setSleep, cycleSleep,
   }
 }

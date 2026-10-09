@@ -5,18 +5,19 @@
 | 서비스 | 소스 | 운영 주소 | 배포 단위 |
 | --- | --- | --- | --- |
 | 회사 홈페이지 | `apps/company-site` | https://www.duvridge.com | Pages `duvridge` |
-| ToldLife 홈 | `apps/toldlife-portal` | https://toldlife.duvridge.com | Pages `toldlife` |
-| 웹소설 | `apps/toldlife-novels` | https://toldlife.duvridge.com/novels/ | `toldlife`에 함께 업로드 |
+| 플랫폼 홈 | `apps/toldlife-portal` | https://toldlife.duvridge.com | Pages `toldlife` |
+| 오리지널 시리즈(소설) | `apps/toldlife-novels` | https://toldlife.duvridge.com/novels/ | `toldlife`에 함께 업로드 |
 | 오디오북 | `apps/toldlife-audiobooks` | https://toldlife.duvridge.com/audiobooks/ | `toldlife`에 함께 업로드 |
+| 영상 | `apps/toldlife-audiobooks` | https://toldlife.duvridge.com/audiobooks/watch/ | `toldlife`에 함께 업로드 |
 
 ## 구조와 공통 코드 정책
 
 ```text
 apps/
   company-site/            회사 홈페이지, 언어별 HTML, 가이드북
-  toldlife-portal/          ToldLife 서비스 홈
+  toldlife-portal/          플랫폼 홈: 오리지널 시리즈·오디오북·영상 탭
   toldlife-novels/          웹소설 읽기, 배경음악
-  toldlife-audiobooks/      오디오북 듣기, 플레이어, 낭독 동기화
+  toldlife-audiobooks/      오디오북 듣기와 영상 보기, 플레이어, 낭독 동기화
 content/books/
   bae-byunghee/
     manuscript.md          웹 페이지의 원문

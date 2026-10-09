@@ -9,6 +9,7 @@
   "scripts": {
     "prepare:content": "node scripts/prepare-reader-content.mjs",
     "narration:sync": "node scripts/sync-narration.mjs",
+    "narration:scenes": "node scripts/build-narration-scenes.mjs",
     "predev": "npm run prepare:content",
     "dev": "vitepress dev site --host 127.0.0.1",
     "prebuild": "npm run prepare:content",

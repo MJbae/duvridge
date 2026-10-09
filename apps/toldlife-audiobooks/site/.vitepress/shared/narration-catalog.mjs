@@ -1,6 +1,6 @@
 import { existsSync, readFileSync, readdirSync, realpathSync, statSync } from 'node:fs'
 import path from 'node:path'
-import { compact, locateSentences, musicCueText, parseSrt } from './narration-cues.mjs'
+import { compact, musicCueText, parseSrt } from './narration-cues.mjs'
 
 /** Narration uses the episode ID: site/public/record/<id>.mp3 read along content/narration/<id>.srt. */
 export const recordDirectory = 'site/public/record'
@@ -8,7 +8,6 @@ export const timingDirectory = 'content/narration'
 // Existing recordings will be regenerated. Editorial changes never depend on their text match rate.
 
 const round = value => Math.round(value * 100) / 100
-const oneLine = text => text.replace(/\s*\n\s*/g, ' ')
 
 const notParagraph = /^\s{0,3}(?:#{1,6}\s|(?:[*_-]\s*){3,}$)/
 
@@ -73,37 +72,52 @@ function checkAudio(root, id) {
   if (!statSync(file).size) throw new Error(`낭독 음성 파일이 비어 있습니다: ${id}`)
 }
 
-/** Opening and music cues carry their kind; sentences found in the manuscript can be highlighted. */
-function readTrack(root, episode, { work, toText, warn }) {
+/**
+ * What the player shows for a cue, as it is heard: the opening cards on one line, only the place
+ * and time of a dateline card (the title was shown just before), and nothing for the closing music.
+ */
+export function cueDisplayText(text, kind) {
+  const lines = String(text).split('\n').map(line => line.trim()).filter(Boolean)
+  if (kind === 'music') return ''
+  if (kind === 'dateline') return lines.at(-1) ?? ''
+  return lines.join(' ')
+}
+
+/** content/narration/<id>.scenes.json names the cue where each illustration comes on screen. */
+function readScenes(root, id, cueCount) {
+  const file = path.join(root, timingDirectory, `${id}.scenes.json`)
+  if (!existsSync(file)) return []
+  const scenes = JSON.parse(readFileSync(file, 'utf8')).scenes
+  if (!Array.isArray(scenes) || !scenes.length) throw new Error(`장면 정보가 비어 있습니다: ${timingDirectory}/${id}.scenes.json`)
+  scenes.forEach((scene, index) => {
+    if (!Number.isInteger(scene.cue) || scene.cue < 0 || scene.cue >= cueCount || (index && scene.cue <= scenes[index - 1].cue) || typeof scene.image !== 'string')
+      throw new Error(`장면 정보가 잘못되었습니다: ${timingDirectory}/${id}.scenes.json ${index + 1}번째`)
+  })
+  return scenes.map(scene => [scene.cue, scene.image])
+}
+
+/** Opening and music cues carry their kind; every cue keeps the words heard, for the player and the video subtitles. */
+function readTrack(root, episode, { work }) {
   const cues = parseSrt(readFileSync(path.join(root, timingDirectory, `${episode.id}.srt`), 'utf8'))
   checkTimes(cues, episode.id)
   const kinds = classifyCues(cues, episode, work)
-  const body = cues.map((cue, index) => ({ cue, index })).filter(({ index }) => !kinds[index])
-  const found = locateSentences(episodeParagraphs(episode.body, toText), body.map(({ cue }) => cue.text))
-  const missing = body.filter((_, position) => !found[position])
-  for (const { cue, index } of missing)
-    warn(`원고에서 찾지 못한 낭독 문장은 표시하지 않습니다: ${episode.id} ${index + 1}번째 문장 “${oneLine(cue.text)}”`)
   return {
-    track: {
-      src: `/record/${episode.id}.mp3`,
-      duration: round(cues.at(-1).end),
-      cues: cues.map((cue, index) => kinds[index] ? [round(cue.start), round(cue.end), kinds[index]] : [round(cue.start), round(cue.end)]),
-    },
-    sentences: body.filter((_, position) => found[position]).map(({ cue, index }) => ({ cue: index, text: oneLine(cue.text) })),
+    src: `/record/${episode.id}.mp3`,
+    duration: round(cues.at(-1).end),
+    cues: cues.map((cue, index) => kinds[index] ? [round(cue.start), round(cue.end), kinds[index]] : [round(cue.start), round(cue.end)]),
+    texts: cues.map((cue, index) => cueDisplayText(cue.text, kinds[index])),
+    scenes: readScenes(root, episode.id, cues.length),
   }
 }
 
-/** Recorded episodes for the reader (tracks) and the sentence text for the Markdown wrapper. */
-export function loadNarration(root, episodes, { work, toText = text => text, warn = () => {} } = {}) {
+/** Recorded episodes for the player and the video. */
+export function loadNarration(root, episodes, { work } = {}) {
   const tracks = {}
-  const sentences = {}
   const timed = checkPairs(root, episodes)
   for (const episode of episodes) {
     if (!timed.has(episode.id)) continue
     checkAudio(root, episode.id)
-    const result = readTrack(root, episode, { work, toText, warn })
-    tracks[episode.id] = result.track
-    sentences[episode.id] = result.sentences
+    tracks[episode.id] = readTrack(root, episode, { work })
   }
-  return { tracks, sentences }
+  return { tracks }
 }

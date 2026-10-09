@@ -1,4 +1,4 @@
-export type SavedReading = { id: string; title: string; url: string; scroll: number; finished?: boolean }
+export type SavedReading = { id: string; title: string; url: string; scroll: number; finished?: boolean; progress?: number }
 type HistoryCatalog = {
   readingOrder: { id: string; title: string; url: string }[]
   legacyIds: Record<string, string>

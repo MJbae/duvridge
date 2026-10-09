@@ -5,7 +5,6 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import test from 'node:test'
 import matter from 'gray-matter'
-import { createMarkdownRenderer, disposeMdItInstance } from 'vitepress'
 import { stripIllustrationMarkers } from '@duvridge/content-processing/illustrations/parse-illustration-markers.mjs'
 import { parseManuscript } from '../site/.vitepress/shared/episode-heading.mjs'
 import {
@@ -20,8 +19,8 @@ import {
   previousCueStart,
   spokenTime,
 } from '../site/.vitepress/shared/narration-cues.mjs'
-import { classifyCues, episodeParagraphs, loadNarration } from '../site/.vitepress/shared/narration-catalog.mjs'
-import { narrationSentences } from '../site/.vitepress/markdown/narration-sentences.ts'
+import { classifyCues, cueDisplayText, episodeParagraphs, loadNarration } from '../site/.vitepress/shared/narration-catalog.mjs'
+import { buildScenes, narrationScripts, splitCaptions } from '../scripts/build-narration-scenes.mjs'
 import { alignSentences, findOutro, findSilences } from '../scripts/narration-align.mjs'
 import { syncNarration } from '../scripts/sync-narration.mjs'
 import { plainText, prepareContent } from '../scripts/prepare-reader-content.mjs'
@@ -57,17 +56,6 @@ function fixture(t) {
   return { root, write }
 }
 
-// Existing recordings stay usable after edits; only cues still present in the manuscript are highlighted.
-function expectedSentenceCues(episode, source) {
-  const cues = parseSrt(source)
-  const kinds = classifyCues(cues, episode, work)
-  const body = cues.flatMap((cue, index) => kinds[index] ? [] : [{ cue: index, text: cue.text.replace(/\s*\n\s*/g, ' ') }])
-  const found = locateSentences(episodeParagraphs(episode.body, plainText), body.map(sentence => sentence.text))
-  return {
-    matched: body.filter((_, index) => found[index]),
-    missing: body.filter((_, index) => !found[index]),
-  }
-}
 
 test('자막 시각을 읽고 같은 형식으로 다시 쓴다', () => {
   const source = '1\n00:00:00,000 --> 00:00:08,066\n1화\n어머니의 쇠갈고리\n\n2\n00:01:30,724 --> 00:01:37,296\n물때가 되면 어머니는\n바다로 나섰다.\n'
@@ -178,24 +166,51 @@ test('프롤로그 녹음은 책 표지와 회차 제목, 시대·장소로 시�
   assert.throws(() => classifyCues([{ text: '♪' }, { text: '문장' }], prolog, work), /끝 음악/)
 })
 
-test('낭독 음성과 문장 시각을 같은 회차 ID로 연결하고 원고 문장만 강조 대상으로 남긴다', t => {
+test('낭독 음성과 문장 시각을 같은 회차 ID로 연결하고, 들리는 그대로의 자막 문장을 함께 싣는다', t => {
   const { root, write } = fixture(t)
   write('site/public/record/ep01.mp3', 'mp3')
   write('content/narration/ep01.srt', timing)
-  const warnings = []
-  const { tracks, sentences } = loadNarration(root, [sample], { work, warn: message => warnings.push(message) })
+  const { tracks } = loadNarration(root, [sample], { work })
   assert.deepEqual(tracks, {
     ep01: {
       src: '/record/ep01.mp3',
       duration: 46.75,
       cues: [[0, 8, 'title'], [8, 13, 'dateline'], [13, 20], [20, 27.5], [27.5, 33.25], [33.25, 46.75, 'music']],
+      texts: ['1화 어머니의 쇠갈고리', '1930년대 · 안면도 중장리', '첫 문장이다.', '둘째 문장이다.', '셋째 문장이다.', ''],
+      scenes: [],
     },
   })
-  assert.deepEqual(sentences, {
-    ep01: [{ cue: 2, text: '첫 문장이다.' }, { cue: 3, text: '둘째 문장이다.' }, { cue: 4, text: '셋째 문장이다.' }],
-  })
-  assert.deepEqual(warnings, [])
-  assert.deepEqual(loadNarration(path.join(root, 'missing'), [sample], { work }), { tracks: {}, sentences: {} })
+  assert.deepEqual(loadNarration(path.join(root, 'missing'), [sample], { work }), { tracks: {} })
+})
+
+test('자막 문장은 표지·제목을 한 줄로, 시대·장소 화면은 그 줄만, 끝 음악은 비워 둔다', () => {
+  assert.equal(cueDisplayText('내 논을 파는 한이 있어도\n배병희 자전소설', 'cover'), '내 논을 파는 한이 있어도 배병희 자전소설')
+  assert.equal(cueDisplayText('3화\n열두 자리 숫자', 'title'), '3화 열두 자리 숫자')
+  assert.equal(cueDisplayText('3화\n열두 자리 숫자\n1950년대 · 안면도 중장리', 'dateline'), '1950년대 · 안면도 중장리')
+  assert.equal(cueDisplayText('♪', 'music'), '')
+  assert.equal(cueDisplayText('징집\n영장을 받았다.', null), '징집 영장을 받았다.')
+})
+
+test('장면 정보는 낭독 대본의 그림 순서를 자막 번호로 옮기고, 대본과 자막이 어긋나면 멈춘다', t => {
+  assert.deepEqual(splitCaptions('첫 문장이다. “둘째다.” 셋째인가?'), ['첫 문장이다.', '“둘째다.”', '셋째인가?'])
+  const script = [
+    { kind: 'title', show: '어머니의 쇠갈고리', image: 'ep01-01' },
+    { kind: 'dateline', show: '1930년대 · 안면도 중장리', image: 'ep01-01' },
+    { kind: 'para', show: '첫 문장이다. 둘째 문장이다.', image: 'ep01-01' },
+    { kind: 'break', show: '', image: 'ep01-02' },
+    { kind: 'para', show: '셋째 문장이다.', image: 'ep01-02' },
+  ]
+  const cues = parseSrt(timing)
+  assert.deepEqual(buildScenes(script, cues, 'ep01'), [{ cue: 0, image: 'ep01-01' }, { cue: 4, image: 'ep01-02' }])
+  assert.throws(() => buildScenes(script.slice(0, -1), cues, 'ep01'), /맞지 않습니다/)
+  assert.throws(() => buildScenes([...script.slice(0, -1), { kind: 'para', show: '다른 문장이다.', image: 'ep01-02' }], cues, 'ep01'), /다릅니다/)
+  const { root, write } = fixture(t)
+  write('site/public/record/ep01.mp3', 'mp3')
+  write('content/narration/ep01.srt', timing)
+  write('content/narration/ep01.scenes.json', JSON.stringify({ version: 1, scenes: [{ cue: 0, image: 'ep01-01' }, { cue: 4, image: 'ep01-02' }] }))
+  assert.deepEqual(loadNarration(root, [sample], { work }).tracks.ep01.scenes, [[0, 'ep01-01'], [4, 'ep01-02']])
+  write('content/narration/ep01.scenes.json', JSON.stringify({ version: 1, scenes: [{ cue: 4, image: 'ep01-02' }, { cue: 2, image: 'ep01-01' }] }))
+  assert.throws(() => loadNarration(root, [sample], { work }), /장면 정보가 잘못되었습니다/)
 })
 
 test('짝이 없거나 원고에 없는 낭독 파일, 비었거나 겹친 시각을 준비 단계에서 거절한다', t => {
@@ -219,50 +234,13 @@ test('짝이 없거나 원고에 없는 낭독 파일, 비었거나 겹친 시�
   assert.throws(load, /비어 있습니다/)
 })
 
-test('원고를 고치면 일치 문장만 강조하고 일치율과 무관하게 기존 재생 자료를 유지한다', t => {
+test('원고를 고쳐도 기존 재생 자료와 자막 문장을 그대로 쓴다', t => {
   const { root, write } = fixture(t)
   write('site/public/record/ep01.mp3', 'mp3')
   write('content/narration/ep01.srt', timing)
-  const warnings = []
-  const originalTrack = loadNarration(root, [sample], { work }).tracks.ep01
-  const edited = { ...sample, body: '첫 문장을 고쳤다. 둘째 문장이다.\n\n셋째 문장이다.' }
-  const { tracks, sentences } = loadNarration(root, [edited], { work, warn: message => warnings.push(message) })
-  assert.equal(tracks.ep01.cues.length, 6)
-  assert.deepEqual(sentences.ep01.map(sentence => sentence.cue), [3, 4])
-  assert.equal(warnings.length, 1)
-  assert.match(warnings[0], /ep01 3번째 문장/)
-  const missingWarnings = []
-  const replaced = loadNarration(root, [{ ...sample, body: '전혀 다른 원고다.' }], { work, warn: message => missingWarnings.push(message) })
-  assert.deepEqual(replaced.tracks.ep01, originalTrack)
-  assert.deepEqual(replaced.sentences.ep01, [])
-  assert.equal(missingWarnings.length, 3)
-})
-
-test('낭독 문장을 원문 그대로 감싸고 제목과 원고에 없는 문장은 감싸지 않는다', async () => {
-  disposeMdItInstance()
-  const sentences = {
-    sample: [
-      { cue: 2, text: '첫 문장이다.' },
-      { cue: 3, text: '둘째 문장이다.' },
-      { cue: 4, text: '없는 문장이다.' },
-      { cue: 5, text: '셋째는 굵게 쓴다.' },
-    ],
-  }
-  const md = await createMarkdownRenderer(path.join(repo, 'narration-renderer'), {
-    config(md) {
-      md.set({ html: false })
-      md.use(narrationSentences, { sentences })
-    },
-  })
-  const render = (text, kind = 'episode') => md.render(text, { frontmatter: { kind, episodeId: 'sample' } })
-  const html = render('# 첫 문장이다.\n\n첫 문장이다. 둘째 문장이다.\n\n셋째는 **굵게** 쓴다.\n')
-  assert.match(html, /<h1[^>]*>첫 문장이다\./)
-  assert.match(html, /<p><span class="cue" data-cue="2">첫 문장이다\.<\/span> <span class="cue" data-cue="3">둘째 문장이다\.<\/span><\/p>/)
-  assert.ok(!html.includes('data-cue="4"'))
-  assert.match(html, /<p><span class="cue" data-cue="5">셋째는 <\/span><strong><span class="cue" data-cue="5">굵게<\/span><\/strong><span class="cue" data-cue="5"> 쓴다\.<\/span><\/p>/)
-  assert.ok(!render('첫 문장이다.', 'document').includes('cue'))
-  assert.ok(!md.render('첫 문장이다.', { frontmatter: { kind: 'episode', episodeId: 'ep99' } }).includes('cue'))
-  disposeMdItInstance()
+  const original = loadNarration(root, [sample], { work }).tracks.ep01
+  const edited = { ...sample, title: '새 제목', body: '전혀 다른 원고다.' }
+  assert.deepEqual(loadNarration(root, [edited], { work }).tracks.ep01, original)
 })
 
 test('오디오북 결과물에서 음성을 옮기고 문장 시각을 실제 쉼에 맞춘다', t => {
@@ -298,57 +276,41 @@ test('오디오북 결과물에서 음성을 옮기고 문장 시각을 실제 �
   assert.throws(() => syncNarration({ root, from: source, ids: ['ep99'], decodeAudio: () => samples, logger: silent }), /원고에 없는 회차/)
 })
 
-test('콘텐츠를 준비하면 낭독 회차를 목록과 문장 감싸기 자료에 넣는다', t => {
+test('콘텐츠를 준비하면 낭독 회차를 목록에 넣고 본문은 따로 감싸지 않는다', t => {
   const { root, write } = fixture(t)
   write(mainFilename, stripIllustrationMarkers(original))
   write('site/public/record/ep01.mp3', readFileSync(path.join(repo, 'site/public/record/ep01.mp3')))
-  const timing = readFileSync(path.join(repo, 'content/narration/ep01.srt'), 'utf8')
-  write('content/narration/ep01.srt', timing)
-  const episode = parseManuscript(matter(original).content).episodes.find(episode => episode.id === 'ep01')
-  const expected = expectedSentenceCues(episode, timing)
+  write('content/narration/ep01.srt', readFileSync(path.join(repo, 'content/narration/ep01.srt'), 'utf8'))
   const { catalog, warnings } = prepareContent({ root, logger: silent })
   assert.deepEqual(Object.keys(catalog.narration), ['ep01'])
-  assert.equal(warnings.length, expected.missing.length)
-  expected.missing.forEach((sentence, index) => assert.match(warnings[index], new RegExp(`ep01 ${sentence.cue + 1}번째 문장`)))
-  const generated = JSON.parse(readFileSync(path.join(root, 'site/.vitepress/generated/narration.json'), 'utf8'))
-  assert.deepEqual(generated.ep01, expected.matched)
+  assert.equal(catalog.narration.ep01.texts.length, catalog.narration.ep01.cues.length)
+  assert.deepEqual(warnings, [])
+  assert.equal(existsSync(path.join(root, 'site/.vitepress/generated/narration.json')), false)
   assert.equal(matter(readFileSync(path.join(root, 'site/read/ep01.md'), 'utf8')).data.narration, undefined)
 })
 
-test('3화까지의 낭독 음성과 문장 시각이 같은 회차 ID로 연결된다', () => {
+test('3화까지의 낭독 음성과 문장 시각, 장면이 같은 회차 ID로 연결된다', () => {
   const main = matter(original)
   const { episodes } = parseManuscript(main.content)
-  const { tracks, sentences } = loadNarration(repo, episodes, { work, toText: plainText })
+  const { tracks } = loadNarration(repo, episodes, { work })
+  const manifest = JSON.parse(readFileSync(path.join(repo, '../../content/books/bae-byunghee/illustrations/manifest.json'), 'utf8'))
+  const known = new Set(['cover', ...manifest.images.map(image => image.id)])
   assert.deepEqual(Object.keys(tracks), ['prolog', 'ep01', 'ep02', 'ep03'])
   for (const [id, track] of Object.entries(tracks)) {
     assert.equal(track.src, `/record/${id}.mp3`)
     assert.ok(existsSync(path.join(repo, 'site/public', track.src)))
     assert.equal(track.cues.at(-1)[2], 'music')
     assert.equal(track.duration, track.cues.at(-1)[1])
-    const episode = episodes.find(episode => episode.id === id)
-    const source = readFileSync(path.join(repo, `content/narration/${id}.srt`), 'utf8')
-    assert.deepEqual(sentences[id], expectedSentenceCues(episode, source).matched)
+    assert.equal(track.texts.length, track.cues.length)
+    assert.equal(track.texts.at(-1), '')
+    assert.equal(track.scenes[0][0], 0)
+    for (const [, image] of track.scenes) assert.ok(known.has(image), `${id}: ${image}`)
+    // The committed scenes are what the narration script gives today.
+    const script = JSON.parse(readFileSync(path.join(repo, narrationScripts, `${id}.json`), 'utf8'))
+    const cues = parseSrt(readFileSync(path.join(repo, `content/narration/${id}.srt`), 'utf8'))
+    assert.deepEqual(buildScenes(script, cues, id).map(scene => [scene.cue, scene.image]), track.scenes)
   }
   assert.deepEqual(tracks.prolog.cues.slice(0, 3).map(cue => cue[2]), ['cover', 'title', 'dateline'])
   assert.deepEqual(tracks.ep01.cues.slice(0, 2).map(cue => cue[2]), ['title', 'dateline'])
-})
-
-test('재생성 전 2화 원고를 자유롭게 수정해도 기존 음성과 시각을 유지하고 남은 문장만 강조한다', t => {
-  const { root, write } = fixture(t)
-  write('site/public/record/ep02.mp3', readFileSync(path.join(repo, 'site/public/record/ep02.mp3')))
-  write('content/narration/ep02.srt', readFileSync(path.join(repo, 'content/narration/ep02.srt'), 'utf8'))
-  const episode = parseManuscript(matter(original).content).episodes.find(episode => episode.id === 'ep02')
-  const before = loadNarration(root, [episode], { work, toText: plainText })
-  const source = readFileSync(path.join(repo, 'content/narration/ep02.srt'), 'utf8')
-  assert.deepEqual(before.sentences.ep02, expectedSentenceCues(episode, source).matched)
-  assert.equal(existsSync(path.join(root, 'content/narration-compatibility.json')), false)
-  const surviving = before.sentences.ep02.slice(0, 2)
-  const edited = { ...episode, title: '새로 다듬은 제목', time: '새로 정리한 시점',
-    body: ['새롭게 쓴 도입 문단이다.', ...surviving.map(sentence => sentence.text), '마무리도 새로 고쳤다.'].join('\n\n') }
-  const result = loadNarration(root, [edited], { work, toText: plainText })
-  assert.deepEqual(result.tracks.ep02, before.tracks.ep02)
-  assert.deepEqual(result.sentences.ep02, surviving)
-  const rewritten = loadNarration(root, [{ ...edited, body: '남아 있는 낭독 문장 없이 새로 정리한 본문이다.' }], { work, toText: plainText })
-  assert.deepEqual(rewritten.tracks.ep02, before.tracks.ep02)
-  assert.deepEqual(rewritten.sentences.ep02, [])
+  assert.deepEqual(tracks.prolog.scenes.map(scene => scene[1]), ['cover', 'prolog-01'])
 })
