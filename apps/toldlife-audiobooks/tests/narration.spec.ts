@@ -14,7 +14,7 @@ const audio = (page: Page) => page.locator('.narration-audio')
 const currentTime = (page: Page) => audio(page).evaluate((media: HTMLAudioElement) => media.currentTime)
 const playButton = (page: Page) => page.getByRole('button', { name: '재생', exact: true })
 const pauseButton = (page: Page) => page.getByRole('button', { name: '일시 정지', exact: true })
-const bigButton = (page: Page) => page.locator('.work-action .big-button')
+const bigButton = (page: Page) => page.locator('[data-reader-ready="true"] .work-action .big-button')
 const nextButton = (page: Page) => page.locator('.next-episode .big-button')
 
 async function listening(page: Page, id: string) {

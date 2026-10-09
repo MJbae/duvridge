@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, defineAsyncComponent, defineComponent, h, provide, type Component } from 'vue'
+import { computed, defineAsyncComponent, defineComponent, h, onMounted, provide, ref, type Component } from 'vue'
 import { useData } from 'vitepress'
 import { workCatalogKey } from '../catalog/work-catalog'
 import type { ReaderCatalog } from '@duvridge/content-processing/types'
@@ -13,7 +13,12 @@ const selected = computed(() => {
   if (!loader) return undefined
   if (!components.has(id)) components.set(id, defineAsyncComponent(async () => {
     const module = await loader() as { default: ReaderCatalog }
-    return defineComponent({ setup() { provide(workCatalogKey, module.default); return () => h(props.layout) } })
+    return defineComponent({ setup() {
+      provide(workCatalogKey, module.default)
+      const ready = ref(false)
+      onMounted(() => { ready.value = true })
+      return () => h(props.layout, { 'data-reader-ready': ready.value ? 'true' : undefined })
+    } })
   }))
   return components.get(id)
 })

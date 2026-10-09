@@ -9,6 +9,7 @@ import matter from 'gray-matter'
 import { createMarkdownRenderer, disposeMdItInstance } from 'vitepress'
 import { parseManuscript } from '@duvridge/content-processing/manuscripts/parse-manuscript.mjs'
 import { createLegacyEpisodeMaps } from '@duvridge/content-processing/manuscripts/episode-ids.mjs'
+import { renderedText } from '@duvridge/content-processing/manuscripts/rendered-text.mjs'
 import { listBookSources } from '@duvridge/content-processing/source-files/list-book-sources.mjs'
 import { stripIllustrationMarkers } from '@duvridge/content-processing/illustrations/parse-illustration-markers.mjs'
 
@@ -86,7 +87,7 @@ try {
       const expected = await inspector.evaluate(html => [...new DOMParser().parseFromString(html, 'text/html').querySelectorAll('p')].map(paragraph => paragraph.textContent),
         markdown.render(stripIllustrationMarkers(episode.body)))
       assert.equal(published.title, `${episode.label} ${episode.title} · ${title}`, `novels/${id}: stale title`)
-      assert.deepEqual(published.paragraphs, expected, `novels/${id}: published prose differs from the canonical manuscript`)
+      assert.deepEqual(published.paragraphs.map(renderedText), expected.map(renderedText), `novels/${id}: published prose differs from the canonical manuscript`)
       paragraphChecks += expected.length
       const listen = await (await request(values.toldlife, `/audiobooks/${bookId}/${id}`)).text()
       assert(listen.includes(`https://toldlife.duvridge.com/audiobooks/${bookId}/${id}`), `audiobooks/${id}: wrong canonical`)

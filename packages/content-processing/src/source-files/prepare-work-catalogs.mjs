@@ -31,9 +31,12 @@ export function prepareWorkCatalogs({ repositoryRoot, appRoot, extendCatalog, na
   const ownedPages = existsSync(pagesManifestFile) ? JSON.parse(readFileSync(pagesManifestFile, 'utf8')) : {}
   // Upgrade the earlier single-work generator without claiming hand-written files.
   const oldManifestFile = path.join(generated, 'content-manifest.json')
+  let retiredReadFiles = []
   if (existsSync(oldManifestFile)) {
     const old = JSON.parse(readFileSync(oldManifestFile, 'utf8'))
-    if (old.directory && !ownedPages[old.directory]) ownedPages[old.directory] = old.files
+    const directory = old.directory ?? 'read'
+    if (!ownedPages[directory]) ownedPages[directory] = old.files
+    if (directory === 'read') retiredReadFiles = old.files
   }
   for (const id of previous) {
     const stagedManifest = path.join(appRoot, '.work-inputs', id, 'site/.vitepress/generated/content-manifest.json')
@@ -81,6 +84,8 @@ export function prepareWorkCatalogs({ repositoryRoot, appRoot, extendCatalog, na
     rmSync(path.join(publicWorks, id), { recursive: true, force: true })
     rmSync(path.join(workFiles, `${id}.json`), { force: true })
   }
+  for (const filename of retiredReadFiles) rmSync(path.join(appRoot, 'site/read', filename), { force: true })
+  for (const directory of [path.join(appRoot, 'site/read/assets'), path.join(appRoot, 'site/read')]) if (existsSync(directory) && !readdirSync(directory).length) rmSync(directory, { recursive: true })
   writeFileSync(pagesManifestFile, JSON.stringify(nextPages) + '\n')
   writeFileSync(previousFile, JSON.stringify(Object.keys(catalogs)) + '\n')
   writeFileSync(path.join(generated, 'catalogs.json'), JSON.stringify(catalogs, null, 2) + '\n')

@@ -57,3 +57,15 @@ test('materialized work pages preserve hand-written files and reject a conflicti
   write('apps/reader/site/second/ep01.md', '# Manual conflict')
   assert.throws(() => prepareWorkCatalogs({ repositoryRoot: root, appRoot }), /직접 작성한/)
 })
+
+test('upgrading an existing local app removes only owned legacy read pages', t => {
+  const { root, book, write } = make(t); book('first', true)
+  const appRoot = path.join(root, 'apps/reader')
+  write('apps/reader/site/read/ep01.md', '# Old generated chapter')
+  write('apps/reader/site/read/manual.md', '# Manual page')
+  write('apps/reader/site/.vitepress/generated/content-manifest.json', JSON.stringify({ version: 1, files: ['ep01.md'] }))
+  prepareWorkCatalogs({ repositoryRoot: root, appRoot })
+  assert.equal(existsSync(path.join(appRoot, 'site/read/ep01.md')), false)
+  assert.equal(readFileSync(path.join(appRoot, 'site/read/manual.md'), 'utf8'), '# Manual page')
+  assert.equal(existsSync(path.join(appRoot, 'site/first/ep01.md')), true)
+})
