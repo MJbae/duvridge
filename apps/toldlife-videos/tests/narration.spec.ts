@@ -35,15 +35,18 @@ async function noOverflow(page: Page) {
 }
 async function startEpisode(page: Page, id: string, _format: 'read' = 'read') {
   await page.goto(`${id}`)
+  await expect(page.locator('[data-reader-ready="true"]')).toBeVisible()
   await playButton(page).click()
   await listening(page, id)
 }
 
 test('영상 작품 홈과 영상은 보기만 보여 주고, 장면을 누르면 그 장면부터 본다', async ({ page }) => {
   await page.goto('./')
+  await expect(page.locator('[data-reader-ready="true"]')).toBeVisible()
   await expect(bigButton(page)).toHaveText('처음부터 보기')
   await expect(page.getByText(/듣기|읽기/)).toHaveCount(0)
   await page.goto('prolog')
+  await expect(page.locator('[data-reader-ready="true"]')).toBeVisible()
   const captions = page.getByRole('button', { name: '자막 끄기' })
   await expect(page.locator('.subtitle-band')).toHaveText(narration.prolog.texts[0])
   await captions.click()
@@ -64,6 +67,7 @@ test('영상 작품 홈과 영상은 보기만 보여 주고, 장면을 누르�
 test('가로로 돌리면 영상이 화면을 채우고 자막이 그림 위에 겹친다', async ({ page }) => {
   await page.setViewportSize({ width: 844, height: 390 })
   await page.goto('prolog')
+  await expect(page.locator('[data-reader-ready="true"]')).toBeVisible()
   await expect(page.locator('.theater-page')).toHaveClass(/is-full/)
   await expect(page.locator('.stage-caption')).toHaveText(narration.prolog.texts[0])
   await expect(page.locator('.subtitle-band')).toHaveCount(0)
@@ -75,6 +79,7 @@ test('영상은 배경음악을 불러오지 않는다', async ({ page }) => {
  const requests: string[] = []
  page.on('request', request => { if (request.url().includes('/music/')) requests.push(request.url()) })
  await page.goto('./')
+  await expect(page.locator('[data-reader-ready="true"]')).toBeVisible()
  await startEpisode(page, 'prolog')
  await expect(page.locator('.background-audio')).toHaveCount(0)
  expect(requests).toEqual([])

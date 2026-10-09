@@ -35,6 +35,7 @@ async function noOverflow(page: Page) {
 }
 async function startEpisode(page: Page, id: string, _format: 'read' = 'read') {
   await page.goto(`${id}`)
+  await expect(page.locator('[data-reader-ready="true"]')).toBeVisible()
   await playButton(page).click()
   await listening(page, id)
 }
@@ -43,6 +44,7 @@ test('오디오북 작품 홈은 큰 버튼 하나와 듣기 회차만 보여 �
   const errors: string[] = []
   page.on('pageerror', error => errors.push(error.message))
   await page.goto('./')
+  await expect(page.locator('[data-reader-ready="true"]')).toBeVisible()
   await expect(page.getByRole('heading', { level: 1, name: '내 논을 파는 한이 있어도' })).toBeVisible()
   await expect(bigButton(page)).toHaveText('처음부터 듣기')
   await expect(bigButton(page)).toHaveAttribute('href', '/audiobooks/bae-byunghee/prolog')
@@ -60,6 +62,7 @@ test('오디오북 작품 홈은 큰 버튼 하나와 듣기 회차만 보여 �
 
 test('큰 버튼은 플레이어를 열어 바로 재생하고, 낭독 문장을 앞뒤 문장과 함께 보여 준다', async ({ page }) => {
   await page.goto('./')
+  await expect(page.locator('[data-reader-ready="true"]')).toBeVisible()
   await bigButton(page).click()
   await expect(page).toHaveURL(/\/audiobooks\/bae-byunghee\/prolog$/)
   await listening(page, 'prolog')
@@ -107,6 +110,7 @@ test('멈춘 곳은 작품 홈 버튼과 회차에 남고, 이어 들으면 그 
   await expect.poll(() => currentTime(page)).toBeGreaterThan(42)
   await pauseButton(page).click()
   await page.goto('./')
+  await expect(page.locator('[data-reader-ready="true"]')).toBeVisible()
   await expect(bigButton(page)).toHaveText('프롤로그 이어 듣기')
   await expect(page.locator('#episode-prolog')).toHaveAttribute('aria-current', 'true')
   await bigButton(page).click()
@@ -153,6 +157,7 @@ test('다음 화 녹음이 있으면 회차 끝을 잠시 보여 준 뒤 다음 
 test('녹음이 없는 회차는 같은 자리 버튼이 준비 중으로 잠기고 본문을 싣지 않는다', async ({ page }) => {
   test.skip(!waiting, '모든 회차가 녹음되었습니다')
   await page.goto(`${waiting!.id}`)
+  await expect(page.locator('[data-reader-ready="true"]')).toBeVisible()
   await expect(page.getByRole('heading', { level: 1, name: waiting!.title })).toBeVisible()
   await expect(page.getByRole('button', { name: `${waiting!.label} 듣기 · 준비 중` })).toBeDisabled()
   await expect(page.locator('.story-content')).toHaveCount(0)
@@ -161,6 +166,7 @@ test('녹음이 없는 회차는 같은 자리 버튼이 준비 중으로 잠기
 
 test('회차 목록은 녹음된 회차만 열고 나머지는 준비 중으로 둔다', async ({ page }) => {
   await page.goto('prolog')
+  await expect(page.locator('[data-reader-ready="true"]')).toBeVisible()
   await page.getByRole('button', { name: '회차 목록' }).click()
   const sheet = page.getByRole('dialog', { name: '회차' })
   await expect(sheet).toBeVisible()
@@ -209,6 +215,7 @@ test('오디오북은 배경음악을 틀지 않는다', async ({ page }) => {
   const requests: string[] = []
   page.on('request', request => { if (request.url().includes('/music/')) requests.push(request.url()) })
   await page.goto('./')
+  await expect(page.locator('[data-reader-ready="true"]')).toBeVisible()
   await startEpisode(page, 'prolog')
   await expect(page.locator('.background-audio')).toHaveCount(0)
   await expect(page.getByRole('switch', { name: '배경음악' })).toHaveCount(0)
