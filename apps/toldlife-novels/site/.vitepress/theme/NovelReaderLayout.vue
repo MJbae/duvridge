@@ -18,7 +18,9 @@ const router = useRouter()
 const previousBeforeLoad = router.onBeforePageLoad
 const isHome = computed(() => frontmatter.value.layout === 'home')
 const isMissing = computed(() => Boolean(page.value.isNotFound))
-const isEpisode = computed(() => !isHome.value && !isMissing.value && frontmatter.value.kind === 'episode')
+// Every page read as text (episodes, and any document a book adds) is paper or night.
+const isReading = computed(() => !isHome.value && !isMissing.value && frontmatter.value.kind !== 'redirect')
+const isEpisode = computed(() => isReading.value && frontmatter.value.kind === 'episode')
 // Music belongs to reading; the work page stays quiet.
 const musicTrack = computed(() => (isEpisode.value ? catalog.music?.episodes[String(frontmatter.value.episodeId || '')] : undefined))
 const { audio: musicAudio, enabled: musicEnabled, status: musicStatus, setEnabled: setMusicEnabled, retry: retryMusic } = useBackgroundMusic(musicTrack)
@@ -89,7 +91,7 @@ function setMode(mode: string) {
 function syncThemeColor() {
   const meta = document.querySelector('meta[name="theme-color"]')
   if (!meta) return
-  meta.setAttribute('content', !isEpisode.value ? '#111318' : isNight.value ? '#16171b' : '#f5f2eb')
+  meta.setAttribute('content', !isReading.value ? '#111318' : isNight.value ? '#16171b' : '#f5f2eb')
 }
 /** A tap on the text shows or hides the bars; taps on links, buttons and selections are left alone. */
 function toggleChrome(event: MouseEvent) {
@@ -200,7 +202,7 @@ onBeforeUnmount(() => {
 })
 </script>
 <template>
-  <div class="library" :class="isEpisode ? ['page-reader', `font-${fontSize}`, { 'chrome-hidden': !chrome }] : 'page-theater'">
+  <div class="library" :class="isReading ? ['page-reader', `font-${fontSize}`, { 'chrome-hidden': !chrome }] : 'page-theater'">
     <a class="skip-link" href="#main">본문으로 건너뛰기</a>
     <audio ref="musicAudio" class="background-audio" loop preload="none" aria-hidden="true" />
     <WorkHome v-if="isHome" series="novel" :title="catalog.work.title" :art="art"

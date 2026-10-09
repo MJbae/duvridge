@@ -9,7 +9,7 @@ import { listenAction } from '../shared/playback-selection.mjs'
 import AudiobookPlayer from './components/AudiobookPlayer.vue'
 import TheaterPlayer from './components/TheaterPlayer.vue'
 import SceneArt from './components/SceneArt.vue'
-import { episodePath, narrationFor, narrationKey, useNarration, type NarrationMode } from './lib/narration-controller'
+import { episodePath, followsHere, narrationFor, narrationKey, useNarration, type NarrationMode } from './lib/narration-controller'
 import { catalog, episodeImage } from './lib/reader-catalog'
 import { migrateCompleted, migrateReading } from '../shared/reading-history.mjs'
 const { frontmatter, page, params, site } = useData()
@@ -76,11 +76,11 @@ const art = computed(() => {
     alt: cover.alt, width: cover.width, height: cover.height,
   }
 })
-/** Opening an episode plays it at once, inside the same tap. */
-function openAction() { if (action.value.id) narration.open(action.value.id) }
+/** Opening an episode plays it at once, inside the same tap; a link opened elsewhere leaves playback alone. */
+function openAction(event: MouseEvent) { if (action.value.id && followsHere(event)) narration.open(action.value.id) }
 function openRow(event: MouseEvent, row: WorkRow) {
   const entry = catalog.readingOrder.find(candidate => (candidate.episodeId || candidate.id) === row.id)
-  if (entry && event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) narration.open(entry.id)
+  if (entry && followsHere(event)) narration.open(entry.id)
 }
 
 onMounted(() => {
