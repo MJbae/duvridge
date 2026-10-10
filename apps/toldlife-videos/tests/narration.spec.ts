@@ -129,3 +129,34 @@ test('원작으로 만든 영상은 제 화면에서 그대로 재생되고, 원
   }
   expect(errors).toEqual([])
 })
+
+test('영상 화면을 열면 영상이 바로 재생된다', async ({ page }) => {
+  for (const id of ['nureon-bongtu', 'mot-bon-cheok']) {
+    await page.goto(id)
+    const media = page.locator('video.film-video')
+    await expect.poll(() => media.evaluate((element: HTMLVideoElement) => !element.paused && element.currentTime > 0), { timeout: 15000 }).toBe(true)
+    // Started with its sound, it needs nothing more; started silently, one button brings the sound in.
+    const muted = await media.evaluate((element: HTMLVideoElement) => element.muted)
+    await expect(page.getByRole('button', { name: '소리 켜기' })).toHaveCount(muted ? 1 : 0)
+  }
+})
+
+test('브라우저가 소리를 막으면 소리 없이 바로 시작하고, 소리 켜기 한 번으로 소리가 난다', async ({ page }) => {
+  // The strictest browsers (iPhone Safari) refuse sound before a tap on the page itself.
+  await page.addInitScript(() => {
+    const play = HTMLMediaElement.prototype.play
+    let tapped = false
+    addEventListener('pointerdown', () => { tapped = true }, true)
+    HTMLMediaElement.prototype.play = function (this: HTMLMediaElement) {
+      return !this.muted && !tapped ? Promise.reject(new DOMException('소리는 누른 뒤에만', 'NotAllowedError')) : play.call(this)
+    }
+  })
+  await page.goto('byeotgap')
+  const media = page.locator('video.film-video')
+  await expect.poll(() => media.evaluate((element: HTMLVideoElement) => element.muted && !element.paused), { timeout: 15000 }).toBe(true)
+  const unmute = page.getByRole('button', { name: '소리 켜기' })
+  await expect(unmute).toBeVisible()
+  await unmute.click()
+  await expect.poll(() => media.evaluate((element: HTMLVideoElement) => !element.muted && !element.paused)).toBe(true)
+  await expect(unmute).toHaveCount(0)
+})

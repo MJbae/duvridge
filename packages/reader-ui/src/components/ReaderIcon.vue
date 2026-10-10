@@ -7,6 +7,7 @@ type Shape = { d: string; solid?: boolean }
 const shapes: Record<string, Shape[]> = {
   arrow: [{ d: 'M5 12h14m-6-6 6 6-6 6' }],
   music: [{ d: 'M9 17V6l10-2v11M9 9l10-2M9 17a3 2 0 1 1-6 0 3 2 0 1 1 6 0m10-2a3 2 0 1 1-6 0 3 2 0 1 1 6 0' }],
+  sound: [{ d: 'M4 9.5h3.5L12 6v12l-4.5-3.5H4z' }, { d: 'M15.5 9.5a3.5 3.5 0 0 1 0 5M18 7a7 7 0 0 1 0 10' }],
   back: [{ d: 'M19 12H5m6 6-6-6 6-6' }],
   close: [{ d: 'm6 6 12 12M6 18 18 6' }],
   chevron: [{ d: 'm9 5 7 7-7 7' }],
