@@ -14,7 +14,7 @@
     "dev": "vitepress dev site --host 127.0.0.1",
     "prebuild": "npm run prepare:content",
     "build": "vitepress build site",
-    "preview": "vitepress preview site --host 127.0.0.1",
+    "preview": "node ../../packages/vitepress-reader/src/config/preview-reader.mjs site --host 127.0.0.1",
     "typecheck": "vue-tsc --noEmit",
     "pretest": "npm run prepare:content",
     "test": "node --test tests/content.test.mjs tests/narration.test.mjs tests/player.test.mjs",

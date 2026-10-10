@@ -1,10 +1,11 @@
 import { createHash } from 'node:crypto'
-import { createReadStream, existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { cp, mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import subsetFont from 'subset-font'
 import { readerFontHead } from './font-head.mjs'
+import { readerFontMiddleware } from './font-server.mjs'
 
 const repository = fileURLToPath(new URL('../../../../', import.meta.url))
 const sourceDirectory = fileURLToPath(new URL('../../assets/fonts/', import.meta.url))
@@ -110,17 +111,7 @@ export async function prepareReaderFonts(root = repository) {
 
 /** Development/standalone preview use the same root URLs as the assembled Pages project. */
 export function readerFontsPlugin(directory) {
-  const serve = (request, response, next) => {
-    const name = (request.url || '').split('?')[0].match(/^\/fonts\/([a-zA-Z0-9.-]+)$/)?.[1]
-    if (!name) return next()
-    const file = path.join(directory, name)
-    if (!existsSync(file) || !statSync(file).isFile()) { response.statusCode = 404; return response.end() }
-    response.setHeader('Content-Type', name.endsWith('.woff2') ? 'font/woff2' : name.endsWith('.css') ? 'text/css; charset=utf-8' : name.endsWith('.json') ? 'application/json' : 'text/plain; charset=utf-8')
-    response.setHeader('Cache-Control', /\.[a-f0-9]{16}\.(woff2|css)$/.test(name) ? 'public, max-age=31536000, immutable' : 'no-cache')
-    if (request.method === 'HEAD') return response.end()
-    createReadStream(file).pipe(response)
-  }
-  return { name: 'reader-fonts', configureServer(server) { server.middlewares.use(serve) }, configurePreviewServer(server) { server.middlewares.use(serve) } }
+  return { name: 'reader-fonts', configureServer(server) { server.middlewares.use(readerFontMiddleware(directory)) } }
 }
 
 export async function copyReaderFonts(directory, outDir) {

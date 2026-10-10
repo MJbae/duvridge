@@ -5,6 +5,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 import shutil
 import subprocess
@@ -84,8 +85,11 @@ def add_shared_fonts(staged, services):
             if not file.is_file() or file.stat().st_size != face["bytes"] or hashlib.sha256(file.read_bytes()).hexdigest() != face["sha256"]:
                 raise ValueError(f"{base}: font asset differs: {name}")
         stylesheet = manifest["stylesheet"]
-        if Path(stylesheet).name != stylesheet or not (directory / stylesheet).is_file():
+        match = re.fullmatch(r"reader\.([a-f0-9]{16})\.css", stylesheet)
+        if not match or not (directory / stylesheet).is_file():
             raise ValueError(f"{base}: font stylesheet missing")
+        if hashlib.sha256((directory / stylesheet).read_bytes()).hexdigest()[:16] != match[1]:
+            raise ValueError(f"{base}: font stylesheet checksum differs")
         if not (staged / "fonts").exists():
             shutil.copytree(directory, staged / "fonts")
     return expected

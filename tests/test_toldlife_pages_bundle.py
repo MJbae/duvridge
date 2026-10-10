@@ -43,9 +43,10 @@ class ToldLifeAssemblyTests(unittest.TestCase):
             data = b"wOF2font"
             digest = hashlib.sha256(data).hexdigest()
             font = f"serif.{digest[:16]}.woff2"
-            stylesheet = "reader.0123456789abcdef.css"
+            css = b"@font-face{}"
+            stylesheet = f"reader.{hashlib.sha256(css).hexdigest()[:16]}.css"
             (fonts / font).write_bytes(data)
-            (fonts / stylesheet).write_text("@font-face{}")
+            (fonts / stylesheet).write_bytes(css)
             (fonts / "manifest.json").write_text(json.dumps({"version": 1, "stylesheet": stylesheet, "faces": [{"family": "ToldLife Serif", "weight": "400 800", "common": True, "file": font, "bytes": len(data), "sha256": digest}]}))
             if name in {"audio", "videos"}:
                 (dist / "works/bae-byunghee/record").mkdir(parents=True)
@@ -104,6 +105,11 @@ class ToldLifeAssemblyTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "font asset differs"):
             build.assemble(self.output, self.services)
         (folder / face["file"]).write_bytes(b"wOF2font")
+        stylesheet = json.loads(original)["stylesheet"]
+        (folder / stylesheet).write_text("corrupt CSS")
+        with self.assertRaisesRegex(ValueError, "stylesheet checksum differs"):
+            build.assemble(self.output, self.services)
+        (folder / stylesheet).write_bytes(b"@font-face{}")
         modified = json.loads(original)
         modified["faces"][0]["weight"] = "700"
         marker.write_text(json.dumps(modified))

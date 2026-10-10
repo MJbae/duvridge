@@ -7,6 +7,18 @@ async function noOverflow(page: Page) { expect(await page.evaluate(() => documen
 const bigButton = (page: Page) => page.locator('.work-action .big-button')
 const quiet = (page: Page) => page.addInitScript(() => localStorage.setItem('family-library:music', JSON.stringify({ enabled: false })))
 const fontSize = (page: Page) => page.locator('.story-content p').first().evaluate(element => parseFloat(getComputedStyle(element).fontSize))
+async function readerReady(page: Page) { await expect(page.locator('[data-reader-ready="true"]')).toBeVisible() }
+async function typographySamples(page: Page) {
+  await page.locator('.story-content').evaluate(element => {
+    for (const tag of ['h2', 'h3', 'ul', 'ol']) {
+      if (element.querySelector(`${tag}[data-typography-probe]`)) continue
+      const sample = document.createElement(tag)
+      sample.dataset.typographyProbe = ''
+      sample.textContent = '서체 견본'
+      element.appendChild(sample)
+    }
+  })
+}
 // How far a row sits from the middle of the screen.
 const offCenter = (page: Page, selector: string) => page.locator(selector).evaluate(element => {
   const box = element.getBoundingClientRect()
@@ -79,19 +91,13 @@ test('읽기 화면 위 막대는 뒤로·회차 제목·설정뿐이고, 뒤로
 test('읽기 설정은 네 글자 크기·줄 간격·서체를 바로 적용하고 다시 와도 유지한다', async ({ page }) => {
   await quiet(page)
   await page.goto('ep01')
+  await readerReady(page)
   expect(await fontSize(page)).toBe(20)
   const paragraph = page.locator('.story-content p').first()
   expect(await paragraph.evaluate(element => getComputedStyle(element).lineHeight)).toBe('42px')
   expect(await paragraph.evaluate(element => getComputedStyle(element).fontFamily)).toContain('ToldLife Serif')
   // The chapter has no lists or subheadings, so sample their inherited typography too.
-  await page.locator('.story-content').evaluate(element => {
-    for (const tag of ['h2', 'h3', 'ul', 'ol']) {
-      const sample = document.createElement(tag)
-      sample.dataset.typographyProbe = ''
-      sample.textContent = '서체 견본'
-      element.appendChild(sample)
-    }
-  })
+  await typographySamples(page)
   await page.getByRole('button', { name: '설정', exact: true }).click()
   const sheet = page.getByRole('dialog', { name: '읽기 설정' })
   await expect(sheet).toBeVisible()
@@ -129,6 +135,8 @@ test('읽기 설정은 네 글자 크기·줄 간격·서체를 바로 적용하
   await expect(leading.getByRole('button', { name: '넓게', exact: true })).toHaveAttribute('aria-pressed', 'true')
   await expect(page.locator('.library')).toHaveClass(/leading-wide/)
   expect(await paragraph.evaluate(element => parseFloat(getComputedStyle(element).lineHeight) / parseFloat(getComputedStyle(element).fontSize))).toBeCloseTo(2.1, 3)
+  // Content rerenders on settings changes; sample the final rendered inheritance.
+  await typographySamples(page)
   const listLeading = await page.locator('.story-content ul, .story-content ol').evaluateAll(elements => elements.map(element => parseFloat(getComputedStyle(element).lineHeight) / parseFloat(getComputedStyle(element).fontSize)))
   expect(listLeading).toHaveLength(2)
   for (const leading of listLeading) expect(leading).toBeCloseTo(2.1, 3)
@@ -136,6 +144,7 @@ test('읽기 설정은 네 글자 크기·줄 간격·서체를 바로 적용하
   await expect(faces.getByRole('button', { name: '고딕', exact: true })).toHaveAttribute('aria-pressed', 'true')
   await expect(page.locator('.library')).toHaveClass(/face-sans/)
   expect(await paragraph.evaluate(element => getComputedStyle(element).fontFamily)).toContain('ToldLife UI')
+  await typographySamples(page)
   const headings = await page.locator('.story-content h2, .story-content h3').evaluateAll(elements => elements.map(element => getComputedStyle(element).fontFamily))
   expect(headings.length).toBeGreaterThan(0)
   expect(headings.every(face => face.includes('ToldLife UI'))).toBe(true)
@@ -178,6 +187,7 @@ test('설정 시트는 본문을 가리지 않고 짧은 화면에서 안쪽만 
   await quiet(page)
   await page.setViewportSize({ width: page.viewportSize()!.width, height: 400 })
   await page.goto('ep01')
+  await readerReady(page)
   await page.evaluate(() => window.scrollTo({ top: 900, behavior: 'instant' }))
   const before = await page.evaluate(() => scrollY)
   await page.getByRole('button', { name: '설정', exact: true }).click()
@@ -221,6 +231,7 @@ test('본문 중간에서 글자 크기·줄 간격·서체를 바꿔도 읽던 
 test('본문을 누르면 위아래 막대가 숨고 얇은 진행선만 남는다', async ({ page }) => {
   await quiet(page)
   await page.goto('ep02')
+  await readerReady(page)
   await page.locator('.story-content p').nth(1).click()
   await expect(page.locator('.library')).toHaveClass(/chrome-hidden/)
   await expect.poll(() => page.locator('.reader-thin').evaluate(element => getComputedStyle(element).opacity)).toBe('1')
@@ -430,11 +441,11 @@ test('모든 회차의 삽화를 불러오며 16:9 전체 그림을 화면 폭�
   await page.screenshot({ path: `test-results/reading/${info.project.name}-illustrated-reader.png`, fullPage: true })
 })
 
-test('자바스크립트 없이도 넓은 줄 간격·명조 기본값과 삽화를 표시한다', async ({ browser }) => {
+test('자바스크립트 없이도 넓은 줄 간격·명조 기본값과 삽화를 표시한다', async ({ browser, baseURL }) => {
   const context = await browser.newContext({ javaScriptEnabled: false })
   const page = await context.newPage()
   try {
-    await page.goto('http://127.0.0.1:4183/novels/bae-byunghee/ep01')
+    await page.goto(new URL('ep01', baseURL).href)
     await expect(page.locator('.library')).toHaveClass(/leading-wide/)
     await expect(page.locator('.library')).toHaveClass(/face-serif/)
     const paragraph = page.locator('.story-content p').first()
@@ -443,7 +454,7 @@ test('자바스크립트 없이도 넓은 줄 간격·명조 기본값과 삽화
     await expect(page.locator('.episode-illustration')).toHaveCount(2)
     const first = page.locator('.episode-illustration img').first()
     await expect.poll(() => first.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true)
-    await page.goto('http://127.0.0.1:4183/novels/bae-byunghee/ep05')
+    await page.goto(new URL('ep05', baseURL).href)
     await expect(page.locator('.episode-illustration')).toHaveCount(2)
   } finally { await context.close() }
 })

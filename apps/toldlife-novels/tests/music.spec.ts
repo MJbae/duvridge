@@ -5,6 +5,7 @@ const music = () => rawCatalog.music!
 const backgroundAudio = (page: Page) => page.locator('.background-audio')
 const musicSwitch = (page: Page) => page.getByRole('switch', { name: '배경음악', exact: true })
 async function openSettings(page: Page) {
+  await expect(page.locator('[data-reader-ready="true"]')).toBeVisible()
   if (!await page.getByRole('dialog', { name: '읽기 설정' }).isVisible())
     await page.getByRole('button', { name: '설정', exact: true }).click()
 }
