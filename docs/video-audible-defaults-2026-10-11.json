@@ -1,0 +1,649 @@
+{
+  "schemaVersion": 1,
+  "implementationCommit": "e579a1e52f959a7f02e99d6ae7b7d08ccb0de406",
+  "worktree": "duvridge-video-audible-defaults",
+  "workflow": {
+    "id": 38063853089,
+    "url": "https://github.com/MJbae/duvridge/actions/runs/38063853089",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "name": "plan",
+        "conclusion": "success"
+      },
+      {
+        "name": "repository",
+        "conclusion": "success"
+      },
+      {
+        "name": "service (toldlife-videos, @duvridge/toldlife-videos, apps/toldlife-videos/site/.vitepress/dist)",
+        "conclusion": "success"
+      },
+      {
+        "name": "service (toldlife-novels, @duvridge/toldlife-novels, apps/toldlife-novels/site/.vitepress/dist)",
+        "conclusion": "success"
+      },
+      {
+        "name": "urls",
+        "conclusion": "success"
+      },
+      {
+        "name": "service (toldlife-audiobooks, @duvridge/toldlife-audiobooks, apps/toldlife-audiobooks/site/.vitep...",
+        "conclusion": "success"
+      },
+      {
+        "name": "service (toldlife-portal, @duvridge/toldlife-portal)",
+        "conclusion": "success"
+      },
+      {
+        "name": "Monorepo required",
+        "conclusion": "success"
+      },
+      {
+        "name": "deploy (toldlife, toldlife, https://toldlife.duvridge.com, .deploy/toldlife, python3, scripts/ass...",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "deploymentUrl": "https://6517ec45.toldlife.pages.dev",
+  "localValidation": {
+    "node": "22.23.2",
+    "npm": "10.9.8",
+    "rootInstall": "npm ci",
+    "repositoryNodeTests": 32,
+    "repositoryPythonTests": 11,
+    "videoCatalogTests": 6,
+    "videoSharingTests": 4,
+    "videoTypecheck": "passed",
+    "videoBuild": "passed",
+    "videoBrowserTests": 42
+  },
+  "baseline": {
+    "marker": {
+      "schemaVersion": 1,
+      "group": "toldlife",
+      "sourceRevision": "b46e77b4c9d1491788428b4021234038e3f09aa6",
+      "sourceDirty": false,
+      "services": [
+        {
+          "base": "/novels/",
+          "files": 1017
+        },
+        {
+          "base": "/audiobooks/",
+          "files": 1069
+        },
+        {
+          "base": "/videos/",
+          "files": 1052
+        }
+      ],
+      "videos": 29
+    },
+    "state": {
+      "muted": true,
+      "paused": false,
+      "time": 1.461962,
+      "activated": false,
+      "ready": 4
+    },
+    "checkedAt": "2026-10-10T15:30:53.698Z"
+  },
+  "production": {
+    "checkedAt": "2026-10-10T15:35:47.228Z",
+    "origin": "https://toldlife.duvridge.com",
+    "deployment": {
+      "schemaVersion": 1,
+      "group": "toldlife",
+      "sourceRevision": "e579a1e52f959a7f02e99d6ae7b7d08ccb0de406",
+      "sourceDirty": false,
+      "services": [
+        {
+          "base": "/novels/",
+          "files": 1017
+        },
+        {
+          "base": "/audiobooks/",
+          "files": 1069
+        },
+        {
+          "base": "/videos/",
+          "files": 1052
+        }
+      ],
+      "videos": 29
+    },
+    "browser": "Chromium",
+    "results": [
+      {
+        "device": "phone",
+        "policy": "no-user-gesture-required",
+        "id": "nureon-bongtu",
+        "automatic": true,
+        "initial": {
+          "ready": true,
+          "muted": false,
+          "defaultMuted": false,
+          "volume": 1,
+          "paused": false,
+          "currentTime": 0.142947,
+          "readyState": 4,
+          "duration": 203.2,
+          "src": "https://toldlife.duvridge.com/videos/works/bae-byunghee/media/nureon-bongtu.ba09cad351.mp4",
+          "activated": false,
+          "audioDecodedBytes": 7819
+        },
+        "playing": {
+          "ready": true,
+          "muted": false,
+          "defaultMuted": false,
+          "volume": 1,
+          "paused": false,
+          "currentTime": 0.505122,
+          "readyState": 4,
+          "duration": 203.2,
+          "src": "https://toldlife.duvridge.com/videos/works/bae-byunghee/media/nureon-bongtu.ba09cad351.mp4",
+          "activated": true,
+          "audioDecodedBytes": 13652
+        },
+        "errors": []
+      },
+      {
+        "device": "phone",
+        "policy": "no-user-gesture-required",
+        "id": "byeotgap",
+        "automatic": true,
+        "initial": {
+          "ready": true,
+          "muted": false,
+          "defaultMuted": false,
+          "volume": 1,
+          "paused": false,
+          "currentTime": 0.374235,
+          "readyState": 4,
+          "duration": 62.016,
+          "src": "https://toldlife.duvridge.com/videos/works/bae-byunghee/media/byeotgap.ce19a68f6d.mp4",
+          "activated": false,
+          "audioDecodedBytes": 11471
+        },
+        "playing": {
+          "ready": true,
+          "muted": false,
+          "defaultMuted": false,
+          "volume": 1,
+          "paused": false,
+          "currentTime": 0.387197,
+          "readyState": 4,
+          "duration": 62.016,
+          "src": "https://toldlife.duvridge.com/videos/works/bae-byunghee/media/byeotgap.ce19a68f6d.mp4",
+          "activated": true,
+          "audioDecodedBytes": 11471
+        },
+        "errors": []
+      },
+      {
+        "device": "phone",
+        "policy": "no-user-gesture-required",
+        "id": "mot-bon-cheok",
+        "automatic": true,
+        "initial": {
+          "ready": true,
+          "muted": false,
+          "defaultMuted": false,
+          "volume": 1,
+          "paused": false,
+          "currentTime": 0.019323,
+          "readyState": 4,
+          "duration": 80,
+          "src": "https://toldlife.duvridge.com/videos/works/bae-byunghee/media/mot-bon-cheok.f50e9b09ec.mp4",
+          "activated": false,
+          "audioDecodedBytes": 4953
+        },
+        "playing": {
+          "ready": true,
+          "muted": false,
+          "defaultMuted": false,
+          "volume": 1,
+          "paused": false,
+          "currentTime": 0.385795,
+          "readyState": 4,
+          "duration": 80,
+          "src": "https://toldlife.duvridge.com/videos/works/bae-byunghee/media/mot-bon-cheok.f50e9b09ec.mp4",
+          "activated": true,
+          "audioDecodedBytes": 10772
+        },
+        "errors": []
+      },
+      {
+        "device": "phone",
+        "policy": "no-user-gesture-required",
+        "id": "prolog",
+        "automatic": false,
+        "initial": {
+          "ready": true,
+          "muted": false,
+          "defaultMuted": false,
+          "volume": 1,
+          "paused": true,
+          "currentTime": 0,
+          "readyState": 0,
+          "duration": null,
+          "src": "",
+          "activated": false,
+          "audioDecodedBytes": 0
+        },
+        "playing": {
+          "ready": true,
+          "muted": false,
+          "defaultMuted": false,
+          "volume": 1,
+          "paused": false,
+          "currentTime": 0.517545,
+          "readyState": 4,
+          "duration": 105.133333,
+          "src": "https://toldlife.duvridge.com/videos/works/bae-byunghee/media/prolog.44032dfacf.mp4",
+          "activated": true,
+          "audioDecodedBytes": 16514
+        },
+        "errors": []
+      },
+      {
+        "device": "phone",
+        "policy": "user-gesture-required",
+        "id": "nureon-bongtu",
+        "automatic": false,
+        "initial": {
+          "ready": true,
+          "muted": false,
+          "defaultMuted": false,
+          "volume": 1,
+          "paused": true,
+          "currentTime": 0,
+          "readyState": 1,
+          "duration": 203.2,
+          "src": "https://toldlife.duvridge.com/videos/works/bae-byunghee/media/nureon-bongtu.ba09cad351.mp4",
+          "activated": false,
+          "audioDecodedBytes": 0
+        },
+        "playing": {
+          "ready": true,
+          "muted": false,
+          "defaultMuted": false,
+          "volume": 1,
+          "paused": false,
+          "currentTime": 0.291997,
+          "readyState": 4,
+          "duration": 203.2,
+          "src": "https://toldlife.duvridge.com/videos/works/bae-byunghee/media/nureon-bongtu.ba09cad351.mp4",
+          "activated": true,
+          "audioDecodedBytes": 10281
+        },
+        "errors": []
+      },
+      {
+        "device": "phone",
+        "policy": "user-gesture-required",
+        "id": "byeotgap",
+        "automatic": false,
+        "initial": {
+          "ready": true,
+          "muted": false,
+          "defaultMuted": false,
+          "volume": 1,
+          "paused": true,
+          "currentTime": 0,
+          "readyState": 4,
+          "duration": 62.016,
+          "src": "https://toldlife.duvridge.com/videos/works/bae-byunghee/media/byeotgap.ce19a68f6d.mp4",
+          "activated": false,
+          "audioDecodedBytes": 4105
+        },
+        "playing": {
+          "ready": true,
+          "muted": false,
+          "defaultMuted": false,
+          "volume": 1,
+          "paused": false,
+          "currentTime": 0.292354,
+          "readyState": 4,
+          "duration": 62.016,
+          "src": "https://toldlife.duvridge.com/videos/works/bae-byunghee/media/byeotgap.ce19a68f6d.mp4",
+          "activated": true,
+          "audioDecodedBytes": 10116
+        },
+        "errors": []
+      },
+      {
+        "device": "phone",
+        "policy": "user-gesture-required",
+        "id": "mot-bon-cheok",
+        "automatic": false,
+        "initial": {
+          "ready": true,
+          "muted": false,
+          "defaultMuted": false,
+          "volume": 1,
+          "paused": true,
+          "currentTime": 0,
+          "readyState": 4,
+          "duration": 80,
+          "src": "https://toldlife.duvridge.com/videos/works/bae-byunghee/media/mot-bon-cheok.f50e9b09ec.mp4",
+          "activated": false,
+          "audioDecodedBytes": 3548
+        },
+        "playing": {
+          "ready": true,
+          "muted": false,
+          "defaultMuted": false,
+          "volume": 1,
+          "paused": false,
+          "currentTime": 0.293459,
+          "readyState": 4,
+          "duration": 80,
+          "src": "https://toldlife.duvridge.com/videos/works/bae-byunghee/media/mot-bon-cheok.f50e9b09ec.mp4",
+          "activated": true,
+          "audioDecodedBytes": 9439
+        },
+        "errors": []
+      },
+      {
+        "device": "phone",
+        "policy": "user-gesture-required",
+        "id": "prolog",
+        "automatic": false,
+        "initial": {
+          "ready": true,
+          "muted": false,
+          "defaultMuted": false,
+          "volume": 1,
+          "paused": true,
+          "currentTime": 0,
+          "readyState": 0,
+          "duration": null,
+          "src": "",
+          "activated": false,
+          "audioDecodedBytes": 0
+        },
+        "playing": {
+          "ready": true,
+          "muted": false,
+          "defaultMuted": false,
+          "volume": 1,
+          "paused": false,
+          "currentTime": 1.135963,
+          "readyState": 4,
+          "duration": 105.133333,
+          "src": "https://toldlife.duvridge.com/videos/works/bae-byunghee/media/prolog.44032dfacf.mp4",
+          "activated": true,
+          "audioDecodedBytes": 29083
+        },
+        "errors": []
+      },
+      {
+        "device": "desktop",
+        "policy": "no-user-gesture-required",
+        "id": "nureon-bongtu",
+        "automatic": true,
+        "initial": {
+          "ready": true,
+          "muted": false,
+          "defaultMuted": false,
+          "volume": 1,
+          "paused": false,
+          "currentTime": 0.061232,
+          "readyState": 4,
+          "duration": 203.2,
+          "src": "https://toldlife.duvridge.com/videos/works/bae-byunghee/media/nureon-bongtu.ba09cad351.mp4",
+          "activated": false,
+          "audioDecodedBytes": 6489
+        },
+        "playing": {
+          "ready": true,
+          "muted": false,
+          "defaultMuted": false,
+          "volume": 1,
+          "paused": false,
+          "currentTime": 0.274846,
+          "readyState": 4,
+          "duration": 203.2,
+          "src": "https://toldlife.duvridge.com/videos/works/bae-byunghee/media/nureon-bongtu.ba09cad351.mp4",
+          "activated": true,
+          "audioDecodedBytes": 9927
+        },
+        "errors": []
+      },
+      {
+        "device": "desktop",
+        "policy": "no-user-gesture-required",
+        "id": "byeotgap",
+        "automatic": true,
+        "initial": {
+          "ready": true,
+          "muted": false,
+          "defaultMuted": false,
+          "volume": 1,
+          "paused": false,
+          "currentTime": 0.175987,
+          "readyState": 4,
+          "duration": 62.016,
+          "src": "https://toldlife.duvridge.com/videos/works/bae-byunghee/media/byeotgap.ce19a68f6d.mp4",
+          "activated": false,
+          "audioDecodedBytes": 8202
+        },
+        "playing": {
+          "ready": true,
+          "muted": false,
+          "defaultMuted": false,
+          "volume": 1,
+          "paused": false,
+          "currentTime": 0.289951,
+          "readyState": 4,
+          "duration": 62.016,
+          "src": "https://toldlife.duvridge.com/videos/works/bae-byunghee/media/byeotgap.ce19a68f6d.mp4",
+          "activated": true,
+          "audioDecodedBytes": 10116
+        },
+        "errors": []
+      },
+      {
+        "device": "desktop",
+        "policy": "no-user-gesture-required",
+        "id": "mot-bon-cheok",
+        "automatic": true,
+        "initial": {
+          "ready": true,
+          "muted": false,
+          "defaultMuted": false,
+          "volume": 1,
+          "paused": false,
+          "currentTime": 0.310882,
+          "readyState": 4,
+          "duration": 80,
+          "src": "https://toldlife.duvridge.com/videos/works/bae-byunghee/media/mot-bon-cheok.f50e9b09ec.mp4",
+          "activated": false,
+          "audioDecodedBytes": 9769
+        },
+        "playing": {
+          "ready": true,
+          "muted": false,
+          "defaultMuted": false,
+          "volume": 1,
+          "paused": false,
+          "currentTime": 0.322804,
+          "readyState": 4,
+          "duration": 80,
+          "src": "https://toldlife.duvridge.com/videos/works/bae-byunghee/media/mot-bon-cheok.f50e9b09ec.mp4",
+          "activated": true,
+          "audioDecodedBytes": 9769
+        },
+        "errors": []
+      },
+      {
+        "device": "desktop",
+        "policy": "no-user-gesture-required",
+        "id": "prolog",
+        "automatic": false,
+        "initial": {
+          "ready": true,
+          "muted": false,
+          "defaultMuted": false,
+          "volume": 1,
+          "paused": true,
+          "currentTime": 0,
+          "readyState": 0,
+          "duration": null,
+          "src": "",
+          "activated": false,
+          "audioDecodedBytes": 0
+        },
+        "playing": {
+          "ready": true,
+          "muted": false,
+          "defaultMuted": false,
+          "volume": 1,
+          "paused": false,
+          "currentTime": 0.527499,
+          "readyState": 4,
+          "duration": 105.133333,
+          "src": "https://toldlife.duvridge.com/videos/works/bae-byunghee/media/prolog.44032dfacf.mp4",
+          "activated": true,
+          "audioDecodedBytes": 17000
+        },
+        "errors": []
+      },
+      {
+        "device": "desktop",
+        "policy": "user-gesture-required",
+        "id": "nureon-bongtu",
+        "automatic": false,
+        "initial": {
+          "ready": true,
+          "muted": false,
+          "defaultMuted": false,
+          "volume": 1,
+          "paused": true,
+          "currentTime": 0,
+          "readyState": 4,
+          "duration": 203.2,
+          "src": "https://toldlife.duvridge.com/videos/works/bae-byunghee/media/nureon-bongtu.ba09cad351.mp4",
+          "activated": false,
+          "audioDecodedBytes": 4399
+        },
+        "playing": {
+          "ready": true,
+          "muted": false,
+          "defaultMuted": false,
+          "volume": 1,
+          "paused": false,
+          "currentTime": 0.293483,
+          "readyState": 4,
+          "duration": 203.2,
+          "src": "https://toldlife.duvridge.com/videos/works/bae-byunghee/media/nureon-bongtu.ba09cad351.mp4",
+          "activated": true,
+          "audioDecodedBytes": 10281
+        },
+        "errors": []
+      },
+      {
+        "device": "desktop",
+        "policy": "user-gesture-required",
+        "id": "byeotgap",
+        "automatic": false,
+        "initial": {
+          "ready": true,
+          "muted": false,
+          "defaultMuted": false,
+          "volume": 1,
+          "paused": true,
+          "currentTime": 0,
+          "readyState": 4,
+          "duration": 62.016,
+          "src": "https://toldlife.duvridge.com/videos/works/bae-byunghee/media/byeotgap.ce19a68f6d.mp4",
+          "activated": false,
+          "audioDecodedBytes": 4105
+        },
+        "playing": {
+          "ready": true,
+          "muted": false,
+          "defaultMuted": false,
+          "volume": 1,
+          "paused": false,
+          "currentTime": 0.281382,
+          "readyState": 4,
+          "duration": 62.016,
+          "src": "https://toldlife.duvridge.com/videos/works/bae-byunghee/media/byeotgap.ce19a68f6d.mp4",
+          "activated": true,
+          "audioDecodedBytes": 9826
+        },
+        "errors": []
+      },
+      {
+        "device": "desktop",
+        "policy": "user-gesture-required",
+        "id": "mot-bon-cheok",
+        "automatic": false,
+        "initial": {
+          "ready": true,
+          "muted": false,
+          "defaultMuted": false,
+          "volume": 1,
+          "paused": true,
+          "currentTime": 0,
+          "readyState": 4,
+          "duration": 80,
+          "src": "https://toldlife.duvridge.com/videos/works/bae-byunghee/media/mot-bon-cheok.f50e9b09ec.mp4",
+          "activated": false,
+          "audioDecodedBytes": 3548
+        },
+        "playing": {
+          "ready": true,
+          "muted": false,
+          "defaultMuted": false,
+          "volume": 1,
+          "paused": false,
+          "currentTime": 0.296643,
+          "readyState": 4,
+          "duration": 80,
+          "src": "https://toldlife.duvridge.com/videos/works/bae-byunghee/media/mot-bon-cheok.f50e9b09ec.mp4",
+          "activated": true,
+          "audioDecodedBytes": 9439
+        },
+        "errors": []
+      },
+      {
+        "device": "desktop",
+        "policy": "user-gesture-required",
+        "id": "prolog",
+        "automatic": false,
+        "initial": {
+          "ready": true,
+          "muted": false,
+          "defaultMuted": false,
+          "volume": 1,
+          "paused": true,
+          "currentTime": 0,
+          "readyState": 0,
+          "duration": null,
+          "src": "",
+          "activated": false,
+          "audioDecodedBytes": 0
+        },
+        "playing": {
+          "ready": true,
+          "muted": false,
+          "defaultMuted": false,
+          "volume": 1,
+          "paused": false,
+          "currentTime": 0.531868,
+          "readyState": 4,
+          "duration": 105.133333,
+          "src": "https://toldlife.duvridge.com/videos/works/bae-byunghee/media/prolog.44032dfacf.mp4",
+          "activated": true,
+          "audioDecodedBytes": 17000
+        },
+        "errors": []
+      }
+    ],
+    "completedAt": "2026-10-10T15:36:26.895Z"
+  }
+}

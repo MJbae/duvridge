@@ -285,3 +285,16 @@ Workspace 177개는 회사 16, 오디오북 58, 소설 34, 포털 15, 영상 6, 
 - 공개 [deployment.json](https://toldlife.duvridge.com/deployment.json)의 배포 SHA와 `sourceDirty=false`를 확인했다. 실제 운영 Chromium의 휴대폰 390×844와 PC 1440×1000에서 소설의 양방향 꺾쇠, 다음 화·이전 화 이동, 첫 회차·마지막 회차의 비활성 상태와 접근 가능한 버튼 이름을 확인했다. 작품 홈의 책, 오디오북의 헤드폰, 영상의 재생 아이콘은 유지됐으며 가로 넘침과 브라우저 오류는 0건이다.
 
 [기계 판독 검증 결과](novel-navigation-icons-2026-10-10.json)에 확인 시각, 공개 marker, 배포 실행과 화면별 결과를 기록했다. 전후 비교·세 대안·운영 캡처와 로그는 해당 워크트리의 `_workspace/nav-icons/`에 보존하고 Git에서 제외했다.
+
+## 2026-10-11: 영상의 기본 음소거 해제
+
+단일 영상 페이지는 소리 있는 자동 재생이 차단되면 음소거로 다시 재생하던 동작을 제거했다. 페이지 진입과 자동 재생의 기본 상태는 음소거 해제이며, 브라우저가 자동 재생을 차단하면 같은 상태로 재생 버튼을 기다린다. 불필요해진 ‘소리 켜기’ 버튼과 스타일도 제거했다. 시리즈 회차의 기존 음소거 해제 상태와 다음 화 재생은 유지한다.
+
+- 별도 워크트리 `duvridge-video-audible-defaults`에서 작업했다. 구현 커밋은 `e579a1e52f959a7f02e99d6ae7b7d08ccb0de406`이며 최신 원격 main 위에서 일반 fast-forward 푸시했다. 다른 세션의 미커밋 변경을 가져오거나 수정하지 않았다.
+- Node 22.23.2 / npm 10.9.8로 루트 `npm ci`를 실행했다. 저장소 Node 32건·Python 11건, 영상 카탈로그 6건·공유 4건, 영상 빌드·타입 검사와 휴대폰·작은 휴대폰·PC 브라우저 42건이 통과했다. 자동 재생 허용, NotAllowedError 차단, 실제 Chromium 정책의 첫 방문·수동 재생과 다음 화의 음소거 해제를 확인했다. 첫 방문 정책 검사는 트레이스 스냅샷을 끄고 사용자 동작을 만들지 않는 CDP 읽기를 사용한다.
+- [Actions 실행 38063853089](https://github.com/MJbae/duvridge/actions/runs/38063853089)의 저장소·포털·세 리더·URL·필수 검사와 ToldLife 배포·운영 HTTP 검사가 모두 성공했다. 실제 Pages 업로드 주소는 [6517ec45.toldlife.pages.dev](https://6517ec45.toldlife.pages.dev)이며 포털·세 리더와 기존 영상 29개를 함께 배포했다.
+- 운영 검증 완료 시각은 **2026-10-11 00:36:26 KST**다. 공개 [deployment.json](https://toldlife.duvridge.com/deployment.json)의 SHA는 구현 커밋과 같고 `sourceDirty=false`다. 검증 시작과 종료 사이 배포 SHA가 동일했다.
+- 운영 Chromium의 휴대폰 390×844와 PC 1440×1000에서 단일 영상 3개와 프롤로그를 자동 재생 허용·차단 정책으로 각각 확인했다(16건). 첫 상태는 모두 `muted=false`·`defaultMuted=false`·음량 1이었다. 허용된 단일 영상은 바로 재생되고, 차단된 페이지는 소리가 켜진 상태로 기다리다가 재생 버튼으로 시작했다. 실제 영상의 음성 트랙 디코딩을 확인했으며 브라우저 오류와 가로 넘침은 0건이다. 휴대폰·PC 화면도 육안 검수했다.
+- 변경 전 운영 소스 `b46e77b4c9d1491788428b4021234038e3f09aa6`의 같은 첫 방문 조건에서는 `muted=true`인 채 재생됨을 확인했다. 음원·SRT·원고·제작 영상·Firebase 규칙은 수정하거나 재생성하지 않았다.
+
+[기계 판독 검증 결과](video-audible-defaults-2026-10-11.json)에 배포 marker·CI 결과·변경 전 상태·운영 16건의 실측을 기록했다. 상세 로그·검증 스크립트·화면 캡처는 이 워크트리의 `.deploy/video-audible-defaults/`에 보존하고 Git에서 제외했다.
