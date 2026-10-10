@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { workStorageKey, migrateWorkStorage } from '@duvridge/reader-ui/state/work-storage.mjs'
-import { faceOptions, fontSizeOptions, leadingOptions, readingSettings, type ReadingFace, type ReadingLeading } from '@duvridge/reader-ui/state/reading-settings.mjs'
+import { applyReadingSettings, faceOptions, fontSizeOptions, leadingOptions, readingSettings, type ReadingFace, type ReadingLeading } from '@duvridge/reader-ui/state/reading-settings.mjs'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { Content, useData, useRoute, useRouter, withBase } from 'vitepress'
 import ReaderIcon from '@duvridge/reader-ui/components/ReaderIcon.vue'
@@ -107,17 +107,18 @@ async function changeTypography(apply: () => void) {
 }
 function setFont(size: number) {
   const next = readingSettings({ font: size }).font
-  void changeTypography(() => { fontSize.value = next })
+  void changeTypography(() => { fontSize.value = next; syncReadingSettings() })
   writeStorage('family-library:font', String(next))
 }
 function setLeading(value: ReadingLeading) {
-  void changeTypography(() => { leading.value = value })
+  void changeTypography(() => { leading.value = value; syncReadingSettings() })
   writeStorage('family-library:leading', value)
 }
 function setFace(value: ReadingFace) {
-  void changeTypography(() => { face.value = value })
+  void changeTypography(() => { face.value = value; syncReadingSettings() })
   writeStorage('family-library:face', value)
 }
+function syncReadingSettings() { applyReadingSettings({ font: fontSize.value, leading: leading.value, face: face.value }) }
 function setMode(mode: string) {
   screenMode.value = mode
   document.documentElement.dataset.theme = mode
@@ -215,6 +216,7 @@ onMounted(() => {
   fontSize.value = preferred.font
   leading.value = preferred.leading
   face.value = preferred.face
+  syncReadingSettings()
   const mode = readStorage('family-library:theme')
   setMode(['auto', 'light', 'dark'].includes(mode ?? '') ? mode! : 'auto')
   completed.value = migrateCompleted(catalog, readJson(key('completed')))

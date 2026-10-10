@@ -25,6 +25,8 @@
     "plan:services": "node scripts/select-affected-services.mjs",
     "check:deployment": "node scripts/check-deployment-browser.mjs",
     "test:urls": "playwright test --config playwright.urls.config.ts",
+    "pretest:fonts": "npm run build --workspace @duvridge/toldlife-novels --workspace @duvridge/toldlife-audiobooks --workspace @duvridge/toldlife-videos",
+    "test:fonts": "playwright test --config playwright.fonts.config.ts",
     "dev:videos": "npm run dev --workspace @duvridge/toldlife-videos"
   },
   "devDependencies": {

@@ -78,7 +78,8 @@
       "deployGroup": "toldlife",
       "watchedPaths": [
         "apps/company-site/assets/brand/",
-        "apps/company-site/assets/social/"
+        "apps/company-site/assets/social/",
+        "assets/fonts/"
       ],
       "checks": [
         "test"
@@ -104,7 +105,10 @@
         "bae-byunghee/index.html",
         "bae-byunghee/ep01.html"
       ],
-      "bookCatalog": true
+      "bookCatalog": true,
+      "watchedPaths": [
+        "assets/fonts/"
+      ]
     },
     {
       "id": "toldlife-audiobooks",
@@ -124,7 +128,10 @@
         "bae-byunghee/ep01.html",
         "works/bae-byunghee/record/prolog.mp3"
       ],
-      "bookCatalog": true
+      "bookCatalog": true,
+      "watchedPaths": [
+        "assets/fonts/"
+      ]
     },
     {
       "id": "toldlife-videos",
@@ -134,7 +141,8 @@
       "bookCatalog": true,
       "watchedPaths": [
         "apps/toldlife-audiobooks/content/narration/",
-        "apps/toldlife-audiobooks/site/public/record/"
+        "apps/toldlife-audiobooks/site/public/record/",
+        "assets/fonts/"
       ],
       "checks": [
         "test",

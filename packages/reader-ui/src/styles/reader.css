@@ -246,6 +246,15 @@ html:has(dialog[open]) { overflow: hidden; }
 .font-3 { --reading-size: 1.625rem; }
 .leading-wide { --reading-leading: 2.1; }
 .face-sans { --reading-face: var(--face-ui); }
+/* The head restores these before hydration; settings changes update the same attributes. */
+:root[data-reader-face='sans'] .page-reader { --reading-face: var(--face-ui); }
+:root[data-reader-face='serif'] .page-reader { --reading-face: var(--face-title); }
+:root[data-reader-font='0'] .page-reader { --reading-size: 1.125rem; }
+:root[data-reader-font='1'] .page-reader { --reading-size: 1.25rem; }
+:root[data-reader-font='2'] .page-reader { --reading-size: 1.4375rem; }
+:root[data-reader-font='3'] .page-reader { --reading-size: 1.625rem; }
+:root[data-reader-leading='normal'] .page-reader { --reading-leading: 1.85; }
+:root[data-reader-leading='wide'] .page-reader { --reading-leading: 2.1; }
 .reader-bar {
   position: fixed;
   top: 0;

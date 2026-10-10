@@ -147,9 +147,31 @@ jobs:
       - name: Rehearse both works and all legacy endpoints in an isolated Pages fixture
         run: npm run test:urls
 
+  fonts:
+    needs: plan
+    if: contains(needs.plan.outputs.matrix, 'toldlife')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium webkit
+      - name: Check first-paint reading preferences, font budgets and cross-format cache reuse
+        run: npm run test:fonts
+
   required:
     name: Monorepo required
-    needs: [plan, repository, service, urls]
+    needs: [plan, repository, service, urls, fonts]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -159,11 +181,13 @@ jobs:
           REPOSITORY_RESULT: ${{ needs.repository.result }}
           SERVICE_RESULT: ${{ needs.service.result }}
           URL_RESULT: ${{ needs.urls.result }}
+          FONT_RESULT: ${{ needs.fonts.result }}
           HAS_SERVICES: ${{ needs.plan.outputs.has_services }}
         run: |
           test "$PLAN_RESULT" = success
           test "$REPOSITORY_RESULT" = success
           test "$URL_RESULT" = success || test "$URL_RESULT" = skipped
+          test "$FONT_RESULT" = success || test "$FONT_RESULT" = skipped
           if [ "$HAS_SERVICES" = true ]; then
             test "$SERVICE_RESULT" = success
           else

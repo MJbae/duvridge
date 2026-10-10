@@ -7,6 +7,8 @@ import { episodeIllustrations } from '../markdown/render-episode-illustrations.t
 import type { ReaderCatalog, Cover, Sharing } from '@duvridge/content-processing/types'
 import { coverImageSizes, episodeImageSizes, imagePreload } from '@duvridge/reader-ui/images/create-image-sources.mjs'
 import { copyReaderFonts, readerFontsPlugin, type ReaderFontAssets } from '@duvridge/reader-ui/fonts/reader-fonts.mjs'
+import { readingFontPreloadScript } from '@duvridge/reader-ui/fonts/font-head.mjs'
+import { readingSettingsBootstrap } from '@duvridge/reader-ui/state/reading-settings.mjs'
 
 /** An address from an earlier site layout and the page that now answers it. */
 export type MovedPage = { from: string; to: string }
@@ -67,13 +69,14 @@ export function createReaderConfig({ root, catalog, catalogs, series, defaultBas
     themeConfig,
     head: [
       ['script', {}, "try{const m=localStorage.getItem('family-library:theme');if(['auto','light','dark'].includes(m))document.documentElement.dataset.theme=m}catch(e){}"],
+      ['script', {}, readingSettingsBootstrap()],
       ['meta', { name: 'theme-color', content: '#111318' }],
       ['meta', { name: 'color-scheme', content: 'light dark' }],
       [
         'meta',
         { name: 'viewport', content: 'width=device-width, initial-scale=1, viewport-fit=cover' },
       ],
-      ...(fonts?.head ?? []),
+      ...(fonts?.head.filter(([, attributes]) => attributes.rel !== 'preload') ?? []),
       ['link', { rel: 'icon', type: 'image/svg+xml', href: `${base}favicon.svg` }],
       ['link', { rel: 'icon', type: 'image/png', sizes: '32x32', href: `${base}favicon-32.png` }],
       ['link', { rel: 'apple-touch-icon', sizes: '180x180', href: `${base}apple-touch-icon.png` }],
@@ -132,6 +135,13 @@ export function createReaderConfig({ root, catalog, catalogs, series, defaultBas
       pageData.description = description
       pageData.frontmatter.description = description
       pageData.frontmatter.head ??= []
+      if (fonts && !redirectTo) {
+        const preload = fonts.head.filter(([, attributes]) => attributes.rel === 'preload')
+        if (series === 'novels' && !isHome) {
+          pageData.frontmatter.head.push(['script', {}, readingFontPreloadScript(fonts.manifest)],
+            ...preload.filter(([, attributes]) => attributes.href?.includes('ui-600.')))
+        } else pageData.frontmatter.head.push(...preload)
+      }
       pageData.frontmatter.head.push(
       ['meta', { property: 'og:image', content: shareImage }],
       ['meta', { property: 'og:image:secure_url', content: shareImage }],

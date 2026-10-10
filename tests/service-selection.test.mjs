@@ -92,6 +92,14 @@ test('editorial book sources outside packages validate both declared readers and
   }
 })
 
+test('shared font sources reach the portal and every ToldLife reader', () => {
+  const root = fileURLToPath(new URL('../', import.meta.url))
+  const actual = JSON.parse(readFileSync(new URL('../service-registry.json', import.meta.url), 'utf8'))
+  const plan = affected(['assets/fonts/sources/ToldLifeSerif.ttf'], actual, workspaceGraph(root, actual))
+  assert.deepEqual(plan.services, ['toldlife-portal', 'toldlife-novels', 'toldlife-audiobooks', 'toldlife-videos'])
+  assert.deepEqual(plan.deployGroups, ['toldlife'])
+})
+
 test('git diffs retain both renamed paths and deleted paths', t => {
   const root = mkdtempSync(resolve(tmpdir(), 'affected-git-'))
   t.after(() => rmSync(root, { recursive: true, force: true }))

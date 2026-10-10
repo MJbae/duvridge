@@ -8,7 +8,7 @@ import { readerFontHead } from './font-head.mjs'
 import { readerFontMiddleware } from './font-server.mjs'
 
 const repository = fileURLToPath(new URL('../../../../', import.meta.url))
-const sourceDirectory = fileURLToPath(new URL('../../assets/fonts/', import.meta.url))
+const sourceDirectory = path.join(repository, 'assets/fonts/sources')
 const sources = JSON.parse(readFileSync(path.join(sourceDirectory, 'sources.json'), 'utf8'))
 const hash = value => createHash('sha256').update(value).digest('hex')
 const ordered = text => [...new Set([...text].map(character => character.codePointAt(0)))].sort((a, b) => a - b)
@@ -26,10 +26,14 @@ export function unicodeRange(points) {
 }
 
 /** The small common file and the remaining shards partition the complete upstream cmap. */
-export function partitionCharacters(available, common, shardSize = 256) {
+export function partitionCharacters(available, common, shardSize = 256, preferred = []) {
   const wanted = new Set(ordered(common))
   const first = available.filter(point => wanted.has(point))
   const remaining = available.filter(point => !wanted.has(point))
+  if (preferred.length) {
+    const priority = new Map(preferred.map((point, index) => [point, index]))
+    remaining.sort((a, b) => (priority.get(a) ?? preferred.length) - (priority.get(b) ?? preferred.length) || a - b)
+  }
   return [first, ...Array.from({ length: Math.ceil(remaining.length / shardSize) }, (_, index) => remaining.slice(index * shardSize, (index + 1) * shardSize))].filter(points => points.length)
 }
 
@@ -48,23 +52,29 @@ function commonText(root) {
   // Keep basic punctuation and digits in the common file, including arbitrary playback times.
   const basic = characters(Array.from({ length: 95 }, (_, index) => index + 32)) + '©·…“”‘’—–♪×±'
   let titles = '인생원작회차살아낸 삶이 원작이 됩니다이야기를 찾지 못했습니다홈으로 이동합니다페이지를 찾을 수 없습니다' + basic
+  const frequency = new Map()
   for (const entry of readdirSync(books, { withFileTypes: true }).filter(entry => entry.isDirectory())) {
     const directory = path.join(books, entry.name)
     if (!existsSync(path.join(directory, 'book.json'))) continue
     const book = JSON.parse(readFileSync(path.join(directory, 'book.json'), 'utf8'))
     const manuscript = readFileSync(path.join(directory, book.manuscript || 'manuscript.md'), 'utf8')
+    for (const character of manuscript) {
+      const point = character.codePointAt(0)
+      frequency.set(point, (frequency.get(point) ?? 0) + 1)
+    }
     titles += book.work?.title ?? ''
     titles += manuscript.split('\n').filter(line => /^#+\s|^title:/.test(line)).join('')
     titles += (book.work?.films ?? book.films ?? []).map(film => film.title).join('')
   }
   const interfaceText = ['apps/toldlife-novels/site/.vitepress/theme', 'apps/toldlife-audiobooks/site/.vitepress/theme',
     'apps/toldlife-videos/site/.vitepress/theme', 'apps/toldlife-portal', 'packages/reader-ui/src/components',
-    'packages/reader-ui/src/series', 'packages/reader-reactions/src', 'scripts/render-toldlife-portal.mjs']
+    'packages/reader-ui/src/series', 'packages/reader-ui/src/state', 'packages/reader-reactions/src', 'scripts/render-toldlife-portal.mjs']
     .map(relative => {
       const file = path.join(root, relative)
       return existsSync(file) && statSync(file).isFile() ? (readFileSync(file, 'utf8').match(/[\p{Script=Hangul}\p{Script=Han}]/gu) ?? []).join('') : uiText(file)
     }).join('')
-  return { title: characters(ordered(titles)), ui: characters(ordered(titles + interfaceText)) }
+  return { title: characters(ordered(titles)), ui: characters(ordered(titles + interfaceText)),
+    preferred: [...frequency].sort((a, b) => b[1] - a[1] || a[0] - b[0]).map(([point]) => point) }
 }
 
 /** Offline, deterministic fonts; the input hash invalidates the build cache on new titles/UI text. */
@@ -82,17 +92,21 @@ export async function prepareReaderFonts(root = repository) {
         const input = await readFile(path.join(sourceDirectory, source.file))
         if (hash(input) !== source.sha256) throw new Error(`Font source checksum differs: ${source.file}`)
         const serif = source.weight === null
-        const groups = partitionCharacters(ordered(sources.characterSets[source.characterSet]), serif ? common.title : common.ui, serif ? 128 : 256)
-        for (const [index, points] of groups.entries()) {
+        // Frequently read characters share shards. New/rare glyphs still retain full upstream coverage.
+        const groups = partitionCharacters(ordered(sources.characterSets[source.characterSet]), serif ? common.title : common.ui, 128, common.preferred)
+        // Body text needs only regular outlines. Keep the title range variable, including 600.
+        const profiles = serif ? [{ weight: '400', axes: { wght: 400 } }, { weight: '500 800', axes: { wght: { min: 500, max: 800 } } }]
+          : [{ weight: String(source.weight), axes: undefined }]
+        for (const profile of profiles) for (const [index, points] of groups.entries()) {
           const data = await subsetFont(input, characters(points), {
-            targetFormat: 'woff2', preserveNameIds: [0, 13, 14],
-            ...(serif ? { variationAxes: { wght: { min: 400, max: 800 } } } : {}),
+            targetFormat: 'woff2', preserveNameIds: [0, 13, 14], noHinting: true,
+            ...(profile.axes ? { variationAxes: profile.axes } : {}),
           })
           const digest = hash(data)
-          const file = `${serif ? 'serif' : `ui-${source.weight}`}.${digest.slice(0, 16)}.woff2`
+          const file = `${serif ? `serif-${profile.weight === '400' ? '400' : '500-800'}` : `ui-${source.weight}`}.${digest.slice(0, 16)}.woff2`
           await writeFile(path.join(temporary, file), data)
           faces.push({ file, sha256: digest, bytes: data.length, family: serif ? 'ToldLife Serif' : 'ToldLife UI',
-            weight: serif ? '400 800' : String(source.weight), unicodeRange: unicodeRange(points), common: index === 0 })
+            weight: profile.weight, unicodeRange: unicodeRange(points), common: index === 0 })
         }
       }
       const css = faces.map(face => `@font-face{font-family:'${face.family}';font-style:normal;font-weight:${face.weight};font-display:swap;src:url('/fonts/${face.file}') format('woff2');unicode-range:${face.unicodeRange}}`).join('\n') + '\n'

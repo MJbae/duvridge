@@ -19,3 +19,10 @@ test('deployment follows the required check even when an optional check was skip
   assert.match(condition, /github\.ref == 'refs\/heads\/main'/)
   assert.match(condition, /github\.event_name != 'pull_request'/)
 })
+
+test('ToldLife font browser checks gate deployment while company-only runs may skip them', () => {
+  assert.match(jobCondition('fonts'), /contains\(needs\.plan\.outputs\.matrix, 'toldlife'\)/)
+  assert.match(workflow, /needs: \[plan, repository, service, urls, fonts\]/)
+  assert.match(workflow, /FONT_RESULT: \$\{\{ needs\.fonts\.result \}\}/)
+  assert.match(workflow, /test "\$FONT_RESULT" = success \|\| test "\$FONT_RESULT" = skipped/)
+})

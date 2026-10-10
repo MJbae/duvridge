@@ -4,7 +4,9 @@ These are offline build inputs for the ToldLife readers, derived from Hahmlet an
 
 The family, full and PostScript names were changed to **ToldLife Serif** and **ToldLife UI** using FontTools. Glyph outlines and metrics are unchanged. The UI name avoids the reserved font name `Plex` when distributing modified subsets. Copyright and license records are retained; both upstream OFL files accompany every published bundle.
 
-`prepareReaderFonts()` produces WOFF2 subsets locally using the pinned `subset-font` dependency. The common serif subset contains published titles and fixed headings. The common UI subsets also contain interface text and basic Latin characters, punctuation and digits. Remaining subsets partition the full upstream character map, so characters outside the current common set can still load on demand. Hahmlet keeps a single variable weight range from 400 to 800.
+`prepareReaderFonts()` produces WOFF2 subsets locally using the pinned `subset-font` dependency. The common serif subset contains published titles and fixed headings. The common UI subsets also contain interface text and basic Latin characters, punctuation and digits. Remaining subsets partition the full upstream character map, so characters outside the current common set can still load on demand. Regular serif body text is instantiated at weight 400; the title and emphasis range remains variable from 500 to 800, including weight 600.
+
+Remaining shards group characters by their frequency in canonical manuscripts without removing rare characters or editing prose. Web outputs omit grid-fitting hint instructions; glyph outlines, metrics and OpenType layout features remain. Sources and licenses stay outside reusable code packages in `assets/fonts/sources`.
 
 Inputs are cached under the repository's ignored `.deploy/reader-fonts/` directory. Changing a title, interface text, generator or source version changes the input signature. Font and CSS filenames contain SHA-256 fingerprints of their actual content. Each reader build contains an identical `fonts/` bundle; the Pages assembler verifies all bundles and publishes one copy at `/fonts/`.
 

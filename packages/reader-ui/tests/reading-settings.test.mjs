@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { faceOptions, fontSizeOptions, leadingOptions, readingSettings } from '../src/state/reading-settings.mjs'
+import { runInNewContext } from 'node:vm'
+import { applyReadingSettings, faceOptions, fontSizeOptions, leadingOptions, readingSettings, readingSettingsBootstrap } from '../src/state/reading-settings.mjs'
 
 test('reading defaults to the second font step, wide leading and serif', () => {
   assert.deepEqual(readingSettings(), { font: 1, leading: 'wide', face: 'serif' })
@@ -36,4 +37,21 @@ test('leading and face choices restore every valid combination', () => {
 test('invalid preferences fall back independently while retaining valid choices', () => {
   assert.deepEqual(readingSettings({ font: '2', leading: 'narrow', face: 'sans' }), { font: 2, leading: 'wide', face: 'sans' })
   assert.deepEqual(readingSettings({ font: 'bad', leading: 'wide', face: 'gothic' }), { font: 1, leading: 'wide', face: 'serif' })
+})
+
+test('the pre-CSS bootstrap restores saved preferences without waiting for the app', () => {
+  const dataset = {}
+  const values = { 'family-library:font': '2', 'family-library:leading': 'normal', 'family-library:face': 'sans' }
+  runInNewContext(readingSettingsBootstrap(), { document: { documentElement: { dataset } }, localStorage: { getItem: key => values[key] ?? null } })
+  assert.deepEqual(dataset, { readerFont: '2', readerLeading: 'normal', readerFace: 'sans' })
+  applyReadingSettings({ font: 3, leading: 'wide', face: 'serif' }, { dataset })
+  assert.deepEqual(dataset, { readerFont: '3', readerLeading: 'wide', readerFace: 'serif' })
+})
+
+test('first-paint settings use the same defaults with missing, invalid or blocked storage', () => {
+  for (const getItem of [() => null, () => 'invalid', () => { throw new Error('Storage blocked') }]) {
+    const dataset = {}
+    runInNewContext(readingSettingsBootstrap(), { document: { documentElement: { dataset } }, localStorage: { getItem } })
+    assert.deepEqual(dataset, { readerFont: '1', readerLeading: 'wide', readerFace: 'serif' })
+  }
 })

@@ -30,7 +30,7 @@
 1. 체크아웃은 모두 `github.sha`로 고정한다. PR은 해당 테스트 대상 SHA, 운영은 main 이벤트의 SHA를 검증한다.
 2. 루트 `npm ci`와 단일 `package-lock.json`으로 설치한다. 잠금 파일이 manifest와 다르면 설치가 실패하며 CI에서 잠금 파일을 갱신하지 않는다. [npm ci](https://docs.npmjs.com/cli/v11/commands/npm-ci/)
 3. 저장소의 영향 분석·조립 테스트, `packages/`의 공통 기능 테스트와 단일 정본 Firebase 규칙의 Firestore 에뮬레이터 검사를 항상 실행한다. 패키지 테스트는 `npm run test --workspace packages --if-present`로 실행하므로 새 패키지의 `test`도 자동 포함된다. Java 21과 demo 프로젝트를 사용하며 운영 Firebase에는 쓰지 않는다. PR은 영향받은 서비스만, main은 영향받은 배포 그룹의 모든 서비스를 테스트하고 빌드한다.
-4. 소설/오디오북은 콘텐츠 테스트, 운영 경로 빌드, 공유 메타데이터 테스트, 타입 검사를 수행한다. 오디오북은 휴대폰·데스크톱 낭독 상호작용 E2E도 실행한 뒤 운영 경로로 다시 빌드한다.
+4. 소설/오디오북은 콘텐츠 테스트, 운영 경로 빌드, 공유 메타데이터 테스트, 타입 검사를 수행한다. 오디오북은 휴대폰·데스크톱 낭독 상호작용 E2E도 실행한 뒤 운영 경로로 다시 빌드한다. ToldLife 변경은 `npm run test:fonts`도 실행해 Chromium과 WebKit의 초기 서체 복원, 폰트 전송량, 형식 간 캐시 재사용 및 폰트·저장소 실패 시 읽기를 확인한다. 이 폰트 검사도 `Monorepo required`에 포함된다.
 5. `Monorepo required`가 계획·저장소 테스트·전체 서비스 매트릭스의 성공을 확인한다. 서비스가 없는 변경은 명시적인 skipped 결과를 허용한다. 브랜치 보호의 필수 상태 체크로 이 이름을 지정한다.
 6. main과 수동 main 실행만 검증한 아티팩트를 배포한다. PR에는 Cloudflare 토큰을 전달하지 않는다. 수동 실행은 전체 그룹을 검증·배포하므로 누락된 운영 갱신 복구에도 사용한다. 배포 작업은 조건 앞에 `!cancelled()`를 두고 `Monorepo required` 결과로만 판단한다. 상태 함수가 없으면 회사만 바뀐 main에서 ToldLife 주소 검사가 건너뛰어질 때 GitHub가 그 건너뜀을 이어받아 배포까지 건너뛴다.
 

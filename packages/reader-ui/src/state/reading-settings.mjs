@@ -16,3 +16,16 @@ export function readingSettings(saved = {}) {
     face: faceOptions.some(option => option.value === saved.face) ? saved.face : 'serif',
   }
 }
+
+/** Keep first-paint CSS and later Vue settings in agreement without changing the SSR markup. */
+export function applyReadingSettings(settings, element = globalThis.document?.documentElement) {
+  if (!element) return
+  element.dataset.readerFont = String(settings.font)
+  element.dataset.readerLeading = settings.leading
+  element.dataset.readerFace = settings.face
+}
+
+/** The head runs before CSS can start downloading the server's default serif face. */
+export function readingSettingsBootstrap() {
+  return `(()=>{const fontSizeOptions=${JSON.stringify(fontSizeOptions)};const leadingOptions=${JSON.stringify(leadingOptions)};const faceOptions=${JSON.stringify(faceOptions)};const readingSettings=${readingSettings.toString()};const applyReadingSettings=${applyReadingSettings.toString()};try{applyReadingSettings(readingSettings({font:localStorage.getItem('family-library:font'),leading:localStorage.getItem('family-library:leading'),face:localStorage.getItem('family-library:face')}))}catch{applyReadingSettings(readingSettings())}})()`
+}

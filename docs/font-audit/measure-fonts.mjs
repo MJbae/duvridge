@@ -5,7 +5,7 @@ import { execFileSync } from 'node:child_process'
 import { gzipSync } from 'node:zlib'
 
 const origin = process.env.FONT_AUDIT_ORIGIN || 'https://toldlife.duvridge.com'
-const fontUrl = url => /https:\/\/fonts\.(googleapis|gstatic)\.com\//.test(url) || /\.(woff2?|ttf|otf)(\?|$)/.test(url)
+const fontUrl = url => /https:\/\/fonts\.(googleapis|gstatic)\.com\//.test(url) || new URL(url).pathname.startsWith('/fonts/') || /\.(woff2?|ttf|otf)(\?|$)/.test(url)
 const browser = await chromium.launch()
 const result = {
   schemaVersion: 1,
@@ -94,7 +94,7 @@ async function journey(name, viewport, steps, network, storage = {}, earlyFacePr
           family: block.match(/font-family:\s*['"]?([^;'"\n]+)/)?.[1]?.trim(),
           weight: block.match(/font-weight:\s*([^;]+)/)?.[1]?.trim(),
           display: block.match(/font-display:\s*([^;]+)/)?.[1]?.trim(),
-          url: block.match(/url\(([^)]+)\)/)?.[1]?.replace(/['"]/g, ''),
+          url: new URL(block.match(/url\(([^)]+)\)/)?.[1]?.replace(/['"]/g, ''), row.url).href,
           unicodeRange: block.match(/unicode-range:\s*([^;]+)/)?.[1]?.trim(),
         }))
         cssByUrl.set(row.url, { url: row.url, textBytes: Buffer.byteLength(body), faces })
