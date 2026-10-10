@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>회차의 시대·장소 표시 개선 시안</title>
+  <style>
+    :root { color-scheme: light; --night: #111318; --ivory: #f3efe7; --gold: #e0ac4e; --ui: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; --prose: 'AppleMyungjo', 'Noto Serif KR', serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #ece9e2; color: #262823; font-family: var(--ui); -webkit-font-smoothing: antialiased; word-break: keep-all; }
+    h1, h2, h3, p { margin: 0; }
+    button, a { font: inherit; }
+    button { color: inherit; border: 0; background: none; }
+    a { color: inherit; text-decoration: none; }
+    svg { display: block; flex-shrink: 0; }
+    .board { width: 1260px; margin: auto; padding: 42px 42px 34px; background: #ece9e2; }
+    .eyebrow { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; color: #6a6c61; font-size: 13px; font-weight: 600; letter-spacing: .03em; }
+    .eyebrow span { padding: 5px 9px; border: 1px solid #cac8bf; border-radius: 5px; font-weight: 500; letter-spacing: 0; }
+    .board-title { font-size: 30px; font-weight: 700; letter-spacing: -.035em; }
+    .board-summary { margin-top: 10px; color: #67685f; font-size: 16px; line-height: 1.65; }
+    .panels { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin-top: 30px; }
+    .panel-heading { display: flex; align-items: center; gap: 9px; margin-bottom: 12px; font-size: 17px; font-weight: 650; }
+    .panel-heading span { display: grid; place-items: center; width: 25px; height: 25px; background: #dcd9cf; color: #55594d; border-radius: 50%; font-size: 12px; font-weight: 600; }
+    .screen { height: 674px; overflow: hidden; border: 1px solid #bfbeb7; border-radius: 14px; box-shadow: 0 12px 25px rgb(54 50 37 / 7%); }
+    .screen-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; height: 56px; padding: 0 16px; border-bottom: 1px solid #e7e5de; }
+    .screen-bar strong { font-size: 14px; font-weight: 600; }
+    .screen-bar .settings { padding: 7px 10px; border: 1px solid #dedbd2; border-radius: 20px; font-size: 12px; }
+    .dark { background: var(--night); color: var(--ivory); border-color: #33353c; }
+    .light { background: #f5f2eb; color: #26251f; }
+    .toc-screen { padding-bottom: 24px; }
+    .brandbar { display: flex; align-items: center; justify-content: space-between; height: 56px; padding: 0 20px; border-bottom: 1px solid #292c35; }
+    .brand { font-size: 18px; font-weight: 700; letter-spacing: -.05em; }
+    .brand b { color: var(--gold); }
+    .tabs { display: flex; gap: 12px; color: #b4b7c0; font-size: 11px; }
+    .tabs .selected { color: var(--gold); }
+    .work-title { padding: 25px 20px 23px; font-family: var(--prose); font-size: 24px; font-weight: 700; line-height: 1.55; letter-spacing: -.025em; }
+    .toc { padding: 0 20px; }
+    .toc h3 { margin-bottom: 7px; color: #c7c9cf; font-size: 13px; font-weight: 500; }
+    .episode { display: flex; align-items: center; gap: 13px; min-height: 96px; padding: 12px 0; border-bottom: 1px solid #282b34; }
+    .episode img { flex-shrink: 0; width: 112px; height: 63px; border-radius: 8px; object-fit: cover; }
+    .episode .name { flex: 1; font-size: 14px; line-height: 1.6; font-weight: 550; }
+    .episode .episode-label { display: block; margin-bottom: 2px; color: #b4b7c0; font-size: 12px; }
+    .episode.current .name { color: #f2c677; }
+    .episode.current .episode-label { color: #e0ac4e; }
+    .round-action { display: grid; place-items: center; width: 27px; height: 27px; border: 1px solid #494332; border-radius: 50%; color: var(--gold); }
+    .more { display: block; width: 100%; margin-top: 19px; padding: 11px; border: 1px solid #363942; border-radius: 7px; color: #cfcbc3; font-size: 13px; text-align: center; }
+    .novel-screen { display: flex; flex-direction: column; }
+    .novel-body { flex: 1; padding: 21px 20px 0; overflow: hidden; }
+    .context { margin: 0; color: #79796e; font-family: var(--ui); font-size: 13px; font-weight: 400; line-height: 1.5; letter-spacing: 0; }
+    .novel-body > .context { margin-bottom: 18px; }
+    .novel-body .illustration { display: block; width: 100%; aspect-ratio: 16 / 9; border-radius: 6px; object-fit: cover; margin-bottom: 23px; }
+    .prose p { margin-bottom: 18px; font-family: var(--prose); font-size: 17px; line-height: 1.9; letter-spacing: -.02em; }
+    .reading-foot { display: flex; align-items: center; gap: 10px; padding: 18px 20px; border-top: 1px solid #e2ddd2; background: #f5f2eb; color: #6b675e; font-size: 11px; }
+    .progress { display: block; height: 3px; flex: 1; border-radius: 3px; background: #e5e1d5; }
+    .progress i { display: block; width: 8%; height: 100%; background: #b98c38; }
+    .audio-screen { display: flex; flex-direction: column; background: linear-gradient(to bottom, #2a2620 0%, var(--night) 46%); }
+    .audio-screen .screen-bar { border: 0; color: #cfcbc3; }
+    .audio-screen .screen-bar strong { font-size: 13px; font-weight: 400; }
+    .audio-body { display: flex; flex: 1; flex-direction: column; min-height: 0; padding: 8px 20px 20px; }
+    .audio-heading { display: flex; flex-shrink: 0; align-items: center; gap: 14px; }
+    .audio-heading .illustration { display: block; flex-shrink: 0; width: 112px; aspect-ratio: 16 / 9; border-radius: 8px; object-fit: cover; }
+    .audio-titles { min-width: 0; }
+    .audio-heading h3 { font-family: var(--prose); font-size: 23px; line-height: 1.4; letter-spacing: -.03em; }
+    .audio-heading .context { color: #b4b7c0; margin-top: 7px; font-size: 12px; }
+    .lyrics { flex: 1; min-height: 0; overflow: hidden; padding-top: 20px; margin: 24px 0 18px; mask-image: linear-gradient(to bottom, transparent 0, #000 20px, #000 calc(100% - 36px), transparent 100%); }
+    .lyrics .current { font-size: 18px; line-height: 1.65; }
+    .lyrics .following { margin-top: 12px; color: #858994; font-size: 15px; line-height: 1.65; }
+    .audio-progress { height: 4px; border-radius: 3px; background: #343846; }
+    .audio-progress i { display: block; position: relative; width: 5%; height: 100%; background: var(--gold); }
+    .audio-progress i::after { content: ''; position: absolute; right: -6px; top: -4px; width: 12px; height: 12px; border-radius: 50%; background: var(--ivory); }
+    .times { display: flex; justify-content: space-between; margin-top: 9px; color: #b4b7c0; font-size: 11px; }
+    .transport { display: flex; align-items: center; justify-content: space-between; margin-top: 17px; padding: 0 7px; }
+    .transport .play { display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; background: var(--gold); color: var(--night); }
+    .transport .skip { font-size: 14px; }
+    .tools { display: flex; gap: 8px; margin-top: 18px; }
+    .tools span { flex: 1; padding: 13px; border-radius: 9px; background: #1c1f27; color: #b4b7c0; text-align: center; font-size: 12px; }
+    .caption { padding-top: 16px; color: #56594e; font-size: 14px; line-height: 1.65; }
+    .caption strong { color: #2b3026; font-weight: 650; }
+    .policy { display: flex; align-items: center; gap: 15px; margin-top: 26px; padding: 17px 21px; border: 1px solid #d4d1c6; border-radius: 9px; background: #f5f2ea; }
+    .policy .label { padding-right: 15px; border-right: 1px solid #d4d1c6; font-size: 13px; font-weight: 650; white-space: nowrap; }
+    .policy p { font-size: 14px; line-height: 1.6; }
+    .policy small { display: block; margin-top: 4px; color: #737468; font-size: 12px; }
+    .optional-board { width: 860px; margin: 38px auto; padding: 38px; }
+    .optional-board .board-title { font-size: 27px; }
+    .optional-layout { display: grid; grid-template-columns: 340px 1fr; gap: 30px; margin-top: 26px; }
+    .optional-layout .screen { height: 460px; }
+    .optional-layout .novel-body { padding-top: 22px; }
+    .optional-layout .novel-body .prose p { font-family: var(--prose); font-size: 18px; }
+    .optional-notes { padding-top: 36px; font-size: 16px; line-height: 1.8; }
+    .optional-notes p + p { margin-top: 18px; }
+    .optional-notes .note { color: #77796d; font-size: 13px; }
+    .details { max-width: 960px; margin: 32px auto 60px; padding: 32px; background: #faf8f2; border-radius: 12px; }
+    .details h2 { margin: 24px 0 10px; font-size: 20px; }
+    .details h2:first-child { margin-top: 0; }
+    .details p, .details li { font-size: 15px; line-height: 1.9; }
+    .details p + p { margin-top: 12px; }
+    .details ul, .details ol { padding-left: 23px; }
+    .details code { font-family: ui-monospace, monospace; font-size: 13px; background: #eeebe2; padding: 2px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+    .details a { text-decoration: underline; text-underline-offset: 3px; }
+    .details .status { display: inline-block; margin-bottom: 18px; padding: 5px 9px; border: 1px solid #cbc8bc; border-radius: 5px; color: #6a6c60; font-size: 12px; }
+    @media (max-width: 1259px) { .board { width: 100%; padding: 28px 20px; } .panels { grid-template-columns: repeat(3, 376px); overflow-x: auto; padding-bottom: 12px; } .optional-board { max-width: 860px; } }
+    @media (max-width: 700px) { .board-title { font-size: 25px; } .policy { align-items: flex-start; } .optional-layout { display: flex; flex-direction: column; } .optional-layout .screen { width: 340px; max-width: 100%; } .optional-notes { padding-top: 0; } .details { margin: 20px; padding: 24px; } }
+  </style>
+</head>
+<body>
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+    <symbol id="back" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" /></symbol>
+    <symbol id="down" viewBox="0 0 24 24"><path d="m5 9 7 7 7-7" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" /></symbol>
+    <symbol id="contents" viewBox="0 0 24 24"><path d="M7 6h13M7 12h13M7 18h13M3 6h.1M3 12h.1M3 18h.1" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" /></symbol>
+    <symbol id="book" viewBox="0 0 24 24"><path d="M12 5v15M12 5C8 3 5 3 2 4v14c3-1 6-1 10 2 4-3 7-3 10-2V4c-3-1-6-1-10 1Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" /></symbol>
+    <symbol id="play" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7Z" fill="currentColor" /></symbol>
+    <symbol id="pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14" stroke="currentColor" stroke-width="3" stroke-linecap="round" /></symbol>
+    <symbol id="prev" viewBox="0 0 24 24"><path d="M6 6v12m12-12-9 6 9 6Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" /></symbol>
+    <symbol id="next" viewBox="0 0 24 24"><path d="M18 6v12M6 6l9 6-9 6Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" /></symbol>
+  </svg>
+
+  <section class="board main-board" aria-labelledby="proposal-title">
+    <div class="eyebrow">인생원작 · 읽기와 듣기 <span>화면 시안 · 2026.10.10</span></div>
+    <h1 class="board-title" id="proposal-title">시대와 장소는 회차 본문에 한 줄만</h1>
+    <p class="board-summary">목차에는 회차 번호와 제목만. 소설과 오디오북은 같은 배경 안내를 표시하고, 본문은 바로 이야기로 이어집니다.</p>
+    <div class="panels">
+      <section class="panel" aria-labelledby="toc-heading">
+        <h2 class="panel-heading" id="toc-heading"><span>01</span>목차 · 회차 목록</h2>
+        <div class="screen dark toc-screen">
+          <div class="brandbar"><div class="brand">인생원작<b>.</b></div><div class="tabs"><span class="selected">소설</span><span>오디오북</span><span>영상</span></div></div>
+          <div class="work-title">내 논을 파는 한이 있어도</div>
+          <nav class="toc" aria-label="회차 목록 시안">
+            <h3>회차</h3>
+            <a class="episode" href="#novel-preview"><img src="../../content/books/bae-byunghee/public/images/episodes/prolog-01-360.jpg" alt="농민의 손에 담긴 벼 한 줌" /><span class="name"><span class="episode-label">프롤로그</span>벼 한 톨의 무게</span></a>
+            <a class="episode" href="#novel-preview"><img src="../../content/books/bae-byunghee/public/images/episodes/ep01-01-360.jpg" alt="갯벌에서 굴을 까는 어머니" /><span class="name"><span class="episode-label">1화</span>어머니의 쇠갈고리</span></a>
+            <a class="episode" href="#novel-preview"><img src="../../content/books/bae-byunghee/public/images/episodes/ep02-01-360.jpg" alt="지게를 지고 밭으로 가는 소년" /><span class="name"><span class="episode-label">2화</span>책보 대신 지게</span></a>
+            <a class="episode current" href="#novel-preview" aria-current="page"><img src="../../content/books/bae-byunghee/public/images/episodes/ep03-01-360.jpg" alt="집을 떠나는 형들과 남겨진 소년" /><span class="name"><span class="episode-label">3화</span>열두 자리 숫자</span><span class="round-action"><svg width="14" height="14"><use href="#book" /></svg></span></a>
+            <a class="episode" href="#novel-preview"><img src="../../content/books/bae-byunghee/public/images/episodes/ep04-01-360.jpg" alt="목선으로 바다를 건너는 청년" /><span class="name"><span class="episode-label">4화</span>천수만의 돌풍</span></a>
+          </nav>
+        </div>
+        <p class="caption"><strong>번호와 제목만 표시.</strong><br />시대·장소는 홈 목록과 목차 시트에 넣지 않습니다.</p>
+      </section>
+
+      <section class="panel" id="novel-preview" aria-labelledby="novel-heading">
+        <h2 class="panel-heading" id="novel-heading"><span>02</span>소설 · 회차 본문</h2>
+        <div class="screen light novel-screen">
+          <header class="screen-bar"><svg width="21" height="21"><use href="#back" /></svg><strong>3화 열두 자리 숫자</strong><span class="settings">가 · 설정</span></header>
+          <article class="novel-body" aria-label="소설 본문 시안">
+            <p class="context">1950년대 · 안면도 중장리</p>
+            <img class="illustration" src="../../content/books/bae-byunghee/public/images/episodes/ep03-01-720.jpg" alt="집을 떠나는 형들과 남겨진 소년의 수채화" />
+            <div class="prose">
+              <p>6·25 전쟁이 터졌다. 외딴 섬마을 안면도도 전쟁을 비켜 가지 못했다. 집안의 기둥이던 두 형이 징집 영장을 받고 전선으로 떠났다.</p>
+              <p>막내 배병희는 열다섯 살이었다. 형들이 떠난 뒤로 늙은 부모와 누나들의 생계를 떠맡았다. 하루아침에 소년 가장이 되었다.</p>
+            </div>
+          </article>
+          <div class="reading-foot"><span class="progress"><i></i></span><span>8%</span></div>
+        </div>
+        <p class="caption"><strong>본문 첫머리에 조용한 한 줄.</strong><br />“1950년,”을 덜고 사건으로 이야기를 시작합니다.</p>
+      </section>
+
+      <section class="panel" aria-labelledby="audio-heading">
+        <h2 class="panel-heading" id="audio-heading"><span>03</span>오디오북 · 회차 화면</h2>
+        <div class="screen dark audio-screen">
+          <header class="screen-bar"><svg width="21" height="21"><use href="#down" /></svg><strong>3화</strong><span style="width:21px"></span></header>
+          <main class="audio-body" aria-label="오디오북 본문 시안">
+            <div class="audio-heading"><img class="illustration" src="../../content/books/bae-byunghee/public/images/episodes/ep03-01-720.jpg" alt="집을 떠나는 형들과 남겨진 소년의 수채화" /><div class="audio-titles"><h3>열두 자리 숫자</h3><p class="context">1950년대 · 안면도 중장리</p></div></div>
+            <div class="lyrics"><p class="current">6·25 전쟁이 터졌다.</p><p class="following">외딴 섬마을 안면도도 전쟁을 비켜 가지 못했다.</p><p class="following">집안의 기둥이던 두 형이 징집 영장을 받고 전선으로 떠났다.</p><p class="following">막내 배병희는 열다섯 살이었다.</p><p class="following">형들이 떠난 뒤로 늙은 부모와 누나들의 생계를 떠맡았다.</p><p class="following">하루아침에 소년 가장이 되었다.</p></div>
+            <div class="audio-progress"><i></i></div><div class="times"><span>0:08</span><span>2:55</span></div>
+            <div class="transport"><svg width="19" height="19"><use href="#prev" /></svg><span class="skip">↶ 10</span><span class="play"><svg width="25" height="25"><use href="#pause" /></svg></span><span class="skip">10 ↷</span><svg width="19" height="19"><use href="#next" /></svg></div>
+            <div class="tools"><span>1.0× · 재생 속도</span><span>타이머</span></div>
+          </main>
+        </div>
+        <p class="caption"><strong>소설과 같은 배경 안내.</strong><br />도입에서 한 번만 읽고, 본문 낭독으로 이어갑니다.</p>
+      </section>
+    </div>
+    <div class="policy"><span class="label">낭독 도입 예시</span><p>“제삼화. 열두 자리 숫자. 천구백오십년대, 안면도 중장리.”<small>짧은 쉼 뒤 “육이오 전쟁이 터졌다.”로 시작 · 배경 안내는 도입에서 1회</small></p></div>
+  </section>
+
+  <section class="board optional-board" aria-labelledby="optional-title">
+    <div class="eyebrow">선택 사항 <span>메타 정보가 없는 작품의 예시</span></div>
+    <h2 class="board-title" id="optional-title">시대·장소를 쓰지 않는 작품도 자연스럽게</h2>
+    <p class="board-summary">안내 줄이 없으면 제목 다음에 바로 본문이 이어집니다.</p>
+    <div class="optional-layout">
+      <div class="screen light novel-screen">
+        <header class="screen-bar"><svg width="21" height="21"><use href="#back" /></svg><strong>1화 첫 번째 이야기</strong><span class="settings">가 · 설정</span></header>
+        <article class="novel-body" aria-label="메타 정보 없는 작품의 본문 시안">
+          <div class="prose"><p>창밖에서 바람 소리가 들렸다. 그는 읽던 책을 덮고 천천히 자리에서 일어났다.</p><p>방 안에는 늦은 오후의 빛이 길게 들어와 있었다.</p></div>
+        </article>
+        <div class="reading-foot"><span class="progress"><i></i></span><span>8%</span></div>
+      </div>
+      <div class="optional-notes"><p><strong>시대·장소 안내는 선택 사항입니다.</strong><br />모든 회차에 연도와 장소를 입력하도록 요구하지 않습니다.</p><p>안내가 없으면 줄과 여백을 함께 생략합니다. 목차는 동일하게 번호와 제목을 표시합니다.</p><p>오디오북도 안내가 없으면 회차 제목을 읽은 뒤 곧바로 본문을 낭독합니다.</p><p class="note">이 화면의 제목과 문장은 빈 상태의 동작을 설명하는 가상의 예시입니다.</p></div>
+    </div>
+  </section>
+
+  <article class="details" id="proposal-details" aria-labelledby="details-title">
+    <span class="status">제안 단계 · 실제 앱 반영 및 음성 제작 전</span>
+    <h2 id="details-title">개선 방향</h2>
+    <p>회차의 시대·장소를 정본 원고에서 한 번 작성하고 소설 화면, 오디오북 회차 화면, 낭독 도입이 함께 사용합니다. 본문에서는 연도만 덧붙이는 도입을 줄이고 사건의 흐름으로 시대를 드러냅니다. 목차와 회차 목록에서는 이 안내를 표시하지 않습니다.</p>
+    <h2>확인한 원인</h2>
+    <ul>
+      <li><a href="../../packages/content-processing/src/manuscripts/parse-manuscript.mjs">원고 파서</a>는 <code>*1950년대 · 안면도 중장리*</code>를 <code>time</code>으로 분리하고 본문에서 제거합니다. 현재 이 줄은 모든 회차에 필수입니다.</li>
+      <li><a href="../../packages/content-processing/src/catalog/prepare-reader-content.mjs">소설 페이지 생성</a>은 분리한 <code>time</code>을 본문에 다시 넣지 않아, 정본에 있는 안내가 읽기 화면에서 빠집니다.</li>
+      <li><a href="../../tools/audiobook-production/src/build_narration_script.py">오디오북 대본 생성</a>은 같은 줄을 <code>dateline</code>으로 한 번 읽습니다. “1950년, 6·25 전쟁이 터졌다.”처럼 이어지는 본문에도 연도가 있으면 중복됩니다.</li>
+      <li>회차 목록은 <a href="../../packages/reader-ui/src/series/work-rows.mjs">회차 번호와 제목</a>을 사용합니다. 이 구성을 유지하고 배경 안내를 목록용 설명이나 툴팁에 연결하지 않습니다.</li>
+    </ul>
+    <h2>반영 순서</h2>
+    <ol>
+      <li><strong>정본 원고의 편집 원칙을 맞춥니다.</strong> 각 회차 제목 다음의 기존 시점 줄을 활용합니다. “1950년,”처럼 배경 안내와 겹치는 도입만 덜어내고, “전쟁이 지나간 뒤에도” 같은 자연스러운 맥락은 유지합니다. 사건의 선후 관계에 필요한 연도는 삭제하기 전에 다른 표현으로도 뜻이 분명한지 확인합니다. 연령, 기간, 금액, “6·25” 같은 사건명은 유지합니다.</li>
+      <li><strong>배경 안내를 선택 사항으로 처리합니다.</strong> 안내 줄이 없는 회차는 <code>time</code>을 비워 두고 원문 전체를 본문으로 처리합니다. 시대·장소 형식의 터전 제목도 없는 작품을 수용하되, 기존 작품의 구조와 주소는 계속 지원합니다. 연도·장소를 따로 복제해 <code>book.json</code> 등에 저술하지 않습니다.</li>
+      <li><strong>소설과 오디오북의 회차 안에서만 표시합니다.</strong> 소설은 첫 삽화 앞의 본문 첫머리에, 오디오북은 회차 제목 아래에 같은 한 줄을 둡니다. 존재하지 않으면 안내와 그 여백을 렌더링하지 않습니다. 현재 회차 목록 데이터의 <code>description: episode.time</code> 연결도 제거합니다. 홈 목록, 목차 시트, 다음 화 카드와 회차 제목의 접근성 이름에도 안내를 붙이지 않습니다.</li>
+      <li><strong>낭독은 사용자가 선택한 도입 1회를 따릅니다.</strong> 회차 제목 → 시대·장소 한 줄 → 짧은 쉼 → 본문 순서입니다. 도입을 읽는 동안에는 상단 한 줄이 안내와 자막 역할을 함께 맡고, 아래 낭독 문장 영역에는 본문 문장만 표시합니다. 본문 대본에도 안내 줄을 다시 섞지 않습니다. 이 표시 구분 때문에 낭독 큐의 인덱스나 타이밍을 바꾸지 않습니다. 재생 위치 이동이나 다시 듣기는 기존 방식대로 해당 음성 위치를 재생합니다.</li>
+      <li><strong>웹 반영과 음성 제작을 나눠 검증합니다.</strong> 웹 빌드는 녹음·SRT·승인 클립을 생성하거나 수정하지 않습니다. 본문에서 덜어낸 연도를 실제 MP3에서도 없애는 작업은 별도 요청된 음성 제작 단계에서 적용합니다. 기존 오디오의 텍스트 차이는 원고 편집이나 웹 빌드를 막는 조건으로 삼지 않습니다.</li>
+    </ol>
+    <h2>완료 기준</h2>
+    <ul>
+      <li>같은 회차의 소설·오디오북에서 배경 안내의 문구가 같고, 회차 본문 영역에 한 번 표시됩니다.</li>
+      <li>안내를 사용하지 않는 작품도 목록·읽기·듣기 화면과 콘텐츠 빌드가 정상적으로 동작합니다.</li>
+      <li>홈 목록과 목차 시트, 다음 화 카드에서 안내 문구가 노출되지 않습니다.</li>
+      <li>정본과 생성된 본문을 비교하고, 영향받는 워크스페이스의 테스트·빌드·타입 검사와 UI 브라우저 검증을 수행합니다. 실제 음성 반영 시에는 도입이 한 번인지 듣고 확인하고 파일·타이밍 검사를 유지합니다.</li>
+    </ul>
+    <p>이 제안에서는 앱 코드와 정본 원고를 수정하지 않았습니다. 화면의 본문은 3화 첫 문장에서 “1950년,”만 덜어낸 최소 수정 예시이며, 화면의 재생 위치는 설명용입니다. 이 HTML과 PNG 시안을 별도 워킹 트리에서 작성하고 검토하여 메인에 반영합니다.</p>
+  </article>
+</body>
+</html>
