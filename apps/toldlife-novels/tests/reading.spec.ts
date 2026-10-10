@@ -81,7 +81,7 @@ test('읽기 설정은 네 글자 크기·줄 간격·서체를 바로 적용하
   await page.goto('ep01')
   expect(await fontSize(page)).toBe(20)
   const paragraph = page.locator('.story-content p').first()
-  expect(await paragraph.evaluate(element => getComputedStyle(element).lineHeight)).toBe('37px')
+  expect(await paragraph.evaluate(element => getComputedStyle(element).lineHeight)).toBe('42px')
   expect(await paragraph.evaluate(element => getComputedStyle(element).fontFamily)).toContain('Hahmlet')
   // The chapter has no lists or subheadings, so sample their inherited typography too.
   await page.locator('.story-content').evaluate(element => {
@@ -113,7 +113,7 @@ test('읽기 설정은 네 글자 크기·줄 간격·서체를 바로 적용하
   await expect(page.locator('.library')).toHaveClass(/font-2/)
   const leading = sheet.getByRole('group', { name: '줄 간격', exact: true })
   const faces = sheet.getByRole('group', { name: '서체', exact: true })
-  await expect(leading.getByRole('button', { name: '보통', exact: true })).toHaveAttribute('aria-pressed', 'true')
+  await expect(leading.getByRole('button', { name: '넓게', exact: true })).toHaveAttribute('aria-pressed', 'true')
   await expect(faces.getByRole('button', { name: '명조', exact: true })).toHaveAttribute('aria-pressed', 'true')
   expect(await faces.getByRole('button', { name: '명조', exact: true }).evaluate(element => getComputedStyle(element).fontFamily)).toContain('Hahmlet')
   expect(await faces.getByRole('button', { name: '고딕', exact: true }).evaluate(element => getComputedStyle(element).fontFamily)).toContain('IBM Plex Sans KR')
@@ -122,6 +122,9 @@ test('읽기 설정은 네 글자 크기·줄 간격·서체를 바로 적용하
   expect(Math.abs(leadingBox.y - faceBox.y)).toBeLessThan(1)
   expect(Math.abs(leadingBox.width - faceBox.width)).toBeLessThan(1)
   for (const options of [leading, faces]) expect((await options.getByRole('button').first().boundingBox())!.height).toBe(52)
+  await leading.getByRole('button', { name: '보통', exact: true }).click()
+  await expect(leading.getByRole('button', { name: '보통', exact: true })).toHaveAttribute('aria-pressed', 'true')
+  expect(await paragraph.evaluate(element => parseFloat(getComputedStyle(element).lineHeight) / parseFloat(getComputedStyle(element).fontSize))).toBeCloseTo(1.85, 3)
   await leading.getByRole('button', { name: '넓게', exact: true }).click()
   await expect(leading.getByRole('button', { name: '넓게', exact: true })).toHaveAttribute('aria-pressed', 'true')
   await expect(page.locator('.library')).toHaveClass(/leading-wide/)
@@ -163,6 +166,11 @@ test('읽기 설정은 네 글자 크기·줄 간격·서체를 바로 적용하
   expect(await paragraph.evaluate(element => getComputedStyle(element).fontFamily)).toContain('Hahmlet')
   expect(await paragraph.evaluate(element => parseFloat(getComputedStyle(element).lineHeight) / parseFloat(getComputedStyle(element).fontSize))).toBeCloseTo(1.85, 3)
   expect(await page.evaluate(() => [localStorage.getItem('family-library:leading'), localStorage.getItem('family-library:face')])).toEqual(['normal', 'serif'])
+  await sheet.getByRole('button', { name: '완료' }).click()
+  await page.reload()
+  await expect(page.locator('.library')).toHaveClass(/leading-normal/)
+  await expect(page.locator('.library')).toHaveClass(/face-serif/)
+  expect(await paragraph.evaluate(element => parseFloat(getComputedStyle(element).lineHeight) / parseFloat(getComputedStyle(element).fontSize))).toBeCloseTo(1.85, 3)
   await noOverflow(page)
 })
 
@@ -200,7 +208,7 @@ test('본문 중간에서 글자 크기·줄 간격·서체를 바꿔도 읽던 
   const sheet = page.getByRole('dialog', { name: '읽기 설정' })
   for (const option of [
     sheet.getByRole('button', { name: '글자 크기 아주 크게 26px', exact: true }),
-    sheet.getByRole('group', { name: '줄 간격', exact: true }).getByRole('button', { name: '넓게', exact: true }),
+    sheet.getByRole('group', { name: '줄 간격', exact: true }).getByRole('button', { name: '보통', exact: true }),
     sheet.getByRole('group', { name: '서체', exact: true }).getByRole('button', { name: '고딕', exact: true }),
   ]) {
     await option.click()
@@ -422,11 +430,16 @@ test('모든 회차의 삽화를 불러오며 16:9 전체 그림을 화면 폭�
   await page.screenshot({ path: `test-results/reading/${info.project.name}-illustrated-reader.png`, fullPage: true })
 })
 
-test('삽화는 자바스크립트 없이 회차에서 표시된다', async ({ browser }) => {
+test('자바스크립트 없이도 넓은 줄 간격·명조 기본값과 삽화를 표시한다', async ({ browser }) => {
   const context = await browser.newContext({ javaScriptEnabled: false })
   const page = await context.newPage()
   try {
     await page.goto('http://127.0.0.1:4183/novels/bae-byunghee/ep01')
+    await expect(page.locator('.library')).toHaveClass(/leading-wide/)
+    await expect(page.locator('.library')).toHaveClass(/face-serif/)
+    const paragraph = page.locator('.story-content p').first()
+    expect(await paragraph.evaluate(element => getComputedStyle(element).lineHeight)).toBe('42px')
+    expect(await paragraph.evaluate(element => getComputedStyle(element).fontFamily)).toContain('Hahmlet')
     await expect(page.locator('.episode-illustration')).toHaveCount(2)
     const first = page.locator('.episode-illustration img').first()
     await expect.poll(() => first.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true)

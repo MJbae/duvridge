@@ -36,9 +36,10 @@ const barTitle = computed(() => (episode.value ? episodeName(episode.value) : St
 // The work's home is its folder; the series root itself belongs to the platform home.
 const workHome = withBase(`/${catalog.work.id}/`)
 const homeHref = computed(() => workHome + (frontmatter.value.episodeId ? `#episode-${frontmatter.value.episodeId}` : ''))
-const fontSize = ref(1)
-const leading = ref<ReadingLeading>('normal')
-const face = ref<ReadingFace>('serif')
+const defaults = readingSettings()
+const fontSize = ref(defaults.font)
+const leading = ref<ReadingLeading>(defaults.leading)
+const face = ref<ReadingFace>(defaults.face)
 const screenMode = ref('auto')
 const prefersNight = ref(false)
 const isNight = computed(() => screenMode.value === 'dark' || (screenMode.value === 'auto' && prefersNight.value))

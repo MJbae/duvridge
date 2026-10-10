@@ -12,7 +12,7 @@ export function readingSettings(saved = {}) {
   const font = typeof saved.font === 'number' || (typeof saved.font === 'string' && /^[0-3]$/.test(saved.font)) ? Number(saved.font) : 1
   return {
     font: Number.isInteger(font) && font >= 0 && font < fontSizeOptions.length ? font : 1,
-    leading: leadingOptions.some(option => option.value === saved.leading) ? saved.leading : 'normal',
+    leading: leadingOptions.some(option => option.value === saved.leading) ? saved.leading : 'wide',
     face: faceOptions.some(option => option.value === saved.face) ? saved.face : 'serif',
   }
 }

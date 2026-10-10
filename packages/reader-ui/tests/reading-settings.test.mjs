@@ -2,8 +2,8 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { faceOptions, fontSizeOptions, leadingOptions, readingSettings } from '../src/state/reading-settings.mjs'
 
-test('reading defaults to the second font step, normal leading and serif', () => {
-  assert.deepEqual(readingSettings(), { font: 1, leading: 'normal', face: 'serif' })
+test('reading defaults to the second font step, wide leading and serif', () => {
+  assert.deepEqual(readingSettings(), { font: 1, leading: 'wide', face: 'serif' })
 })
 
 test('the four named font steps preview 18, 20, 23 and 26 pixels', () => {
@@ -34,6 +34,6 @@ test('leading and face choices restore every valid combination', () => {
 })
 
 test('invalid preferences fall back independently while retaining valid choices', () => {
-  assert.deepEqual(readingSettings({ font: '2', leading: 'narrow', face: 'sans' }), { font: 2, leading: 'normal', face: 'sans' })
+  assert.deepEqual(readingSettings({ font: '2', leading: 'narrow', face: 'sans' }), { font: 2, leading: 'wide', face: 'sans' })
   assert.deepEqual(readingSettings({ font: 'bad', leading: 'wide', face: 'gothic' }), { font: 1, leading: 'wide', face: 'serif' })
 })
