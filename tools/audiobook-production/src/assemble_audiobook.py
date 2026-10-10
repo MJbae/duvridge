@@ -112,9 +112,10 @@ def mix(pieces, speech_end, music_path):
         ts = np.arange(n) / SR
         return np.interp(ts, [p[0] for p in points], [p[1] for p in points]).astype(np.float32)[:, None]
 
-    intro_len = int((LEAD + 5) * SR)
+    # 음악은 낭독이 시작하기 전(LEAD초)에 다 줄어든다. 낭독 시각은 그대로 둔다.
+    intro_len = int(LEAD * SR)
     intro = music[:intro_len] * gain
-    out[:len(intro)] += intro * env(len(intro), [(0, 0), (0.8, 1), (LEAD - 0.5, 1), (LEAD + 5, 0)])
+    out[:len(intro)] += intro * env(len(intro), [(0, 0), (0.8, 1), (LEAD - 1.5, 1), (LEAD - 0.5, 0)])
     o0 = int((speech_end + TAIL - 1.0) * SR)
     outro = music[: len(out) - o0] * gain
     out[o0:o0 + len(outro)] += outro * env(len(outro), [(0, 0), (1.5, 1), (OUTRO - OUTRO_FADE, 1), (OUTRO + 1, 0)])
