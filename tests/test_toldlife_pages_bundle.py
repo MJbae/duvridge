@@ -38,6 +38,15 @@ class ToldLifeAssemblyTests(unittest.TestCase):
             folder = "/audiobooks/watch/" if name == "videos" else base + "read/"
             (dist / "moved-pages.json").write_text(json.dumps({"version": 1, "pages": [{"from": folder + "old.html", "to": base + "bae-byunghee/ep01"}]}))
             (dist / "work-index.json").write_text(json.dumps([{"id": "bae-byunghee", "title": "Example", "legacyRoot": True, "legacyIds": {}, "cover": {"alt": "Cover", "width": 720, "height": 405, "sources": [{"src": "/works/bae-byunghee/images/cover.jpg", "width": 720}]}, "episodes": [{"id": "prolog", "label": "프롤로그", "recorded": True}]}]))
+            fonts = dist / "fonts"
+            fonts.mkdir()
+            data = b"wOF2font"
+            digest = hashlib.sha256(data).hexdigest()
+            font = f"serif.{digest[:16]}.woff2"
+            stylesheet = "reader.0123456789abcdef.css"
+            (fonts / font).write_bytes(data)
+            (fonts / stylesheet).write_text("@font-face{}")
+            (fonts / "manifest.json").write_text(json.dumps({"version": 1, "stylesheet": stylesheet, "faces": [{"family": "ToldLife Serif", "weight": "400 800", "common": True, "file": font, "bytes": len(data), "sha256": digest}]}))
             if name in {"audio", "videos"}:
                 (dist / "works/bae-byunghee/record").mkdir(parents=True)
                 (dist / "works/bae-byunghee/record/prolog.mp3").write_bytes(b"ID3audio")
@@ -56,6 +65,10 @@ class ToldLifeAssemblyTests(unittest.TestCase):
         self.assertTrue((self.output / "novels/bae-byunghee/ep01.html").exists())
         self.assertEqual((self.output / "audiobooks/works/bae-byunghee/record/prolog.mp3").read_bytes(), b"ID3audio")
         self.assertTrue((self.output / "404.html").exists())
+        self.assertTrue((self.output / "fonts/manifest.json").exists())
+        self.assertFalse((self.output / "novels/fonts").exists())
+        self.assertIn('/fonts/reader.', (self.output / "index.html").read_text())
+        self.assertIn('max-age=31536000, immutable', (self.output / "_headers").read_text())
         sitemap = (self.output / "sitemap.xml").read_text()
         self.assertIn("/novels/bae-byunghee/ep01", sitemap)
         self.assertIn("/audiobooks/bae-byunghee/ep01", sitemap)
@@ -74,6 +87,28 @@ class ToldLifeAssemblyTests(unittest.TestCase):
         (self.output / "index.html").write_text("current")
         with self.assertRaisesRegex(ValueError, "every service"):
             build.assemble(self.output, self.services[:1])
+        self.assertEqual((self.output / "index.html").read_text(), "current")
+
+    def test_missing_corrupted_or_different_shared_fonts_cannot_replace_snapshot(self):
+        self.output.mkdir()
+        (self.output / "index.html").write_text("current")
+        folder = self.services[1][1] / "fonts"
+        marker = folder / "manifest.json"
+        original = marker.read_text()
+        marker.unlink()
+        with self.assertRaisesRegex(ValueError, "font manifest"):
+            build.assemble(self.output, self.services)
+        marker.write_text(original)
+        face = json.loads(original)["faces"][0]
+        (folder / face["file"]).write_bytes(b"corrupt")
+        with self.assertRaisesRegex(ValueError, "font asset differs"):
+            build.assemble(self.output, self.services)
+        (folder / face["file"]).write_bytes(b"wOF2font")
+        modified = json.loads(original)
+        modified["faces"][0]["weight"] = "700"
+        marker.write_text(json.dumps(modified))
+        with self.assertRaisesRegex(ValueError, "font bundles differ"):
+            build.assemble(self.output, self.services)
         self.assertEqual((self.output / "index.html").read_text(), "current")
 
     def test_wrong_base_or_missing_audio_cannot_publish_a_snapshot(self):

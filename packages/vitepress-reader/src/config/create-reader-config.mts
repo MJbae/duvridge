@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url'
 import { episodeIllustrations } from '../markdown/render-episode-illustrations.ts'
 import type { ReaderCatalog, Cover, Sharing } from '@duvridge/content-processing/types'
 import { coverImageSizes, episodeImageSizes, imagePreload } from '@duvridge/reader-ui/images/create-image-sources.mjs'
+import { copyReaderFonts, readerFontsPlugin, type ReaderFontAssets } from '@duvridge/reader-ui/fonts/reader-fonts.mjs'
 
 /** An address from an earlier site layout and the page that now answers it. */
 export type MovedPage = { from: string; to: string }
@@ -39,10 +40,11 @@ type ReaderConfigOptions = {
   /** Earlier addresses this build replaces; the deployment turns the list into permanent redirects. */
   movedPages?: (context: { base: string; work: string }) => MovedPage[]
   themeConfig?: Record<string, unknown>
+  fonts?: ReaderFontAssets
 }
 
 /** One reading/metadata configuration; services add their own Markdown features. */
-export function createReaderConfig({ root, catalog, catalogs, series, defaultBase = '/', defaultOrigin, siteNames = {}, configureMarkdown, preparePage, movedPages, themeConfig }: ReaderConfigOptions) {
+export function createReaderConfig({ root, catalog, catalogs, series, defaultBase = '/', defaultOrigin, siteNames = {}, configureMarkdown, preparePage, movedPages, themeConfig, fonts }: ReaderConfigOptions) {
   const sharedRoot = fileURLToPath(new URL('../../', import.meta.url))
   const env = loadEnv(process.env.NODE_ENV || 'production', root, '')
   const base = process.env.SITE_BASE || env.SITE_BASE || defaultBase
@@ -71,10 +73,7 @@ export function createReaderConfig({ root, catalog, catalogs, series, defaultBas
         'meta',
         { name: 'viewport', content: 'width=device-width, initial-scale=1, viewport-fit=cover' },
       ],
-      // Titles and the novel's text use Hahmlet, the interface IBM Plex Sans KR; both load with the page.
-      ['link', { rel: 'preconnect', href: 'https://fonts.googleapis.com' }],
-      ['link', { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' }],
-      ['link', { id: 'reader-fonts', rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Hahmlet:wght@400;500;700;800&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap' }],
+      ...(fonts?.head ?? []),
       ['link', { rel: 'icon', type: 'image/svg+xml', href: `${base}favicon.svg` }],
       ['link', { rel: 'icon', type: 'image/png', sizes: '32x32', href: `${base}favicon-32.png` }],
       ['link', { rel: 'apple-touch-icon', sizes: '180x180', href: `${base}apple-touch-icon.png` }],
@@ -95,6 +94,7 @@ export function createReaderConfig({ root, catalog, catalogs, series, defaultBas
       },
     },
     vite: {
+      plugins: fonts ? [readerFontsPlugin(fonts.directory)] : [],
       envDir: root,
       server: { fs: { allow: [searchForWorkspaceRoot(root), sharedRoot] } },
       build: { chunkSizeWarningLimit: 650 },
@@ -172,7 +172,8 @@ export function createReaderConfig({ root, catalog, catalogs, series, defaultBas
         ['meta', { name: 'twitter:description', content: description }]
       )
     },
-    buildEnd({ outDir }) {
+    async buildEnd({ outDir }) {
+      if (fonts) await copyReaderFonts(fonts.directory, outDir)
       const works = Object.values(catalogs ?? { single: catalog }).map(entry => ({
         id: entry.work.id, legacyRoot: entry.work.legacyRoot, title: entry.work.title, cover: entry.work.cover,
         // The films made from the work, for the platform home's video tab.

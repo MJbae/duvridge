@@ -27,6 +27,7 @@ createServer((req, res) => {
   const end = range ? Math.min(Number(range[2] || size - 1), size - 1) : size - 1
   if (range && (start > end || start >= size)) { res.writeHead(416, { 'Content-Range': `bytes */${size}` }); return res.end() }
   const headers = { 'Content-Type': types[path.extname(file)] || 'application/octet-stream', 'Content-Length': end - start + 1, 'Accept-Ranges': 'bytes' }
+  if (/^\/fonts\/[^/]+\.[a-f0-9]{16}\.(woff2|css)$/.test(url.pathname)) headers['Cache-Control'] = 'public, max-age=31536000, immutable'
   if (range) headers['Content-Range'] = `bytes ${start}-${end}/${size}`
   res.writeHead(range ? 206 : status, headers)
   if (req.method === 'HEAD' || size === 0) return res.end()

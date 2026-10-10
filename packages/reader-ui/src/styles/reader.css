@@ -20,8 +20,8 @@
   --gold: #e0ac4e;
   --gold-hover: #f2c677;
   --error: #ff9b8f;
-  --face-ui: 'IBM Plex Sans KR', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
-  --face-title: 'Hahmlet', 'Noto Serif KR', AppleMyungjo, serif;
+  --face-ui: 'ToldLife UI', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  --face-title: 'ToldLife Serif', 'Noto Serif KR', AppleMyungjo, serif;
   /* The sheet colours follow the page under them; the theater is the default. */
   --sheet-bg: var(--night-raised);
   --sheet-ink: var(--ivory);

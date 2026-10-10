@@ -102,3 +102,43 @@ test('approved audio remains readable through a range request at the work media 
     expect((await response.body()).byteLength).toBe(1024)
   }
 })
+
+test('all formats share local fonts and warm tab switches transfer no font data', async ({ page, context, request }) => {
+  const remoteFonts: string[] = []
+  page.on('request', req => { if (/fonts\.(googleapis|gstatic)\.com/.test(req.url())) remoteFonts.push(req.url()) })
+  const session = await context.newCDPSession(page)
+  await session.send('Network.enable')
+  let warm = false
+  const fonts = new Map<string, { warm: boolean; bytes: number }>()
+  session.on('Network.requestWillBeSent', event => {
+    if (event.type === 'Font') fonts.set(event.requestId, { warm, bytes: 0 })
+  })
+  session.on('Network.loadingFinished', event => {
+    const font = fonts.get(event.requestId)
+    if (font) font.bytes = event.encodedDataLength
+  })
+  await page.goto('/novels/bae-byunghee/', { waitUntil: 'networkidle' })
+  await expect(page.locator('[data-reader-ready="true"] .format-switch')).toBeVisible()
+  await page.evaluate(() => document.fonts.ready)
+  const css = await page.locator('#reader-fonts').getAttribute('href')
+  expect(css).toMatch(/^\/fonts\/reader\.[a-f0-9]{16}\.css$/)
+  const cold = [...fonts.values()]
+  expect(cold.length).toBeGreaterThan(0)
+  expect(cold.length).toBeLessThan(15)
+  expect(cold.reduce((sum, font) => sum + font.bytes, 0)).toBeLessThan(350 * 1024)
+  expect(await page.evaluate(() => ['ToldLife Serif', 'ToldLife UI'].every(family => [...document.fonts].some(face => face.family.includes(family) && face.status === 'loaded')))).toBe(true)
+  warm = true
+  for (const [format, tab] of [['audiobooks', '오디오북'], ['novels', '소설'], ['audiobooks', '오디오북']]) {
+    await page.getByRole('navigation', { name: '형식' }).getByRole('link', { name: tab, exact: true }).click()
+    await page.waitForURL(`**/${format}/bae-byunghee/`, { waitUntil: 'networkidle' })
+    await page.evaluate(() => document.fonts.ready)
+    await expect(page.locator('#reader-fonts')).toHaveAttribute('href', css!)
+  }
+  expect([...fonts.values()].filter(font => font.warm).reduce((sum, font) => sum + font.bytes, 0)).toBe(0)
+  expect(remoteFonts).toEqual([])
+  const manifest = await (await request.get('/fonts/manifest.json')).json()
+  const response = await request.get(`/fonts/${manifest.faces[0].file}`)
+  expect(response.headers()['content-type']).toBe('font/woff2')
+  expect(response.headers()['cache-control']).toContain('max-age=31536000, immutable')
+  expect((await response.body()).subarray(0, 4).toString()).toBe('wOF2')
+})

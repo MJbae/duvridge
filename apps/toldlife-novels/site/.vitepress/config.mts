@@ -1,9 +1,11 @@
 import { fileURLToPath } from 'node:url'
 import { createReaderConfig, formerPageRules } from '@duvridge/vitepress-reader/config/create-reader-config.mts'
 import catalogs from './generated/catalogs.json'
+import { prepareReaderFonts } from '@duvridge/reader-ui/fonts/reader-fonts.mjs'
 const series: string = 'novels'
 const catalog = Object.values(catalogs)[0]
 export default createReaderConfig({
+  fonts: await prepareReaderFonts(),
   root: fileURLToPath(new URL('../../', import.meta.url)),
   defaultOrigin: 'https://toldlife.duvridge.com', defaultBase: `/${series}/`, catalog, catalogs, series,
   siteNames: { '/novels/': '인생원작', '/audiobooks/': '인생원작', '/videos/': '인생원작' },

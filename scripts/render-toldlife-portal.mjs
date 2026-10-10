@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { workStorageKey, migrateWorkStorage } from '../packages/reader-ui/src/state/work-storage.mjs'
+import { readerFontHeadHtml } from '../packages/reader-ui/src/fonts/font-head.mjs'
 const template = new URL('../apps/toldlife-portal/index.html', import.meta.url)
 const escape = value => String(value ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;')
 const safeJson = value => JSON.stringify(value).replaceAll('<', '\\u003c')
@@ -55,7 +56,7 @@ function filmPanel(films, works) {
     + works.map(work => workCell('videos', work)).join('')
   return `<section id="videos" class="panel" aria-label="영상"><div class="hero"><a class="hero-art" href="${filmHref(lead)}" tabindex="-1" aria-hidden="true"><picture>${wide}<img src="/novels${escape(lead.card.src)}" width="${lead.card.width}" height="${lead.card.height}" alt="" loading="lazy"></picture></a><div class="hero-copy"><h2 class="hero-title"><a href="${filmHref(lead)}">${escape(lead.title)}</a></h2><span class="hero-origin">원작 · ${escape(lead.work.title)}</span><div class="hero-actions"><a class="big-button" href="${filmHref(lead)}">${icons.videos}<span>보기</span></a></div></div></div><ul class="works" aria-label="작품">${cells}</ul></section>`
 }
-export function renderPortal(works) {
+export function renderPortal(works, fontManifest) {
   if (!works.length) throw new Error('포털에 공개할 작품이 없습니다.')
   // The invitation fills the row when no other originals remain below the featured work.
   const invite = '<li><a class="work-invite" href="https://www.duvridge.com/ko/#services"><span class="invite-card"><span class="invite-dot" aria-hidden="true"></span><span class="invite-line">살아낸 삶이<br>원작이 됩니다</span></span><span class="work-name">원작 의뢰하기</span></a></li>'
@@ -80,6 +81,6 @@ export function renderPortal(works) {
     return `<section id="${format}" class="panel${format === 'novels' ? ' is-active' : ''}" aria-label="${label}">${hero}<ul class="works${inviteOnly ? ' works--invite-only' : ''}" aria-label="작품">${list}</ul></section>`
   }).join('\n')
   const script = `<script>const workStorageKey=${workStorageKey.toString()};const migrateWorkStorage=${migrateWorkStorage.toString()};(${portalRuntime.toString()})(${safeJson(works)});</script>`
-  return readFileSync(template, 'utf8').replace('<!-- work-panels -->', panels).replace('<!-- work-script -->', script)
+  return readFileSync(template, 'utf8').replace('<!-- READER_FONTS -->', readerFontHeadHtml(fontManifest)).replace('<!-- work-panels -->', panels).replace('<!-- work-script -->', script)
 }
-if (process.argv[1] && new URL(`file://${process.argv[1]}`).href === import.meta.url) process.stdout.write(renderPortal(JSON.parse(readFileSync(process.argv[2], 'utf8'))))
+if (process.argv[1] && new URL(`file://${process.argv[1]}`).href === import.meta.url) process.stdout.write(renderPortal(JSON.parse(readFileSync(process.argv[2], 'utf8')), process.argv[3] ? JSON.parse(readFileSync(process.argv[3], 'utf8')) : undefined))

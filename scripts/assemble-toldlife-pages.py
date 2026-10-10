@@ -51,6 +51,8 @@ def check_build(dist, base):
     for required in service.get("requiredFiles", []):
         if not (dist / required).is_file():
             raise ValueError(f"{base}: missing {required}; refusing an incomplete project snapshot.")
+    if not (dist / "fonts/manifest.json").is_file():
+        raise ValueError(f"{base}: missing shared font manifest")
     for file in dist.rglob("*"):
         if file.is_file() and (file.name.startswith(".env") or file.name in {"package.json", "package-lock.json"}):
             raise ValueError(f"Source/config file cannot be published: {file}")
@@ -59,6 +61,34 @@ def check_build(dist, base):
 
 
 PORTAL_TABS = {"audiobooks": "novels"}
+
+
+def add_shared_fonts(staged, services):
+    """Publish one validated font bundle. Separate CI builds must agree before assembly."""
+    expected = None
+    for base, dist in services:
+        directory = dist / "fonts"
+        if not (directory / "manifest.json").is_file():
+            raise ValueError(f"{base}: missing shared font manifest")
+        manifest = json.loads((directory / "manifest.json").read_text(encoding="utf-8"))
+        if expected is not None and manifest != expected:
+            raise ValueError(f"{base}: shared font bundles differ")
+        expected = manifest
+        if manifest.get("version") != 1 or not isinstance(manifest.get("faces"), list) or not manifest["faces"]:
+            raise ValueError(f"{base}: invalid shared font manifest")
+        for face in manifest["faces"]:
+            name = face["file"]
+            if Path(name).name != name or not name.endswith(".woff2"):
+                raise ValueError("Unsafe font asset path")
+            file = directory / name
+            if not file.is_file() or file.stat().st_size != face["bytes"] or hashlib.sha256(file.read_bytes()).hexdigest() != face["sha256"]:
+                raise ValueError(f"{base}: font asset differs: {name}")
+        stylesheet = manifest["stylesheet"]
+        if Path(stylesheet).name != stylesheet or not (directory / stylesheet).is_file():
+            raise ValueError(f"{base}: font stylesheet missing")
+        if not (staged / "fonts").exists():
+            shutil.copytree(directory, staged / "fonts")
+    return expected
 
 
 def redirect_rules(staged, services):
@@ -159,16 +189,18 @@ def assemble(output, services, video_media=None):
     output.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="toldlife-", dir=output.parent) as temporary:
         staged = Path(temporary)
+        fonts = add_shared_fonts(staged, services)
         audio_dist = next(dist for base, dist in services if base == "/audiobooks/")
-        portal = subprocess.check_output(["node", str(ROOT / "scripts/render-toldlife-portal.mjs"), str(audio_dist / "work-index.json")], text=True)
+        portal = subprocess.check_output(["node", str(ROOT / "scripts/render-toldlife-portal.mjs"), str(audio_dist / "work-index.json"), str(staged / "fonts/manifest.json")], text=True)
         (staged / "index.html").write_text(portal, encoding="utf-8")
-        shutil.copyfile(PORTAL / "404.html", staged / "404.html")
+        font_head = subprocess.check_output(["node", "--input-type=module", "-e", "import {readFileSync} from 'node:fs'; import {readerFontHeadHtml} from './packages/reader-ui/src/fonts/font-head.mjs'; console.log(readerFontHeadHtml(JSON.parse(readFileSync(process.argv[1],'utf8'))))", str(staged / "fonts/manifest.json")], cwd=ROOT, text=True).strip()
+        (staged / "404.html").write_text((PORTAL / "404.html").read_text(encoding="utf-8").replace("<!-- READER_FONTS -->", font_head), encoding="utf-8")
         for folder in ("brand", "social"):
             shutil.copytree(BRAND / folder, staged / folder)
         urls = [SITE_ORIGIN + "/"]
         for base, dist in services:
             check_build(dist, base)
-            shutil.copytree(dist, staged / base.strip("/"), ignore=shutil.ignore_patterns(".DS_Store"))
+            shutil.copytree(dist, staged / base.strip("/"), ignore=shutil.ignore_patterns(".DS_Store", "fonts"))
             for page in sorted(dist.rglob("*.html")):
                 relative = page.relative_to(dist).as_posix()
                 if page.name == "404.html" or 'http-equiv="refresh"' in page.read_text(encoding="utf-8"):
@@ -193,7 +225,10 @@ def assemble(output, services, video_media=None):
         (staged / "_redirects").write_text("".join(f"{row['from']} {row['to']} 301\n" for row in redirects), encoding="utf-8")
         (staged / "redirects.json").write_text(json.dumps(redirects, indent=2) + "\n", encoding="utf-8")
         (staged / "_headers").write_text(
-            "/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n",
+            "/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n"
+            "/fonts/*.woff2\n  Cache-Control: public, max-age=31536000, immutable\n"
+            "/fonts/*.css\n  Cache-Control: public, max-age=31536000, immutable\n"
+            "/fonts/manifest.json\n  Cache-Control: no-cache\n",
             encoding="utf-8",
         )
         revision = os.environ.get("GITHUB_SHA") or subprocess.check_output(
