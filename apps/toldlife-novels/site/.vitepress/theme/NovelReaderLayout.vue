@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { workStorageKey, migrateWorkStorage } from '@duvridge/reader-ui/state/work-storage.mjs'
+import { faceOptions, fontSizeOptions, leadingOptions, readingSettings, type ReadingFace, type ReadingLeading } from '@duvridge/reader-ui/state/reading-settings.mjs'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { Content, useData, useRoute, useRouter, withBase } from 'vitepress'
 import ReaderIcon from '@duvridge/reader-ui/components/ReaderIcon.vue'
@@ -8,6 +9,7 @@ import ReaderSettingsButton from '@duvridge/reader-ui/components/ReaderSettingsB
 import WorkHome, { type WorkRow } from '@duvridge/reader-ui/components/WorkHome.vue'
 import { episodeName, episodeThumb, progressPercent } from '@duvridge/reader-ui/series/work-rows.mjs'
 import { formatLinks, seriesWorkHref } from '@duvridge/reader-ui/series/series-tabs.mjs'
+import { novelWorkAction } from '@duvridge/reader-ui/series/novel-work-action.mjs'
 import { imageSrcset } from '@duvridge/reader-ui/images/create-image-sources.mjs'
 import NovelEpisodeEnd from './components/NovelEpisodeEnd.vue'
 import BackgroundMusicToggle from './components/BackgroundMusicToggle.vue'
@@ -35,6 +37,8 @@ const barTitle = computed(() => (episode.value ? episodeName(episode.value) : St
 const workHome = withBase(`/${catalog.work.id}/`)
 const homeHref = computed(() => workHome + (frontmatter.value.episodeId ? `#episode-${frontmatter.value.episodeId}` : ''))
 const fontSize = ref(1)
+const leading = ref<ReadingLeading>('normal')
+const face = ref<ReadingFace>('serif')
 const screenMode = ref('auto')
 const prefersNight = ref(false)
 const isNight = computed(() => screenMode.value === 'dark' || (screenMode.value === 'auto' && prefersNight.value))
@@ -48,6 +52,7 @@ const storageKey = key('reading')
 let activeEpisode: Episode | undefined, activeScroll = 0, activeFinished = false, version = 0
 let saveTimer: ReturnType<typeof setTimeout> | undefined
 let mounted = false
+let typographyVersion = 0
 let nightQuery: MediaQueryList | undefined
 function readStorage(key: string) { try { return localStorage.getItem(key) } catch { return null } }
 function writeStorage(key: string, value: string) { try { localStorage.setItem(key, value) } catch { /* optional */ } }
@@ -85,7 +90,33 @@ function complete() {
   saveReading()
 }
 function resumeReading() { if (lastRead.value) writeStorage(key('resume'), JSON.stringify(lastRead.value)) }
-function setFont(size: number) { fontSize.value = Math.min(3, Math.max(0, size)); writeStorage('family-library:font', String(fontSize.value)) }
+/** Keep the visible paragraph in place when the text changes shape. */
+async function changeTypography(apply: () => void) {
+  const current = ++typographyVersion
+  const path = route.path
+  const anchor = Array.from(document.querySelectorAll<HTMLElement>('.story-content p, .story-content ul, .story-content ol, .story-content h2, .story-content h3, .story-content figure')).find(element => element.getBoundingClientRect().bottom > 72)
+  const top = anchor?.getBoundingClientRect().top
+  apply()
+  await nextTick()
+  if (current !== typographyVersion || path !== route.path) return
+  if (anchor?.isConnected && top !== undefined) window.scrollBy({ top: anchor.getBoundingClientRect().top - top, behavior: 'instant' })
+  activeScroll = window.scrollY
+  measureProgress()
+  saveReading()
+}
+function setFont(size: number) {
+  const next = readingSettings({ font: size }).font
+  void changeTypography(() => { fontSize.value = next })
+  writeStorage('family-library:font', String(next))
+}
+function setLeading(value: ReadingLeading) {
+  void changeTypography(() => { leading.value = value })
+  writeStorage('family-library:leading', value)
+}
+function setFace(value: ReadingFace) {
+  void changeTypography(() => { face.value = value })
+  writeStorage('family-library:face', value)
+}
 function setMode(mode: string) {
   screenMode.value = mode
   document.documentElement.dataset.theme = mode
@@ -105,19 +136,8 @@ function toggleChrome(event: MouseEvent) {
   chrome.value = !chrome.value
 }
 
-// The big button says only 읽기, 이어 읽기 or 다시 읽기; the episode it opens (where the reader stopped,
-// the next one, or the start) is its spoken name and the marked row.
-const action = computed(() => {
-  const order = catalog.readingOrder
-  const index = order.findIndex(entry => entry.id === lastRead.value?.id)
-  if (index < 0) return { label: '읽기', spoken: '처음부터 읽기', episode: order[0], resume: false, current: false }
-  const last = order[index]
-  if (!lastFinished.value) return { label: '이어 읽기', spoken: `${last.label} 이어 읽기`, episode: last, resume: true, current: true }
-  const next = order[index + 1] ?? order.find(entry => !completed.value.includes(entry.id))
-  return next
-    ? { label: '이어 읽기', spoken: `${next.label}부터 이어 읽기`, episode: next, resume: false, current: true }
-    : { label: '다시 읽기', spoken: '처음부터 다시 읽기', episode: order[0], resume: false, current: false }
-})
+// The button and its spoken name identify the same reading destination.
+const action = computed(() => novelWorkAction(catalog.readingOrder, lastRead.value, completed.value))
 const rows = computed<WorkRow[]>(() => catalog.readingOrder.map(entry => {
   const reading = lastRead.value?.id === entry.id && !lastFinished.value
   const current = action.value.current && action.value.episode.id === entry.id
@@ -190,8 +210,10 @@ onMounted(() => {
   nightQuery = window.matchMedia('(prefers-color-scheme: dark)')
   prefersNight.value = nightQuery.matches
   nightQuery.addEventListener('change', onNightChange)
-  const preferred = Number(readStorage('family-library:font') ?? 1)
-  if ([0, 1, 2, 3].includes(preferred)) fontSize.value = preferred
+  const preferred = readingSettings({ font: readStorage('family-library:font'), leading: readStorage('family-library:leading'), face: readStorage('family-library:face') })
+  fontSize.value = preferred.font
+  leading.value = preferred.leading
+  face.value = preferred.face
   const mode = readStorage('family-library:theme')
   setMode(['auto', 'light', 'dark'].includes(mode ?? '') ? mode! : 'auto')
   completed.value = migrateCompleted(catalog, readJson(key('completed')))
@@ -212,17 +234,18 @@ onMounted(() => {
 })
 watch(() => route.path, () => { if (mounted) void setupPage() })
 onBeforeUnmount(() => {
+  mounted = false; ++typographyVersion
   router.onBeforePageLoad = previousBeforeLoad; ++version; clearTimeout(saveTimer); saveReading()
   window.removeEventListener('scroll', onScroll); window.removeEventListener('pagehide', pagehide)
   nightQuery?.removeEventListener('change', onNightChange)
 })
 </script>
 <template>
-  <div class="library" :class="isReading ? ['page-reader', `font-${fontSize}`, { 'chrome-hidden': !chrome }] : 'page-theater'">
+  <div class="library" :class="isReading ? ['page-reader', `font-${fontSize}`, `leading-${leading}`, `face-${face}`, { 'chrome-hidden': !chrome }] : 'page-theater'">
     <a class="skip-link" href="#main">본문으로 건너뛰기</a>
     <audio ref="musicAudio" class="background-audio" loop preload="none" aria-hidden="true" />
     <WorkHome v-if="isHome" series="novel" :title="catalog.work.title" :art="art"
-      :action="{ label: action.label, ariaLabel: action.spoken, href: withBase(action.episode.url) }" :formats="formats" :origin="origin" :rows="rows" @action="openAction" @select="openRow" />
+      :action="{ label: action.label, ariaLabel: action.label, href: withBase(action.episode.url) }" :formats="formats" :origin="origin" :rows="rows" @action="openAction" @select="openRow" />
     <main v-else-if="isMissing" id="main" tabindex="-1" class="not-found"><h1>이야기를 찾지 못했습니다.</h1><a class="text-link" :href="workHome">작품 홈으로</a></main>
     <main v-else-if="frontmatter.kind === 'redirect'" id="main" class="not-found"><h1>홈으로 이동합니다.</h1><a class="text-link" :href="frontmatter.redirectTo" target="_self">홈으로</a></main>
     <template v-else>
@@ -239,13 +262,25 @@ onBeforeUnmount(() => {
       </main>
       <div class="reader-foot" aria-hidden="true"><div class="reader-foot-inner"><span class="reader-track"><span :style="{ width: `${progressPercent(progress)}%` }" /></span><span>{{ progressPercent(progress) }}%</span></div></div>
       <span class="reader-thin" aria-hidden="true"><span :style="{ width: `${progressPercent(progress)}%` }" /></span>
-      <ReaderSheet ref="settings" title="읽기 설정">
+      <ReaderSheet ref="settings" class="reading-settings" title="읽기 설정" clear-backdrop>
         <div>
           <p class="sheet-label">글자 크기</p>
-          <div class="size-steps" role="group" aria-label="글자 크기">
-            <button type="button" aria-label="글자 작게" :disabled="fontSize === 0" @click="setFont(fontSize - 1)"><span class="size-small" aria-hidden="true">가</span></button>
-            <span class="size-dots" role="img" :aria-label="`${fontSize + 1}단계 / 4단계`"><span v-for="step in 4" :key="step" :class="{ 'is-on': step - 1 <= fontSize }" /></span>
-            <button type="button" aria-label="글자 크게" :disabled="fontSize === 3" @click="setFont(fontSize + 1)"><span class="size-large" aria-hidden="true">가</span></button>
+          <div class="size-options" role="group" aria-label="글자 크기">
+            <button v-for="(option, size) in fontSizeOptions" :key="option.label" type="button" :aria-label="`글자 크기 ${option.label} ${option.pixels}px`" :aria-pressed="fontSize === size" @click="setFont(size)"><span class="size-sample" :style="{ fontSize: option.sample }" aria-hidden="true">가</span><span class="size-name" aria-hidden="true">{{ option.label }}</span></button>
+          </div>
+        </div>
+        <div class="text-options">
+          <div>
+            <p class="sheet-label">줄 간격</p>
+            <div class="pair-options" role="group" aria-label="줄 간격">
+              <button v-for="option in leadingOptions" :key="option.value" type="button" :aria-pressed="leading === option.value" @click="setLeading(option.value)">{{ option.label }}</button>
+            </div>
+          </div>
+          <div>
+            <p class="sheet-label">서체</p>
+            <div class="pair-options" role="group" aria-label="서체">
+              <button v-for="option in faceOptions" :key="option.value" type="button" :class="`face-sample-${option.value}`" :aria-pressed="face === option.value" @click="setFace(option.value)">{{ option.label }}</button>
+            </div>
           </div>
         </div>
         <div>

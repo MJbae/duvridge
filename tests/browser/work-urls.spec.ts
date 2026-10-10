@@ -17,9 +17,10 @@ test('format roots open the right portal tab and the old video fragment works', 
     await page.goto(`/${format}/`)
     await expect(page).toHaveURL(new RegExp(`\\?tab=${tab}$`))
     await expect(page.locator('.panel.is-active')).toHaveAttribute('id', tab)
-    // Each work has one cell; the video tab lists the films made from the first work before them.
-    await expect(page.locator(`.panel.is-active .works a[href^="/${tab}/"][href$="/"]`)).toHaveCount(2)
-    if (tab === 'videos') await expect(page.locator('.panel.is-active .works a[href^="/videos/bae-byunghee/"]:not([href$="/"])')).toHaveCount(3)
+    // The original hero replaces its list cell; the lead film also appears only once.
+    await expect(page.locator(`.panel.is-active .works a[href^="/${tab}/"][href$="/"]`)).toHaveCount(tab === 'novels' ? 1 : 2)
+    if (tab === 'videos') await expect(page.locator('.panel.is-active .works a[href^="/videos/bae-byunghee/"]:not([href$="/"])')).toHaveCount(2)
+    if (tab === 'novels') await expect(page.locator('.panel.is-active .hero--work')).toHaveAttribute('href', '/novels/bae-byunghee/')
     await page.locator(`.panel.is-active .works a[href="/${tab}/url-rehearsal/"]`).click()
     await expect(page).toHaveURL(new RegExp(`/${tab}/url-rehearsal/$`))
     await expect(page.getByRole('heading', { name: '주소 검증 작품', exact: true })).toBeVisible()

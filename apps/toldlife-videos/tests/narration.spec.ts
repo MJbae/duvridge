@@ -23,6 +23,10 @@ async function watching(page: Page, id: string) {
 async function noOverflow(page: Page) {
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
 }
+async function showControls(page: Page) {
+  const toggle = page.locator('.stage-frame')
+  if (await toggle.getAttribute('aria-expanded') === 'false') await toggle.click()
+}
 
 test('영상 작품 홈은 보기만 보여 주고, 큰 버튼은 자막이 든 영상을 그대로 바로 튼다', async ({ page }) => {
   await page.goto('./')
@@ -43,6 +47,11 @@ test('장면을 누르면 영상에서 그 장면부터 본다', async ({ page }
   await expect(page.locator('[data-reader-ready="true"]')).toBeVisible()
   await playButton(page).click()
   await watching(page, 'prolog')
+  const disclosure = page.getByRole('button', { name: `장면 보기 · ${video.prolog.scenes.length}개`, exact: true })
+  await expect(disclosure).toHaveAttribute('aria-expanded', 'false')
+  await expect(page.locator('.scene-grid')).toBeHidden()
+  await disclosure.click()
+  await expect(disclosure).toHaveAttribute('aria-expanded', 'true')
   const scenes = page.locator('.scene-card')
   await expect(scenes).toHaveCount(video.prolog.scenes.length)
   await scenes.nth(1).click()
@@ -76,8 +85,7 @@ test('작품 홈으로 돌아가면 영상이 멈추고, 본 회차가 목록 �
   await expect(page.locator('[data-reader-ready="true"]')).toBeVisible()
   await playButton(page).click()
   await watching(page, 'ep03')
-  if (!(await page.locator('.stage-controls').count())) await page.locator('.stage-frame').click()
-  await page.locator('.stage-controls').getByRole('link', { name: '작품 홈으로' }).click()
+  await page.locator('.film-bar').getByRole('link', { name: '작품 홈으로' }).click()
   await expect(page).toHaveURL(/\/bae-byunghee\/#episode-ep03$/)
   await expect(player(page)).toHaveCount(0)
   await expect(bigButton(page)).toHaveText('3화 이어 보기')
@@ -106,7 +114,7 @@ test('영상은 배경음악을 불러오지 않는다', async ({ page }) => {
 
 const films = (rawCatalog as unknown as { films: { id: string; title: string; src: string; poster: { src: string }; width: number; height: number }[] }).films
 
-test('원작으로 만든 영상은 제 화면에서 그대로 재생되고, 원작 작품 전체로 이어진다', async ({ page }) => {
+test('원작으로 만든 영상은 공통 조작부로 재생되고, 오리지널 시리즈 작품 전체로 이어진다', async ({ page }) => {
   const errors: string[] = []
   page.on('pageerror', error => errors.push(error.message))
   expect(films.map(film => film.id)).toEqual(['nureon-bongtu', 'byeotgap', 'mot-bon-cheok'])
@@ -116,10 +124,11 @@ test('원작으로 만든 영상은 제 화면에서 그대로 재생되고, 원
     const media = page.locator('video.film-video')
     await expect(media).toHaveAttribute('src', `/videos${film.src}`)
     await expect(media).toHaveAttribute('poster', `/videos${film.poster.src}`)
-    expect(await media.evaluate((element: HTMLVideoElement) => element.controls && element.playsInline)).toBe(true)
+    expect(await media.evaluate((element: HTMLVideoElement) => !element.controls && element.playsInline)).toBe(true)
     // A tall film keeps its shape and leaves room below it.
     if (film.height > film.width) expect(await media.evaluate(element => element.getBoundingClientRect().height / innerHeight)).toBeLessThanOrEqual(0.73)
     await expect(page.getByRole('link', { name: '영상 홈으로' })).toHaveAttribute('href', '/#videos')
+    await expect(page.getByRole('heading', { name: '오리지널 시리즈', exact: true })).toBeVisible()
     const origin = page.locator('.film-origin-card')
     await expect(origin).toHaveText(new RegExp('내 논을 파는 한이 있어도'))
     await expect(origin).toHaveAttribute('href', `/novels/bae-byunghee/?from=${film.id}`)
@@ -128,6 +137,75 @@ test('원작으로 만든 영상은 제 화면에서 그대로 재생되고, 원
     await noOverflow(page)
   }
   expect(errors).toEqual([])
+})
+
+test('단일 영상과 시리즈 회차는 같은 10초 이동, 재생 위치와 전체 화면 조작부를 쓴다', async ({ page }) => {
+  for (const id of ['prolog', 'nureon-bongtu']) {
+    await page.goto(id)
+    const media = page.locator(id === 'prolog' ? 'video.stage-video' : 'video.film-video')
+    if (id === 'prolog') await playButton(page).click()
+    await expect.poll(() => media.evaluate((element: HTMLVideoElement) => !element.paused && element.readyState >= 2)).toBe(true)
+    await showControls(page)
+    await pauseButton(page).click()
+    await expect.poll(() => media.evaluate((element: HTMLVideoElement) => element.paused)).toBe(true)
+    const seek = page.getByRole('slider', { name: '재생 위치', exact: true })
+    const target = await media.evaluate((element: HTMLVideoElement) => Math.min(30, element.duration / 3))
+    await seek.evaluate((element: HTMLInputElement, time) => {
+      element.value = String(time)
+      element.dispatchEvent(new Event('input', { bubbles: true }))
+    }, target)
+    await expect.poll(() => media.evaluate((element: HTMLVideoElement) => element.currentTime)).toBeCloseTo(target, 1)
+    await page.getByRole('button', { name: '10초 앞으로', exact: true }).click()
+    await expect.poll(() => media.evaluate((element: HTMLVideoElement) => element.currentTime)).toBeCloseTo(target + 10, 1)
+    await page.getByRole('button', { name: '10초 뒤로', exact: true }).click()
+    await expect.poll(() => media.evaluate((element: HTMLVideoElement) => element.currentTime)).toBeCloseTo(target, 1)
+    await page.getByRole('button', { name: '전체 화면', exact: true }).click()
+    const screen = page.locator(id === 'prolog' ? '.theater-page' : '.film-page')
+    await expect(screen).toHaveClass(/is-full/)
+    await page.getByRole('button', { name: '전체 화면 끝내기', exact: true }).click()
+    await expect(screen).not.toHaveClass(/is-full/)
+    await expect(page.getByRole('button', { name: '재생', exact: true })).toBeVisible()
+  }
+})
+
+test('시리즈 첫 회차는 다음 화 카드, 이전 화 없음, 전체 회차와 오리지널 시리즈를 보여 준다', async ({ page }) => {
+  await page.goto('prolog')
+  await expect(page.locator('[data-reader-ready="true"]')).toBeVisible()
+  const next = page.locator('.theater-next-card')
+  await expect(next).toHaveAttribute('href', '/videos/bae-byunghee/ep01')
+  await expect(next.locator('.episode-label')).toHaveText('1화')
+  await expect(next.locator('.episode-title')).not.toBeEmpty()
+  const navigation = page.locator('.theater-episode-links')
+  await expect(navigation.getByRole('button', { name: '이전 화 없음', exact: true })).toBeDisabled()
+  await expect(navigation.getByRole('link', { name: /전체 회차/ })).toHaveAttribute('href', '/videos/bae-byunghee/#episode-prolog')
+  await expect(page.getByRole('heading', { name: '오리지널 시리즈', exact: true })).toBeVisible()
+  await expect(page.locator('.film-origin-card')).toHaveAttribute('href', '/novels/bae-byunghee/')
+  await expect(page.locator('.film-origin-card')).toContainText('내 논을 파는 한이 있어도')
+})
+
+test('끝난 뒤 자동 다음 화를 취소할 수 있고 다음 회차도 같은 영상 요소로 재생한다', async ({ page }) => {
+  await page.clock.install()
+  await page.goto('prolog')
+  await expect(page.locator('[data-reader-ready="true"]')).toBeVisible()
+  await playButton(page).click()
+  await watching(page, 'prolog')
+  const original = await player(page).elementHandle()
+  await player(page).evaluate((media: HTMLVideoElement) => { media.pause(); media.dispatchEvent(new Event('ended')) })
+  await expect(page.locator('.theater-end .episode-nav .big-button')).toHaveClass(/is-counting/)
+  await page.getByRole('button', { name: '자동 다음 화 취소', exact: true }).click()
+  await expect(page.locator('.theater-end .episode-nav .big-button')).not.toHaveClass(/is-counting/)
+  await page.clock.fastForward(6000)
+  await expect(page).toHaveURL(/\/prolog$/)
+  await page.locator('.theater-next-card').click()
+  await expect(page).toHaveURL(/\/ep01$/)
+  await watching(page, 'ep01')
+  expect(await player(page).evaluate((media, first) => media === first, original)).toBe(true)
+  await player(page).evaluate((media: HTMLVideoElement) => { media.pause(); media.dispatchEvent(new Event('ended')) })
+  await expect(page.locator('.theater-end .episode-nav .big-button')).toHaveClass(/is-counting/)
+  await page.clock.fastForward(5000)
+  await expect(page).toHaveURL(/\/ep02$/)
+  await watching(page, 'ep02')
+  expect(await player(page).evaluate((media, first) => media === first, original)).toBe(true)
 })
 
 test('영상 화면을 열면 영상이 바로 재생된다', async ({ page }) => {
@@ -159,4 +237,25 @@ test('브라우저가 소리를 막으면 소리 없이 바로 시작하고, 소
   await unmute.click()
   await expect.poll(() => media.evaluate((element: HTMLVideoElement) => !element.muted && !element.paused)).toBe(true)
   await expect(unmute).toHaveCount(0)
+})
+
+test('소리와 무음 자동 재생이 모두 막히면 소리 켜기 없이 수동 재생을 기다린다', async ({ page }) => {
+  await page.addInitScript(() => {
+    const play = HTMLMediaElement.prototype.play
+    let tapped = false
+    let attempts = 0
+    Object.defineProperty(window, 'filmPlayAttempts', { get: () => attempts })
+    addEventListener('pointerdown', () => { tapped = true }, true)
+    HTMLMediaElement.prototype.play = function (this: HTMLMediaElement) {
+      attempts++
+      return tapped ? play.call(this) : Promise.reject(new DOMException('누른 뒤에만 재생', 'NotAllowedError'))
+    }
+  })
+  await page.goto('byeotgap')
+  const media = page.locator('video.film-video')
+  await expect.poll(() => page.evaluate(() => Reflect.get(window, 'filmPlayAttempts'))).toBe(2)
+  expect(await media.evaluate((element: HTMLVideoElement) => element.paused && !element.muted && element.currentTime === 0)).toBe(true)
+  await expect(page.getByRole('button', { name: '소리 켜기', exact: true })).toHaveCount(0)
+  await page.getByRole('button', { name: '재생', exact: true }).click()
+  await expect.poll(() => media.evaluate((element: HTMLVideoElement) => !element.paused && !element.muted)).toBe(true)
 })

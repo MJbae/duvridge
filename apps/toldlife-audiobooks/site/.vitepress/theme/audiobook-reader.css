@@ -37,14 +37,16 @@
   -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000000 20px, #000000 calc(100% - 44px), transparent 100%);
   mask-image: linear-gradient(to bottom, transparent 0, #000000 20px, #000000 calc(100% - 44px), transparent 100%);
 }
+.lyrics:not(.is-closing) { padding-top: 1.75rem; }
 .lyrics::-webkit-scrollbar { display: none; }
 /* Room after the last sentence, so it too can rise to its reading place. */
 .lyrics::after { content: ''; flex-shrink: 0; height: 40svh; }
-.lyric-line { flex-shrink: 0; margin: 0; padding: 0; color: var(--gray-dim); font-size: 0.9375rem; line-height: 1.6; text-align: left; }
+.lyric-line { flex-shrink: 0; margin: 0; padding: 0; color: #8e929c; font-size: 0.9375rem; line-height: 1.6; text-align: left; }
 button.lyric-line:hover { color: var(--gray); }
 .lyric-current { flex-shrink: 0; margin: 0; color: var(--ivory); font-size: 1.125rem; font-weight: 500; line-height: 1.6; }
 /* At the end the last sentences sit right above the reactions, fading out upward. */
 .lyrics.is-closing { justify-content: flex-end; margin: 8px 0 36px; overflow: hidden; -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000000 64px); mask-image: linear-gradient(to bottom, transparent 0, #000000 64px); }
+.lyrics.is-closing .lyric-line { color: var(--gray-dim); }
 .lyrics.is-closing::after { content: none; }
 .listen-spacer { flex: 1; min-height: 8px; }
 .listen-end { flex-shrink: 0; }

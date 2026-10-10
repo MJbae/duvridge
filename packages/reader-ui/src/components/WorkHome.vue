@@ -62,7 +62,7 @@ onMounted(() => requestAnimationFrame(() => requestAnimationFrame(centerReturned
         <div class="work-copy">
           <h1 id="work-title">{{ title }}</h1>
           <nav v-if="formats" class="format-switch" aria-label="형식">
-            <a v-for="link in formats" :key="link.key" :href="link.href" target="_self" :aria-current="link.current ? 'page' : undefined"><ReaderIcon :name="link.icon" :size="18" :stroke="1.9" />{{ link.label }}</a>
+            <a v-for="link in formats" :key="link.key" :href="link.href" target="_self" :aria-current="link.current ? 'page' : undefined">{{ link.label }}</a>
           </nav>
           <div class="work-action">
             <a v-if="action.href" class="big-button" :href="action.href" :aria-label="action.ariaLabel" @click="emit('action', $event)"><ReaderIcon :name="icon" :size="iconSize" :stroke="1.9" />{{ action.label }}</a>

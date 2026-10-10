@@ -21,12 +21,17 @@ export function formerPageRules({ folder, home, pages }: { folder: string; home:
   ])
 }
 
+type SeriesSharing = Sharing & { images?: Partial<Record<'original' | 'video', Sharing['image']>> }
+type ReaderMetadata = { work: ReaderCatalog['work'] & { cover: Cover; sharing: SeriesSharing } }
+
 type ReaderConfigOptions = {
   root: string
   defaultBase?: string
   defaultOrigin: string
-  catalog: Partial<ReaderCatalog> & { work: ReaderCatalog['work'] & { cover: Cover; sharing: Sharing } }
-  catalogs?: Record<string, ReaderCatalog & { work: ReaderCatalog['work'] & { cover: Cover; sharing: Sharing } }>
+  catalog: Partial<ReaderCatalog> & ReaderMetadata
+  catalogs?: Record<string, ReaderCatalog & ReaderMetadata>
+  /** The service's series selects its preview independently of the deployment base. */
+  series?: string
   siteNames?: Record<string, string>
   configureMarkdown?: NonNullable<MarkdownOptions['config']>
   /** Fills in a service's own page kinds before the shared metadata is written. */
@@ -37,12 +42,12 @@ type ReaderConfigOptions = {
 }
 
 /** One reading/metadata configuration; services add their own Markdown features. */
-export function createReaderConfig({ root, catalog, catalogs, defaultBase = '/', defaultOrigin, siteNames = {}, configureMarkdown, preparePage, movedPages, themeConfig }: ReaderConfigOptions) {
+export function createReaderConfig({ root, catalog, catalogs, series, defaultBase = '/', defaultOrigin, siteNames = {}, configureMarkdown, preparePage, movedPages, themeConfig }: ReaderConfigOptions) {
   const sharedRoot = fileURLToPath(new URL('../../', import.meta.url))
   const env = loadEnv(process.env.NODE_ENV || 'production', root, '')
   const base = process.env.SITE_BASE || env.SITE_BASE || defaultBase
   const workTitle = catalog.work.title
-  const siteName = siteNames[base] || workTitle
+  const siteName = siteNames[base] || (series && siteNames[`/${series}/`]) || workTitle
   const siteDescription = catalog.work.sharing.description
   const siteOrigin = process.env.SITE_ORIGIN || env.SITE_ORIGIN || defaultOrigin
 
@@ -99,14 +104,14 @@ export function createReaderConfig({ root, catalog, catalogs, defaultBase = '/',
       const activeCatalog = selected ?? catalog
       const workTitle = activeCatalog.work.title
       const siteDescription = activeCatalog.work.sharing.description
-      const share = activeCatalog.work.sharing.image
+      const sharing = activeCatalog.work.sharing
+      const share = sharing.images?.[series === 'videos' ? 'video' : 'original'] ?? sharing.image
       const shareImage = new URL(`${base}${share.src.replace(/^\//, '')}`, siteOrigin).href
       const shareImageAlt = share.alt
       preparePage?.(pageData)
       const isHome = pageData.frontmatter.layout === 'home'
-      // A work home is named after the work unless its series names it (the video home adds "영상").
-      const title = pageData.frontmatter.formatRoot ? workTitle
-        : isHome ? String(pageData.frontmatter.shareTitle || workTitle)
+      // Every series names a work home after the work itself.
+      const title = pageData.frontmatter.formatRoot || isHome ? workTitle
         : String(pageData.frontmatter.shareTitle || `${pageData.title} · ${workTitle}`)
       // The client reads PageData.titleTemplate; the static head reads frontmatter.
       pageData.titleTemplate = false

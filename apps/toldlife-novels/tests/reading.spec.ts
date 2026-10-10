@@ -18,16 +18,38 @@ test('작품 홈은 키아트·제목·소설 | 오디오북 전환·큰 버튼 
   await page.goto('./')
   await expect(page).toHaveTitle(rawCatalog.work.title)
   await expect(page.getByRole('heading', { level: 1, name: rawCatalog.work.title })).toBeVisible()
-  await expect(bigButton(page)).toHaveText('읽기')
+  await expect(bigButton(page)).toHaveText('처음부터 읽기')
   await expect(bigButton(page)).toHaveAccessibleName('처음부터 읽기')
   await expect(bigButton(page)).toHaveAttribute('href', '/novels/bae-byunghee/prolog')
-  // The novel is this half of the work page; the audiobook is the other, narrower half of the switch.
+  // Both formats share the same width and the selected format keeps its address.
   const formats = page.getByRole('navigation', { name: '형식' }).getByRole('link')
   await expect(formats).toHaveText(['소설', '오디오북'])
   await expect(formats.first()).toHaveAttribute('aria-current', 'page')
   await expect(formats.last()).toHaveAttribute('href', '/audiobooks/bae-byunghee/')
   const [novel, audio] = await formats.evaluateAll(links => links.map(link => link.getBoundingClientRect().width))
-  expect(novel).toBeGreaterThan(audio * 1.5)
+  expect(Math.abs(novel - audio)).toBeLessThan(1)
+  await expect(formats.locator('svg')).toHaveCount(0)
+  const switchBox = (await page.locator('.format-switch').boundingBox())!
+  const buttonBox = (await bigButton(page).boundingBox())!
+  expect((await formats.first().boundingBox())!.height).toBe(48)
+  expect(switchBox.height).toBe(49)
+  expect(buttonBox.height).toBe(56)
+  expect(Math.abs(buttonBox.y - switchBox.y - switchBox.height - 16)).toBeLessThan(1)
+  await expect(bigButton(page).locator('svg')).toHaveCount(1)
+  await expect(page.locator('.work-action')).toHaveText('처음부터 읽기')
+  if (page.viewportSize()!.width >= 900) {
+    expect(switchBox.width).toBe(360)
+    expect(buttonBox.width).toBe(360)
+  } else {
+    const artBox = (await page.locator('.work-art').boundingBox())!
+    const titleBox = (await page.locator('#work-title').boundingBox())!
+    expect(artBox.height).toBe(304)
+    expect(Math.abs(switchBox.y - artBox.y - artBox.height - 20)).toBeLessThan(1)
+    expect(Math.abs(artBox.y + artBox.height - titleBox.y - titleBox.height - 28)).toBeLessThan(1)
+    expect(titleBox.x).toBeGreaterThanOrEqual(20)
+    expect(titleBox.x + titleBox.width).toBeLessThanOrEqual(page.viewportSize()!.width - 20)
+    expect(await page.locator('#work-title').evaluate(element => parseFloat(getComputedStyle(element).fontSize))).toBe(32)
+  }
   // Every episode is in one scrolling list, each with its painting.
   await expect(page.locator('.episode-item:visible')).toHaveCount(26)
   await expect(page.locator('.episode-list')).toHaveClass(/is-pictured/)
@@ -54,29 +76,138 @@ test('읽기 화면 위 막대는 뒤로·회차 제목·설정뿐이고, 뒤로
   await noOverflow(page)
 })
 
-test('설정은 글자 크기·종이와 밤·배경음악만 바꾸고 다시 와도 유지한다', async ({ page }) => {
+test('읽기 설정은 네 글자 크기·줄 간격·서체를 바로 적용하고 다시 와도 유지한다', async ({ page }) => {
   await quiet(page)
   await page.goto('ep01')
-  const before = await fontSize(page)
+  expect(await fontSize(page)).toBe(20)
+  const paragraph = page.locator('.story-content p').first()
+  expect(await paragraph.evaluate(element => getComputedStyle(element).lineHeight)).toBe('37px')
+  expect(await paragraph.evaluate(element => getComputedStyle(element).fontFamily)).toContain('Hahmlet')
+  // The chapter has no lists or subheadings, so sample their inherited typography too.
+  await page.locator('.story-content').evaluate(element => {
+    for (const tag of ['h2', 'h3', 'ul', 'ol']) {
+      const sample = document.createElement(tag)
+      sample.dataset.typographyProbe = ''
+      sample.textContent = '서체 견본'
+      element.appendChild(sample)
+    }
+  })
   await page.getByRole('button', { name: '설정', exact: true }).click()
   const sheet = page.getByRole('dialog', { name: '읽기 설정' })
   await expect(sheet).toBeVisible()
-  await sheet.getByRole('button', { name: '글자 크게' }).click()
+  const sizes = sheet.getByRole('group', { name: '글자 크기', exact: true })
+  await expect(sizes.getByRole('button')).toHaveCount(4)
+  await expect(sizes.getByRole('button', { name: '글자 크기 기본 20px', exact: true })).toHaveAttribute('aria-pressed', 'true')
+  for (const [index, label, pixels] of [[0, '작게', 18], [1, '기본', 20], [2, '크게', 23], [3, '아주 크게', 26]] as const) {
+    const option = sizes.getByRole('button', { name: `글자 크기 ${label} ${pixels}px`, exact: true })
+    await expect(option).toContainText('가')
+    await expect(option).toContainText(label)
+    await option.click()
+    await expect(option).toHaveAttribute('aria-pressed', 'true')
+    await expect(sizes.locator('button[aria-pressed="true"]')).toHaveCount(1)
+    await expect(page.locator('.library')).toHaveClass(new RegExp(`font-${index}`))
+    expect(await fontSize(page)).toBe(pixels)
+    expect(await page.evaluate(() => localStorage.getItem('family-library:font'))).toBe(String(index))
+  }
+  await sizes.getByRole('button', { name: '글자 크기 크게 23px', exact: true }).click()
   await expect(page.locator('.library')).toHaveClass(/font-2/)
-  expect(await fontSize(page)).toBeGreaterThan(before)
+  const leading = sheet.getByRole('group', { name: '줄 간격', exact: true })
+  const faces = sheet.getByRole('group', { name: '서체', exact: true })
+  await expect(leading.getByRole('button', { name: '보통', exact: true })).toHaveAttribute('aria-pressed', 'true')
+  await expect(faces.getByRole('button', { name: '명조', exact: true })).toHaveAttribute('aria-pressed', 'true')
+  expect(await faces.getByRole('button', { name: '명조', exact: true }).evaluate(element => getComputedStyle(element).fontFamily)).toContain('Hahmlet')
+  expect(await faces.getByRole('button', { name: '고딕', exact: true }).evaluate(element => getComputedStyle(element).fontFamily)).toContain('IBM Plex Sans KR')
+  const leadingBox = (await leading.boundingBox())!
+  const faceBox = (await faces.boundingBox())!
+  expect(Math.abs(leadingBox.y - faceBox.y)).toBeLessThan(1)
+  expect(Math.abs(leadingBox.width - faceBox.width)).toBeLessThan(1)
+  for (const options of [leading, faces]) expect((await options.getByRole('button').first().boundingBox())!.height).toBe(52)
+  await leading.getByRole('button', { name: '넓게', exact: true }).click()
+  await expect(leading.getByRole('button', { name: '넓게', exact: true })).toHaveAttribute('aria-pressed', 'true')
+  await expect(page.locator('.library')).toHaveClass(/leading-wide/)
+  expect(await paragraph.evaluate(element => parseFloat(getComputedStyle(element).lineHeight) / parseFloat(getComputedStyle(element).fontSize))).toBeCloseTo(2.1, 3)
+  const listLeading = await page.locator('.story-content ul, .story-content ol').evaluateAll(elements => elements.map(element => parseFloat(getComputedStyle(element).lineHeight) / parseFloat(getComputedStyle(element).fontSize)))
+  expect(listLeading).toHaveLength(2)
+  for (const leading of listLeading) expect(leading).toBeCloseTo(2.1, 3)
+  await faces.getByRole('button', { name: '고딕', exact: true }).click()
+  await expect(faces.getByRole('button', { name: '고딕', exact: true })).toHaveAttribute('aria-pressed', 'true')
+  await expect(page.locator('.library')).toHaveClass(/face-sans/)
+  expect(await paragraph.evaluate(element => getComputedStyle(element).fontFamily)).toContain('IBM Plex Sans KR')
+  const headings = await page.locator('.story-content h2, .story-content h3').evaluateAll(elements => elements.map(element => getComputedStyle(element).fontFamily))
+  expect(headings.length).toBeGreaterThan(0)
+  expect(headings.every(face => face.includes('IBM Plex Sans KR'))).toBe(true)
+  expect(await page.evaluate(() => [localStorage.getItem('family-library:leading'), localStorage.getItem('family-library:face')])).toEqual(['wide', 'sans'])
   await sheet.getByRole('radio', { name: '밤' }).click()
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
   expect(await page.locator('.page-reader').evaluate(element => getComputedStyle(element).backgroundColor)).toBe('rgb(22, 23, 27)')
   await expect(sheet.getByRole('switch', { name: '배경음악' })).toHaveAttribute('aria-checked', 'false')
+  expect(await sheet.getByRole('switch', { name: '배경음악' }).evaluate(element => element.closest('.sheet-body')!.lastElementChild!.contains(element))).toBe(true)
   await sheet.getByRole('button', { name: '완료' }).click()
   await expect(sheet).toBeHidden()
   await page.reload()
   await expect(page.locator('.library')).toHaveClass(/font-2/)
+  await expect(page.locator('.library')).toHaveClass(/leading-wide/)
+  await expect(page.locator('.library')).toHaveClass(/face-sans/)
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
-  expect(await page.locator('.story-content p').first().evaluate(element => getComputedStyle(element).fontFamily)).toContain('Hahmlet')
+  expect(await fontSize(page)).toBe(23)
+  expect(await paragraph.evaluate(element => getComputedStyle(element).fontFamily)).toContain('IBM Plex Sans KR')
+  expect(await paragraph.evaluate(element => parseFloat(getComputedStyle(element).lineHeight) / parseFloat(getComputedStyle(element).fontSize))).toBeCloseTo(2.1, 3)
   await page.getByRole('button', { name: '설정', exact: true }).click()
+  await expect(sizes.getByRole('button', { name: '글자 크기 크게 23px', exact: true })).toHaveAttribute('aria-pressed', 'true')
+  await expect(leading.getByRole('button', { name: '넓게', exact: true })).toHaveAttribute('aria-pressed', 'true')
+  await expect(faces.getByRole('button', { name: '고딕', exact: true })).toHaveAttribute('aria-pressed', 'true')
   await sheet.getByRole('radio', { name: '종이' }).click()
   expect(await page.locator('.page-reader').evaluate(element => getComputedStyle(element).backgroundColor)).toBe('rgb(245, 242, 235)')
+  await leading.getByRole('button', { name: '보통', exact: true }).click()
+  await faces.getByRole('button', { name: '명조', exact: true }).click()
+  expect(await paragraph.evaluate(element => getComputedStyle(element).fontFamily)).toContain('Hahmlet')
+  expect(await paragraph.evaluate(element => parseFloat(getComputedStyle(element).lineHeight) / parseFloat(getComputedStyle(element).fontSize))).toBeCloseTo(1.85, 3)
+  expect(await page.evaluate(() => [localStorage.getItem('family-library:leading'), localStorage.getItem('family-library:face')])).toEqual(['normal', 'serif'])
+  await noOverflow(page)
+})
+
+test('설정 시트는 본문을 가리지 않고 짧은 화면에서 안쪽만 스크롤한다', async ({ page }) => {
+  await quiet(page)
+  await page.setViewportSize({ width: page.viewportSize()!.width, height: 400 })
+  await page.goto('ep01')
+  await page.evaluate(() => window.scrollTo({ top: 900, behavior: 'instant' }))
+  const before = await page.evaluate(() => scrollY)
+  await page.getByRole('button', { name: '설정', exact: true }).click()
+  const sheet = page.getByRole('dialog', { name: '읽기 설정' })
+  await expect(sheet).toHaveClass(/is-clear-backdrop/)
+  expect(await sheet.evaluate(element => getComputedStyle(element, '::backdrop').backgroundColor)).toBe('rgba(0, 0, 0, 0)')
+  const body = sheet.locator('.sheet-body')
+  const size = await body.evaluate(element => ({ client: element.clientHeight, scroll: element.scrollHeight, overflow: getComputedStyle(element).overflowY }))
+  expect(size.scroll).toBeGreaterThan(size.client)
+  expect(size.overflow).toBe('auto')
+  expect((await sheet.boundingBox())!.height).toBeLessThanOrEqual(400 * 0.88 + 1)
+  await sheet.getByRole('switch', { name: '배경음악' }).scrollIntoViewIfNeeded()
+  expect(await body.evaluate(element => element.scrollTop)).toBeGreaterThan(0)
+  expect(await page.evaluate(() => scrollY)).toBe(before)
+  await sheet.getByRole('button', { name: '완료' }).click()
+  expect(await page.evaluate(() => scrollY)).toBe(before)
+  await noOverflow(page)
+})
+
+test('본문 중간에서 글자 크기·줄 간격·서체를 바꿔도 읽던 문단 위치를 유지한다', async ({ page }) => {
+  await quiet(page)
+  await page.goto('ep03')
+  await page.evaluate(async () => { await document.fonts.ready })
+  const paragraph = page.locator('.story-content p').nth(3)
+  await paragraph.evaluate(element => window.scrollTo({ top: scrollY + element.getBoundingClientRect().top - 80, behavior: 'instant' }))
+  const before = await paragraph.evaluate(element => element.getBoundingClientRect().top)
+  await page.getByRole('button', { name: '설정', exact: true }).click()
+  const sheet = page.getByRole('dialog', { name: '읽기 설정' })
+  for (const option of [
+    sheet.getByRole('button', { name: '글자 크기 아주 크게 26px', exact: true }),
+    sheet.getByRole('group', { name: '줄 간격', exact: true }).getByRole('button', { name: '넓게', exact: true }),
+    sheet.getByRole('group', { name: '서체', exact: true }).getByRole('button', { name: '고딕', exact: true }),
+  ]) {
+    await option.click()
+    await expect.poll(() => paragraph.evaluate(element => Math.abs(element.getBoundingClientRect().top - 80))).toBeLessThan(2)
+  }
+  await sheet.getByRole('button', { name: '완료' }).click()
+  expect(Math.abs(await paragraph.evaluate(element => element.getBoundingClientRect().top) - before)).toBeLessThan(2)
 })
 
 test('본문을 누르면 위아래 막대가 숨고 얇은 진행선만 남는다', async ({ page }) => {
@@ -102,7 +233,8 @@ test('회차 끝에는 다음 화 큰 버튼과 그 아래 이전 화만 있고,
   await expect(page.locator('.episode-end img, .next-title, .next-art')).toHaveCount(0)
   await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('family-library:bae-byunghee:completed') || '[]'))).toContain('ep01')
   await page.goto('./')
-  await expect(bigButton(page)).toHaveAccessibleName('2화부터 이어 읽기')
+  await expect(bigButton(page)).toHaveText('2화 읽기')
+  await expect(bigButton(page)).toHaveAccessibleName('2화 읽기')
   await expect(page.locator('#episode-ep02')).toHaveAttribute('aria-current', 'true')
   await expect(page.locator('#episode-ep01 .episode-progress span')).toHaveAttribute('style', /width: 100%/)
 })
@@ -113,7 +245,7 @@ test('읽던 곳은 작품 홈 버튼과 진행 막대에 남고, 이어 읽으�
   await page.evaluate(() => window.scrollTo(0, 900))
   await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('family-library:bae-byunghee:reading') || '{}').scroll)).toBeGreaterThan(800)
   await page.goto('./')
-  await expect(bigButton(page)).toHaveText('이어 읽기')
+  await expect(bigButton(page)).toHaveText('3화 이어 읽기')
   await expect(bigButton(page)).toHaveAccessibleName('3화 이어 읽기')
   const row = page.locator('#episode-ep03')
   await expect(row).toHaveAttribute('aria-current', 'true')
@@ -122,6 +254,33 @@ test('읽던 곳은 작품 홈 버튼과 진행 막대에 남고, 이어 읽으�
   await bigButton(page).click()
   await expect(page).toHaveURL(/bae-byunghee\/ep03$/)
   await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(800)
+})
+
+test('읽던 프롤로그는 화면과 접근 가능한 이름 모두 프롤로그 이어 읽기로 표시한다', async ({ page }) => {
+  await quiet(page)
+  const episode = rawCatalog.readingOrder.find(entry => entry.episodeId === 'prolog')!
+  await page.addInitScript(episode => {
+    localStorage.setItem('family-library:bae-byunghee:reading', JSON.stringify({ id: episode.id, title: episode.title, url: `/novels${episode.url}`, scroll: 150, finished: false }))
+  }, episode)
+  await page.goto('./')
+  await expect(bigButton(page)).toHaveText('프롤로그 이어 읽기')
+  await expect(bigButton(page)).toHaveAccessibleName('프롤로그 이어 읽기')
+  await expect(bigButton(page)).toHaveAttribute('href', '/novels/bae-byunghee/prolog')
+  await expect(page.locator('#episode-prolog')).toHaveAttribute('aria-current', 'true')
+})
+
+test('모든 회차를 마치면 화면과 접근 가능한 이름 모두 처음부터 다시 읽기로 표시한다', async ({ page }) => {
+  await quiet(page)
+  const episode = rawCatalog.readingOrder.at(-1)!
+  await page.addInitScript(({ episode, completed }) => {
+    localStorage.setItem('family-library:bae-byunghee:reading', JSON.stringify({ id: episode.id, title: episode.title, url: `/novels${episode.url}`, scroll: 150, finished: true }))
+    localStorage.setItem('family-library:bae-byunghee:completed', JSON.stringify(completed))
+  }, { episode, completed: rawCatalog.readingOrder.map(entry => entry.id) })
+  await page.goto('./')
+  await expect(bigButton(page)).toHaveText('처음부터 다시 읽기')
+  await expect(bigButton(page)).toHaveAccessibleName('처음부터 다시 읽기')
+  await expect(bigButton(page)).toHaveAttribute('href', '/novels/bae-byunghee/prolog')
+  await expect(page.locator('.episode-item.is-done')).toHaveCount(rawCatalog.readingOrder.length)
 })
 
 test('마지막 회차는 끝 표시와 흐린 다음 화로 마치고, 이전 화로는 돌아갈 수 있다', async ({ page }) => {
@@ -157,7 +316,8 @@ test('끝까지 읽은 옛 연대 기록은 다 읽은 회차로 두고 다음 �
   await quiet(page)
   await page.addInitScript(() => localStorage.setItem('family-library:reading', JSON.stringify({ id: 'life-1980s', title: '옛 제목', url: '/1980s', scroll: 1800, finished: true })))
   await page.goto('./')
-  await expect(bigButton(page)).toHaveAccessibleName('13화부터 이어 읽기')
+  await expect(bigButton(page)).toHaveText('13화 읽기')
+  await expect(bigButton(page)).toHaveAccessibleName('13화 읽기')
   await expect(page.locator('#episode-ep12 .episode-progress span')).toHaveAttribute('style', /width: 100%/)
 })
 
@@ -367,7 +527,7 @@ test('영상에서 온 사람에게는 작품 위에 그 영상의 원작임을 
   await expect(origin).toHaveText('누런 봉투의 원작')
   await expect(origin).toHaveAttribute('href', '/videos/bae-byunghee/nureon-bongtu')
   await expect(origin.locator('img')).toHaveAttribute('src', /\/novels\/works\/bae-byunghee\/images\/films\/nureon-bongtu-poster\.jpg$/)
-  await expect(bigButton(page)).toHaveText('읽기')
+  await expect(bigButton(page)).toHaveText('처음부터 읽기')
   await noOverflow(page)
   for (const address of ['./', './?from=unknown']) {
     await page.goto(address)

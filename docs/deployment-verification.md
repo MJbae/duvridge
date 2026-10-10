@@ -173,3 +173,67 @@ Cloudflare 미리보기의 MP3 Range 요청은 전체 파일 HTTP 200으로 응�
 - 배포 후 5개 언어의 why·proof가 로컬 원본과 일치했다. 첫 두 섹션은 변경 전 운영 페이지와도 일치했다.
 - 320·390·1440px의 5개 언어, 총 15개 실제 운영 브라우저 화면에서 문구·기존 강조·오픈소스 링크·공유 이미지 경로를 확인했다. 브라우저 오류와 가로 넘침은 0건이다.
 - 운영 CSS와 JavaScript는 변경 전 다운로드·커밋·로컬 복사본과 바이트가 같다. CSS SHA256은 `8602f391c6d3e4ee1aefccc910242702d7612816ce438396e4c268f4699d2e1c`, JavaScript는 `fee0caa12c0bc970c0619cb05023e6dec5875b3027c589d74f7f77decdfdf4b8`다.
+
+### 4-A 작품 공유 이미지 변경 절차 (배포 전)
+
+작품의 기본 `sharing.image`는 소설·오디오북용 오리지널 카드이며, `sharing.images.video`는 영상용 카드다. 다른 작품도 기본 이미지를 제공하고 필요한 형식만 덮어쓸 수 있다. 배병희 작품의 새 파일명은 `share-bae-byunghee-original-v3.png`, `share-bae-byunghee-video-v3.png`다. 작품 홈 공유 제목은 작품명만, 설명은 “갯벌에서 들녘까지, 가족과 이웃을 위해 살아온 한평생.”으로 쓴다.
+
+루트에서 `node scripts/render-sharing-cards.mjs --books-only`로 1200×630 PNG를 생성한다. Google Fonts 접근과 Chromium 실행이 필요하며, 제목이 두 줄을 넘거나 단색 패널 끝에서 24px의 여유를 확보하지 못하면 저장을 거절한다. 옵션 없이 실행하면 기존 서비스·회사 카드도 생성한다. 새 PNG의 시각 검수 후, 포털·회사·테스트에서 옛 이미지를 참조하지 않는지 확인하고 v2 작품 파일을 정리한다. 과거 배포 증거의 URL은 보존한다.
+
+세 앱 빌드 후 각각 `npm run test:sharing --workspace @duvridge/toldlife-novels`, `npm run test:sharing --workspace @duvridge/toldlife-audiobooks`, `npm run test:sharing --workspace @duvridge/toldlife-videos`를 실행한다. 배포 후 각 형식 URL을 카카오 공유 디버거에서 캐시 초기화하고 실제 공유 미리보기를 확인한다. PNG 생성과 로컬 공유 검증은 아래 QA에서 완료했고, 이 변경의 배포 검증은 아직 하지 않았다.
+
+### 2026-10-10 확정 디자인 통합 QA (로컬, 배포 없음)
+
+단독으로 전체 변경과 W1–W5 보고서를 대조했다. 포털·소설 README의 오래된 설명을 갱신하고, URL 브라우저 테스트의 대표 작품/대표 영상 목록 개수를 중복 제거 후 동작으로 맞췄다. 읽기 설정의 배경음악 스위치는 보이는 32px 트랙을 유지하며 터치 영역을 44px로 늘렸다. 오류 재시도 버튼에도 44px 높이를 적용하고 글자색을 대비 기준에 맞췄다. 설정의 키보드 포커스 색은 선택 테두리색을 따른다. 기존 키보드·오류 회복 브라우저 테스트에 터치 높이 검증을 추가했다.
+
+두 v3 PNG를 직접 열어 제목이 단색 영역 안에 있고 큰 형식 배지가 보이는 것을 확인했다. 두 파일 모두 1200×630이다. 오케스트레이터가 제공한 제목 오른쪽 실측은 414.4px로 허용 경계 504px 안이다. 활성 소스·메타·테스트에서 v2 참조가 없음을 확인하고 옛 PNG를 삭제했다. 이전 배포 증거 JSON의 v2 URL은 역사 기록으로 유지했다.
+
+| 실행 명령 | 실제 결과 |
+| --- | --- |
+| `node -v`, `npm -v`, `npm ci` | Node 22.23.2 / npm 10.9.8, 설치 성공. npm의 기존 의존성 감사 결과 27건(중간 14, 높음 13), lockfile 변경 없음 |
+| `git status --short`, `git diff --stat`, `git diff --check` | 전체 변경 확인, 공백 오류 0 |
+| `gh variable list --json name,value` (공개 Firebase 값만 선택) | 네 `VITE_FIREBASE_*` 값 확보; 비밀 배포 토큰 조회 없음 |
+| `npm run test:repo` | Node 32 + Python 10 통과, 실패 0 |
+| `npm test` (수정 후 재실행 포함) | 저장소 42 + 모든 workspace 177 = 219 통과, 실패·건너뜀 0 |
+| `npm run typecheck` | 세 리더 통과, 오류 0 |
+| `python3 scripts/assemble-toldlife-pages.py --github-vars` | `/novels/`, `/audiobooks/`, `/videos/` + 포털 빌드·조립 성공, `SITE_ORIGIN=https://toldlife.duvridge.com`, 실제 공개 Firebase 설정 사용 |
+| 위 조립 명령의 각 앱 `test`, `build`, `test:sharing`, `typecheck` | 앱 테스트 34/58/6, 공유 검사 각 4(총 12) 통과, 세 빌드·typecheck 성공 |
+| `python3 scripts/assemble-toldlife-pages.py --skip-build --video-media release` | 실제 MP4 29개 다운로드, 크기·SHA-256 검증 후 조립 성공 |
+| `python3 scripts/assemble-toldlife-pages.py --github-vars --video-media .deploy/toldlife/videos/works/bae-byunghee/media` | 최종 CSS로 세 리더의 검사·빌드·공유·typecheck 재검증. 검증한 MP4를 재사용하여 2,513개 파일, sitemap 85주소 조립 |
+| `node scripts/serve-pages.mjs .deploy/toldlife 4196` + Python HTTP 검증 | 페이지 9, 공유 PNG 3, 음원/영상 Range 4, 리다이렉트 388, 없는 주소 1 = 405 통과. 모든 리다이렉트는 단일 301 → 200. 검증 후 서버 종료 |
+| 변경 선택 함수의 실제 변경·앱 코드·책 메타·문서 입력 검사 | 4개 시나리오 통과. 책 메타는 포털과 세 리더, 소설 코드는 소설 검사 + ToldLife 네 서비스 전체 조립을 선택 |
+| 각 앱 `npm exec --workspace @duvridge/toldlife-<형식> -- playwright test --list` | 소설 84, 오디오북 33, 영상 39개 발견. 테스트 파일 로드 성공, 브라우저 실행 없음 |
+| `npm exec -- playwright test --config playwright.urls.config.ts --list` | URL 검사 14개 발견, 브라우저 실행 없음 |
+| 외부 실행용 스크립트 `bash -n`, `node --check`, `qa-screens.mjs --help`, `playwright-core` 경로 확인 | 모두 성공 |
+| 원고의 현재 바이트와 `git show HEAD:content/books/bae-byunghee/manuscript.md` 비교 | 일치. SHA-256 `cf2af92f0f335428250489c48d3e60772fafde0b4778d67cb8a5db7aad8347a0` |
+
+Workspace 177개는 회사 16, 오디오북 58, 소설 34, 포털 15, 영상 6, content-processing 11, reader-reactions 6, reader-ui 21, vitepress-reader 10개다. 공유 검사는 모든 소설 회차의 공개 제목·본문도 정본과 대조한다. 최종 산출물의 작품 홈 `og:title`은 세 형식 모두 `내 논을 파는 한이 있어도`, `og:description`은 `갯벌에서 들녘까지, 가족과 이웃을 위해 살아온 한평생.`이다. 소설·오디오북 이미지는 `share-bae-byunghee-original-v3.png`, 영상은 `share-bae-byunghee-video-v3.png`이며 각각의 공개 base 아래에 있다. 공개 Firebase 설정을 확보했으므로 더미 설정 대안은 사용하지 않았다.
+
+정적 대비 계산: 비선택 형식 탭 9.27:1, 금색 실행 버튼 글자 9.01:1, 종이 설정 선택 글자 5.35:1, 밤 설정 글자 10.87:1, 오디오 주변 문장과 가장 밝은 배경 4.83:1이다. 제목이 놓인 실제 사진의 대비·크롭과 브라우저에서의 키보드/터치 동작은 외부 검수가 남았다.
+
+추가 지시에 따라 Chromium을 시작하는 `test:e2e`, `test:urls`, 화면 캡처와 공유 PNG 재렌더는 이번 샌드박스에서 시도하지 않았다. W5에서 확인한 오류는 `Permission denied (1100)`이다. 아래 스크립트는 브라우저 실행 가능한 환경에 넘기기 위한 것이며 실제 e2e 통과 증거가 아니다.
+
+외부 실행 파일과 모든 `qa-*.log`는 `/private/tmp/claude-501/-Users-baemanjin-orca-projects-autobio-bae/ab248ef8-f8d7-4e8d-a668-e55cf410020d/scratchpad/impl/`에 있다.
+
+```sh
+cd /Users/baemanjin/sideProjects/duvridge-design
+npx playwright install chromium
+bash /private/tmp/claude-501/-Users-baemanjin-orca-projects-autobio-bae/ab248ef8-f8d7-4e8d-a668-e55cf410020d/scratchpad/impl/run-browser-checks.sh
+node /private/tmp/claude-501/-Users-baemanjin-orca-projects-autobio-bae/ab248ef8-f8d7-4e8d-a668-e55cf410020d/scratchpad/impl/qa-screens.mjs
+```
+
+`run-browser-checks.sh`는 세 앱 e2e와 루트 URL 검사를 순서대로 실행하고, 실패해도 뒤 검사를 계속하여 `browser-{novels,audiobooks,videos,urls}.log`와 `browser-summary.log`를 남긴다. 앱 Playwright 설정은 전용 preview를 다시 빌드하며 Firebase 없이 검사한다. 영상 e2e의 묵음 대체 영상 생성에는 PATH의 ffmpeg가 필요하다. `.deploy/toldlife`의 실제 영상 산출물은 보존한다.
+
+`qa-screens.mjs`는 작업 폴더의 `node_modules/playwright-core`를 require하고, 자체 로컬 Pages 서버와 브라우저를 열고 닫는다. 휴대폰은 390×844·deviceScaleFactor 2, 데스크톱은 1440×900이다. 읽기 설정은 본문 첫 문단을 보이게 한 뒤 클릭해서 열고, 오디오북은 프롤로그 문장 목록을 맨 위로 놓는다. 단일 영상은 첫 프레임에서 정지하고 조작부를 표시한다. 크기·탭·히어로·설정 저장 복원·배경음악 토글·44px 터치·포커스·단색 배경 대비를 추가 검사하고 결과를 `qa-shots/qa-results.json`에 기록한다.
+
+캡처 예정 파일은 아래 각 이름에 `-phone-390x844.png` / `-desktop-1440x900.png`를 붙인 기본 20장이다. `film-nureon-bongtu`와 `video-prolog`는 각 뷰포트에서 전체 길이의 `-full.png`도 추가하여 아래쪽 오리지널 시리즈 카드까지 검수한다(추가 4장). 이번 작업에서 실제 화면 스크린샷을 생성하지 않았다.
+
+- `home-original`, `home-videos`
+- `work-novel`, `work-audiobook`, `work-video`
+- `novel-reading`, `novel-settings`
+- `audiobook-prolog-top`
+- `film-nureon-bongtu`, `video-prolog`
+
+확정 목업의 주요 치수·문구·DOM 구조와 구현 소스를 대조했다. 접근성 보정을 위해 음악 스위치의 보이는 32px 트랙 주위에 44px 터치 영역을 두고, 영상 seek bar도 44px 터치 높이를 쓴다. 실제 화면과 목업 사이의 남은 시각 차이는 아직 확정할 수 없다. 외부 실행 후 제목 두 줄·사진 대비·바닥 여백·첫 낭독 문장·영상 두 화면과 반응 영역·200% 확대·설정 내부 스크롤을 사람이 확인해야 한다. iPhone Safari의 전체 화면 종료와 자동 재생 제한, 실제 카카오 공유 미리보기/캐시 초기화도 별도 확인 대상이다.
+
+정본 원고·녹음·SRT를 수정하거나 재생성하지 않았고, 커밋·푸시·배포하지 않았다. `.deploy/toldlife/deployment.json`은 기준 SHA `a8f3496ad8c4babcfe98326e07603b4c576a8d09`, `sourceDirty: true`인 로컬 QA 기록이다. 운영 업로드 전에는 검수가 끝난 동일 커밋으로 다시 만든 산출물이 필요하다.

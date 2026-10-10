@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { withBase } from 'vitepress'
 import ReaderIcon from '@duvridge/reader-ui/components/ReaderIcon.vue'
 import { seriesHomeHref, seriesWorkHref } from '@duvridge/reader-ui/series/series-tabs.mjs'
 import EpisodeReactions from './EpisodeReactions.vue'
+import OriginalSeriesCard from './OriginalSeriesCard.vue'
+import VideoControls from './VideoControls.vue'
 import { useCatalog } from '../lib/reader-catalog'
 
 const props = defineProps<{ filmId: string }>()
@@ -14,61 +16,145 @@ const originHref = computed(() => `${seriesWorkHref('novel', catalog.work.id)}?f
 // Opening a film plays it. Browsers may hold back sound on a page not yet tapped (iPhone Safari always does);
 // then the film starts without sound and one button brings it in.
 const media = ref<HTMLVideoElement>()
+const frame = ref<HTMLElement>()
 const silent = ref(false)
-onMounted(async () => {
+const playing = ref(false)
+const failed = ref(false)
+const time = ref(0)
+const mediaDuration = ref(0)
+const duration = computed(() => mediaDuration.value || film.value?.duration || 0)
+const fullRequested = ref(false)
+const turned = ref(false)
+const full = computed(() => fullRequested.value || turned.value)
+let startAttempt = 0
+let pendingSeek: number | undefined
+let turnQuery: MediaQueryList | undefined
+
+async function autoplay() {
+  const attempt = ++startAttempt
   const video = media.value
   if (!video) return
+  video.muted = false
   try {
     await video.play()
   } catch {
+    if (attempt !== startAttempt || video !== media.value) return
     video.muted = true
     try {
       await video.play()
-      silent.value = true
+      if (attempt === startAttempt && video === media.value) silent.value = true
     } catch {
+      if (attempt !== startAttempt || video !== media.value) return
       // Not even a silent start (data saving, for one): the controls stay for the viewer.
       video.muted = false
     }
   }
-})
+}
 function soundOn() {
   const video = media.value
   if (!video) return
   video.muted = false
   silent.value = false
-  if (video.paused) void video.play().catch(() => {})
+  if (video.paused) void video.play().catch(() => { failed.value = Boolean(video.error) })
 }
-/** Sound turned on with the video's own controls also clears the button. */
+/** Sound turned on elsewhere also clears the button. */
 function syncSound() { if (media.value && !media.value.muted) silent.value = false }
-const cover = computed(() => {
-  const sources = catalog.work.cover?.sources ?? []
-  const source = sources.find(entry => entry.width >= 360) ?? sources[0]
-  return source ? withBase(source.src) : undefined
+function syncTime() { time.value = media.value?.currentTime ?? 0 }
+function syncMetadata() {
+  const video = media.value
+  if (!video) return
+  mediaDuration.value = Number.isFinite(video.duration) ? video.duration : 0
+  if (pendingSeek !== undefined) { seekTo(pendingSeek); pendingSeek = undefined }
+  syncTime()
+}
+function syncPlaying() { playing.value = true; failed.value = false }
+function mediaFailed() { playing.value = false; failed.value = true; silent.value = false }
+function seekTo(value: number) {
+  const video = media.value
+  if (!video || !Number.isFinite(value)) return
+  const position = Math.min(duration.value, Math.max(0, value))
+  video.currentTime = position
+  time.value = position
+}
+function skip(seconds: number) { seekTo(time.value + seconds) }
+function togglePlay() {
+  const video = media.value
+  if (!video) return
+  ++startAttempt
+  if (failed.value) {
+    pendingSeek = time.value
+    failed.value = false
+    video.load()
+  } else if (!video.paused) {
+    video.pause()
+    return
+  }
+  void video.play().catch(() => { failed.value = Boolean(video.error) })
+}
+/** Phones turn sideways for full screen where the browser allows it. */
+async function enterFull() {
+  fullRequested.value = true
+  try { await frame.value?.requestFullscreen?.() } catch { /* The page itself fills the window instead. */ }
+  try { await (screen.orientation as ScreenOrientation & { lock?: (orientation: string) => Promise<void> })?.lock?.('landscape') } catch { /* Not every device turns on request. */ }
+}
+async function leaveFull() {
+  fullRequested.value = false
+  turned.value = false
+  try { if (document.fullscreenElement) await document.exitFullscreen() } catch { /* Already left. */ }
+  try { screen.orientation?.unlock?.() } catch { /* Nothing locked. */ }
+}
+function toggleFull() { if (full.value) void leaveFull(); else void enterFull() }
+function onFullscreenChange() {
+  if (document.fullscreenElement) return
+  fullRequested.value = false
+  try { screen.orientation?.unlock?.() } catch { /* Nothing locked. */ }
+}
+function onTurn(event: MediaQueryListEvent) { turned.value = event.matches }
+
+watch(() => props.filmId, async () => {
+  ++startAttempt
+  silent.value = false
+  playing.value = false
+  failed.value = false
+  time.value = 0
+  mediaDuration.value = 0
+  pendingSeek = undefined
+  await nextTick()
+  void autoplay()
+})
+onMounted(() => {
+  turnQuery = window.matchMedia('(orientation: landscape) and (max-height: 500px)')
+  turned.value = turnQuery.matches
+  turnQuery.addEventListener('change', onTurn)
+  document.addEventListener('fullscreenchange', onFullscreenChange)
+  void autoplay()
+})
+onBeforeUnmount(() => {
+  ++startAttempt
+  turnQuery?.removeEventListener('change', onTurn)
+  document.removeEventListener('fullscreenchange', onFullscreenChange)
+  if (fullRequested.value) void leaveFull()
 })
 </script>
 
 <template>
-  <div v-if="film" class="film-page">
+  <div v-if="film" class="film-page" :class="{ 'is-full': full }">
     <header class="film-bar">
       <a class="film-back" :href="seriesHomeHref('video')" target="_self" aria-label="영상 홈으로"><ReaderIcon name="chevron-left" :size="22" :stroke="1.9" /></a>
     </header>
     <main id="main" tabindex="-1" class="film-main">
-      <div class="film-frame" :class="{ 'is-tall': film.height > film.width }">
+      <section ref="frame" class="film-frame" :class="{ 'is-tall': film.height > film.width }" aria-label="영상 플레이어">
         <video ref="media" class="film-video" :src="withBase(film.src)" :poster="withBase(film.poster.src)" :width="film.width" :height="film.height"
-          controls playsinline preload="auto" @volumechange="syncSound" />
+          playsinline preload="auto" @volumechange="syncSound" @loadedmetadata="syncMetadata" @durationchange="syncMetadata" @timeupdate="syncTime"
+          @play="syncPlaying" @playing="syncPlaying" @pause="playing = false" @ended="playing = false" @error="mediaFailed" />
+        <VideoControls :playing="playing" :failed="failed" :time="time" :duration="duration" :full="full" :reset-key="filmId"
+          @play="togglePlay" @skip="skip" @seek="seekTo" @fullscreen="toggleFull" />
         <button v-if="silent" type="button" class="film-sound" @click="soundOn"><ReaderIcon name="sound" :size="20" :stroke="1.9" />소리 켜기</button>
-      </div>
+      </section>
       <div class="film-copy">
         <h1 class="film-title">{{ film.title }}</h1>
         <EpisodeReactions :page-id="`film-${film.id}`" />
-        <section class="film-origin" aria-labelledby="film-origin-title">
-          <h2 id="film-origin-title">원작</h2>
-          <a class="film-origin-card" :href="originHref" target="_self">
-            <img v-if="cover" class="film-origin-cover" :src="cover" alt="" width="72" height="108" loading="lazy" />
-            <span class="film-origin-title">{{ catalog.work.title }}</span>
-            <ReaderIcon name="chevron" :size="22" :stroke="1.9" />
-          </a>
-        </section>
+        <OriginalSeriesCard :href="originHref" title-id="film-origin-title" />
       </div>
     </main>
   </div>

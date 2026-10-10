@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-defineProps<{ title: string; doneLabel?: string }>()
+defineProps<{ title: string; doneLabel?: string; clearBackdrop?: boolean }>()
 const emit = defineEmits<{ close: [] }>()
 const dialog = ref<HTMLDialogElement>()
 function open() { if (!dialog.value?.open) dialog.value?.showModal() }
@@ -17,7 +17,7 @@ defineExpose({ open, close })
 </script>
 
 <template>
-  <dialog ref="dialog" class="sheet" :aria-label="title" @click="closeOnBackdrop" @close="emit('close')">
+  <dialog ref="dialog" class="sheet" :class="{ 'is-clear-backdrop': clearBackdrop }" :aria-label="title" @click="closeOnBackdrop" @close="emit('close')">
     <div class="sheet-body">
       <div class="sheet-handle" aria-hidden="true" />
       <header class="sheet-heading"><h2>{{ title }}</h2><button type="button" class="sheet-done" @click="close">{{ doneLabel ?? '완료' }}</button></header>

@@ -40,13 +40,22 @@
     "alt": "가을 논을 배경으로 정장을 입은 배병희의 수채화 초상"
   },
   "sharing": {
-    "description": "배병희 자전소설 · 갯벌에서 들녘까지, 가족과 이웃을 위해 살아온 한평생.",
+    "description": "갯벌에서 들녘까지, 가족과 이웃을 위해 살아온 한평생.",
     "image": {
-      "src": "/images/share-bae-byunghee-v2.png",
+      "src": "/images/share-bae-byunghee-original-v3.png",
       "width": 1200,
       "height": 630,
-      "alt": "가을 논을 배경으로 한 배병희의 수채화 초상과 작품 제목, 인생원작 워드마크",
+      "alt": "배병희의 수채화 초상과 내 논을 파는 한이 있어도 제목, 인생원작 워드마크와 오리지널 배지",
       "type": "image/png"
+    },
+    "images": {
+      "video": {
+        "src": "/images/share-bae-byunghee-video-v3.png",
+        "width": 1200,
+        "height": 630,
+        "alt": "배병희의 수채화 초상과 내 논을 파는 한이 있어도 제목, 인생원작 워드마크와 영상 배지",
+        "type": "image/png"
+      }
     }
   },
   "films": [

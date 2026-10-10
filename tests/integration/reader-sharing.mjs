@@ -21,24 +21,56 @@ function page(file) {
     assert.equal(tags.length, 1, `${file}: one ${value}`)
     return decode(tags[0][0].match(new RegExp(`${target}="([^\"]+)"`))[1])
   }
-  return { html, canonical: () => attribute('rel', 'canonical', 'href'), meta: value => attribute('property', value, 'content'), title: () => decode(head.match(/<title>(.*?)<\/title>/)[1]) }
+  return { html, canonical: () => attribute('rel', 'canonical', 'href'), meta: value => attribute('property', value, 'content'), twitter: value => attribute('name', value, 'content'), title: () => decode(head.match(/<title>(.*?)<\/title>/)[1]) }
+}
+function sharingImage(catalog) {
+  const sharing = catalog.work.sharing
+  return (series === 'videos' ? sharing.images?.video : sharing.images?.original) ?? sharing.image
+}
+function assertSharing(page, catalog, { title, description }) {
+  const image = sharingImage(catalog)
+  const url = `${origin}${base}${image.src.replace(/^\//, '')}`
+  assert.equal(page.title(), title)
+  assert.equal(page.meta('og:title'), title)
+  assert.equal(page.twitter('twitter:title'), title)
+  assert.equal(page.meta('og:description'), description)
+  assert.equal(page.twitter('twitter:description'), description)
+  assert.equal(page.meta('og:site_name'), '인생원작')
+  assert.equal(page.meta('og:url'), page.canonical())
+  assert.equal(page.meta('og:image'), url)
+  assert.equal(page.meta('og:image:secure_url'), url)
+  assert.equal(page.meta('og:image:type'), image.type || 'image/png')
+  assert.equal(page.meta('og:image:width'), String(image.width))
+  assert.equal(page.meta('og:image:height'), String(image.height))
+  assert.equal(page.meta('og:image:alt'), image.alt)
+  assert.equal(page.twitter('twitter:card'), 'summary_large_image')
+  assert.equal(page.twitter('twitter:image'), url)
+  assert.equal(page.twitter('twitter:image:alt'), image.alt)
+  assert.ok(existsSync(path.join(dist, image.src)))
 }
 test('each work and chapter shares its own static metadata at a clean canonical endpoint', () => {
   assert.equal(page('index.html').canonical(), `${origin}/`)
   for (const catalog of Object.values(catalogs)) {
     const home = page(`${catalog.work.id}/index.html`)
     assert.equal(home.canonical(), `${origin}${base}${catalog.work.id}/`)
-    assert.ok(home.title().includes(catalog.work.title))
+    assertSharing(home, catalog, { title: catalog.work.title, description: catalog.work.sharing.description })
     assert.ok(decode(home.html).includes(catalog.readingOrder[0].title))
     for (const chapter of catalog.readingOrder) {
       const chapterPage = page(`${catalog.work.id}/${chapter.id}.html`)
       assert.equal(chapterPage.canonical(), `${origin}${base}${catalog.work.id}/${chapter.id}`)
-      assert.equal(chapterPage.meta('og:url'), chapterPage.canonical())
-      assert.ok(chapterPage.meta('og:title').includes(chapter.title))
-      assert.ok(chapterPage.meta('og:title').includes(catalog.work.title))
-      assert.equal(chapterPage.meta('og:image'), `${origin}${base}${catalog.work.sharing.image.src.replace(/^\//, '')}`)
-      assert.equal(chapterPage.meta('og:image:secure_url'), chapterPage.meta('og:image'))
-      assert.ok(existsSync(path.join(dist, catalog.work.sharing.image.src)))
+      const metadata = matter(readFileSync(path.join(app, `site/${catalog.work.id}/${chapter.id}.md`), 'utf8')).data
+      assertSharing(chapterPage, catalog, {
+        title: `${chapter.label} ${chapter.title} · ${catalog.work.title}`,
+        description: String(metadata.description || catalog.work.sharing.description),
+      })
+    }
+    if (series === 'videos') for (const film of catalog.films ?? []) {
+      const filmPage = page(`${catalog.work.id}/${film.id}.html`)
+      assert.equal(filmPage.canonical(), `${origin}${base}${catalog.work.id}/${film.id}`)
+      assertSharing(filmPage, catalog, {
+        title: `${film.title} · ${catalog.work.title}`,
+        description: catalog.work.sharing.description,
+      })
     }
   }
 })
@@ -75,7 +107,7 @@ test('published novel paragraphs preserve all canonical manuscript prose', () =>
 test('published browser icons and share images retain their declared dimensions', () => {
   const pngSize = file => {
     const bytes = readFileSync(path.join(dist, file))
-    assert.equal(bytes.subarray(1, 4).toString(), 'PNG')
+    assert.deepEqual(bytes.subarray(0, 8), Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))
     return [bytes.readUInt32BE(16), bytes.readUInt32BE(20)]
   }
   assert.deepEqual(pngSize('favicon-32.png'), [32, 32])
@@ -87,7 +119,7 @@ test('published browser icons and share images retain their declared dimensions'
     assert.deepEqual(pngSize(icon.src), [size, size])
   }
   for (const catalog of Object.values(catalogs)) {
-    const image = catalog.work.sharing.image
+    const image = sharingImage(catalog)
     if (image.type === 'image/png' || image.src.endsWith('.png')) assert.deepEqual(pngSize(image.src), [image.width, image.height])
     const head = page(`${catalog.work.id}/index.html`)
     assert.equal(head.meta('og:image:width'), String(image.width))

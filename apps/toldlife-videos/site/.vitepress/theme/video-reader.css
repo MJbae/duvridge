@@ -43,95 +43,97 @@ button.lyric-line:hover { color: var(--gray); }
 .listen-tool.is-on span { color: var(--gold); }
 .listen-main > .big-button.is-pending { margin-top: 24px; }
 
-/* The video: the picture on top with its subtitles inside it, then scenes and episodes. */
-.theater-page { min-height: 100svh; background: var(--night); color: var(--ivory); }
-.stage { position: relative; width: 100%; max-width: 960px; margin: 0 auto; aspect-ratio: 16 / 9; background: #000000; overflow: hidden; }
-.stage-video { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; background: #000000; }
-.stage-frame { position: absolute; inset: 0; cursor: pointer; }
-.stage-controls { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between; background: rgb(0 0 0 / 45%); pointer-events: none; }
-.stage-controls button, .stage-controls a, .stage-controls input { pointer-events: auto; }
-.stage-top { display: flex; align-items: center; gap: 6px; padding: 4px 8px 0 4px; }
-.stage-icon { display: grid; place-items: center; width: 48px; height: 48px; flex-shrink: 0; color: #ffffff; }
-.stage-title { flex: 1; min-width: 0; overflow: hidden; font-size: 1rem; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
-.stage-middle { display: flex; align-items: center; justify-content: center; gap: 44px; }
-.stage-skip { display: grid; place-items: center; width: 52px; height: 52px; color: #ffffff; }
-.stage-play { display: grid; place-items: center; width: 64px; height: 64px; border-radius: 32px; background: rgb(17 19 24 / 60%); color: #ffffff; }
-.stage-bottom { display: flex; flex-direction: column; gap: 2px; padding: 0 16px 8px; }
-.stage-row { display: flex; align-items: center; justify-content: space-between; min-height: 44px; margin-right: -8px; }
-.stage-time { color: #ffffff; font-size: 0.8125rem; font-variant-numeric: tabular-nums; }
-.stage-seek { height: 16px; }
-.stage-seek::-webkit-slider-runnable-track { background: linear-gradient(to right, var(--gold) var(--seek, 0%), rgb(255 255 255 / 30%) var(--seek, 0%)); }
-.stage-seek::-webkit-slider-thumb { width: 14px; height: 14px; margin-top: -5px; background: var(--gold); }
+/* Both video pages share the transport, title, reactions and original-series card. */
+.theater-page, .film-page { min-height: 100svh; background: var(--night); color: var(--ivory); }
+.film-bar { display: flex; align-items: center; width: 100%; max-width: 960px; height: calc(3.5rem + env(safe-area-inset-top)); margin: 0 auto; padding: env(safe-area-inset-top) 0.5rem 0; }
+.film-back { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; color: var(--ivory); }
+.stage { position: relative; width: 100%; max-width: 960px; margin: 0 auto; aspect-ratio: 16 / 9; background: #000; overflow: hidden; }
+.stage-video { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; background: #000; }
+.stage-frame { position: absolute; inset: 0; width: 100%; height: 100%; cursor: pointer; }
+.stage-controls { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; pointer-events: none; }
+.stage-controls button, .stage-controls input { pointer-events: auto; }
+.stage-bottom { display: flex; flex-direction: column; padding: 1.5rem 0.5rem 0; background: linear-gradient(to bottom, transparent, rgb(0 0 0 / 72%) 1.5rem, rgb(0 0 0 / 55%)); }
+.stage-row { display: flex; align-items: center; gap: 0.25rem; min-height: 2.75rem; }
+.stage-icon { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; flex-shrink: 0; color: #fff; }
+.stage-skip { position: relative; }
+.stage-skip span { position: absolute; inset: 1rem 0 auto; text-align: center; font-size: 0.5rem; font-weight: 700; }
+.stage-time { flex: 1; color: #fff; font-size: 0.8125rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+/* The slider remains a full touch target around its thin visual track. */
+.stage-seek { width: calc(100% - 1.5rem); height: 2.75rem; margin: 0 0.75rem; }
+.stage-seek::-webkit-slider-runnable-track { background: linear-gradient(to right, #fff var(--seek, 0%), rgb(255 255 255 / 30%) var(--seek, 0%)); }
+.stage-seek::-webkit-slider-thumb { width: 0.75rem; height: 0.75rem; margin-top: -0.25rem; background: #fff; }
 .stage-seek::-moz-range-track { background: rgb(255 255 255 / 30%); }
-.stage-seek::-moz-range-thumb { width: 14px; height: 14px; background: var(--gold); }
-.stage-thin { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: rgb(255 255 255 / 25%); pointer-events: none; }
-.stage-thin span { display: block; height: 100%; background: var(--gold); }
+.stage-seek::-moz-range-progress { background: #fff; }
+.stage-seek::-moz-range-thumb { width: 0.75rem; height: 0.75rem; background: #fff; }
+.stage-thin { position: absolute; inset: auto 0 0; height: 3px; background: rgb(255 255 255 / 25%); pointer-events: none; }
+.stage-thin span { display: block; height: 100%; background: #fff; }
+.stage-top { position: absolute; inset: 0 0 auto; display: flex; align-items: center; gap: 0.375rem; padding: 0.5rem 1rem 1.5rem 0.75rem; background: linear-gradient(to bottom, rgb(0 0 0 / 72%), transparent); }
+.stage-title { flex: 1; min-width: 0; overflow: hidden; color: #fff; font-size: 1rem; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
 .is-ended .stage-video { opacity: 0.55; }
-.is-ended .stage::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--gold); }
-.stage-end-collapse { position: absolute; left: 4px; top: 4px; }
-.theater-main { max-width: 960px; margin: 0 auto; padding-bottom: calc(40px + env(safe-area-inset-bottom)); }
-.theater-heading { display: flex; flex-direction: column; gap: 4px; padding: 20px 20px 0; }
-.theater-heading h1 { margin: 0; font-family: var(--face-title); font-size: 1.375rem; font-weight: 700; line-height: 1.3; }
-.theater-heading p { margin: 0; color: var(--gray); font-size: 0.875rem; }
-.theater-section { display: flex; flex-direction: column; gap: 12px; margin-top: 28px; padding: 0 20px; }
-.theater-section h2 { margin: 0; font-family: var(--face-title); font-size: 1.125rem; font-weight: 700; line-height: 1.5rem; }
-.theater-section .episode-list { margin-top: -8px; }
-.theater-section .episode-item:last-child { border-bottom: 0; }
-.scene-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-.scene-card { display: flex; flex-direction: column; gap: 8px; color: var(--ivory); text-align: left; }
-.scene-thumb { position: relative; display: block; aspect-ratio: 16 / 9; border-radius: 8px; overflow: hidden; background: var(--night-raised); }
+.is-ended .stage::after { content: ''; position: absolute; inset: auto 0 0; height: 3px; background: #fff; pointer-events: none; }
+.theater-main, .film-main { width: 100%; max-width: 960px; margin: 0 auto; padding-bottom: calc(2.5rem + env(safe-area-inset-bottom)); }
+.film-copy { display: flex; flex-direction: column; max-width: 640px; margin: 0 auto; padding: 1.25rem 1.25rem 0; }
+.film-title { margin: 0; font-family: var(--face-title); font-size: 1.625rem; font-weight: 800; line-height: 1.25; }
+.film-copy > .reactions-anchor { margin-top: 2.25rem; }
+.theater-heading { display: flex; flex-direction: column; gap: 0.25rem; }
+.theater-heading p { margin: 0; color: var(--gray); font-size: 0.875rem; font-weight: 600; }
+.theater-scenes { margin-top: 1.5rem; }
+.scene-toggle { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; width: 100%; min-height: 3.25rem; padding: 0.75rem 0.875rem 0.75rem 1rem; border: 1px solid var(--night-border); border-radius: 0.75rem; color: var(--ivory); font-size: 1rem; font-weight: 600; text-align: left; }
+.scene-toggle svg { flex-shrink: 0; color: var(--ivory-dim); }
+.scene-toggle[aria-expanded='true'] svg { transform: rotate(180deg); }
+.scene-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; margin-top: 0.75rem; }
+.scene-card { display: flex; flex-direction: column; gap: 0.5rem; min-width: 0; min-height: 2.75rem; color: var(--ivory); text-align: left; }
+.scene-thumb { position: relative; display: block; width: 100%; aspect-ratio: 16 / 9; border-radius: 0.5rem; overflow: hidden; background: var(--night-raised); }
 .scene-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.scene-done { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: var(--gold); opacity: 0; }
+.scene-done { position: absolute; inset: auto 0 0; height: 4px; background: var(--gold); opacity: 0; }
 .scene-card.is-past .scene-done { opacity: 1; }
 .scene-card.is-current .scene-thumb { box-shadow: 0 0 0 2px var(--gold); }
 .scene-card.is-current { color: var(--gold-hover); }
 .scene-name { display: -webkit-box; overflow: hidden; font-size: 0.9375rem; font-weight: 600; line-height: 1.3125rem; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-/* At the end the reactions and 다음 화 sit at the foot of the screen, under the stopped picture and the title. */
-.theater-page.is-ended:not(.is-full) { display: flex; flex-direction: column; }
-.is-ended .theater-main { display: flex; flex: 1; flex-direction: column; width: 100%; }
-.theater-end { display: flex; flex-direction: column; margin-top: auto; padding: 28px 20px 0; }
-
-/* Turned sideways, or asked for: the picture fills the screen. */
-.theater-page.is-full .stage { position: fixed; inset: 0; z-index: 50; max-width: none; aspect-ratio: auto; }
-.theater-page.is-full .stage-video { object-fit: contain; }
-.theater-page.is-full .stage-controls { background: linear-gradient(to bottom, rgb(0 0 0 / 62%) 0%, rgb(0 0 0 / 18%) 28%, rgb(0 0 0 / 18%) 62%, rgb(0 0 0 / 72%) 100%); }
-.theater-page.is-full .stage-top { padding: 8px 16px 0 12px; }
-.theater-page.is-full .stage-middle { gap: 56px; }
-.theater-page.is-full .stage-play { width: 68px; height: 68px; border-radius: 34px; }
-.theater-page.is-full .stage-skip { width: 56px; height: 56px; }
-.theater-page.is-full .stage-bottom { flex-direction: column-reverse; gap: 6px; padding: 0 28px 10px; }
-.theater-page.is-full .stage-row { min-height: 40px; }
-.theater-page.is-full .stage-time { font-size: 0.875rem; }
-.stage:fullscreen { width: 100vw; height: 100vh; max-width: none; aspect-ratio: auto; }
-.stage-end { position: absolute; inset: 0; display: grid; grid-template-columns: minmax(0, 360px); justify-content: center; align-items: center; padding: 56px; background: rgb(0 0 0 / 60%); }
-.stage-end-back { position: absolute; left: 12px; top: 8px; }
-.stage-end-side { display: flex; flex-direction: column; gap: 24px; }
-.stage-end-side .reaction-options button { height: 64px; background: rgb(28 31 39 / 92%); }
-.stage-end-side .episode-nav { margin-top: 0; }
-@media (max-height: 360px) { .stage-end { padding: 40px 48px; } .stage-end-side { gap: 16px; } }
-
-/* A film made from the work: the film itself, its title, 마음 남기기, then one way to its whole original. */
-.film-page { min-height: 100svh; background: var(--night); color: var(--ivory); }
-.film-bar { display: flex; align-items: center; width: 100%; max-width: 960px; height: calc(56px + env(safe-area-inset-top)); margin: 0 auto; padding: env(safe-area-inset-top) 8px 0; }
-.film-back { display: grid; place-items: center; width: 44px; height: 44px; color: var(--ivory); }
-.film-main { width: 100%; max-width: 960px; margin: 0 auto; padding-bottom: calc(40px + env(safe-area-inset-bottom)); }
-.film-frame { position: relative; display: flex; justify-content: center; background: #000; }
-/* Started without sound: one large button over the film brings the sound in. */
-.film-sound { position: absolute; top: 12px; left: 12px; display: flex; align-items: center; gap: 8px; height: 48px; padding: 0 18px; border-radius: 24px; background: rgb(17 19 24 / 78%); color: var(--ivory); font-size: 1rem; font-weight: 600; box-shadow: inset 0 0 0 1px rgb(243 239 231 / 35%); }
-@media (hover: hover) { .film-sound:hover { background: rgb(17 19 24 / 92%); } }
-.film-video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; background: #000; }
-/* A tall film keeps its own shape but never fills more than most of the screen. */
-.film-frame.is-tall .film-video { width: auto; max-width: 100%; height: min(72svh, calc(100vw * 16 / 9)); aspect-ratio: 9 / 16; }
-.film-copy { display: flex; flex-direction: column; max-width: 640px; margin: 0 auto; padding: 20px 20px 0; }
-.film-title { margin: 0; font-family: var(--face-title); font-size: 1.625rem; font-weight: 800; line-height: 1.25; }
-.film-copy .reactions-anchor { margin-top: 36px; }
-.film-origin { margin-top: 40px; }
-.film-origin h2 { display: flex; align-items: center; height: 44px; margin: 0; font-family: var(--face-title); font-size: 1.125rem; font-weight: 700; }
-.film-origin-card { display: flex; align-items: center; gap: 14px; margin-top: 6px; padding: 12px; border-radius: 12px; background: var(--night-raised); color: var(--ivory); }
-.film-origin-card svg { flex-shrink: 0; color: var(--gray); }
-.film-origin-cover { flex-shrink: 0; width: 72px; height: 108px; border-radius: 6px; object-fit: cover; object-position: 52% 35%; background: var(--night-selected); }
+.theater-next { margin-top: 2rem; }
+.theater-next h2, .film-origin h2 { display: flex; align-items: center; min-height: 2.75rem; margin: 0; font-family: var(--face-title); font-size: 1.125rem; font-weight: 700; }
+.theater-next-card, .film-origin-card { display: flex; align-items: center; gap: 0.875rem; margin-top: 0.375rem; padding: 0.75rem; border-radius: 0.75rem; background: var(--night-raised); color: var(--ivory); }
+.theater-next-card > svg, .film-origin-card > svg { flex-shrink: 0; color: var(--gray); }
+.theater-next-thumb { display: grid; place-items: center; flex-shrink: 0; width: 8rem; height: 4.5rem; overflow: hidden; border-radius: 0.375rem; background: var(--night-selected); color: var(--gray); }
+.theater-next-thumb picture, .theater-next-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.theater-next-copy { display: flex; flex: 1; flex-direction: column; gap: 0.1875rem; min-width: 0; }
+.theater-next-name { font-family: var(--face-title); font-size: 1.0625rem; font-weight: 700; line-height: 1.35; }
+.theater-pending, .theater-no-next { color: var(--gray); font-size: 0.875rem; }
+.theater-no-next { margin: 0.375rem 0 0; padding: 1rem 0; }
+.theater-episode-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; margin-top: 0.5rem; }
+.theater-episode-links a, .theater-episode-links button { display: flex; align-items: center; justify-content: center; gap: 0.25rem; min-width: 0; min-height: 3rem; padding: 0.5rem 0.25rem; border-radius: 0.75rem; color: var(--ivory); font-size: 0.9375rem; font-weight: 600; }
+.theater-episode-links a { box-shadow: inset 0 0 0 1px var(--night-dash); }
+.theater-episode-links button:disabled { color: var(--gray-dim); font-weight: 500; }
+.theater-episode-links svg { flex-shrink: 0; }
+.film-origin { margin-top: 2.5rem; }
+.theater-copy .film-origin { margin-top: 1.75rem; }
+.film-origin-cover { flex-shrink: 0; width: 4.5rem; height: 6.75rem; border-radius: 0.375rem; object-fit: cover; object-position: 52% 35%; background: var(--night-selected); }
 .film-origin-title { flex: 1; min-width: 0; font-family: var(--face-title); font-size: 1.125rem; font-weight: 700; line-height: 1.35; }
-@media (hover: hover) { a.film-origin-card:hover .film-origin-title { color: var(--gold-hover); } }
-@media (min-width: 900px) {
-  .film-frame.is-tall .film-video { height: 72svh; }
+.theater-end { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1.5rem; }
+.theater-end .episode-nav { margin-top: 0; }
+.theater-cancel { align-self: center; min-height: 2.75rem; padding: 0.5rem 0.75rem; color: var(--ivory-dim); font-size: 0.9375rem; text-decoration: underline; text-underline-offset: 3px; }
+@media (hover: hover) {
+  a.film-origin-card:hover .film-origin-title, a.theater-next-card:hover .theater-next-name { color: var(--gold-hover); }
+  .scene-toggle:hover, .theater-episode-links a:hover { background: var(--night-raised); }
 }
+
+/* A film keeps its portrait shape and its existing automatic sound fallback. */
+.film-frame { position: relative; display: flex; justify-content: center; background: #000; overflow: hidden; }
+.film-video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; background: #000; }
+.film-frame.is-tall .film-video { width: auto; max-width: 100%; height: min(72svh, calc(100vw * 16 / 9)); aspect-ratio: 9 / 16; }
+.film-sound { position: absolute; top: 0.75rem; left: 0.75rem; display: flex; align-items: center; gap: 0.5rem; min-height: 3rem; padding: 0.5rem 1.125rem; border-radius: 1.5rem; background: rgb(17 19 24 / 78%); color: var(--ivory); font-size: 1rem; font-weight: 600; box-shadow: inset 0 0 0 1px rgb(243 239 231 / 35%); }
+@media (hover: hover) { .film-sound:hover { background: rgb(17 19 24 / 92%); } }
+@media (min-width: 900px) { .film-frame.is-tall .film-video { height: 72svh; } }
+
+/* Turned sideways, or asked for, either player fills the screen. */
+.theater-page.is-full .stage, .film-page.is-full .film-frame { position: fixed; inset: 0; z-index: 50; width: 100%; height: 100%; max-width: none; aspect-ratio: auto; }
+.theater-page.is-full .stage-video, .film-page.is-full .film-video, .film-page.is-full .film-frame.is-tall .film-video { width: 100%; height: 100%; max-width: none; aspect-ratio: auto; object-fit: contain; }
+.film-page.is-full .film-bar, .film-page.is-full .film-copy { display: none; }
+.is-full .stage-bottom { padding: 1.5rem max(1rem, env(safe-area-inset-right)) env(safe-area-inset-bottom) max(1rem, env(safe-area-inset-left)); }
+.stage:fullscreen, .film-frame:fullscreen { width: 100vw; height: 100vh; max-width: none; aspect-ratio: auto; }
+.stage-end { position: absolute; inset: 0; display: grid; grid-template-columns: minmax(0, 360px); justify-content: center; align-items: center; padding: 3.5rem; background: rgb(0 0 0 / 60%); overflow-y: auto; }
+.stage-end-back { position: absolute; left: 0.75rem; top: 0.5rem; }
+.stage-end-side { display: flex; flex-direction: column; gap: 1rem; }
+.stage-end-side .reaction-options button { height: 4rem; background: rgb(28 31 39 / 92%); }
+.stage-end-side .episode-nav { margin-top: 0; }
+@media (max-height: 360px) { .stage-end { padding: 2.5rem 3rem; } .stage-end-side { gap: 0.5rem; } }
