@@ -43,19 +43,22 @@ test('영상 작품 홈은 보기만 보여 주고, 큰 버튼은 자막이 든 
 })
 
 test('장면을 누르면 영상에서 그 장면부터 본다', async ({ page }) => {
-  await page.goto('prolog')
+  const episode = Object.entries(video).find(([, track]) => track.scenes.length > 1)
+  expect(episode, '장면 이동을 검사할 회차에는 장면이 둘 이상 있어야 합니다').toBeDefined()
+  const [id, track] = episode!
+  await page.goto(id)
   await expect(page.locator('[data-reader-ready="true"]')).toBeVisible()
   await playButton(page).click()
-  await watching(page, 'prolog')
-  const disclosure = page.getByRole('button', { name: `장면 보기 · ${video.prolog.scenes.length}개`, exact: true })
+  await watching(page, id)
+  const disclosure = page.getByRole('button', { name: `장면 보기 · ${track.scenes.length}개`, exact: true })
   await expect(disclosure).toHaveAttribute('aria-expanded', 'false')
   await expect(page.locator('.scene-grid')).toBeHidden()
   await disclosure.click()
   await expect(disclosure).toHaveAttribute('aria-expanded', 'true')
   const scenes = page.locator('.scene-card')
-  await expect(scenes).toHaveCount(video.prolog.scenes.length)
+  await expect(scenes).toHaveCount(track.scenes.length)
   await scenes.nth(1).click()
-  const second = video.prolog.cues[video.prolog.scenes[1][0]][0]
+  const second = track.cues[track.scenes[1][0]][0]
   await expect.poll(() => currentTime(page)).toBeGreaterThanOrEqual(second - 0.3)
   await expect(scenes.nth(1)).toHaveAttribute('aria-current', 'true')
 })
