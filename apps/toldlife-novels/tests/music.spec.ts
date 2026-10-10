@@ -81,6 +81,7 @@ test('하나의 재생기로 모든 회차의 곡을 12% 음량으로 이어 틀
 test('키보드로 설정과 음악 스위치를 조작한다', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('family-library:music', JSON.stringify({ enabled: false })))
   await page.goto('ep01')
+  await expect(page.locator('[data-reader-ready="true"]')).toBeVisible()
   await page.getByRole('button', { name: '설정', exact: true }).focus()
   await page.keyboard.press('Enter')
   const control = musicSwitch(page)

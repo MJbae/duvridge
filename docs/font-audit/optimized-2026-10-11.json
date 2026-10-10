@@ -1,0 +1,404 @@
+{
+  "checkedAt": "2026-10-10T15:08:10.200Z",
+  "scope": "Shared fonts, subsetting, cache and preload. Existing separate reader navigation is preserved.",
+  "method": "Chromium CDP font transfer bytes; fresh contexts for cold visits and the same context for tab switches. WebKit emulation checks loading and layout only. Live baseline and local optimized Pages use identical viewports; timing is not compared.",
+  "results": [
+    {
+      "origin": "https://toldlife.duvridge.com",
+      "name": "desktop-baseline",
+      "browser": "153.0.8010.12",
+      "steps": [
+        {
+          "stage": "cold",
+          "fontRequests": 32,
+          "fontBytes": 425110,
+          "cacheHits": 0,
+          "fontFamilies": [
+            "Hahmlet",
+            "IBM Plex Sans KR"
+          ],
+          "title": {
+            "width": 504,
+            "height": 127.65625
+          },
+          "overflow": false,
+          "origin": 1791644869125.4
+        },
+        {
+          "stage": "audio",
+          "fontRequests": 32,
+          "fontBytes": 0,
+          "cacheHits": 32,
+          "fontFamilies": [
+            "Hahmlet",
+            "IBM Plex Sans KR"
+          ],
+          "title": {
+            "width": 504,
+            "height": 127.65625
+          },
+          "overflow": false,
+          "origin": 1791644872125.3
+        },
+        {
+          "stage": "novel-return",
+          "fontRequests": 32,
+          "fontBytes": 0,
+          "cacheHits": 32,
+          "fontFamilies": [
+            "Hahmlet",
+            "IBM Plex Sans KR"
+          ],
+          "title": {
+            "width": 504,
+            "height": 127.65625
+          },
+          "overflow": false,
+          "origin": 1791644873850.8
+        }
+      ],
+      "css": [
+        {
+          "stage": "cold",
+          "url": "https://fonts.googleapis.com/css2?family=Hahmlet:wght@400;500;700;800&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap",
+          "sourceBytes": 465436
+        },
+        {
+          "stage": "audio",
+          "url": "https://fonts.googleapis.com/css2?family=Hahmlet:wght@400;500;700;800&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap",
+          "sourceBytes": 465436
+        },
+        {
+          "stage": "novel-return",
+          "url": "https://fonts.googleapis.com/css2?family=Hahmlet:wght@400;500;700;800&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap",
+          "sourceBytes": 465436
+        }
+      ]
+    },
+    {
+      "origin": "http://127.0.0.1:4197",
+      "name": "desktop",
+      "browser": "153.0.8010.12",
+      "steps": [
+        {
+          "stage": "cold",
+          "fontRequests": 4,
+          "fontBytes": 216136,
+          "cacheHits": 0,
+          "fontFamilies": [
+            "ToldLife Serif",
+            "ToldLife UI"
+          ],
+          "title": {
+            "width": 504,
+            "height": 127.65625
+          },
+          "overflow": false,
+          "origin": 1791644874867.1
+        },
+        {
+          "stage": "audio",
+          "fontRequests": 4,
+          "fontBytes": 0,
+          "cacheHits": 4,
+          "fontFamilies": [
+            "ToldLife Serif",
+            "ToldLife UI"
+          ],
+          "title": {
+            "width": 504,
+            "height": 127.65625
+          },
+          "overflow": false,
+          "origin": 1791644875758.3
+        },
+        {
+          "stage": "novel-return",
+          "fontRequests": 4,
+          "fontBytes": 0,
+          "cacheHits": 4,
+          "fontFamilies": [
+            "ToldLife Serif",
+            "ToldLife UI"
+          ],
+          "title": {
+            "width": 504,
+            "height": 127.65625
+          },
+          "overflow": false,
+          "origin": 1791644876378
+        }
+      ],
+      "css": [
+        {
+          "stage": "cold",
+          "url": "http://127.0.0.1:4197/fonts/reader.b58363508c74c667.css",
+          "sourceBytes": 80159
+        },
+        {
+          "stage": "audio",
+          "url": "http://127.0.0.1:4197/fonts/reader.b58363508c74c667.css",
+          "sourceBytes": 80159
+        },
+        {
+          "stage": "novel-return",
+          "url": "http://127.0.0.1:4197/fonts/reader.b58363508c74c667.css",
+          "sourceBytes": 80159
+        }
+      ]
+    },
+    {
+      "origin": "https://toldlife.duvridge.com",
+      "name": "phone-baseline",
+      "browser": "153.0.8010.12",
+      "steps": [
+        {
+          "stage": "cold",
+          "fontRequests": 32,
+          "fontBytes": 425105,
+          "cacheHits": 0,
+          "fontFamilies": [
+            "Hahmlet",
+            "IBM Plex Sans KR"
+          ],
+          "title": {
+            "width": 288,
+            "height": 78.0625
+          },
+          "overflow": false,
+          "origin": 1791644877138.2
+        },
+        {
+          "stage": "audio",
+          "fontRequests": 32,
+          "fontBytes": 0,
+          "cacheHits": 32,
+          "fontFamilies": [
+            "Hahmlet",
+            "IBM Plex Sans KR"
+          ],
+          "title": {
+            "width": 288,
+            "height": 78.0625
+          },
+          "overflow": false,
+          "origin": 1791644879843.1
+        },
+        {
+          "stage": "novel-return",
+          "fontRequests": 32,
+          "fontBytes": 0,
+          "cacheHits": 32,
+          "fontFamilies": [
+            "Hahmlet",
+            "IBM Plex Sans KR"
+          ],
+          "title": {
+            "width": 288,
+            "height": 78.0625
+          },
+          "overflow": false,
+          "origin": 1791644882318.8
+        }
+      ],
+      "css": [
+        {
+          "stage": "cold",
+          "url": "https://fonts.googleapis.com/css2?family=Hahmlet:wght@400;500;700;800&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap",
+          "sourceBytes": 465436
+        },
+        {
+          "stage": "audio",
+          "url": "https://fonts.googleapis.com/css2?family=Hahmlet:wght@400;500;700;800&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap",
+          "sourceBytes": 465436
+        },
+        {
+          "stage": "novel-return",
+          "url": "https://fonts.googleapis.com/css2?family=Hahmlet:wght@400;500;700;800&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap",
+          "sourceBytes": 465436
+        }
+      ]
+    },
+    {
+      "origin": "http://127.0.0.1:4197",
+      "name": "phone",
+      "browser": "153.0.8010.12",
+      "steps": [
+        {
+          "stage": "cold",
+          "fontRequests": 4,
+          "fontBytes": 216136,
+          "cacheHits": 0,
+          "fontFamilies": [
+            "ToldLife Serif",
+            "ToldLife UI"
+          ],
+          "title": {
+            "width": 288,
+            "height": 78.0625
+          },
+          "overflow": false,
+          "origin": 1791644883373.4
+        },
+        {
+          "stage": "audio",
+          "fontRequests": 4,
+          "fontBytes": 0,
+          "cacheHits": 4,
+          "fontFamilies": [
+            "ToldLife Serif",
+            "ToldLife UI"
+          ],
+          "title": {
+            "width": 288,
+            "height": 78.0625
+          },
+          "overflow": false,
+          "origin": 1791644884480.2
+        },
+        {
+          "stage": "novel-return",
+          "fontRequests": 4,
+          "fontBytes": 0,
+          "cacheHits": 4,
+          "fontFamilies": [
+            "ToldLife Serif",
+            "ToldLife UI"
+          ],
+          "title": {
+            "width": 288,
+            "height": 78.0625
+          },
+          "overflow": false,
+          "origin": 1791644885064.6
+        }
+      ],
+      "css": [
+        {
+          "stage": "cold",
+          "url": "http://127.0.0.1:4197/fonts/reader.b58363508c74c667.css",
+          "sourceBytes": 80159
+        },
+        {
+          "stage": "audio",
+          "url": "http://127.0.0.1:4197/fonts/reader.b58363508c74c667.css",
+          "sourceBytes": 80159
+        },
+        {
+          "stage": "novel-return",
+          "url": "http://127.0.0.1:4197/fonts/reader.b58363508c74c667.css",
+          "sourceBytes": 80159
+        }
+      ]
+    },
+    {
+      "origin": "http://127.0.0.1:4197",
+      "name": "webkit-phone",
+      "browser": "26.6",
+      "steps": [
+        {
+          "stage": "cold",
+          "fontRequests": null,
+          "fontBytes": null,
+          "cacheHits": null,
+          "fontFamilies": [
+            "ToldLife Serif",
+            "ToldLife UI"
+          ],
+          "title": {
+            "width": 288,
+            "height": 78.0625
+          },
+          "overflow": false,
+          "origin": 1791644888064
+        },
+        {
+          "stage": "audio",
+          "fontRequests": null,
+          "fontBytes": null,
+          "cacheHits": null,
+          "fontFamilies": [
+            "ToldLife Serif",
+            "ToldLife UI"
+          ],
+          "title": {
+            "width": 288,
+            "height": 78.0625
+          },
+          "overflow": false,
+          "origin": 1791644888997
+        },
+        {
+          "stage": "novel-return",
+          "fontRequests": null,
+          "fontBytes": null,
+          "cacheHits": null,
+          "fontFamilies": [
+            "ToldLife Serif",
+            "ToldLife UI"
+          ],
+          "title": {
+            "width": 288,
+            "height": 78.0625
+          },
+          "overflow": false,
+          "origin": 1791644889598
+        }
+      ],
+      "css": [
+        {
+          "stage": "cold",
+          "url": "http://127.0.0.1:4197/fonts/reader.b58363508c74c667.css",
+          "sourceBytes": 80159
+        },
+        {
+          "stage": "audio",
+          "url": "http://127.0.0.1:4197/fonts/reader.b58363508c74c667.css",
+          "sourceBytes": 80159
+        },
+        {
+          "stage": "novel-return",
+          "url": "http://127.0.0.1:4197/fonts/reader.b58363508c74c667.css",
+          "sourceBytes": 80159
+        }
+      ]
+    }
+  ],
+  "fontAssets": {
+    "faces": 220,
+    "stylesheet": "reader.b58363508c74c667.css",
+    "cssSourceBytes": 80159,
+    "common": [
+      {
+        "family": "ToldLife Serif",
+        "weight": "400 800",
+        "bytes": 68716,
+        "file": "serif.dd919c447dd39036.woff2"
+      },
+      {
+        "family": "ToldLife UI",
+        "weight": "400",
+        "bytes": 46192,
+        "file": "ui-400.ddfbb58e5e392b39.woff2"
+      },
+      {
+        "family": "ToldLife UI",
+        "weight": "500",
+        "bytes": 50076,
+        "file": "ui-500.f346781248f89c74.woff2"
+      },
+      {
+        "family": "ToldLife UI",
+        "weight": "600",
+        "bytes": 50248,
+        "file": "ui-600.d37d0df3e07dd1fc.woff2"
+      },
+      {
+        "family": "ToldLife UI",
+        "weight": "700",
+        "bytes": 48892,
+        "file": "ui-700.9275cad330181d43.woff2"
+      }
+    ]
+  }
+}
