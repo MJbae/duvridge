@@ -1,0 +1,350 @@
+{
+  "implementationRevision": "0c5c6e2bd5594212ec057630228c41f32ad2adac",
+  "episode": "ep02",
+  "production": {
+    "voice": "nw7o9nqXCkQKoAs59z99",
+    "model": "eleven_v4",
+    "seed": 1936,
+    "newlyRecordedClips": 1,
+    "reusedClips": 8,
+    "changedScriptRows": [
+      2
+    ],
+    "previousClipsPreserved": true,
+    "sttCalls": 0,
+    "media": {
+      "checkedAt": "2026-10-10T23:57:11.061Z",
+      "origin": "https://toldlife.duvridge.com",
+      "expectedSha": "0c5c6e2bd5594212ec057630228c41f32ad2adac",
+      "before": {
+        "schemaVersion": 1,
+        "group": "toldlife",
+        "sourceRevision": "0c5c6e2bd5594212ec057630228c41f32ad2adac",
+        "sourceDirty": false,
+        "services": [
+          {
+            "base": "/novels/",
+            "files": 1229
+          },
+          {
+            "base": "/audiobooks/",
+            "files": 1281
+          },
+          {
+            "base": "/videos/",
+            "files": 1264
+          }
+        ],
+        "videos": 29
+      },
+      "after": {
+        "schemaVersion": 1,
+        "group": "toldlife",
+        "sourceRevision": "0c5c6e2bd5594212ec057630228c41f32ad2adac",
+        "sourceDirty": false,
+        "services": [
+          {
+            "base": "/novels/",
+            "files": 1229
+          },
+          {
+            "base": "/audiobooks/",
+            "files": 1281
+          },
+          {
+            "base": "/videos/",
+            "files": 1264
+          }
+        ],
+        "videos": 29
+      },
+      "media": [
+        {
+          "path": "/audiobooks/works/bae-byunghee/record/ep02.mp3",
+          "sha256": "ce8c1608a5e2281799d37ed51c37d485b6e523c6762efffaea94b6dda050fda8",
+          "bytes": 1878771,
+          "contentType": "audio/mpeg",
+          "rangeStatus": 206
+        },
+        {
+          "path": "/videos/works/bae-byunghee/media/ep02.8c0ccc7508.mp4",
+          "sha256": "8c0ccc7508d5c231adf8f020e4d0934212b79609118ab36dd6be0fffd49c1612",
+          "bytes": 12728964,
+          "contentType": "video/mp4",
+          "rangeStatus": 206
+        }
+      ]
+    },
+    "browser": {
+      "checkedAt": "2026-10-10T23:57:22.791Z",
+      "mode": "production",
+      "results": [
+        {
+          "format": "novels",
+          "size": "small-phone",
+          "width": 320,
+          "height": 740,
+          "context": "1940년대 · 안면도 중장리",
+          "firstBody": "태평양 전쟁과 광복을 전후해 세상은 어수선했다. 섬마을 살림도 곤궁했다. 황토밭을 일구고 물때마다 갯벌에 나가도 대식구의 끼니를 대기는 늘 빠듯했다.",
+          "overflow": false,
+          "errors": []
+        },
+        {
+          "format": "audiobooks",
+          "size": "small-phone",
+          "width": 320,
+          "height": 740,
+          "context": "1940년대 · 안면도 중장리",
+          "firstBody": "태평양 전쟁과 광복을 전후해 세상은 어수선했다.",
+          "overflow": false,
+          "errors": []
+        },
+        {
+          "format": "novels",
+          "size": "phone",
+          "width": 390,
+          "height": 844,
+          "context": "1940년대 · 안면도 중장리",
+          "firstBody": "태평양 전쟁과 광복을 전후해 세상은 어수선했다. 섬마을 살림도 곤궁했다. 황토밭을 일구고 물때마다 갯벌에 나가도 대식구의 끼니를 대기는 늘 빠듯했다.",
+          "overflow": false,
+          "errors": []
+        },
+        {
+          "format": "audiobooks",
+          "size": "phone",
+          "width": 390,
+          "height": 844,
+          "context": "1940년대 · 안면도 중장리",
+          "firstBody": "태평양 전쟁과 광복을 전후해 세상은 어수선했다.",
+          "overflow": false,
+          "errors": []
+        },
+        {
+          "format": "novels",
+          "size": "desktop",
+          "width": 1440,
+          "height": 1000,
+          "context": "1940년대 · 안면도 중장리",
+          "firstBody": "태평양 전쟁과 광복을 전후해 세상은 어수선했다. 섬마을 살림도 곤궁했다. 황토밭을 일구고 물때마다 갯벌에 나가도 대식구의 끼니를 대기는 늘 빠듯했다.",
+          "overflow": false,
+          "errors": []
+        },
+        {
+          "format": "audiobooks",
+          "size": "desktop",
+          "width": 1440,
+          "height": 1000,
+          "context": "1940년대 · 안면도 중장리",
+          "firstBody": "태평양 전쟁과 광복을 전후해 세상은 어수선했다.",
+          "overflow": false,
+          "errors": []
+        }
+      ]
+    },
+    "finalMarker": {
+      "schemaVersion": 1,
+      "group": "toldlife",
+      "sourceRevision": "0c5c6e2bd5594212ec057630228c41f32ad2adac",
+      "sourceDirty": false,
+      "services": [
+        {
+          "base": "/novels/",
+          "files": 1229
+        },
+        {
+          "base": "/audiobooks/",
+          "files": 1281
+        },
+        {
+          "base": "/videos/",
+          "files": 1264
+        }
+      ],
+      "videos": 29
+    }
+  },
+  "artifacts": {
+    "episode": "ep02",
+    "metadata": "1940년대 · 안면도 중장리",
+    "yearOccurrencesInSrt": 1,
+    "firstBodyCue": {
+      "start": 12.137,
+      "end": 16.33,
+      "text": "태평양 전쟁과 광복을\n전후해 세상은 어수선했다."
+    },
+    "cueCount": 21,
+    "duration": 93.878,
+    "scriptMatchesCanonical": true,
+    "subtitlesMatchCanonical": true,
+    "mp3Sha256": "ce8c1608a5e2281799d37ed51c37d485b6e523c6762efffaea94b6dda050fda8",
+    "mp3Bytes": 1878771
+  },
+  "video": {
+    "file": "ep02.8c0ccc7508.mp4",
+    "bytes": 12728964,
+    "sha256": "8c0ccc7508d5c231adf8f020e4d0934212b79609118ab36dd6be0fffd49c1612",
+    "duration": 103.467
+  },
+  "localBrowser": {
+    "checkedAt": "2026-10-10T23:49:20.228Z",
+    "mode": "local",
+    "results": [
+      {
+        "format": "novels",
+        "size": "small-phone",
+        "width": 320,
+        "height": 740,
+        "context": "1940년대 · 안면도 중장리",
+        "firstBody": "태평양 전쟁과 광복을 전후해 세상은 어수선했다. 섬마을 살림도 곤궁했다. 황토밭을 일구고 물때마다 갯벌에 나가도 대식구의 끼니를 대기는 늘 빠듯했다.",
+        "overflow": false,
+        "errors": []
+      },
+      {
+        "format": "audiobooks",
+        "size": "small-phone",
+        "width": 320,
+        "height": 740,
+        "context": "1940년대 · 안면도 중장리",
+        "firstBody": "태평양 전쟁과 광복을 전후해 세상은 어수선했다.",
+        "overflow": false,
+        "errors": []
+      },
+      {
+        "format": "novels",
+        "size": "phone",
+        "width": 390,
+        "height": 844,
+        "context": "1940년대 · 안면도 중장리",
+        "firstBody": "태평양 전쟁과 광복을 전후해 세상은 어수선했다. 섬마을 살림도 곤궁했다. 황토밭을 일구고 물때마다 갯벌에 나가도 대식구의 끼니를 대기는 늘 빠듯했다.",
+        "overflow": false,
+        "errors": []
+      },
+      {
+        "format": "audiobooks",
+        "size": "phone",
+        "width": 390,
+        "height": 844,
+        "context": "1940년대 · 안면도 중장리",
+        "firstBody": "태평양 전쟁과 광복을 전후해 세상은 어수선했다.",
+        "overflow": false,
+        "errors": []
+      },
+      {
+        "format": "novels",
+        "size": "desktop",
+        "width": 1440,
+        "height": 1000,
+        "context": "1940년대 · 안면도 중장리",
+        "firstBody": "태평양 전쟁과 광복을 전후해 세상은 어수선했다. 섬마을 살림도 곤궁했다. 황토밭을 일구고 물때마다 갯벌에 나가도 대식구의 끼니를 대기는 늘 빠듯했다.",
+        "overflow": false,
+        "errors": []
+      },
+      {
+        "format": "audiobooks",
+        "size": "desktop",
+        "width": 1440,
+        "height": 1000,
+        "context": "1940년대 · 안면도 중장리",
+        "firstBody": "태평양 전쟁과 광복을 전후해 세상은 어수선했다.",
+        "overflow": false,
+        "errors": []
+      }
+    ]
+  },
+  "localChecks": {
+    "repository": {
+      "node": 34,
+      "python": 11
+    },
+    "productionParser": 20,
+    "sharedPackages": 56,
+    "novels": {
+      "unit": 35,
+      "sharing": 4,
+      "build": true,
+      "typecheck": true
+    },
+    "audiobooks": {
+      "unit": 60,
+      "sharing": 4,
+      "build": true,
+      "typecheck": true,
+      "browserPassed": 33,
+      "browserSkipped": 3
+    },
+    "videos": {
+      "unit": 6,
+      "sharing": 4,
+      "build": true,
+      "typecheck": true,
+      "browserPassed": 42,
+      "mediaFixtures": true
+    },
+    "portal": {
+      "unit": 15
+    },
+    "novelBrowserPassed": 6
+  },
+  "scope": {
+    "otherEpisodesUnchanged": true,
+    "canonicalManuscriptAlreadyUpdated": true
+  },
+  "finishedAt": "2026-10-10T23:59:00.725Z",
+  "ci": {
+    "runId": 38096440322,
+    "url": "https://github.com/MJbae/duvridge/actions/runs/38096440322",
+    "headSha": "0c5c6e2bd5594212ec057630228c41f32ad2adac",
+    "status": "completed",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "name": "repository",
+        "conclusion": "success"
+      },
+      {
+        "name": "plan",
+        "conclusion": "success"
+      },
+      {
+        "name": "service (toldlife-audiobooks, @duvridge/toldlife-audiobooks, apps/toldlife-audiobooks/site/.vitep...",
+        "conclusion": "success"
+      },
+      {
+        "name": "fonts",
+        "conclusion": "success"
+      },
+      {
+        "name": "service (toldlife-videos, @duvridge/toldlife-videos, apps/toldlife-videos/site/.vitepress/dist)",
+        "conclusion": "success"
+      },
+      {
+        "name": "urls",
+        "conclusion": "success"
+      },
+      {
+        "name": "service (toldlife-novels, @duvridge/toldlife-novels, apps/toldlife-novels/site/.vitepress/dist)",
+        "conclusion": "success"
+      },
+      {
+        "name": "service (toldlife-portal, @duvridge/toldlife-portal)",
+        "conclusion": "success"
+      },
+      {
+        "name": "Monorepo required",
+        "conclusion": "success"
+      },
+      {
+        "name": "deploy (toldlife, toldlife, https://toldlife.duvridge.com, .deploy/toldlife, python3, scripts/ass...",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "release": {
+    "repository": "MJbae/duvridge",
+    "tag": "videos-bae-byunghee-20261009",
+    "asset": "ep02.8c0ccc7508.mp4",
+    "uploadedHashVerified": true,
+    "previousAssetsPreserved": true
+  },
+  "localArtifacts": "_workspace/ep02-audio/ (ignored scripts, logs, screenshots and release download)"
+}
