@@ -118,7 +118,9 @@ def add_video_media(staged, source, books=ROOT / "content/books"):
     added = 0
     for book, manifest in video_manifests(books):
         release = manifest.get("release", {})
-        for episode, video in manifest.get("videos", {}).items():
+        # Films made from the book are published the same way and sit beside the episode videos.
+        listed = [*manifest.get("videos", {}).items(), *manifest.get("films", {}).items()]
+        for episode, video in listed:
             target = staged / "videos/works" / book / "media" / video["file"]
             target.parent.mkdir(parents=True, exist_ok=True)
             if source == "release":

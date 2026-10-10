@@ -24,3 +24,13 @@ test('every recorded episode has its video: the recording\'s sentences and scene
     for (let index = 1; index < track.cues.length; index++) assert.ok(track.cues[index][0] >= track.cues[index - 1][0], `${id} cue ${index}`)
   }
 })
+test('films made from the work keep their published file and pictures, each with its own page', () => {
+  assert.deepEqual(catalog.films.map(film => film.id), ['nureon-bongtu', 'byeotgap', 'mot-bon-cheok'])
+  for (const film of catalog.films) {
+    assert.match(film.src, new RegExp(`^/works/${catalog.work.id}/media/${film.id}\\.[a-f0-9]{10}\\.mp4$`))
+    assert.ok(film.duration > 0 && film.width > 0 && film.height > 0)
+    for (const image of [film.poster, film.card]) assert.ok(existsSync(new URL(`../site/public${image.src}`, import.meta.url)), image.src)
+    const page = readFileSync(new URL(`../site/${catalog.work.id}/${film.id}.md`, import.meta.url), 'utf8')
+    assert.match(page, new RegExp(`kind: "film"[\\s\\S]*filmId: "${film.id}"`))
+  }
+})

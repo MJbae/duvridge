@@ -124,6 +124,29 @@ function discover(root, book) {
   return sources.sort((a, b) => a.localeCompare(b, 'ko'))
 }
 
+const filmIdPattern = /^[a-z0-9][a-z0-9-]{0,40}$/
+const filmImagePattern = /^\/images\/films\/[a-z0-9][a-z0-9-]*\.(?:jpg|jpeg|png|webp)$/
+
+/**
+ * Films made from a work (book.json `films`): their ids, titles and pictures travel with the work so every
+ * format can name them. Their video files are published apart from Git by the video app.
+ */
+function workFilms(films = []) {
+  if (!Array.isArray(films)) throw new Error('book.json의 films는 배열이어야 합니다.')
+  const seen = new Set()
+  return films.map((film) => {
+    if (!filmIdPattern.test(film?.id ?? '') || seen.has(film.id)) throw new Error(`영상 id가 잘못되었거나 겹칩니다: ${film?.id}`)
+    seen.add(film.id)
+    if (typeof film.title !== 'string' || !film.title.trim()) throw new Error(`영상 제목이 없습니다: ${film.id}`)
+    const picture = (key) => {
+      const image = film[key]
+      if (!filmImagePattern.test(image?.src ?? '') || !(image.width > 0) || !(image.height > 0)) throw new Error(`영상 그림이 잘못되었습니다: ${film.id}.${key}`)
+      return { src: image.src, width: image.width, height: image.height, ...(key === 'card' ? { alt: plainText(image.alt || film.title) } : {}) }
+    }
+    return { id: film.id, title: plainText(film.title), card: picture('card'), poster: picture('poster') }
+  })
+}
+
 function frontmatter(metadata, content) {
   // JSON values are valid YAML, including Korean text and nested prev/next objects.
   return `---\n${Object.entries(metadata)
@@ -225,6 +248,7 @@ export function prepareContent({ root = projectRoot, book, logger = console, ext
     schedule: plainText(main.data.schedule || ''),
     cover: book.cover,
     sharing: book.sharing,
+    films: workFilms(book.films),
   }
   const extension = extendCatalog?.({ root, structure, work, toText: plainText, warn }) ?? { catalog: {}, generated: [] }
   const reservedPageIds = new Set(['index', '404', 'assets', 'life-story', ...Object.keys(legacyEpisodes)])
@@ -402,6 +426,12 @@ export function prepareContent({ root = projectRoot, book, logger = console, ext
       return [page.filename, frontmatter(metadata, rewriteLinks(page.body, page.source))]
     }),
   ])
+  // An app may add pages of its own to the work, such as one per film; they never replace a generated page.
+  for (const extra of extension.pages ?? []) {
+    if (!/^[a-z0-9][a-z0-9_-]{0,79}\.md$/.test(extra.filename)) throw new Error(`안전하지 않은 생성 경로: ${extra.filename}`)
+    if (outputs.has(extra.filename)) throw new Error(`생성 경로 중복: ${extra.filename}`)
+    outputs.set(extra.filename, frontmatter({ ...extra.frontmatter, outline: false }, extra.body ?? ''))
+  }
   const catalog = { title: work.title, work, places: structure.places, chapters, readingOrder, legacyIds, legacyScrollResetIds, documents, illustrations, music, ...extension.catalog }
   // A work first published before works had their own folder kept its pages at read/{page}.html;
   // the deployment sends those addresses on, so name each one with the page that replaced it.

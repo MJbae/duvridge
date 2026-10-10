@@ -67,8 +67,9 @@ def check(group_id, origin=None, revision=None):
         # Every published video answers a range request with its listed size, as Safari needs to play it.
         for manifest in sorted((ROOT / "content/books").glob("*/video/media.json")):
             book = json.loads((manifest.parent.parent / "book.json").read_text())["id"]
-            videos = json.loads(manifest.read_text())["videos"]
-            for video in videos.values():
+            listed = json.loads(manifest.read_text())
+            videos = [*listed["videos"].values(), *listed.get("films", {}).values()]
+            for video in videos:
                 path = f"/videos/works/{book}/media/{video['file']}"
                 _, response_headers = fetch(path, {"Range": "bytes=0-1"}, limit=2)
                 if response_headers.get("Content-Range") != f"bytes 0-1/{video['bytes']}":

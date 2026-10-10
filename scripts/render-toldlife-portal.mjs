@@ -55,21 +55,34 @@ function portalRuntime(works) {
     if (tab === 'novels' && !saved.finished) button.addEventListener('click', () => remember(key('resume'), JSON.stringify({ ...saved, id })))
   }
 }
+const filmHref = film => `/videos/${escape(film.work.id)}/${escape(film.id)}`
+const workCell = (format, work) => {
+  const image = work.cover.src || work.cover.sources.find(source => source.width === 720)?.src || work.cover.sources[0].src
+  return `<li><a href="/${format}/${escape(work.id)}/"><img src="/novels${escape(image)}" width="${work.cover.width}" height="${work.cover.height}" alt="${escape(work.cover.alt)}" loading="lazy"><span class="work-name">${escape(work.title)}</span></a></li>`
+}
+/** The video tab with films: the first film leads with its original named under it, then every film, then each work's episode videos. */
+function filmPanel(films, works) {
+  const lead = films[0]
+  const wide = lead.poster && lead.poster.width > lead.poster.height ? `<source media="(min-width: 900px)" srcset="/novels${escape(lead.poster.src)}">` : ''
+  const cells = films.map(film => `<li><a href="${filmHref(film)}"><img src="/novels${escape(film.card.src)}" width="${film.card.width}" height="${film.card.height}" alt="${escape(film.card.alt)}" loading="lazy"><span class="work-name">${escape(film.title)}</span></a></li>`).join('')
+    + works.map(work => workCell('videos', work)).join('')
+  return `<section id="videos" class="panel" aria-label="영상"><div class="hero"><a class="hero-art" href="${filmHref(lead)}" tabindex="-1" aria-hidden="true"><picture>${wide}<img src="/novels${escape(lead.card.src)}" width="${lead.card.width}" height="${lead.card.height}" alt="" loading="lazy"></picture></a><div class="hero-copy"><h2 class="hero-title"><a href="${filmHref(lead)}">${escape(lead.title)}</a></h2><span class="hero-origin">원작 · ${escape(lead.work.title)}</span><div class="hero-actions"><a class="big-button" href="${filmHref(lead)}">${icons.videos}<span>보기</span></a></div></div></div><ul class="works" aria-label="작품">${cells}</ul></section>`
+}
 export function renderPortal(works) {
   if (!works.length) throw new Error('포털에 공개할 작품이 없습니다.')
   // Both tabs list works in the same cells; only the original series ends by inviting a life to become the next original.
   const invite = '<li><a class="work-invite" href="https://www.duvridge.com/ko/#services"><span class="invite-card"><span class="invite-dot" aria-hidden="true"></span><span class="invite-line">살아낸 삶이<br>원작이 됩니다</span></span><span class="work-name">원작 의뢰하기</span></a></li>'
+  // Films made from the originals lead the video tab; each names the work it came from.
+  const films = works.flatMap(work => (work.films ?? []).map(film => ({ ...film, work })))
   const panels = Object.entries({ novels: '오리지널 시리즈', videos: '영상' }).map(([format, label]) => {
+    if (format === 'videos' && films.length) return filmPanel(films, works)
     const featured = works[0]
     const home = `/${format}/${featured.id}/`
     const first = featured.episodes.find(episode => format === 'novels' || episode.recorded)
     const image = featured.cover.src || featured.cover.sources.find(source => source.width === 720)?.src || featured.cover.sources[0].src
     const src = `/novels${image}`
     const srcset = sources => sources.map(source => `/novels${source.src} ${source.width}w`).join(', ')
-    const list = works.map(work => {
-      const image = work.cover.src || work.cover.sources.find(source => source.width === 720)?.src || work.cover.sources[0].src
-      return `<li><a href="/${format}/${escape(work.id)}/"><img src="/novels${escape(image)}" width="${work.cover.width}" height="${work.cover.height}" alt="${escape(work.cover.alt)}" loading="lazy"><span class="work-name">${escape(work.title)}</span></a></li>`
-    }).join('') + (format === 'novels' ? invite : '')
+    const list = works.map(work => workCell(format, work)).join('') + (format === 'novels' ? invite : '')
     // The original series leads with the novel; the audiobook of the same work is one quiet button beside it.
     const actions = format === 'novels'
       ? `<a class="big-button" href="${home}${first?.id ?? ''}" data-action="${format}" data-work="${featured.id}" aria-label="소설 처음부터 읽기">${icons.novels}<span>소설</span></a><a class="sub-button" href="/audiobooks/${escape(featured.id)}/">${icons.audiobookButton}<span>오디오북</span></a>`

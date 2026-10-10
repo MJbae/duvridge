@@ -142,6 +142,18 @@ class VideoMediaTests(unittest.TestCase):
         self.assertEqual(self.add(str(self.folder)), 1)
         self.assertEqual(self.target.read_bytes(), self.content)
 
+    def test_films_are_placed_beside_the_episode_videos(self):
+        film = b"film bytes"
+        digest = hashlib.sha256(film).hexdigest()
+        name = f"short.{digest[:10]}.mp4"
+        manifest = json.loads((self.books / "first/video/media.json").read_text())
+        manifest["films"] = {"short": {"file": name, "bytes": len(film), "sha256": digest, "duration": 2.0, "width": 720, "height": 1280}}
+        (self.books / "first/video/media.json").write_text(json.dumps(manifest))
+        (self.folder / "ep01.mp4").write_bytes(self.content)
+        (self.folder / name).write_bytes(film)
+        self.assertEqual(self.add(str(self.folder)), 2)
+        self.assertEqual((self.staged / "videos/works/first-work/media" / name).read_bytes(), film)
+
     def test_a_missing_or_changed_video_stops_the_assembly(self):
         with self.assertRaisesRegex(ValueError, "missing"):
             self.add(str(self.folder))

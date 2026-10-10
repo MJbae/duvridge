@@ -7,7 +7,7 @@ import ReaderSheet from '@duvridge/reader-ui/components/ReaderSheet.vue'
 import ReaderSettingsButton from '@duvridge/reader-ui/components/ReaderSettingsButton.vue'
 import WorkHome, { type WorkRow } from '@duvridge/reader-ui/components/WorkHome.vue'
 import { episodeName, episodeThumb, progressPercent } from '@duvridge/reader-ui/series/work-rows.mjs'
-import { formatLinks } from '@duvridge/reader-ui/series/series-tabs.mjs'
+import { formatLinks, seriesWorkHref } from '@duvridge/reader-ui/series/series-tabs.mjs'
 import { imageSrcset } from '@duvridge/reader-ui/images/create-image-sources.mjs'
 import NovelEpisodeEnd from './components/NovelEpisodeEnd.vue'
 import BackgroundMusicToggle from './components/BackgroundMusicToggle.vue'
@@ -144,6 +144,13 @@ const art = computed(() => {
 })
 // The work page switches between its novel (this page) and its audiobook; the novel leads.
 const formats = formatLinks(catalog.work.id, 'novel')
+// A film's page links here with ?from=<film>; that film is named above the work, and leads back to it.
+const origin = ref<{ title: string; image: string; href: string }>()
+function arrivedFrom() {
+  const id = new URLSearchParams(location.search).get('from')
+  const film = catalog.work.films?.find(entry => entry.id === id)
+  origin.value = film ? { title: film.title, image: withBase(film.poster.src), href: `${seriesWorkHref('video', catalog.work.id)}${film.id}` } : undefined
+}
 function openAction() { if (action.value.resume) resumeReading() }
 function openRow(_event: MouseEvent, row: WorkRow) { if (row.current && action.value.resume) resumeReading() }
 
@@ -198,6 +205,7 @@ onMounted(() => {
     window.history.replaceState(window.history.state, '', `#episode-${anchorId}`)
     void nextTick(() => document.getElementById(`episode-${anchorId}`)?.scrollIntoView())
   }
+  arrivedFrom()
   window.addEventListener('scroll', onScroll, { passive: true })
   window.addEventListener('pagehide', pagehide)
   void setupPage()
@@ -214,7 +222,7 @@ onBeforeUnmount(() => {
     <a class="skip-link" href="#main">본문으로 건너뛰기</a>
     <audio ref="musicAudio" class="background-audio" loop preload="none" aria-hidden="true" />
     <WorkHome v-if="isHome" series="novel" :title="catalog.work.title" :art="art"
-      :action="{ label: action.label, ariaLabel: action.spoken, href: withBase(action.episode.url) }" :formats="formats" :rows="rows" @action="openAction" @select="openRow" />
+      :action="{ label: action.label, ariaLabel: action.spoken, href: withBase(action.episode.url) }" :formats="formats" :origin="origin" :rows="rows" @action="openAction" @select="openRow" />
     <main v-else-if="isMissing" id="main" tabindex="-1" class="not-found"><h1>이야기를 찾지 못했습니다.</h1><a class="text-link" :href="workHome">작품 홈으로</a></main>
     <main v-else-if="frontmatter.kind === 'redirect'" id="main" class="not-found"><h1>홈으로 이동합니다.</h1><a class="text-link" :href="frontmatter.redirectTo" target="_self">홈으로</a></main>
     <template v-else>

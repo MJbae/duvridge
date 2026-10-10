@@ -359,3 +359,19 @@ test('여섯 회차의 삽화는 해당 장면에서 시작하고 대표 그림�
     }
   }
 })
+
+test('영상에서 온 사람에게는 작품 위에 그 영상의 원작임을 한 줄로 보여 준다', async ({ page }) => {
+  await quiet(page)
+  await page.goto('./?from=nureon-bongtu')
+  const origin = page.locator('.work-origin')
+  await expect(origin).toHaveText('누런 봉투의 원작')
+  await expect(origin).toHaveAttribute('href', '/videos/bae-byunghee/nureon-bongtu')
+  await expect(origin.locator('img')).toHaveAttribute('src', /\/novels\/works\/bae-byunghee\/images\/films\/nureon-bongtu-poster\.jpg$/)
+  await expect(bigButton(page)).toHaveText('읽기')
+  await noOverflow(page)
+  for (const address of ['./', './?from=unknown']) {
+    await page.goto(address)
+    await expect(page.locator('[data-reader-ready="true"]')).toBeVisible()
+    await expect(page.locator('.work-origin')).toHaveCount(0)
+  }
+})

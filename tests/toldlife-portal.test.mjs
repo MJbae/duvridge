@@ -59,3 +59,16 @@ test('both tabs list works in the same cells; only the original series invites t
   assert.doesNotMatch(panelOf('videos'), /work-invite|원작 의뢰하기/)
   assert.doesNotMatch(portal, /works--(?:poster|square|wide)/)
 })
+
+test('the video tab leads with the films made from the originals; each film names its original', () => {
+  const filmPortal = renderPortal([{ id: 'example', title: 'Example', cover: { alt: 'Cover', width: 720, height: 405, sources: [{ src: '/works/example/images/cover.jpg', width: 720 }] }, legacyIds: {}, episodes: [{ id: 'ep01', label: '1화', recorded: true }],
+    films: [{ id: 'short', title: '짧은 영상', card: { src: '/works/example/images/films/short-card.jpg', width: 720, height: 1080, alt: '그림' } }, { id: 'second', title: '둘째 영상', card: { src: '/works/example/images/films/second-card.jpg', width: 720, height: 1080, alt: '그림' } }] }])
+  const videos = filmPortal.match(/<section id="videos"[\s\S]*?<\/section>/)[0]
+  assert.match(videos, /<img src="\/novels\/works\/example\/images\/films\/short-card\.jpg"[^>]*alt=""/)
+  assert.match(videos, /<h2 class="hero-title"><a href="\/videos\/example\/short">짧은 영상<\/a><\/h2><span class="hero-origin">원작 · Example<\/span>/)
+  assert.match(videos, /<a class="big-button" href="\/videos\/example\/short">[\s\S]*?<span>보기<\/span><\/a>/)
+  assert.doesNotMatch(videos, /data-action/)
+  const cells = [...videos.matchAll(/<li><a href="([^"]+)">/g)].map(match => match[1])
+  assert.deepEqual(cells, ['/videos/example/short', '/videos/example/second', '/videos/example/'])
+  assert.doesNotMatch(filmPortal.match(/<section id="novels"[\s\S]*?<\/section>/)[0], /짧은 영상/)
+})

@@ -38,8 +38,10 @@ export type BookConfig = {
   assets?: { coverSource?: string }
 }
 export type ReaderEpisode = { id: string; episodeId: string; title: string; url: string; label: string; number: number | null; time: string; place: Place | null }
+/** A film made from the work (book.json `films`); the video app adds its file. */
+export type WorkFilm = { id: string; title: string; card: { src: string; width: number; height: number; alt: string }; poster: { src: string; width: number; height: number } }
 export type ReaderCatalog = {
-  work: { id: string; legacyRoot?: boolean; title: string; subtitle: string; synopsis: string[]; schedule: string; cover?: Cover; sharing?: Sharing }
+  work: { id: string; legacyRoot?: boolean; title: string; subtitle: string; synopsis: string[]; schedule: string; cover?: Cover; sharing?: Sharing; films?: WorkFilm[] }
   readingOrder: ReaderEpisode[]
   documents: { id: string; title: string; url: string }[]
   illustrations?: Record<string, Illustration[]>

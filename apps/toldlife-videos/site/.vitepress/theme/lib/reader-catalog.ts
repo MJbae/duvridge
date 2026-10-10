@@ -3,6 +3,7 @@ import type { ReaderCatalog, ReaderEpisode, Place, Illustration, ImageSource } f
 import { withBase } from 'vitepress'
 import { useWorkCatalog } from '@duvridge/reader-ui/catalog/work-catalog.ts'
 import type { NarrationTrack } from '../../shared/narration-catalog.mjs'
+import type { Film } from '../../shared/video-catalog.mjs'
 export type { NarrationTrack }
 export type Reading = { id: string; title: string; url: string }
 export type Episode = ReaderEpisode
@@ -20,6 +21,8 @@ export type Catalog = ReaderCatalog & {
   narration: Record<string, NarrationTrack>
   /** Each recorded episode's video: the same sentences and scenes as the recording, in the video's own times. */
   video: Record<string, NarrationTrack>
+  /** Films made from the work, each with its own page. */
+  films: Film[]
 }
 export const useCatalog = () => useWorkCatalog<Catalog>()
 

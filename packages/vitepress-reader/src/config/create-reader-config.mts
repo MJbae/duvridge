@@ -170,6 +170,8 @@ export function createReaderConfig({ root, catalog, catalogs, defaultBase = '/',
     buildEnd({ outDir }) {
       const works = Object.values(catalogs ?? { single: catalog }).map(entry => ({
         id: entry.work.id, legacyRoot: entry.work.legacyRoot, title: entry.work.title, cover: entry.work.cover,
+        // The films made from the work, for the platform home's video tab.
+        films: (entry.work.films ?? []).map(film => ({ id: film.id, title: film.title, card: film.card, poster: film.poster })),
         legacyIds: entry.legacyIds ?? {}, episodes: entry.readingOrder?.map(episode => ({ id: episode.id, label: episode.label,
           recorded: Boolean((entry as ReaderCatalog & { narration?: Record<string, unknown> }).narration?.[episode.id]) })) ?? [],
       }))

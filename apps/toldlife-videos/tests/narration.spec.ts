@@ -103,3 +103,29 @@ test('영상은 배경음악을 불러오지 않는다', async ({ page }) => {
   await expect(page.locator('.background-audio')).toHaveCount(0)
   expect(requests).toEqual([])
 })
+
+const films = (rawCatalog as unknown as { films: { id: string; title: string; src: string; poster: { src: string }; width: number; height: number }[] }).films
+
+test('원작으로 만든 영상은 제 화면에서 그대로 재생되고, 원작 작품 전체로 이어진다', async ({ page }) => {
+  const errors: string[] = []
+  page.on('pageerror', error => errors.push(error.message))
+  expect(films.map(film => film.id)).toEqual(['nureon-bongtu', 'byeotgap', 'mot-bon-cheok'])
+  for (const film of films) {
+    await page.goto(film.id)
+    await expect(page.getByRole('heading', { level: 1, name: film.title, exact: true })).toBeVisible()
+    const media = page.locator('video.film-video')
+    await expect(media).toHaveAttribute('src', `/videos${film.src}`)
+    await expect(media).toHaveAttribute('poster', `/videos${film.poster.src}`)
+    expect(await media.evaluate((element: HTMLVideoElement) => element.controls && element.playsInline)).toBe(true)
+    // A tall film keeps its shape and leaves room below it.
+    if (film.height > film.width) expect(await media.evaluate(element => element.getBoundingClientRect().height / innerHeight)).toBeLessThanOrEqual(0.73)
+    await expect(page.getByRole('link', { name: '영상 홈으로' })).toHaveAttribute('href', '/#videos')
+    const origin = page.locator('.film-origin-card')
+    await expect(origin).toHaveText(new RegExp('내 논을 파는 한이 있어도'))
+    await expect(origin).toHaveAttribute('href', `/novels/bae-byunghee/?from=${film.id}`)
+    // A film links only to its whole original: no episode, novel or audiobook buttons.
+    await expect(page.locator('.film-page .big-button, .film-page .format-switch')).toHaveCount(0)
+    await noOverflow(page)
+  }
+  expect(errors).toEqual([])
+})

@@ -8,6 +8,7 @@ import { episodeThumb, progressPercent } from '@duvridge/reader-ui/series/work-r
 import { imageSrcset } from '@duvridge/reader-ui/images/create-image-sources.mjs'
 import { listenAction } from '../shared/playback-selection.mjs'
 import TheaterPlayer from './components/TheaterPlayer.vue'
+import FilmPage from './components/FilmPage.vue'
 import SceneArt from './components/SceneArt.vue'
 import { followsHere, narrationKey, useNarration, videoElementKey, type NarrationMode } from './lib/narration-controller'
 import { useCatalogHelpers } from './lib/reader-catalog'
@@ -22,6 +23,7 @@ const view = computed(() => {
   if (isMissing.value) return 'missing'
   if (frontmatter.value.layout === 'home') return 'home'
   if (frontmatter.value.kind === 'redirect') return 'redirect'
+  if (frontmatter.value.kind === 'film') return 'film'
   return frontmatter.value.kind === 'episode' ? 'episode' : 'missing'
 })
 const pageEpisode = computed(() => (view.value === 'episode' ? String(frontmatter.value.pageId || '') : ''))
@@ -83,8 +85,8 @@ function openRow(event: MouseEvent, row: WorkRow) {
   if (entry && followsHere(event)) narration.open(entry.id)
 }
 
-// Back on the episode list, the video stops; its place is kept for 이어 보기.
-watch(view, value => { if (value === 'home' && state.active) narration.stop() })
+// Back on the episode list or on a film, the episode video stops; its place is kept for 이어 보기.
+watch(view, value => { if ((value === 'home' || value === 'film') && state.active) narration.stop() })
 
 onMounted(() => {
   try { migrateWorkStorage(localStorage, catalog.work) } catch { /* Browser storage is optional. */ }
@@ -100,6 +102,7 @@ onMounted(() => {
     <a class="skip-link" href="#main">본문으로 건너뛰기</a>
     <WorkHome v-if="view === 'home'" :series="mode === 'watch' ? 'video' : 'audio'" :title="catalog.work.title" :art="art"
       :action="{ label: action.label, href: action.id ? episodePath(action.id) : undefined }" :rows="rows" @action="openAction" @select="openRow" />
+    <FilmPage v-else-if="view === 'film'" :film-id="String(frontmatter.filmId || '')" />
     <!-- One player for every episode, so its video element carries on into the next episode. -->
     <TheaterPlayer v-else-if="view === 'episode' && !pendingEpisode && mode === 'watch'" :episode-id="pageEpisode" />
     <div v-else-if="pendingEpisode" class="listen-page">

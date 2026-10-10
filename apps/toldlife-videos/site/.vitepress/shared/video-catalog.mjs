@@ -8,6 +8,31 @@ export const videoFilePattern = /^[a-z0-9-]+\.[a-f0-9]{10}\.mp4$/
 const round = value => Math.round(value * 100) / 100
 
 /**
+ * The films made from a work. book.json names them and their pictures; video/media.json lists each film's
+ * published file, apart from Git like the episode videos. Every named film must have its file.
+ */
+export function loadFilms(root, work) {
+  if (!work.films?.length) return []
+  const manifestFile = path.join(root, videoDirectory, 'media.json')
+  const listed = existsSync(manifestFile) ? JSON.parse(readFileSync(manifestFile, 'utf8')).films ?? {} : {}
+  return work.films.map(film => {
+    const entry = listed[film.id]
+    if (!entry) throw new Error(`영상 목록에 파일이 없는 영상입니다: ${film.id}`)
+    if (!videoFilePattern.test(entry.file) || !entry.file.startsWith(`${film.id}.`) || !(entry.duration > 0) || !(entry.width > 0) || !(entry.height > 0))
+      throw new Error(`영상 목록이 잘못되었습니다: ${film.id}`)
+    return { ...film, src: `/works/${work.id}/media/${entry.file}`, duration: round(entry.duration), width: entry.width, height: entry.height }
+  })
+}
+
+/** One page per film in the work's folder, beside the episodes: /videos/<work>/<film>. */
+export function filmPages(work, films) {
+  return films.map(film => ({
+    filename: `${film.id}.md`,
+    frontmatter: { title: film.title, workId: work.id, pageId: `film-${film.id}`, kind: 'film', filmId: film.id, shareTitle: `${film.title} · ${work.title}` },
+  }))
+}
+
+/**
  * One video per recorded episode. A video is the recording at its own pace, so it keeps the recording's
  * sentences, kinds and scenes and only its times differ. The closing music has no subtitle; it takes the
  * rest of the video.

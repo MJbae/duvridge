@@ -19,8 +19,10 @@ export type WorkRow = {
 }
 /** `ariaLabel` names where the button goes when its text is only the format or the verb. */
 export type WorkAction = { label: string; href?: string; ariaLabel?: string }
+/** The film a reader arrived from, named above the work it was made from. */
+export type WorkOrigin = { title: string; image: string; href: string }
 /** `formats` switches the same work page between its novel and its audiobook; the list and the button follow it. */
-const props = defineProps<{ series: SeriesKey; title: string; art?: WorkArt; action: WorkAction; formats?: FormatLink[]; rows: WorkRow[] }>()
+const props = defineProps<{ series: SeriesKey; title: string; art?: WorkArt; action: WorkAction; formats?: FormatLink[]; origin?: WorkOrigin; rows: WorkRow[] }>()
 const emit = defineEmits<{ action: [event: MouseEvent]; select: [event: MouseEvent, row: WorkRow] }>()
 const icon = computed(() => seriesIcons[props.series])
 const iconSize = computed(() => (props.series === 'video' ? 18 : 20))
@@ -47,6 +49,10 @@ onMounted(() => requestAnimationFrame(() => requestAnimationFrame(centerReturned
       </nav>
     </header>
     <main id="main" tabindex="-1">
+      <a v-if="origin" class="work-origin" :href="origin.href" target="_self">
+        <span class="work-origin-thumb"><img :src="origin.image" alt="" width="80" height="45" /><ReaderIcon name="play" :size="16" :stroke="1.9" /></span>
+        <span class="work-origin-text">{{ origin.title }}<span>의 원작</span></span>
+      </a>
       <section class="work-hero" aria-labelledby="work-title">
         <picture v-if="art" class="work-art">
           <source v-if="art.webpSrcset" type="image/webp" :srcset="art.webpSrcset" sizes="100vw" />

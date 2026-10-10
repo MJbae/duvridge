@@ -49,6 +49,53 @@
       "type": "image/png"
     }
   },
+  "films": [
+    {
+      "id": "nureon-bongtu",
+      "title": "누런 봉투",
+      "card": {
+        "src": "/images/films/nureon-bongtu-card.jpg",
+        "width": 720,
+        "height": 1080,
+        "alt": "정미소 사무실에서 배병희가 농민에게 누런 봉투를 건네는 먹 그림"
+      },
+      "poster": {
+        "src": "/images/films/nureon-bongtu-poster.jpg",
+        "width": 1280,
+        "height": 720
+      }
+    },
+    {
+      "id": "byeotgap",
+      "title": "볏값",
+      "card": {
+        "src": "/images/films/byeotgap-card.jpg",
+        "width": 720,
+        "height": 1080,
+        "alt": "볏값 돈뭉치를 농민의 손에 쥐여 주는 먹 그림"
+      },
+      "poster": {
+        "src": "/images/films/byeotgap-poster.jpg",
+        "width": 720,
+        "height": 1280
+      }
+    },
+    {
+      "id": "mot-bon-cheok",
+      "title": "못 본 척",
+      "card": {
+        "src": "/images/films/mot-bon-cheok-card.jpg",
+        "width": 720,
+        "height": 1080,
+        "alt": "자루에 볍씨를 퍼 담는 손을 그린 먹 그림"
+      },
+      "poster": {
+        "src": "/images/films/mot-bon-cheok-poster.jpg",
+        "width": 720,
+        "height": 1280
+      }
+    }
+  ],
   "legacy": {
     "servedAtRoot": true,
     "headingIds": {

@@ -109,3 +109,26 @@ button.lyric-line:hover { color: var(--gray); }
 .stage-end-side .reaction-options button { height: 64px; background: rgb(28 31 39 / 92%); }
 .stage-end-side .episode-nav { margin-top: 0; }
 @media (max-height: 360px) { .stage-end { padding: 40px 48px; } .stage-end-side { gap: 16px; } }
+
+/* A film made from the work: the film itself, its title, 마음 남기기, then one way to its whole original. */
+.film-page { min-height: 100svh; background: var(--night); color: var(--ivory); }
+.film-bar { display: flex; align-items: center; width: 100%; max-width: 960px; height: calc(56px + env(safe-area-inset-top)); margin: 0 auto; padding: env(safe-area-inset-top) 8px 0; }
+.film-back { display: grid; place-items: center; width: 44px; height: 44px; color: var(--ivory); }
+.film-main { width: 100%; max-width: 960px; margin: 0 auto; padding-bottom: calc(40px + env(safe-area-inset-bottom)); }
+.film-frame { display: flex; justify-content: center; background: #000; }
+.film-video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; background: #000; }
+/* A tall film keeps its own shape but never fills more than most of the screen. */
+.film-frame.is-tall .film-video { width: auto; max-width: 100%; height: min(72svh, calc(100vw * 16 / 9)); aspect-ratio: 9 / 16; }
+.film-copy { display: flex; flex-direction: column; max-width: 640px; margin: 0 auto; padding: 20px 20px 0; }
+.film-title { margin: 0; font-family: var(--face-title); font-size: 1.625rem; font-weight: 800; line-height: 1.25; }
+.film-copy .reactions-anchor { margin-top: 36px; }
+.film-origin { margin-top: 40px; }
+.film-origin h2 { display: flex; align-items: center; height: 44px; margin: 0; font-family: var(--face-title); font-size: 1.125rem; font-weight: 700; }
+.film-origin-card { display: flex; align-items: center; gap: 14px; margin-top: 6px; padding: 12px; border-radius: 12px; background: var(--night-raised); color: var(--ivory); }
+.film-origin-card svg { flex-shrink: 0; color: var(--gray); }
+.film-origin-cover { flex-shrink: 0; width: 72px; height: 108px; border-radius: 6px; object-fit: cover; object-position: 52% 35%; background: var(--night-selected); }
+.film-origin-title { flex: 1; min-width: 0; font-family: var(--face-title); font-size: 1.125rem; font-weight: 700; line-height: 1.35; }
+@media (hover: hover) { a.film-origin-card:hover .film-origin-title { color: var(--gold-hover); } }
+@media (min-width: 900px) {
+  .film-frame.is-tall .film-video { height: 72svh; }
+}

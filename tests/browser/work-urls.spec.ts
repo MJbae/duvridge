@@ -17,8 +17,10 @@ test('format roots open the right portal tab and the old video fragment works', 
     await page.goto(`/${format}/`)
     await expect(page).toHaveURL(new RegExp(`\\?tab=${tab}$`))
     await expect(page.locator('.panel.is-active')).toHaveAttribute('id', tab)
-    await expect(page.locator('.panel.is-active .works a:not(.work-invite)')).toHaveCount(2)
-    await page.locator('.panel.is-active .works a:not(.work-invite)').nth(1).click()
+    // Each work has one cell; the video tab lists the films made from the first work before them.
+    await expect(page.locator(`.panel.is-active .works a[href^="/${tab}/"][href$="/"]`)).toHaveCount(2)
+    if (tab === 'videos') await expect(page.locator('.panel.is-active .works a[href^="/videos/bae-byunghee/"]:not([href$="/"])')).toHaveCount(3)
+    await page.locator(`.panel.is-active .works a[href="/${tab}/url-rehearsal/"]`).click()
     await expect(page).toHaveURL(new RegExp(`/${tab}/url-rehearsal/$`))
     await expect(page.getByRole('heading', { name: '주소 검증 작품', exact: true })).toBeVisible()
   }

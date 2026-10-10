@@ -4,7 +4,7 @@ import { materializeBookContent } from '@duvridge/content-processing/source-file
 import { resolveBookSource } from '@duvridge/content-processing/source-files/resolve-book-source.mjs'
 import { prepareContent as prepareShared, plainText } from '@duvridge/content-processing/catalog/prepare-reader-content.mjs'
 import { loadNarration } from '../site/.vitepress/shared/narration-catalog.mjs'
-import { loadVideo, videoDirectory } from '../site/.vitepress/shared/video-catalog.mjs'
+import { filmPages, loadFilms, loadVideo, videoDirectory } from '../site/.vitepress/shared/video-catalog.mjs'
 import { prepareWorkCatalogs } from '@duvridge/content-processing/source-files/prepare-work-catalogs.mjs'
 export { plainText }
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
@@ -21,7 +21,9 @@ export function prepareContent(options = {}) {
     }),
     extendCatalog({ root, structure, work }) {
       const narration = loadNarration(root, structure.episodes, { work }).tracks
-      return { catalog: { narration, video: loadVideo(root, narration, { work }).videos } }
+      // Films made from the work get their own pages beside the episodes.
+      const films = loadFilms(root, work)
+      return { catalog: { narration, video: loadVideo(root, narration, { work }).videos, films }, pages: filmPages(work, films) }
     },
   })
   return prepareShared({ ...options, root, book: editorial.book, extendCatalog({ root, structure, work }) {

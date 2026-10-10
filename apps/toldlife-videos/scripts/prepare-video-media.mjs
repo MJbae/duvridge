@@ -16,7 +16,9 @@ export function prepareVideoMedia({ media = process.env.TOLDLIFE_VIDEO_MEDIA, fi
   const catalogs = JSON.parse(readFileSync(path.join(appRoot, 'site/.vitepress/generated/catalogs.json'), 'utf8'))
   const placed = []
   for (const catalog of Object.values(catalogs)) {
-    for (const [id, video] of Object.entries(catalog.video ?? {})) {
+    // The episode videos and the films made from the work are placed the same way.
+    const videos = [...Object.entries(catalog.video ?? {}), ...(catalog.films ?? []).map(film => [film.id, film])]
+    for (const [id, video] of videos) {
       const target = path.join(appRoot, 'site/public', video.src)
       mkdirSync(path.dirname(target), { recursive: true })
       if (media) {
@@ -25,7 +27,7 @@ export function prepareVideoMedia({ media = process.env.TOLDLIFE_VIDEO_MEDIA, fi
         rmSync(target, { force: true })
         try { linkSync(source, target) } catch { copyFileSync(source, target) }
       } else if (!existsSync(target)) {
-        execFileSync('ffmpeg', ['-v', 'error', '-y', '-f', 'lavfi', '-i', `color=c=black:s=64x36:r=2:d=${video.duration}`,
+        execFileSync('ffmpeg', ['-v', 'error', '-y', '-f', 'lavfi', '-i', `color=c=black:s=${video.height > video.width ? '36x64' : '64x36'}:r=2:d=${video.duration}`,
           '-f', 'lavfi', '-i', 'anullsrc=r=22050:cl=mono', '-t', String(video.duration),
           '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '16k', '-movflags', '+faststart', target])
       }
