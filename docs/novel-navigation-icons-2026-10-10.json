@@ -1,0 +1,209 @@
+{
+  "changeCommit": "95083f693e5490763bf23cd5320e34a15532d52f",
+  "testRepairCommit": "46bc005ca7aa80c1a58caef85d8c6195baf79b89",
+  "deployment": {
+    "sourceRevision": "1436d4594014dfe728bf864b9b72d4ba41b52f15",
+    "sourceDirty": false,
+    "run": "https://github.com/MJbae/duvridge/actions/runs/38061068359",
+    "pagesUrl": "https://59a06f6d.toldlife.pages.dev",
+    "productionUrl": "https://toldlife.duvridge.com",
+    "checkedAt": "2026-10-10T14:58:15.580Z",
+    "allValidationAndDeploymentJobs": "success"
+  },
+  "scope": {
+    "novelEpisodeNavigation": {
+      "previous": "chevron-left",
+      "next": "chevron"
+    },
+    "defaults": {
+      "novelWorkHome": "book",
+      "audiobookEpisodeNavigation": "headphones",
+      "videoEpisodeNavigation": "play"
+    },
+    "layoutStylesChanged": false,
+    "optionalProp": "EpisodeNav.nextIcon",
+    "visualPrototypesOnly": [
+      "short arrows",
+      "circled chevrons"
+    ]
+  },
+  "localValidation": {
+    "node": "22.23.2",
+    "npm": "10.9.8",
+    "installation": "npm ci",
+    "repository": {
+      "nodeTests": 32,
+      "pythonTests": 10
+    },
+    "packages": {
+      "tests": 48
+    },
+    "services": {
+      "novels": 34,
+      "audiobooks": 58,
+      "videos": 6,
+      "portal": 15,
+      "sharing": 12,
+      "readerBuilds": 3,
+      "readerTypechecks": 3
+    },
+    "browser": {
+      "novels": 15,
+      "audiobooks": 9,
+      "videos": 9,
+      "repairedVideoSceneSeeking": 3
+    },
+    "preview": {
+      "before": {
+        "buttons": [
+          {
+            "text": "다음 화",
+            "tag": "A",
+            "href": "/novels/bae-byunghee/ep02",
+            "width": 350,
+            "height": 54,
+            "x": 20,
+            "y": 0,
+            "background": "rgb(224, 172, 78)",
+            "color": "rgb(17, 19, 24)",
+            "borderRadius": "12px",
+            "gap": "8px",
+            "iconWidth": "20",
+            "stroke": "1.9",
+            "paths": [
+              "M12 6c-2.5-1.6-5.5-1.8-8-1v13c2.5-.8 5.5-.6 8 1 2.5-1.6 5.5-1.8 8-1V5c-2.5-.8-5.5-.6-8 1zM12 6v13"
+            ]
+          },
+          {
+            "text": "이전 화",
+            "tag": "A",
+            "href": "/novels/bae-byunghee/prolog",
+            "width": 86.875,
+            "height": 44,
+            "x": 151.5625,
+            "y": 60,
+            "background": "rgba(0, 0, 0, 0)",
+            "color": "rgb(107, 103, 94)",
+            "borderRadius": "0px",
+            "gap": "2px",
+            "iconWidth": "18",
+            "stroke": "1.9",
+            "paths": [
+              "M15 5l-7 7 7 7"
+            ]
+          }
+        ],
+        "homePaths": [
+          "M12 6c-2.5-1.6-5.5-1.8-8-1v13c2.5-.8 5.5-.6 8 1 2.5-1.6 5.5-1.8 8-1V5c-2.5-.8-5.5-.6-8 1zM12 6v13"
+        ]
+      },
+      "after": {
+        "buttons": [
+          {
+            "text": "다음 화",
+            "tag": "A",
+            "href": "/novels/bae-byunghee/ep02",
+            "width": 350,
+            "height": 54,
+            "x": 20,
+            "y": 0,
+            "background": "rgb(224, 172, 78)",
+            "color": "rgb(17, 19, 24)",
+            "borderRadius": "12px",
+            "gap": "8px",
+            "iconWidth": "20",
+            "stroke": "1.9",
+            "paths": [
+              "m9 5 7 7-7 7"
+            ]
+          },
+          {
+            "text": "이전 화",
+            "tag": "A",
+            "href": "/novels/bae-byunghee/prolog",
+            "width": 86.875,
+            "height": 44,
+            "x": 151.5625,
+            "y": 60,
+            "background": "rgba(0, 0, 0, 0)",
+            "color": "rgb(107, 103, 94)",
+            "borderRadius": "0px",
+            "gap": "2px",
+            "iconWidth": "18",
+            "stroke": "1.9",
+            "paths": [
+              "M15 5l-7 7 7 7"
+            ]
+          }
+        ],
+        "homePaths": [
+          "M12 6c-2.5-1.6-5.5-1.8-8-1v13c2.5-.8 5.5-.6 8 1 2.5-1.6 5.5-1.8 8-1V5c-2.5-.8-5.5-.6-8 1zM12 6v13"
+        ]
+      },
+      "buttonGeometryAndStylesIdentical": true
+    }
+  },
+  "publishedViewports": [
+    {
+      "name": "phone",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "buttons": [
+        {
+          "label": "다음 화",
+          "href": "/novels/bae-byunghee/ep02",
+          "width": 350,
+          "height": 54,
+          "iconWidth": "20"
+        },
+        {
+          "label": "이전 화",
+          "href": "/novels/bae-byunghee/prolog",
+          "width": 87.6875,
+          "height": 44,
+          "iconWidth": "18"
+        }
+      ],
+      "novelNavigation": "chevrons",
+      "workHome": "book",
+      "audiobookNavigation": "headphones",
+      "videoNavigation": "play",
+      "firstAndLastDisabled": true,
+      "linksWork": true,
+      "pageErrors": []
+    },
+    {
+      "name": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "buttons": [
+        {
+          "label": "다음 화",
+          "href": "/novels/bae-byunghee/ep02",
+          "width": 640,
+          "height": 54,
+          "iconWidth": "20"
+        },
+        {
+          "label": "이전 화",
+          "href": "/novels/bae-byunghee/prolog",
+          "width": 87.6875,
+          "height": 44,
+          "iconWidth": "18"
+        }
+      ],
+      "novelNavigation": "chevrons",
+      "workHome": "book",
+      "audiobookNavigation": "headphones",
+      "videoNavigation": "play",
+      "firstAndLastDisabled": true,
+      "linksWork": true,
+      "pageErrors": []
+    }
+  ],
+  "localArtifacts": "_workspace/nav-icons/"
+}
