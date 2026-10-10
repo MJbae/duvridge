@@ -72,10 +72,10 @@
       "duration": 217.533
     },
     "ep11": {
-      "file": "ep11.51f42f46a7.mp4",
-      "bytes": 15937021,
-      "sha256": "51f42f46a75414da7511a031d6421625cffa79ed92bccbd83d9ab4c3b0c733f4",
-      "duration": 217.533
+      "file": "ep11.b84ce0f12f.mp4",
+      "bytes": 17130716,
+      "sha256": "b84ce0f12fcb9707b5ee4a9915f8f18a3166f03bdc06404fcf0d52728cfb1cff",
+      "duration": 233.467
     },
     "ep12": {
       "file": "ep12.ef6fe278b9.mp4",
@@ -96,10 +96,10 @@
       "duration": 166.667
     },
     "ep15": {
-      "file": "ep15.116683880b.mp4",
-      "bytes": 17099284,
-      "sha256": "116683880bcc4366650b65d5c56e0136de08f4b3eea168635db614cbc3166824",
-      "duration": 228.467
+      "file": "ep15.727fd22409.mp4",
+      "bytes": 15863242,
+      "sha256": "727fd224090802599bbe96f2b95847c6109e5a7ff6be3c9fd7d34a1f7dc92a24",
+      "duration": 211.533
     },
     "ep16": {
       "file": "ep16.0cdc463b88.mp4",
@@ -156,10 +156,10 @@
       "duration": 138.733
     },
     "side": {
-      "file": "side.9c020bbe84.mp4",
-      "bytes": 19418079,
-      "sha256": "9c020bbe84f765b8fee95109adb624b39f81dfad7e8ee08fae7de2e07f8b21ba",
-      "duration": 164.2
+      "file": "side.0ff2e10a03.mp4",
+      "bytes": 19355940,
+      "sha256": "0ff2e10a0348d0b0e7a5d6da275b93935fa4b501df3cdbfe3dd542694f9c06db",
+      "duration": 164.267
     }
   }
 }
