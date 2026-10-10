@@ -119,5 +119,22 @@ class NarrationIllustrationTests(unittest.TestCase):
                 self.build(body)
 
 
+class PrologueStartTests(unittest.TestCase):
+    """프롤로그는 표지·제목·시대 줄을 읽지 않고 본문 첫 문단부터 시작한다(사용자 결정, 2026-10-10)."""
+    images = [{"id": "prolog-01", "episodeId": "prolog"}]
+    body = "*1990년대 중반 · 독정 정미소*\n\n<!-- illustration: prolog-01 -->\n\n첫 문단이다.\n\n둘째 문단이다."
+
+    def build(self):
+        episode = {"title": "프롤로그. 벼 한 톨의 무게", "part": None, "lines": self.body.splitlines()}
+        with contextlib.redirect_stderr(io.StringIO()):
+            return builder.build("prolog", episode, self.images)
+
+    def test_prologue_starts_at_the_first_paragraph_without_cover_title_or_dateline(self):
+        lines = self.build()
+        self.assertEqual([line["kind"] for line in lines], ["para", "para"])
+        self.assertEqual([line["show"] for line in lines], ["첫 문단이다.", "둘째 문단이다."])
+        self.assertEqual([line["image"] for line in lines], ["prolog-01", "prolog-01"])
+
+
 if __name__ == "__main__":
     unittest.main()

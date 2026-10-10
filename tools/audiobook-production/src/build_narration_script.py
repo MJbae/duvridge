@@ -12,8 +12,6 @@ from pathlib import Path
 DIGITS = "영일이삼사오육칠팔구"
 SMALL = [(1000, "천"), (100, "백"), (10, "십")]
 BIG = [(10**8, "억"), (10**4, "만")]
-BOOK_TITLE = "내 논을 파는 한이 있어도"
-BOOK_SUBTITLE = "배병희 자전소설"
 UNITS = r"(년대|년|월|부|화|억|만|천|원|남|녀|평|가구|세|대|호|번지|리|킬로|미터|퍼센트|%|마력|정보|도|일|볼트|톤|인|조|여|곳)"
 MONTHS = {6: "유월", 10: "시월"}
 NATIVE = ["", "한", "두", "세", "네", "다섯", "여섯", "일곱", "여덟", "아홉", "열"]
@@ -270,15 +268,14 @@ def build(eid, ep, images):
     card_image = representatives[0] if representatives else markers[0]["id"]
     before = {marker["paragraphIndex"]: marker["id"] for marker in markers}
     out = []
-    if eid == "prolog":
-        out.append({"kind": "cover", "label": BOOK_SUBTITLE, "show": BOOK_TITLE,
-                    "say": f"{BOOK_TITLE}. {BOOK_SUBTITLE}.", "image": "cover"})
     # 부(1부·2부…)는 화면·낭독 모두 생략하고 회차로 바로 시작한다
-    label, title, say = episode_label(eid, ep["title"])
-    out.append({"kind": "title", "label": label, "show": title, "say": say, "image": card_image})
-    if dateline:
-        text = dateline.group(1)
-        out.append({"kind": "dateline", "show": text, "say": speak(text) + ".", "image": card_image})
+    # 프롤로그는 표지·제목·시대 줄을 건너뛰고 본문 첫 문단부터 읽는다(사용자 결정, 2026-10-10)
+    if eid != "prolog":
+        label, title, say = episode_label(eid, ep["title"])
+        out.append({"kind": "title", "label": label, "show": title, "say": say, "image": card_image})
+        if dateline:
+            text = dateline.group(1)
+            out.append({"kind": "dateline", "show": text, "say": speak(text) + ".", "image": card_image})
     image = None  # Cover metadata must never select an unrelated early prose scene.
     paragraph_index = 0
     for p in narration_blocks(body):

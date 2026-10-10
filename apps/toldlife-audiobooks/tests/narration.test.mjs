@@ -313,7 +313,9 @@ test('모든 회차의 낭독 음성과 문장 시각, 장면이 같은 회차 I
     const cues = parseSrt(readFileSync(path.join(repo, `content/narration/${id}.srt`), 'utf8'))
     assert.deepEqual(buildScenes(script, cues, id).map(scene => [scene.cue, scene.image]), track.scenes)
   }
-  assert.deepEqual(tracks.prolog.cues.slice(0, 3).map(cue => cue[2]), ['cover', 'title', 'dateline'])
   assert.deepEqual(tracks.ep01.cues.slice(0, 2).map(cue => cue[2]), ['title', 'dateline'])
-  assert.deepEqual(tracks.prolog.scenes.map(scene => scene[1]), ['cover', 'prolog-01'])
+  // 프롤로그는 표지·제목·시대 줄을 건너뛰고 본문 첫 문장에서 시작한다(사용자 결정, 2026-10-10). 끝 음악만 종류가 남는다.
+  assert.match(tracks.prolog.texts[0], /^믿었던 대형 곡물 상회가/)
+  assert.deepEqual(tracks.prolog.cues.map(cue => cue[2]).filter(Boolean), ['music'])
+  assert.deepEqual(tracks.prolog.scenes.map(scene => scene[1]), ['prolog-01'])
 })

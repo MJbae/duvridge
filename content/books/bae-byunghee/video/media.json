@@ -6,10 +6,10 @@
   },
   "videos": {
     "prolog": {
-      "file": "prolog.a2af82afe0.mp4",
-      "bytes": 15067104,
-      "sha256": "a2af82afe0f375a61447d18eff3a5055043609c85d2cf029a985d68fd3ddc95f",
-      "duration": 120.933
+      "file": "prolog.0c6335e712.mp4",
+      "bytes": 11929939,
+      "sha256": "0c6335e712046e46829667f907b86d736bb0e1fe69c9e5de048185d16a0c5a5f",
+      "duration": 105.133
     },
     "ep01": {
       "file": "ep01.fd8a40d0b3.mp4",
