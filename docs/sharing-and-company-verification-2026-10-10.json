@@ -1,0 +1,207 @@
+{
+  "sharing": {
+    "checked_at": "2026-10-10T03:12:31.299378+00:00",
+    "sourceRevision": "d011aa155eff11ff5e376ec2d4f1466672ebab84",
+    "markers": {
+      "company": {
+        "commit": "d011aa155eff11ff5e376ec2d4f1466672ebab84",
+        "services": [
+          "company-site"
+        ],
+        "sourceRevision": "d011aa155eff11ff5e376ec2d4f1466672ebab84",
+        "sourceDirty": false,
+        "group": "company"
+      },
+      "toldlife": {
+        "schemaVersion": 1,
+        "group": "toldlife",
+        "sourceRevision": "d011aa155eff11ff5e376ec2d4f1466672ebab84",
+        "sourceDirty": false,
+        "services": [
+          {
+            "base": "/novels/",
+            "files": 791
+          },
+          {
+            "base": "/audiobooks/",
+            "files": 843
+          },
+          {
+            "base": "/videos/",
+            "files": 826
+          }
+        ],
+        "videos": 29
+      }
+    },
+    "pages": [
+      {
+        "url": "https://toldlife.duvridge.com/novels/bae-byunghee/",
+        "title": "내 논을 파는 한이 있어도 — 인생원작",
+        "description": "배병희 자전소설 · 갯벌에서 들녘까지, 가족과 이웃을 위해 살아온 한평생.",
+        "image": "https://toldlife.duvridge.com/novels/works/bae-byunghee/images/share-bae-byunghee-v2.png",
+        "site_name": "인생원작",
+        "image_sha256": "33527c6f4724a83f72df77397794f5ac0f1f285784f5e1047f8ffafb1985753e",
+        "image_dimensions": [
+          1200,
+          630
+        ]
+      },
+      {
+        "url": "https://toldlife.duvridge.com/",
+        "title": "인생원작 — 실화 인생 드라마",
+        "description": "한 사람의 삶을 담은 자전소설에서 시작해, 다양한 콘텐츠로 이어지는 실화 인생 드라마.",
+        "image": "https://toldlife.duvridge.com/social/insaengwonjak-v2.png",
+        "site_name": "인생원작",
+        "image_sha256": "c2f4c56ab4ac09b00355863ca945873cb292ecb9e94af493593f554f5fdb41c9",
+        "image_dimensions": [
+          1200,
+          630
+        ]
+      },
+      {
+        "url": "https://www.duvridge.com/",
+        "title": "duvridge — A life, written to last.",
+        "description": "We turn real lives into literature, then develop those original stories across diverse forms of content.",
+        "image": "https://www.duvridge.com/assets/social/duvridge-v2.png",
+        "site_name": "duvridge",
+        "image_sha256": "c414e297ea0aae5c3d70dbca7b676620eaf54f5080a982d4d01f374f2fb5fe7e",
+        "image_dimensions": [
+          1200,
+          630
+        ]
+      }
+    ]
+  },
+  "company": {
+    "checked_at": "2026-10-10T03:25:50.157729+00:00",
+    "deployment": {
+      "commit": "8ac34e9f348a87a18fe399ea2433dcc81e71bdac",
+      "services": [
+        "company-site"
+      ],
+      "sourceRevision": "8ac34e9f348a87a18fe399ea2433dcc81e71bdac",
+      "sourceDirty": false,
+      "group": "company"
+    },
+    "pages": [
+      {
+        "language": "en",
+        "url": "https://www.duvridge.com/",
+        "sections_match_source": true,
+        "first_two_sections_unchanged": true,
+        "why": "Why we record lives Every life has a story worth keeping. A parent's youth. A grandparent's voice. We put those memories into words before they fade. AI reduces the time and cost of writing. The story stays yours.",
+        "proof": "Writing experience Stories readers pay to follow. We built awesome-novel-studio for Korean fiction. More than ten web novels and several publishing contracts followed. We now use its third generation. The first is open source. 10+web novels Publishedpaying readers Gen 3of our writing system View source code → We turn real lives into original stories and diverse content."
+      },
+      {
+        "language": "ko",
+        "url": "https://www.duvridge.com/ko/",
+        "sections_match_source": true,
+        "first_two_sections_unchanged": true,
+        "why": "기록하는 이유 누구의 삶이든 남길 이야기가 있습니다. 부모님의 젊은 날, 조부모의 목소리. 기억이 흐려지기 전에 글로 남깁니다. AI로 집필에 드는 시간과 비용을 줄입니다. 당사자가 전하고 싶은 이야기를 글로 남깁니다.",
+        "proof": "집필 경험 직접 쓰고 독자를 만났습니다. 한국어 소설을 쓰는 AI 시스템 awesome-novel-studio를 개발했습니다. 열 편이 넘는 웹소설을 연재했고 여러 작품의 출판 계약을 맺었습니다. 독자들이 유료로 읽는 작품을 쓰며 시스템을 3세대까지 다듬었습니다. 첫 세대는 오픈소스로 공개했습니다. 10+연재작 출간독자와 만난 작품 3세대집필 시스템 오픈소스 보기 → 이 경험으로 한 사람의 삶을 자전소설로 쓰고 다양한 콘텐츠로 만듭니다."
+      },
+      {
+        "language": "ja",
+        "url": "https://www.duvridge.com/ja/",
+        "sections_match_source": true,
+        "first_two_sections_unchanged": true,
+        "why": "人生を記す理由 誰の人生にも、残したい物語があります。 親の若い頃、祖父母の声。記憶が薄れる前に、言葉で残します。 AIで執筆にかかる時間と費用を抑え、一人ひとりの声を物語にします。",
+        "proof": "執筆実績 書いて、読者に届けました。 韓国語小説を書く awesome-novel-studio を開発し、十作を超えるウェブ小説を連載。複数の作品が出版社と契約しています。 読者は続きを有料で読んでいます。システムは第3世代に進み、第1世代はオープンソースで公開しています。 10+ウェブ小説 出版読者に届く 第3世代執筆システム オープンソースを見る → この経験を生かして、一人の人生を自伝小説に綴り、さまざまなコンテンツに広げます。"
+      },
+      {
+        "language": "zh-Hans",
+        "url": "https://www.duvridge.com/zh-Hans/",
+        "sections_match_source": true,
+        "first_two_sections_unchanged": true,
+        "why": "为什么记录人生 每个人的一生，都有值得留下的故事。 父母年轻时的经历，祖辈的声音。趁记忆还清晰，把它们写下来。 用 AI 减轻写作的时间和费用负担。故事始终属于亲历者。",
+        "proof": "我们的创作经验 写出作品，让读者检验。 我们开发了韩语小说写作系统 awesome-novel-studio，连载了十余部网络小说，其中多部与出版社签约。 读者为下一章付费，系统也已迭代至第三代。第一代已开源，任何人都能使用。 10+网络小说 出版付费读者 3代写作系统 查看开源系统 → 我们用这些经验把真实人生写成自传小说，再创作不同形式的内容。"
+      },
+      {
+        "language": "zh-Hant",
+        "url": "https://www.duvridge.com/zh-Hant/",
+        "sections_match_source": true,
+        "first_two_sections_unchanged": true,
+        "why": "為什麼記錄人生 每個人的一生，都有值得留下的故事。 父母年輕時的經歷，祖輩的聲音。趁記憶還清晰，把它們寫下來。 用 AI 減輕寫作的時間和費用負擔。故事始終屬於親歷者。",
+        "proof": "我們的創作經驗 寫出作品，讓讀者檢驗。 我們開發了韓語小說寫作系統 awesome-novel-studio，連載了十餘部網路小說，其中多部與出版社簽約。 讀者為下一章付費，系統也已迭代至第三代。第一代已開源，任何人都能使用。 10+網路小說 出版付費讀者 3代寫作系統 查看開源系統 → 我們用這些經驗把真實人生寫成自傳小說，再創作不同形式的內容。"
+      }
+    ],
+    "unchanged_design_assets": {
+      "site.css": "8602f391c6d3e4ee1aefccc910242702d7612816ce438396e4c268f4699d2e1c",
+      "site.js": "fee0caa12c0bc970c0619cb05023e6dec5875b3027c589d74f7f77decdfdf4b8"
+    }
+  },
+  "company_browser": {
+    "checkedAt": "2026-10-10T03:26:06.853Z",
+    "revision": "8ac34e9f348a87a18fe399ea2433dcc81e71bdac",
+    "cases": 15,
+    "errors": [],
+    "overflows": 0
+  },
+  "copy_reduction": {
+    "en": {
+      "why": {
+        "before_chars": 501,
+        "after_chars": 213,
+        "reduction_pct": 57.5
+      },
+      "proof": {
+        "before_chars": 577,
+        "after_chars": 305,
+        "reduction_pct": 47.1
+      }
+    },
+    "ko": {
+      "why": {
+        "before_chars": 373,
+        "after_chars": 122,
+        "reduction_pct": 67.3
+      },
+      "proof": {
+        "before_chars": 415,
+        "after_chars": 215,
+        "reduction_pct": 48.2
+      }
+    },
+    "ja": {
+      "why": {
+        "before_chars": 244,
+        "after_chars": 91,
+        "reduction_pct": 62.7
+      },
+      "proof": {
+        "before_chars": 298,
+        "after_chars": 190,
+        "reduction_pct": 36.2
+      }
+    },
+    "zhHans": {
+      "why": {
+        "before_chars": 235,
+        "after_chars": 84,
+        "reduction_pct": 64.3
+      },
+      "proof": {
+        "before_chars": 234,
+        "after_chars": 151,
+        "reduction_pct": 35.5
+      }
+    },
+    "zhHant": {
+      "why": {
+        "before_chars": 235,
+        "after_chars": 84,
+        "reduction_pct": 64.3
+      },
+      "proof": {
+        "before_chars": 235,
+        "after_chars": 151,
+        "reduction_pct": 35.7
+      }
+    }
+  },
+  "workflow_runs": {
+    "sharing": "https://github.com/MJbae/duvridge/actions/runs/38018648376",
+    "company": "https://github.com/MJbae/duvridge/actions/runs/38020121584"
+  }
+}
