@@ -22,35 +22,35 @@ LANGUAGES = {
         "path": "/", "html_lang": "en", "html_class": "", "label": "EN",
         "name": "English", "language_label": "Language", "home_label": "duvridge — home",
         "page_title": "duvridge — A life, written to last.",
-        "page_description": "duvridge turns one person's life into literature that endures — true lives, told as original novels, audiobooks and videos.",
+        "page_description": "We turn real lives into literature, then develop those original stories across diverse forms of content.",
         "font": None,
     },
     "ko": {
         "path": "/ko/", "html_lang": "ko", "html_class": "lang-ko", "label": "한국어",
         "name": "한국어", "language_label": "언어", "home_label": "duvridge — 홈으로",
         "page_title": "duvridge — 오래도록 남을, 한 사람의 삶.",
-        "page_description": "duvridge는 한 사람의 인생을 오래도록 남을 문학으로 빚어냅니다. 실화 인생 드라마 인생원작은 살아낸 삶을 원작 소설과 오디오북, 영상으로 선보입니다.",
+        "page_description": "duvridge는 한 사람의 삶을 자전소설로 쓰고, 그 원작을 다양한 콘텐츠로 만듭니다.",
         "font": "family=Noto+Serif+KR:wght@500;600;700",
     },
     "ja": {
         "path": "/ja/", "html_lang": "ja", "html_class": "lang-ja", "label": "日本語",
         "name": "日本語", "language_label": "言語", "home_label": "duvridge — ホーム",
         "page_title": "duvridge — 永く遺る、一人の人生。",
-        "page_description": "duvridge は一人の人生を、遺すに値する文学へ。実在の人生を、原作小説・オーディオブック・映像で届けます。",
+        "page_description": "duvridge は一人の人生を自伝小説に綴り、その物語を多様なコンテンツへ広げます。",
         "font": "family=Shippori+Mincho:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;700",
     },
     "zhHans": {
         "path": "/zh-Hans/", "html_lang": "zh-Hans", "html_class": "lang-zhHans", "label": "简",
         "name": "简体中文", "language_label": "语言", "home_label": "duvridge — 首页",
         "page_title": "duvridge — 让一个人的一生，化作不朽。",
-        "page_description": "duvridge 将一个人的一生谱写成值得珍藏的文学——把真实的人生，呈现为原作小说、有声书与视频。",
+        "page_description": "duvridge 将真实人生写成自传小说，并以原作为基础创作多种内容。",
         "font": "family=Noto+Serif+SC:wght@500;600;700&family=Noto+Sans+SC:wght@400;500;700",
     },
     "zhHant": {
         "path": "/zh-Hant/", "html_lang": "zh-Hant", "html_class": "lang-zhHant", "label": "繁",
         "name": "繁體中文", "language_label": "語言", "home_label": "duvridge — 首頁",
         "page_title": "duvridge — 讓一個人的一生，化作不朽。",
-        "page_description": "duvridge 將一個人的人生譜寫成值得珍藏的文學——把真實的人生，呈現為原作小說、有聲書與影片。",
+        "page_description": "duvridge 將真實人生寫成自傳小說，並以原作為基礎創作多種內容。",
         "font": "family=Noto+Serif+TC:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;700",
     },
 }
@@ -77,7 +77,7 @@ def render_pages():
                 f'<meta property="og:locale:alternate" content="{locale}">'
                 for key, locale in OG_LOCALES.items() if key != language
             ),
-            "social_image": SITE_URL + "/assets/social/duvridge.png",
+            "social_image": SITE_URL + "/assets/social/duvridge-v2.png",
             "structured_data": json.dumps({
                 "@context": "https://schema.org",
                 "@graph": [

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="{{lang}}">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;1,500&family=Hahmlet:wght@500;700;800&family=IBM+Plex+Sans+KR:wght@500&display=swap">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'IBM Plex Sans KR', sans-serif; font-weight: 500; }
+    .card { position: relative; width: 1200px; height: 630px; overflow: hidden; container-type: inline-size; background: #111318; color: #f3efe7; }
+    .main { position: absolute; z-index: 2; inset: 10% 8%; display: flex; flex-direction: column; justify-content: space-between; }
+    .imprint { font-family: 'Hahmlet', serif; font-size: 2.9cqw; font-weight: 700; letter-spacing: -.03em; }
+    .stop { color: #e0ac4e; }
+    .genre { font-size: 2.3cqw; letter-spacing: .07em; }
+    .foot { display: flex; justify-content: space-between; align-items: end; gap: 20px; font-size: 2.2cqw; color: #b4b7c0; }
+    .title { margin: 0; font-family: 'Hahmlet', serif; font-size: 6.2cqw; line-height: 1.27; font-weight: 800; letter-spacing: -.06em; }
+    .subtitle { margin: 1.47cqw 0 0; font-size: 2.7cqw; }
+    .portrait { position: absolute; inset: 0 0 0 auto; width: 63%; height: 100%; object-fit: cover; object-position: 50% 50%; }
+    .wash { position: absolute; inset: 0; background: linear-gradient(90deg, #111318 0%, #111318 32%, rgb(17 19 24 / 85%) 42%, rgb(17 19 24 / 12%) 66%, rgb(17 19 24 / 3%) 100%), linear-gradient(0deg, rgb(17 19 24 / 75%), transparent 26%); }
+    .service { background: radial-gradient(ellipse at 81% 40%, rgb(224 172 78 / 18%), transparent 52%), #111318; }
+    .point { position: absolute; right: 12%; top: 37%; width: 7%; aspect-ratio: 1; border-radius: 50%; background: #e0ac4e; box-shadow: 0 0 141px 39px rgb(224 172 78 / 11%); }
+    .service-mark { margin: 0; font-family: 'Hahmlet', serif; font-size: 8.3cqw; line-height: 1.18; font-weight: 800; letter-spacing: -.055em; }
+    .service-tagline { margin: 2.2cqw 0 0; font-family: 'Hahmlet', serif; font-size: 3.55cqw; font-weight: 500; line-height: 1.6; }
+    .company { background: #e9e3d6; color: #1c1a16; }
+    .company .stop { color: #c98a1c; }
+    .company .foot { color: #5c5645; }
+    .company-mark { margin: 0; font-family: 'Fraunces', Georgia, serif; font-size: 8.3cqw; font-weight: 500; line-height: 1; letter-spacing: -.04em; }
+    .company-tagline { margin: 0; font-family: 'Fraunces', Georgia, serif; font-size: 5.9cqw; line-height: 1.13; font-weight: 500; letter-spacing: -.02em; }
+    .curve { position: absolute; right: 7%; top: 27%; width: 47%; height: 44%; object-fit: contain; opacity: .68; }
+    .company-middle { display: flex; align-items: center; position: relative; z-index: 1; }
+  </style>
+</head>
+<body>
+  <main class="card {{kind}}">{{artwork}}</main>
+</body>
+</html>

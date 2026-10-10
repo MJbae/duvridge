@@ -6,7 +6,7 @@ const catalog = Object.values(catalogs)[0]
 export default createReaderConfig({
   root: fileURLToPath(new URL('../../', import.meta.url)),
   defaultOrigin: 'https://toldlife.duvridge.com', defaultBase: `/${series}/`, catalog, catalogs,
-  siteNames: { '/novels/': 'ToldLife Novels', '/audiobooks/': 'ToldLife Audiobooks', '/videos/': 'ToldLife Videos' },
+  siteNames: { '/novels/': '인생원작', '/audiobooks/': '인생원작', '/videos/': '인생원작' },
   themeConfig: { series },
   preparePage(pageData) {
     const entry = catalogs[pageData.frontmatter.workId as keyof typeof catalogs]
