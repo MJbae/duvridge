@@ -1,0 +1,165 @@
+{
+  "checkedAt": "2026-10-10T14:55:03.296Z",
+  "origin": "https://toldlife.duvridge.com",
+  "marker": {
+    "schemaVersion": 1,
+    "group": "toldlife",
+    "sourceRevision": "1436d4594014dfe728bf864b9b72d4ba41b52f15",
+    "sourceDirty": false,
+    "services": [
+      {
+        "base": "/novels/",
+        "files": 793
+      },
+      {
+        "base": "/audiobooks/",
+        "files": 845
+      },
+      {
+        "base": "/videos/",
+        "files": 828
+      }
+    ],
+    "videos": 29
+  },
+  "results": [
+    {
+      "device": "phone",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "fontSize": "20px",
+      "lineHeight": "42px",
+      "fontFamily": "Hahmlet, \"Noto Serif KR\", AppleMyungjo, serif",
+      "classes": "library page-reader font-1 leading-wide face-serif",
+      "overflow": false,
+      "selectedLeading": "wide",
+      "selectedFace": "serif",
+      "errors": []
+    },
+    {
+      "device": "desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "fontSize": "20px",
+      "lineHeight": "42px",
+      "fontFamily": "Hahmlet, \"Noto Serif KR\", AppleMyungjo, serif",
+      "classes": "library page-reader font-1 leading-wide face-serif",
+      "overflow": false,
+      "selectedLeading": "wide",
+      "selectedFace": "serif",
+      "errors": []
+    },
+    {
+      "javaScriptEnabled": false,
+      "classes": "library page-reader font-1 leading-wide face-serif",
+      "lineHeight": "42px"
+    }
+  ],
+  "featureCommit": "01d850cb8ff3b0fc1122f458c70ab37554281c09",
+  "featureValidation": {
+    "run": "https://github.com/MJbae/duvridge/actions/runs/38060629090",
+    "conclusion": "success"
+  },
+  "deploymentValidation": {
+    "run": "https://github.com/MJbae/duvridge/actions/runs/38061068359",
+    "sourceRevision": "1436d4594014dfe728bf864b9b72d4ba41b52f15",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "name": "plan",
+        "conclusion": "success"
+      },
+      {
+        "name": "repository",
+        "conclusion": "success"
+      },
+      {
+        "name": "urls",
+        "conclusion": "success"
+      },
+      {
+        "name": "service (toldlife-novels, @duvridge/toldlife-novels, apps/toldlife-novels/site/.vitepress/dist)",
+        "conclusion": "success"
+      },
+      {
+        "name": "service (toldlife-portal, @duvridge/toldlife-portal)",
+        "conclusion": "success"
+      },
+      {
+        "name": "service (toldlife-videos, @duvridge/toldlife-videos, apps/toldlife-videos/site/.vitepress/dist)",
+        "conclusion": "success"
+      },
+      {
+        "name": "service (company-site, @duvridge/company-site, .deploy/company)",
+        "conclusion": "success"
+      },
+      {
+        "name": "service (toldlife-audiobooks, @duvridge/toldlife-audiobooks, apps/toldlife-audiobooks/site/.vitep...",
+        "conclusion": "success"
+      },
+      {
+        "name": "Monorepo required",
+        "conclusion": "success"
+      },
+      {
+        "name": "deploy (toldlife, toldlife, https://toldlife.duvridge.com, .deploy/toldlife, python3, scripts/ass...",
+        "conclusion": "success"
+      },
+      {
+        "name": "deploy (company, duvridge, https://www.duvridge.com, .deploy/company, /, /ko/, /ja/, /zh-Hans/, /...",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "localValidation": {
+    "node": "22.23.2",
+    "npm": "10.9.8",
+    "install": "npm ci --no-audit --no-fund",
+    "npmTest": {
+      "passed": 220,
+      "failed": 0
+    },
+    "productionParser": {
+      "passed": 20,
+      "failed": 0
+    },
+    "typecheck": [
+      "toldlife-novels",
+      "toldlife-audiobooks",
+      "toldlife-videos"
+    ],
+    "sharing": {
+      "passed": 12,
+      "failed": 0
+    },
+    "fullBrowserBeforeIntegration": {
+      "novels": {
+        "passed": 84
+      },
+      "audiobooks": {
+        "passed": 30,
+        "skipped": 3
+      },
+      "videos": {
+        "passed": 39
+      }
+    },
+    "browserAfterIntegration": {
+      "novels": {
+        "passed": 12
+      },
+      "audiobooks": {
+        "passed": 20,
+        "skipped": 2
+      },
+      "videos": {
+        "passed": 26
+      }
+    },
+    "savedPreferences": "normal/serif and wide/sans selections persist after reload"
+  }
+}

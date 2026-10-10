@@ -260,3 +260,16 @@ Workspace 177개는 회사 16, 오디오북 58, 소설 34, 포털 15, 영상 6, 
 - 운영 Chromium의 320·375·390·768·1024·1440px에서 붙은 문장·강제 문장 블록·가로 넘침은 0건이다. JavaScript 없이도 공백과 본문이 유지되며 글꼴 4종이 정상 로드됐다. PC·모바일의 본문 문구와 구절·문장 줄바꿈을 육안 검수했다. 브라우저 오류는 0건이다.
 
 [교정 배포 검증 결과](company-korean-copy-correction-2026-10-10.json)에 실제 배포 증거를 기록했다. 화면과 상세 결과는 `.deploy/verification/company-natural-production/`에 보존했다. 앞선 `company-copy`·`company-story-production` 화면은 교정 전 상태를 기록한 자료다.
+
+## 2026-10-10: 소설 읽기 기본값을 넓은 줄 간격·명조로 적용
+
+구현 커밋은 `01d850cb8ff3b0fc1122f458c70ab37554281c09`다. 별도 워크트리 `duvridge-reading-defaults`에서 작업하고 최신 원격 `main` 위에 충돌 없이 반영한 뒤 fast-forward 푸시했다. 설정을 저장하지 않은 독자는 줄 간격 ‘넓게’와 서체 ‘명조’로 시작한다. 최초 HTML과 브라우저 초기 상태도 같은 설정 함수를 사용하며, 이미 저장한 ‘보통’·‘고딕’ 선택은 계속 복원한다.
+
+- Node 22.23.2 / npm 10.9.8, 루트 `npm ci` 성공. 로컬 `npm test` 220건, 제작 파서 20건, 세 리더 typecheck·빌드, 공유 검사 12건이 통과했다.
+- 전체 브라우저 검사는 소설 84건, 오디오북 30건(기존 조건부 3건 건너뜀), 영상 39건이 통과했다. 메인의 프롤로그·회차 이동 수정까지 통합한 뒤 소설 설정·위치 유지·회차 이동·자바스크립트 없는 화면 12건, 오디오북 20건(2건 건너뜀), 영상 26건도 통과했다. 저장한 보통/명조와 넓게/고딕 조합을 다시 방문했을 때 복원함을 확인했다.
+- [구현 커밋 검증 실행](https://github.com/MJbae/duvridge/actions/runs/38060629090)의 저장소·포털·세 리더·URL·필수 검증이 성공했다. 이후 다른 세션의 문서 커밋이 추가되어 최신 메인 기준으로 배포가 자동 재실행됐다.
+- [실제 배포 실행](https://github.com/MJbae/duvridge/actions/runs/38061068359)은 `1436d4594014dfe728bf864b9b72d4ba41b52f15`를 검증했다. 이 커밋이 구현 커밋을 포함함을 Git ancestry로 확인했다. 저장소·다섯 서비스·URL·필수 검사, ToldLife와 회사의 실제 Pages 업로드·배포 후 HTTP 검사가 모두 성공했다. ToldLife에는 포털·세 리더와 기존 영상 29개가 함께 포함됐다.
+- 운영 확인 시각은 **2026-10-10 23:55 KST**다. 공개 [deployment.json](https://toldlife.duvridge.com/deployment.json)의 `sourceRevision`은 위 실제 배포 SHA이며 `sourceDirty=false`다.
+- 실제 운영 Chromium의 휴대폰 390×844와 PC 1440×1000에서 ‘넓게’·‘명조’ 선택, 본문 20px·줄 높이 42px(2.1), `leading-wide face-serif` 클래스를 확인했다. 가로 넘침과 브라우저 오류는 0건이다. 자바스크립트를 끈 화면에서도 같은 기본 클래스와 42px 줄 높이를 확인했다. 두 설정 화면을 육안 검수했다.
+
+[기계 판독 검증 결과](novel-reading-defaults-2026-10-10.json)에 공개 marker, CI 실행, 화면별 실측과 로컬 검증을 기록했다. 화면 캡처와 상세 로그는 작업 사본의 `_workspace/reading-defaults-qa/`에 보존했다.
