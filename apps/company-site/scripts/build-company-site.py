@@ -28,7 +28,7 @@ LANGUAGES = {
     "ko": {
         "path": "/ko/", "html_lang": "ko", "html_class": "lang-ko", "label": "한국어",
         "name": "한국어", "language_label": "언어", "home_label": "duvridge — 홈으로",
-        "page_title": "duvridge — 오래도록 남을, 한 사람의 삶.",
+        "page_title": "duvridge — 오래도록 남을 당신의 삶.",
         "page_description": "duvridge는 한 사람의 삶을 자전소설로 쓰고, 그 원작을 다양한 콘텐츠로 만듭니다.",
         "font": "family=Noto+Serif+KR:wght@500;600;700",
     },

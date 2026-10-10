@@ -219,7 +219,6 @@
   .format-name{ grid-area:name; font-size:.94rem; font-weight:600; letter-spacing:.01em; line-height:1.5; }
   .format .arr{ grid-area:arrow; font-size:.94rem; transition:transform .25s ease; }
   .format:hover .arr{ transform:translateX(4px); }
-  .ai-note{ margin:.625rem auto 0; font-family:var(--font-ui); font-size:.75rem; line-height:1.5; color:var(--muted); }
 
   .studio{ display:flex; align-items:center; justify-content:space-between; gap:.75rem 1.5rem; width:100%; max-width:640px; margin-top:3.5rem; padding-top:1.375rem; border-top:1px solid var(--line); text-align:left; }
   .studio-text{ flex:1 1 auto; min-width:0; }
@@ -240,7 +239,6 @@
     .format{ grid-template-columns:minmax(0,1fr) auto; grid-template-areas:"name arrow"; justify-content:stretch; column-gap:12px; min-height:60px; border-top:1px solid var(--line); text-align:left; }
     .format-name{ font-size:1rem; color:var(--ink); }
     .format .arr{ font-size:1rem; }
-    .ai-note{ margin-top:.75rem; }
     .studio{ flex-wrap:wrap; margin-top:2.5rem; padding-top:1.125rem; }
     .studio-text .studio-tagline{ font-size:1.06rem; }
   }
@@ -261,6 +259,28 @@
   .foot-rights{ margin-top:2rem; padding-top:1.7rem; border-top:1px solid var(--line-dark); width:min(100%,440px); font-family:var(--font-ui); font-size:.78rem; color:var(--muted-dark); letter-spacing:.02em; }
 
   /* Content remains visible; JavaScript adds scroll animations as an enhancement. */
+
+  /* Korean copy uses short complete sentences and the available width, with natural wrapping on narrower screens. */
+  html.lang-ko :is(.hero h1, .hero-sub, .why .statement, .proof .lead, .proof-bridge, .studio-tagline, .close h2){
+    max-width:100%; text-wrap:wrap; word-break:keep-all; overflow-wrap:normal;
+  }
+  html.lang-ko .hero h1{ font-size:clamp(1.5rem,7.5vw,4.25rem); line-height:1.25; letter-spacing:-.025em; }
+  html.lang-ko .hero-sub{ font-size:clamp(1rem,.95rem + .35vw,1.25rem); line-height:1.7; }
+  html.lang-ko .why .statement{ font-size:clamp(1.2rem,5.3vw,2.25rem); line-height:1.5; }
+  html.lang-ko .proof .lead{ font-size:clamp(1.2rem,5.3vw,2.5rem); line-height:1.5; }
+  html.lang-ko :is(.why, .proof) .prose{ width:100%; max-width:48em; }
+  html.lang-ko :is(.why, .proof) .prose p{ max-width:none; }
+  html.lang-ko .proof .prose a.ilink{ white-space:normal; }
+  html.lang-ko .book-title span{ display:inline; }
+  html.lang-ko .copy-sentence{ display:block; word-break:keep-all; overflow-wrap:normal; text-wrap:wrap; }
+  html.lang-ko .copy-sentence + .copy-sentence{ margin-top:.12em; }
+  html.lang-ko .proof-bridge{ width:100%; max-width:none; font-size:clamp(1rem,4.3vw,1.625rem); line-height:1.7; }
+  html.lang-ko .close h2{ font-size:clamp(1.2rem,5.3vw,3rem); line-height:1.5; }
+  @media (max-width:560px){
+    html.lang-ko body{ font-size:1rem; }
+    html.lang-ko .studio{ display:grid; grid-template-columns:minmax(0,1fr); gap:.8rem; }
+    html.lang-ko .studio-cta{ justify-self:start; }
+  }
 
   /* ---------- Focus ---------- */
   a:focus-visible, button:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-radius:3px; }
