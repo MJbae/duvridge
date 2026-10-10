@@ -108,6 +108,12 @@ class StaticSiteTests(unittest.TestCase):
                     with self.subTest(copy=key):
                         self.assertIn(Snapshot(copy).text, snapshot.text)
 
+    def test_korean_sentences_keep_real_whitespace_between_them(self):
+        source = page_file(PAGES["ko"]).read_text(encoding="utf-8")
+        text = Snapshot(source, body_only=True).text
+        # CSS line breaks must not conceal glued sentence boundaries in copied or extracted text.
+        self.assertIsNone(re.search(r"(?<=[가-힣])[.!?](?=[가-힣])", text), text)
+
     def test_company_presents_a_single_product(self):
         for language, path in PAGES.items():
             source = page_file(path).read_text(encoding="utf-8")

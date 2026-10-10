@@ -260,7 +260,7 @@
 
   /* Content remains visible; JavaScript adds scroll animations as an enhancement. */
 
-  /* Korean copy uses short complete sentences and the available width, with natural wrapping on narrower screens. */
+  /* Korean headings keep their available width; connected prose wraps naturally between words. */
   html.lang-ko :is(.hero h1, .hero-sub, .why .statement, .proof .lead, .proof-bridge, .studio-tagline, .close h2){
     max-width:100%; text-wrap:wrap; word-break:keep-all; overflow-wrap:normal;
   }
@@ -268,12 +268,10 @@
   html.lang-ko .hero-sub{ font-size:clamp(1rem,.95rem + .35vw,1.25rem); line-height:1.7; }
   html.lang-ko .why .statement{ font-size:clamp(1.2rem,5.3vw,2.25rem); line-height:1.5; }
   html.lang-ko .proof .lead{ font-size:clamp(1.2rem,5.3vw,2.5rem); line-height:1.5; }
-  html.lang-ko :is(.why, .proof) .prose{ width:100%; max-width:48em; }
-  html.lang-ko :is(.why, .proof) .prose p{ max-width:none; }
+  html.lang-ko :is(.why, .proof) .prose{ width:100%; max-width:40em; }
+  html.lang-ko :is(.why, .proof) .prose p{ max-width:none; line-height:1.85; white-space:pre-line; text-wrap:pretty; }
   html.lang-ko .proof .prose a.ilink{ white-space:normal; }
   html.lang-ko .book-title span{ display:inline; }
-  html.lang-ko .copy-sentence{ display:block; word-break:keep-all; overflow-wrap:normal; text-wrap:wrap; }
-  html.lang-ko .copy-sentence + .copy-sentence{ margin-top:.12em; }
   html.lang-ko .proof-bridge{ width:100%; max-width:none; font-size:clamp(1rem,4.3vw,1.625rem); line-height:1.7; }
   html.lang-ko .close h2{ font-size:clamp(1.2rem,5.3vw,3rem); line-height:1.5; }
   @media (max-width:560px){
