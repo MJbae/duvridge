@@ -41,7 +41,7 @@
 
 ## 책임별 이름
 
-공통 `reader-ui/src/components/WorkHome.vue`는 세 탭이 함께 쓰는 작품 홈(키아트·큰 버튼·회차 목록)을, `EpisodeNext.vue`는 회차 끝의 다음 화 카드와 버튼을, `ReaderSheet.vue`는 아래에서 올라오는 시트를 그린다. 탭 이름과 링크는 `reader-ui/src/series/series-tabs.mjs`에서 한 번만 정한다. `NovelReaderLayout.vue`, `AudiobookReaderLayout.vue`, `VideoReaderLayout.vue`는 각 앱의 화면을 구성하고, `NovelEpisodeEnd.vue`는 읽기 회차 끝, `AudiobookPlayer.vue`와 `TheaterPlayer.vue`는 오디오북과 영상의 재생과 회차 끝을 관리한다.
+공통 `reader-ui/src/components/WorkHome.vue`는 모든 형식이 함께 쓰는 작품 홈(키아트·큰 버튼·회차 목록, 소설과 오디오북은 그 위의 `소설 | 오디오북` 전환)을, `EpisodeNext.vue`는 회차 끝의 다음 화 카드와 버튼을, `ReaderSheet.vue`는 아래에서 올라오는 시트를 그린다. 탭 이름과 링크는 `reader-ui/src/series/series-tabs.mjs`에서 한 번만 정한다. `NovelReaderLayout.vue`, `AudiobookReaderLayout.vue`, `VideoReaderLayout.vue`는 각 앱의 화면을 구성하고, `NovelEpisodeEnd.vue`는 읽기 회차 끝, `AudiobookPlayer.vue`와 `TheaterPlayer.vue`는 오디오북과 영상의 재생과 회차 끝을 관리한다.
 
 `reader-reactions/src/model`은 반응 종류와 자료형, `src/state`는 브라우저 상태·구독·재시도, `src/persistence`는 Firestore 조회·저장, `src/firebase`는 연결 설정을 담당한다. `content-processing/src/manuscripts`는 본문 구조, `src/illustrations`는 표식과 삽화 목록, `src/source-files`는 작업 사본, `src/assets`는 이미지 인코딩을 담당한다. `vitepress-reader/src/config`와 `src/markdown`은 플랫폼 연동이다. `lib`, `shared`, `utils` 같은 포괄적 폴더에 서로 다른 기능을 모으지 않는다.
 

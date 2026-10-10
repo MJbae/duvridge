@@ -7,6 +7,7 @@ import ReaderSheet from '@duvridge/reader-ui/components/ReaderSheet.vue'
 import ReaderSettingsButton from '@duvridge/reader-ui/components/ReaderSettingsButton.vue'
 import WorkHome, { type WorkRow } from '@duvridge/reader-ui/components/WorkHome.vue'
 import { episodeName, episodeThumb, progressPercent } from '@duvridge/reader-ui/series/work-rows.mjs'
+import { formatLinks } from '@duvridge/reader-ui/series/series-tabs.mjs'
 import { imageSrcset } from '@duvridge/reader-ui/images/create-image-sources.mjs'
 import NovelEpisodeEnd from './components/NovelEpisodeEnd.vue'
 import BackgroundMusicToggle from './components/BackgroundMusicToggle.vue'
@@ -104,19 +105,18 @@ function toggleChrome(event: MouseEvent) {
   chrome.value = !chrome.value
 }
 
-// The action names the episode it opens: where the reader stopped, the next one, or the start.
+// The big button says only 읽기, 이어 읽기 or 다시 읽기; the episode it opens (where the reader stopped,
+// the next one, or the start) is its spoken name and the marked row.
 const action = computed(() => {
   const order = catalog.readingOrder
   const index = order.findIndex(entry => entry.id === lastRead.value?.id)
-  if (index < 0) return { label: '처음부터 읽기', episode: order[0], resume: false, current: false }
+  if (index < 0) return { label: '읽기', spoken: '처음부터 읽기', episode: order[0], resume: false, current: false }
   const last = order[index]
-  if (!lastFinished.value) return { label: `${last.label} 이어 읽기`, episode: last, resume: true, current: true }
-  const next = order[index + 1]
-  if (next) return { label: `${next.label} 읽기`, episode: next, resume: false, current: true }
-  const unread = order.find(entry => !completed.value.includes(entry.id))
-  return unread
-    ? { label: `${unread.label} 읽기`, episode: unread, resume: false, current: true }
-    : { label: '처음부터 다시 읽기', episode: order[0], resume: false, current: false }
+  if (!lastFinished.value) return { label: '이어 읽기', spoken: `${last.label} 이어 읽기`, episode: last, resume: true, current: true }
+  const next = order[index + 1] ?? order.find(entry => !completed.value.includes(entry.id))
+  return next
+    ? { label: '이어 읽기', spoken: `${next.label}부터 이어 읽기`, episode: next, resume: false, current: true }
+    : { label: '다시 읽기', spoken: '처음부터 다시 읽기', episode: order[0], resume: false, current: false }
 })
 const rows = computed<WorkRow[]>(() => catalog.readingOrder.map(entry => {
   const reading = lastRead.value?.id === entry.id && !lastFinished.value
@@ -142,6 +142,8 @@ const art = computed(() => {
     alt: cover.alt, width: cover.width, height: cover.height,
   }
 })
+// The work page switches between its novel (this page) and its audiobook; the novel leads.
+const formats = formatLinks(catalog.work.id, 'novel')
 function openAction() { if (action.value.resume) resumeReading() }
 function openRow(_event: MouseEvent, row: WorkRow) { if (row.current && action.value.resume) resumeReading() }
 
@@ -212,7 +214,7 @@ onBeforeUnmount(() => {
     <a class="skip-link" href="#main">본문으로 건너뛰기</a>
     <audio ref="musicAudio" class="background-audio" loop preload="none" aria-hidden="true" />
     <WorkHome v-if="isHome" series="novel" :title="catalog.work.title" :art="art"
-      :action="{ label: action.label, href: withBase(action.episode.url) }" :rows="rows" @action="openAction" @select="openRow" />
+      :action="{ label: action.label, ariaLabel: action.spoken, href: withBase(action.episode.url) }" :formats="formats" :rows="rows" @action="openAction" @select="openRow" />
     <main v-else-if="isMissing" id="main" tabindex="-1" class="not-found"><h1>이야기를 찾지 못했습니다.</h1><a class="text-link" :href="workHome">작품 홈으로</a></main>
     <main v-else-if="frontmatter.kind === 'redirect'" id="main" class="not-found"><h1>홈으로 이동합니다.</h1><a class="text-link" :href="frontmatter.redirectTo" target="_self">홈으로</a></main>
     <template v-else>

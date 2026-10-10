@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { episodeName, episodeThumb, progressPercent } from '../src/series/work-rows.mjs'
-import { seriesHomeHref, seriesLinks } from '../src/series/series-tabs.mjs'
+import { formatLinks, seriesHomeHref, seriesLinks, seriesWorkHref } from '../src/series/series-tabs.mjs'
 
 test('회차 이름은 번호 회차는 띄어 쓰고, 프롤로그처럼 이름 붙은 회차는 가운뎃점으로 잇는다', () => {
   assert.equal(episodeName({ label: '3화', title: '열두 자리 숫자', number: 3 }), '3화 열두 자리 숫자')
@@ -27,9 +27,24 @@ test('썸네일은 대표 그림의 작은 크기를 쓰고 없으면 비워 둔
   assert.equal(episodeThumb(illustrations, 'ep02', path => path), undefined)
 })
 
-test('탭 링크는 플랫폼 홈의 해당 탭으로 돌아간다', () => {
-  assert.deepEqual(seriesLinks('audio').map(link => [link.label, link.href, link.current]), [
-    ['오리지널 시리즈', '/#novels', false], ['오디오북', '/#audiobooks', true], ['영상', '/#videos', false],
+test('탭은 오리지널 시리즈와 영상 둘이고, 오디오북은 오리지널 시리즈 안에 있다', () => {
+  assert.deepEqual(seriesLinks('novel').map(link => [link.label, link.href, link.current]), [
+    ['오리지널 시리즈', '/#novels', true], ['영상', '/#videos', false],
   ])
+  assert.deepEqual(seriesLinks('audio').map(link => [link.label, link.current]), [['오리지널 시리즈', true], ['영상', false]])
+  assert.equal(seriesHomeHref('audio'), '/#novels')
   assert.equal(seriesHomeHref('video'), '/#videos')
+})
+
+test('형식마다 작품 홈 주소가 따로 있다', () => {
+  assert.equal(seriesWorkHref('novel', 'bae-byunghee'), '/novels/bae-byunghee/')
+  assert.equal(seriesWorkHref('audio', 'bae-byunghee'), '/audiobooks/bae-byunghee/')
+  assert.equal(seriesWorkHref('video', 'bae-byunghee'), '/videos/bae-byunghee/')
+})
+
+test('작품 홈의 전환은 소설과 오디오북 두 칸이고, 지금 보는 쪽을 표시한다', () => {
+  assert.deepEqual(formatLinks('bae-byunghee', 'novel').map(link => [link.label, link.href, link.icon, link.current]), [
+    ['소설', '/novels/bae-byunghee/', 'book', true], ['오디오북', '/audiobooks/bae-byunghee/', 'headphones', false],
+  ])
+  assert.deepEqual(formatLinks('bae-byunghee', 'audio').map(link => link.current), [false, true])
 })

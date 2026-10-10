@@ -34,12 +34,28 @@ test('portal video tab keeps the legacy alias and exposes the new work route', (
   assert.match(portal, /value === 'video' \? 'videos'/)
 })
 
-test('every tab lists works in the same cells and ends with the invitation to the next original', () => {
-  for (const format of ['novels', 'audiobooks', 'videos']) {
-    const panel = portal.match(new RegExp(`<section id="${format}"[\\s\\S]*?</section>`))[0]
-    assert.match(panel, /<ul class="works" aria-label="작품">/)
-    assert.match(panel, /<a class="work-invite" href="https:\/\/www\.duvridge\.com\/ko\/#services">/)
-    assert.match(panel, /살아낸 삶이<br>원작이 됩니다/)
-  }
+const panelOf = format => portal.match(new RegExp(`<section id="${format}"[\\s\\S]*?</section>`))?.[0]
+
+test('the home has two tabs: the original series and video; the audiobook is inside the original series', () => {
+  const tabs = [...portal.matchAll(/<a href="#(\w+)" data-tab="\w+"[^>]*>([^<]+)<\/a>/g)].map(match => [match[1], match[2]])
+  assert.deepEqual(tabs, [['novels', '오리지널 시리즈'], ['videos', '영상']])
+  assert.equal(panelOf('audiobooks'), undefined)
+  assert.match(portal, /value === 'audiobooks' \? 'novels'/)
+})
+
+test('the original series leads with the novel and keeps the audiobook as one quiet button', () => {
+  const panel = panelOf('novels')
+  assert.match(panel, /<a class="big-button" href="\/novels\/example\/ep01" data-action="novels" data-work="example"[^>]*>[\s\S]*?<span>소설<\/span><\/a>/)
+  assert.match(panel, /<a class="sub-button" href="\/audiobooks\/example\/">[\s\S]*?<span>오디오북<\/span><\/a>/)
+  assert.doesNotMatch(panel, />[^<]*(?:처음부터|읽기|듣기)[^<]*</)
+  assert.match(panel, /aria-label="소설 처음부터 읽기"/)
+  assert.doesNotMatch(panelOf('videos'), /sub-button/)
+})
+
+test('both tabs list works in the same cells; only the original series invites the next original', () => {
+  for (const format of ['novels', 'videos']) assert.match(panelOf(format), /<ul class="works" aria-label="작품">/)
+  assert.match(panelOf('novels'), /<a class="work-invite" href="https:\/\/www\.duvridge\.com\/ko\/#services">/)
+  assert.match(panelOf('novels'), /살아낸 삶이<br>원작이 됩니다/)
+  assert.doesNotMatch(panelOf('videos'), /work-invite|원작 의뢰하기/)
   assert.doesNotMatch(portal, /works--(?:poster|square|wide)/)
 })

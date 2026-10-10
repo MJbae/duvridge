@@ -5,6 +5,7 @@ import { useData, withBase } from 'vitepress'
 import ReaderIcon from '@duvridge/reader-ui/components/ReaderIcon.vue'
 import WorkHome, { type WorkRow } from '@duvridge/reader-ui/components/WorkHome.vue'
 import { episodeThumb, progressPercent } from '@duvridge/reader-ui/series/work-rows.mjs'
+import { formatLinks } from '@duvridge/reader-ui/series/series-tabs.mjs'
 import { imageSrcset } from '@duvridge/reader-ui/images/create-image-sources.mjs'
 import { listenAction } from '../shared/playback-selection.mjs'
 import AudiobookPlayer from './components/AudiobookPlayer.vue'
@@ -45,11 +46,15 @@ const verb = computed(() => (mode.value === 'watch' ? '보기' : '듣기'))
 const position = computed(() => (state.active ? { id: state.episodeId, time: state.time } : state.saved))
 const action = computed(() => {
   const found = listenAction({ readingOrder: catalog.readingOrder, narration: catalog.narration ?? {}, saved: position.value, completed: completed.value })
-  if (!found) return { label: '준비 중', id: '', current: false }
+  if (!found) return { label: '준비 중', spoken: '준비 중', id: '', current: false }
   const episode = catalog.readingOrder.find(entry => entry.id === found.id)!
-  const label = { resume: `${episode.label} 이어 ${verb.value}`, next: `${episode.label} ${verb.value}`, start: `처음부터 ${verb.value}`, again: `처음부터 다시 ${verb.value}` }[found.kind]
-  return { label, id: found.id, current: found.kind === 'resume' || found.kind === 'next' }
+  // The button says only the verb; the episode it opens stays in its spoken name and on the list.
+  const label = { resume: `이어 ${verb.value}`, next: `이어 ${verb.value}`, start: verb.value, again: `다시 ${verb.value}` }[found.kind]
+  const spoken = { resume: `${episode.label} 이어 ${verb.value}`, next: `${episode.label}부터 이어 ${verb.value}`, start: `처음부터 ${verb.value}`, again: `처음부터 다시 ${verb.value}` }[found.kind]
+  return { label, spoken, id: found.id, current: found.kind === 'resume' || found.kind === 'next' }
 })
+// The audiobook is the other half of the work page; the switch leads back to the novel.
+const formats = formatLinks(catalog.work.id, 'audio')
 const rows = computed<WorkRow[]>(() => catalog.readingOrder.map(entry => {
   const track = narrationFor(entry.id)
   const resume = position.value?.id === entry.id
@@ -98,8 +103,8 @@ onMounted(() => {
   <div class="library page-theater">
     <a class="skip-link" href="#main">본문으로 건너뛰기</a>
     <audio ref="narrationAudio" class="narration-audio" preload="none" />
-    <WorkHome v-if="view === 'home'" :series="mode === 'watch' ? 'video' : 'audio'" :title="catalog.work.title" :art="art"
-      :action="{ label: action.label, href: action.id ? episodePath(action.id) : undefined }" :rows="rows" @action="openAction" @select="openRow" />
+    <WorkHome v-if="view === 'home'" :series="mode === 'watch' ? 'video' : 'audio'" :title="catalog.work.title" :art="art" :formats="formats"
+      :action="{ label: action.label, ariaLabel: action.spoken, href: action.id ? episodePath(action.id) : undefined }" :rows="rows" @action="openAction" @select="openRow" />
     <AudiobookPlayer v-else-if="view === 'episode' && !pendingEpisode" :key="pageEpisode" :episode-id="pageEpisode" />
     <div v-else-if="pendingEpisode" class="listen-page">
       <header class="listen-bar">

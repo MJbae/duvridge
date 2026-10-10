@@ -44,13 +44,18 @@ async function startEpisode(page: Page, id: string, _format: 'read' = 'read') {
   await listening(page, id)
 }
 
-test('오디오북 작품 홈은 큰 버튼 하나와 듣기 회차만 보여 준다', async ({ page }) => {
+test('오디오북은 작품 홈의 다른 쪽이다: 전환에서 오디오북이 골라져 있고, 큰 버튼 하나와 듣기 회차만 보여 준다', async ({ page }) => {
   const errors: string[] = []
   page.on('pageerror', error => errors.push(error.message))
   await page.goto('./')
   await expect(page.locator('[data-reader-ready="true"]')).toBeVisible()
   await expect(page.getByRole('heading', { level: 1, name: '내 논을 파는 한이 있어도' })).toBeVisible()
-  await expect(bigButton(page)).toHaveText('처음부터 듣기')
+  const formats = page.getByRole('navigation', { name: '형식' }).getByRole('link')
+  await expect(formats).toHaveText(['소설', '오디오북'])
+  await expect(formats.last()).toHaveAttribute('aria-current', 'page')
+  await expect(formats.first()).toHaveAttribute('href', '/novels/bae-byunghee/')
+  await expect(bigButton(page)).toHaveText('듣기')
+  await expect(bigButton(page)).toHaveAccessibleName('처음부터 듣기')
   await expect(bigButton(page)).toHaveAttribute('href', '/audiobooks/bae-byunghee/prolog')
   await expect(page.locator('.episode-item:visible')).toHaveCount(26)
   await expect(page.locator('a.episode-item')).toHaveCount(recorded)
@@ -114,7 +119,8 @@ test('멈춘 곳은 작품 홈 버튼과 회차에 남고, 이어 들으면 그 
   await pauseButton(page).click()
   await page.goto('./')
   await expect(page.locator('[data-reader-ready="true"]')).toBeVisible()
-  await expect(bigButton(page)).toHaveText('프롤로그 이어 듣기')
+  await expect(bigButton(page)).toHaveText('이어 듣기')
+  await expect(bigButton(page)).toHaveAccessibleName('프롤로그 이어 듣기')
   await expect(page.locator('#episode-prolog')).toHaveAttribute('aria-current', 'true')
   await bigButton(page).click()
   await listening(page, 'prolog')
@@ -172,7 +178,8 @@ test('플레이어를 접어 회차 목록으로 돌아가면 재생이 멈추�
   await page.getByRole('link', { name: '플레이어 접기' }).click()
   await expect(page).toHaveURL(/\/bae-byunghee\/#episode-ep03$/)
   await expect.poll(() => audio(page).evaluate((media: HTMLAudioElement) => media.paused)).toBe(true)
-  await expect(bigButton(page)).toHaveText('3화 이어 듣기')
+  await expect(bigButton(page)).toHaveText('이어 듣기')
+  await expect(bigButton(page)).toHaveAccessibleName('3화 이어 듣기')
   await expect.poll(() => offCenter(page, '#episode-ep03')).toBeLessThan(40)
 })
 

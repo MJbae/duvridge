@@ -58,10 +58,14 @@ def check_build(dist, base):
             raise ValueError(f"Asset exceeds Cloudflare Pages' 25 MiB limit: {file}")
 
 
+PORTAL_TABS = {"audiobooks": "novels"}
+
+
 def redirect_rules(staged, services):
     rules = {}
     for base, dist in services:
-        tab = base.strip("/")
+        # The audiobook has no tab of its own; it lives inside the original series.
+        tab = PORTAL_TABS.get(base.strip("/"), base.strip("/"))
         for source in (base, base.rstrip("/"), base + "index.html"):
             rules[source] = "/?tab=" + tab
         manifest = dist / "moved-pages.json"

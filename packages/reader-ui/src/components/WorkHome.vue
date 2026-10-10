@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 import ReaderIcon from './ReaderIcon.vue'
-import { seriesHomeHref, seriesIcons, seriesLinks, type SeriesKey } from '../series/series-tabs.mjs'
+import { seriesHomeHref, seriesIcons, seriesLinks, type FormatLink, type SeriesKey } from '../series/series-tabs.mjs'
 import type { Thumb } from '../series/work-rows.mjs'
 
 export type WorkArt = { src: string; srcset: string; webpSrcset?: string; alt: string; width: number; height: number }
@@ -17,9 +17,10 @@ export type WorkRow = {
   current: boolean
   actionLabel: string
 }
-export type WorkAction = { label: string; href?: string }
-
-const props = defineProps<{ series: SeriesKey; title: string; art?: WorkArt; action: WorkAction; rows: WorkRow[] }>()
+/** `ariaLabel` names where the button goes when its text is only the format or the verb. */
+export type WorkAction = { label: string; href?: string; ariaLabel?: string }
+/** `formats` switches the same work page between its novel and its audiobook; the list and the button follow it. */
+const props = defineProps<{ series: SeriesKey; title: string; art?: WorkArt; action: WorkAction; formats?: FormatLink[]; rows: WorkRow[] }>()
 const emit = defineEmits<{ action: [event: MouseEvent]; select: [event: MouseEvent, row: WorkRow] }>()
 const icon = computed(() => seriesIcons[props.series])
 const iconSize = computed(() => (props.series === 'video' ? 18 : 20))
@@ -54,8 +55,11 @@ onMounted(() => requestAnimationFrame(() => requestAnimationFrame(centerReturned
         <a class="work-back" :href="seriesHomeHref(series)" target="_self" aria-label="홈으로"><ReaderIcon name="chevron-left" :size="22" :stroke="1.9" /></a>
         <div class="work-copy">
           <h1 id="work-title">{{ title }}</h1>
+          <nav v-if="formats" class="format-switch" aria-label="형식">
+            <a v-for="link in formats" :key="link.key" :href="link.href" target="_self" :aria-current="link.current ? 'page' : undefined"><ReaderIcon :name="link.icon" :size="18" :stroke="1.9" />{{ link.label }}</a>
+          </nav>
           <div class="work-action">
-            <a v-if="action.href" class="big-button" :href="action.href" @click="emit('action', $event)"><ReaderIcon :name="icon" :size="iconSize" :stroke="1.9" />{{ action.label }}</a>
+            <a v-if="action.href" class="big-button" :href="action.href" :aria-label="action.ariaLabel" @click="emit('action', $event)"><ReaderIcon :name="icon" :size="iconSize" :stroke="1.9" />{{ action.label }}</a>
             <button v-else type="button" class="big-button is-pending" disabled><ReaderIcon :name="icon" :size="iconSize" :stroke="1.9" />{{ action.label }}</button>
           </div>
         </div>

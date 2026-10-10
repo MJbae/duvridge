@@ -63,6 +63,8 @@ class ToldLifeAssemblyTests(unittest.TestCase):
         redirects = (self.output / "_redirects").read_text()
         self.assertIn("/novels/read/old.html /novels/bae-byunghee/ep01 301", redirects)
         self.assertIn("/videos/ /?tab=videos 301", redirects)
+        # The audiobook moved inside the original series, so its root opens that tab.
+        self.assertIn("/audiobooks/ /?tab=novels 301", redirects)
         marker = json.loads((self.output / "deployment.json").read_text())
         self.assertEqual([entry["base"] for entry in marker["services"]], ["/novels/", "/audiobooks/", "/videos/"])
         self.assertEqual(len(marker["sourceRevision"]), 40)

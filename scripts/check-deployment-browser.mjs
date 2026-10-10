@@ -138,12 +138,14 @@ try {
       const errors = []
       page.on('pageerror', error => errors.push(error.message))
       const overflows = () => page.evaluate(() => document.documentElement.scrollWidth > innerWidth)
-      // The platform home: three tabs, each with its own work and button.
+      // The platform home: two tabs. The original series leads with the novel and keeps the audiobook as one quiet button.
       await page.goto(new URL('/', values.toldlife).href)
-      for (const [tab, verb] of [['오디오북', '듣기'], ['영상', '보기'], ['오리지널 시리즈', '읽기']]) {
+      assert.equal(await page.locator('.tabs a').count(), 2, 'home tabs')
+      for (const [tab, verb] of [['영상', '보기'], ['오리지널 시리즈', '소설']]) {
         await page.getByRole('link', { name: tab, exact: true }).click()
         assert((await page.locator('.panel.is-active .big-button').textContent()).includes(verb), `home ${tab}: wrong button`)
       }
+      assert.equal(await page.locator('.panel.is-active .sub-button').getAttribute('href'), `/audiobooks/${bookId}/`, 'home: audiobook button')
       assert(!await overflows(), 'platform home overflows')
       await page.screenshot({ path: `${output}/home-${device}.png`, fullPage: true })
       for (const [name, path] of [['novels', `/novels/${bookId}/`], ['audiobooks', `/audiobooks/${bookId}/`], ['video', `/videos/${bookId}/`]]) {
