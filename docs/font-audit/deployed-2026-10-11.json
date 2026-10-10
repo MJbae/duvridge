@@ -1,0 +1,1371 @@
+{
+  "schemaVersion": 1,
+  "measuredAt": "2026-10-10T16:17:16.764Z",
+  "completedAt": "2026-10-10T16:17:49.279Z",
+  "sourceRevision": "983a455e8445bb12004ba45866548c9c39941fde",
+  "sourceDirty": false,
+  "ci": {
+    "url": "https://github.com/MJbae/duvridge/actions/runs/38066539725",
+    "conclusion": "success"
+  },
+  "method": {
+    "cache": "Fresh context per journey, HTTP cache enabled within each journey. No request routing.",
+    "bytes": "CDP loadingFinished.encodedDataLength; cache responses counted separately. Includes response overhead.",
+    "timing": "Milliseconds since each document navigation; native network unless explicitly throttled.",
+    "cls": "Sum of layout-shift values without recent input during the observation, not a full-session CWV score.",
+    "completion": "DOMContentLoaded, two animation frames, document.fonts.ready, then 500 ms observation. readyObservedAt can be later than loadingdone."
+  },
+  "policies": {
+    "stylesheet": {
+      "url": "/fonts/reader.719c2f7542a981b0.css",
+      "contentType": "text/css; charset=utf-8",
+      "contentEncoding": "br",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    "font": {
+      "url": "/fonts/ui-400.1a06ea2af37c8a05.woff2",
+      "contentType": "font/woff2",
+      "cacheControl": "public, max-age=31536000, immutable"
+    }
+  },
+  "journeys": [
+    {
+      "name": "phone tabs",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "network": "native",
+      "steps": [
+        {
+          "label": "cold novel work",
+          "path": "/novels/bae-byunghee/",
+          "summary": {
+            "fontRequests": 4,
+            "fontNetworkResponses": 4,
+            "fontCacheResponses": 0,
+            "fontNetworkBytes": 168723,
+            "stylesheetRequests": 1,
+            "stylesheetNetworkBytes": 20094,
+            "failedRequests": 0,
+            "observedCls": 0
+          },
+          "platformFonts": [
+            {
+              "selector": "#work-title",
+              "fonts": [
+                {
+                  "familyName": "ToldLife Serif",
+                  "postScriptName": "Hahmlet-ExtraBold",
+                  "isCustomFont": true,
+                  "glyphCount": 13
+                }
+              ]
+            },
+            {
+              "selector": ".format-switch a",
+              "fonts": [
+                {
+                  "familyName": "ToldLife UI SemiBold",
+                  "postScriptName": "ToldLifeUI-SemiBold",
+                  "isCustomFont": true,
+                  "glyphCount": 2
+                }
+              ]
+            },
+            {
+              "selector": ".episode-title",
+              "fonts": [
+                {
+                  "familyName": "ToldLife UI SemiBold",
+                  "postScriptName": "ToldLifeUI-SemiBold",
+                  "isCustomFont": true,
+                  "glyphCount": 13
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "event": "loading",
+              "at": 1916.6000000238419
+            },
+            {
+              "event": "loadingdone",
+              "at": 2223.2000000476837,
+              "faces": 4
+            }
+          ]
+        },
+        {
+          "label": "first audio switch",
+          "path": "/audiobooks/bae-byunghee/",
+          "summary": {
+            "fontRequests": 4,
+            "fontNetworkResponses": 0,
+            "fontCacheResponses": 4,
+            "fontNetworkBytes": 0,
+            "stylesheetRequests": 1,
+            "stylesheetNetworkBytes": 0,
+            "failedRequests": 0,
+            "observedCls": 0
+          },
+          "platformFonts": [
+            {
+              "selector": "#work-title",
+              "fonts": [
+                {
+                  "familyName": "ToldLife Serif",
+                  "postScriptName": "Hahmlet-ExtraBold",
+                  "isCustomFont": true,
+                  "glyphCount": 13
+                }
+              ]
+            },
+            {
+              "selector": ".format-switch a",
+              "fonts": [
+                {
+                  "familyName": "ToldLife UI Medium",
+                  "postScriptName": "ToldLifeUI-Medium",
+                  "isCustomFont": true,
+                  "glyphCount": 2
+                }
+              ]
+            },
+            {
+              "selector": ".episode-title",
+              "fonts": [
+                {
+                  "familyName": "ToldLife UI SemiBold",
+                  "postScriptName": "ToldLifeUI-SemiBold",
+                  "isCustomFont": true,
+                  "glyphCount": 13
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "event": "loading",
+              "at": 625.7999999523163
+            },
+            {
+              "event": "loadingdone",
+              "at": 626.0999999046326,
+              "faces": 4
+            }
+          ]
+        },
+        {
+          "label": "return novel",
+          "path": "/novels/bae-byunghee/",
+          "summary": {
+            "fontRequests": 4,
+            "fontNetworkResponses": 0,
+            "fontCacheResponses": 4,
+            "fontNetworkBytes": 0,
+            "stylesheetRequests": 1,
+            "stylesheetNetworkBytes": 0,
+            "failedRequests": 0,
+            "observedCls": 0
+          },
+          "platformFonts": [
+            {
+              "selector": "#work-title",
+              "fonts": [
+                {
+                  "familyName": "ToldLife Serif",
+                  "postScriptName": "Hahmlet-ExtraBold",
+                  "isCustomFont": true,
+                  "glyphCount": 13
+                }
+              ]
+            },
+            {
+              "selector": ".format-switch a",
+              "fonts": [
+                {
+                  "familyName": "ToldLife UI SemiBold",
+                  "postScriptName": "ToldLifeUI-SemiBold",
+                  "isCustomFont": true,
+                  "glyphCount": 2
+                }
+              ]
+            },
+            {
+              "selector": ".episode-title",
+              "fonts": [
+                {
+                  "familyName": "ToldLife UI SemiBold",
+                  "postScriptName": "ToldLifeUI-SemiBold",
+                  "isCustomFont": true,
+                  "glyphCount": 13
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "event": "loading",
+              "at": 332.3000000715256
+            },
+            {
+              "event": "loadingdone",
+              "at": 333.90000009536743,
+              "faces": 4
+            }
+          ]
+        },
+        {
+          "label": "repeat audio switch",
+          "path": "/audiobooks/bae-byunghee/",
+          "summary": {
+            "fontRequests": 4,
+            "fontNetworkResponses": 0,
+            "fontCacheResponses": 4,
+            "fontNetworkBytes": 0,
+            "stylesheetRequests": 1,
+            "stylesheetNetworkBytes": 0,
+            "failedRequests": 0,
+            "observedCls": 0
+          },
+          "platformFonts": [
+            {
+              "selector": "#work-title",
+              "fonts": [
+                {
+                  "familyName": "ToldLife Serif",
+                  "postScriptName": "Hahmlet-ExtraBold",
+                  "isCustomFont": true,
+                  "glyphCount": 13
+                }
+              ]
+            },
+            {
+              "selector": ".format-switch a",
+              "fonts": [
+                {
+                  "familyName": "ToldLife UI Medium",
+                  "postScriptName": "ToldLifeUI-Medium",
+                  "isCustomFont": true,
+                  "glyphCount": 2
+                }
+              ]
+            },
+            {
+              "selector": ".episode-title",
+              "fonts": [
+                {
+                  "familyName": "ToldLife UI SemiBold",
+                  "postScriptName": "ToldLifeUI-SemiBold",
+                  "isCustomFont": true,
+                  "glyphCount": 13
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "event": "loading",
+              "at": 96.69999992847443
+            },
+            {
+              "event": "loadingdone",
+              "at": 98.39999997615814,
+              "faces": 4
+            }
+          ]
+        },
+        {
+          "label": "repeat return novel",
+          "path": "/novels/bae-byunghee/",
+          "summary": {
+            "fontRequests": 4,
+            "fontNetworkResponses": 0,
+            "fontCacheResponses": 4,
+            "fontNetworkBytes": 0,
+            "stylesheetRequests": 1,
+            "stylesheetNetworkBytes": 0,
+            "failedRequests": 0,
+            "observedCls": 0
+          },
+          "platformFonts": [
+            {
+              "selector": "#work-title",
+              "fonts": [
+                {
+                  "familyName": "ToldLife Serif",
+                  "postScriptName": "Hahmlet-ExtraBold",
+                  "isCustomFont": true,
+                  "glyphCount": 13
+                }
+              ]
+            },
+            {
+              "selector": ".format-switch a",
+              "fonts": [
+                {
+                  "familyName": "ToldLife UI SemiBold",
+                  "postScriptName": "ToldLifeUI-SemiBold",
+                  "isCustomFont": true,
+                  "glyphCount": 2
+                }
+              ]
+            },
+            {
+              "selector": ".episode-title",
+              "fonts": [
+                {
+                  "familyName": "ToldLife UI SemiBold",
+                  "postScriptName": "ToldLifeUI-SemiBold",
+                  "isCustomFont": true,
+                  "glyphCount": 13
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "event": "loading",
+              "at": 97
+            },
+            {
+              "event": "loadingdone",
+              "at": 98.89999997615814,
+              "faces": 4
+            }
+          ]
+        }
+      ],
+      "stylesheets": [
+        {
+          "url": "https://toldlife.duvridge.com/fonts/reader.719c2f7542a981b0.css",
+          "textBytes": 175854,
+          "declaredFaces": 432,
+          "uniqueFontUrls": 432,
+          "families": [
+            {
+              "family": "ToldLife Serif",
+              "weights": [
+                "400",
+                "500 800"
+              ],
+              "declaredFaces": 56,
+              "uniqueFontUrls": 56
+            },
+            {
+              "family": "ToldLife UI",
+              "weights": [
+                "400",
+                "500",
+                "600",
+                "700"
+              ],
+              "declaredFaces": 376,
+              "uniqueFontUrls": 376
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "desktop tabs",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "network": "native",
+      "steps": [
+        {
+          "label": "cold novel work",
+          "path": "/novels/bae-byunghee/",
+          "summary": {
+            "fontRequests": 4,
+            "fontNetworkResponses": 4,
+            "fontCacheResponses": 0,
+            "fontNetworkBytes": 168744,
+            "stylesheetRequests": 1,
+            "stylesheetNetworkBytes": 20087,
+            "failedRequests": 0,
+            "observedCls": 0
+          },
+          "platformFonts": [
+            {
+              "selector": "#work-title",
+              "fonts": [
+                {
+                  "familyName": "ToldLife Serif",
+                  "postScriptName": "Hahmlet-ExtraBold",
+                  "isCustomFont": true,
+                  "glyphCount": 13
+                }
+              ]
+            },
+            {
+              "selector": ".format-switch a",
+              "fonts": [
+                {
+                  "familyName": "ToldLife UI SemiBold",
+                  "postScriptName": "ToldLifeUI-SemiBold",
+                  "isCustomFont": true,
+                  "glyphCount": 2
+                }
+              ]
+            },
+            {
+              "selector": ".episode-title",
+              "fonts": [
+                {
+                  "familyName": "ToldLife UI SemiBold",
+                  "postScriptName": "ToldLifeUI-SemiBold",
+                  "isCustomFont": true,
+                  "glyphCount": 13
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "event": "loading",
+              "at": 1319.5
+            },
+            {
+              "event": "loadingdone",
+              "at": 1885.6000000238419,
+              "faces": 4
+            }
+          ]
+        },
+        {
+          "label": "first audio switch",
+          "path": "/audiobooks/bae-byunghee/",
+          "summary": {
+            "fontRequests": 4,
+            "fontNetworkResponses": 0,
+            "fontCacheResponses": 4,
+            "fontNetworkBytes": 0,
+            "stylesheetRequests": 1,
+            "stylesheetNetworkBytes": 0,
+            "failedRequests": 0,
+            "observedCls": 0
+          },
+          "platformFonts": [
+            {
+              "selector": "#work-title",
+              "fonts": [
+                {
+                  "familyName": "ToldLife Serif",
+                  "postScriptName": "Hahmlet-ExtraBold",
+                  "isCustomFont": true,
+                  "glyphCount": 13
+                }
+              ]
+            },
+            {
+              "selector": ".format-switch a",
+              "fonts": [
+                {
+                  "familyName": "ToldLife UI Medium",
+                  "postScriptName": "ToldLifeUI-Medium",
+                  "isCustomFont": true,
+                  "glyphCount": 2
+                }
+              ]
+            },
+            {
+              "selector": ".episode-title",
+              "fonts": [
+                {
+                  "familyName": "ToldLife UI SemiBold",
+                  "postScriptName": "ToldLifeUI-SemiBold",
+                  "isCustomFont": true,
+                  "glyphCount": 13
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "event": "loading",
+              "at": 1078.5
+            },
+            {
+              "event": "loadingdone",
+              "at": 1082.4000000953674,
+              "faces": 4
+            }
+          ]
+        },
+        {
+          "label": "return novel",
+          "path": "/novels/bae-byunghee/",
+          "summary": {
+            "fontRequests": 4,
+            "fontNetworkResponses": 0,
+            "fontCacheResponses": 4,
+            "fontNetworkBytes": 0,
+            "stylesheetRequests": 1,
+            "stylesheetNetworkBytes": 0,
+            "failedRequests": 0,
+            "observedCls": 0
+          },
+          "platformFonts": [
+            {
+              "selector": "#work-title",
+              "fonts": [
+                {
+                  "familyName": "ToldLife Serif",
+                  "postScriptName": "Hahmlet-ExtraBold",
+                  "isCustomFont": true,
+                  "glyphCount": 13
+                }
+              ]
+            },
+            {
+              "selector": ".format-switch a",
+              "fonts": [
+                {
+                  "familyName": "ToldLife UI SemiBold",
+                  "postScriptName": "ToldLifeUI-SemiBold",
+                  "isCustomFont": true,
+                  "glyphCount": 2
+                }
+              ]
+            },
+            {
+              "selector": ".episode-title",
+              "fonts": [
+                {
+                  "familyName": "ToldLife UI SemiBold",
+                  "postScriptName": "ToldLifeUI-SemiBold",
+                  "isCustomFont": true,
+                  "glyphCount": 13
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "event": "loading",
+              "at": 206.39999997615814
+            },
+            {
+              "event": "loadingdone",
+              "at": 208.70000004768372,
+              "faces": 4
+            }
+          ]
+        }
+      ],
+      "stylesheets": [
+        {
+          "url": "https://toldlife.duvridge.com/fonts/reader.719c2f7542a981b0.css",
+          "textBytes": 175854,
+          "declaredFaces": 432,
+          "uniqueFontUrls": 432,
+          "families": [
+            {
+              "family": "ToldLife Serif",
+              "weights": [
+                "400",
+                "500 800"
+              ],
+              "declaredFaces": 56,
+              "uniqueFontUrls": 56
+            },
+            {
+              "family": "ToldLife UI",
+              "weights": [
+                "400",
+                "500",
+                "600",
+                "700"
+              ],
+              "declaredFaces": 376,
+              "uniqueFontUrls": 376
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "portal entry",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "network": "native",
+      "steps": [
+        {
+          "label": "cold portal",
+          "path": "/",
+          "summary": {
+            "fontRequests": 5,
+            "fontNetworkResponses": 5,
+            "fontCacheResponses": 0,
+            "fontNetworkBytes": 200401,
+            "stylesheetRequests": 1,
+            "stylesheetNetworkBytes": 20095,
+            "failedRequests": 0,
+            "observedCls": 0.00039147472325073903
+          },
+          "platformFonts": [],
+          "events": [
+            {
+              "event": "loading",
+              "at": 1298.6999999284744
+            },
+            {
+              "event": "loadingdone",
+              "at": 1747.6999999284744,
+              "faces": 5
+            }
+          ]
+        },
+        {
+          "label": "novel after portal",
+          "path": "/novels/bae-byunghee/",
+          "summary": {
+            "fontRequests": 5,
+            "fontNetworkResponses": 0,
+            "fontCacheResponses": 5,
+            "fontNetworkBytes": 0,
+            "stylesheetRequests": 1,
+            "stylesheetNetworkBytes": 0,
+            "failedRequests": 0,
+            "observedCls": 0
+          },
+          "platformFonts": [
+            {
+              "selector": "#work-title",
+              "fonts": [
+                {
+                  "familyName": "ToldLife Serif",
+                  "postScriptName": "Hahmlet-ExtraBold",
+                  "isCustomFont": true,
+                  "glyphCount": 13
+                }
+              ]
+            },
+            {
+              "selector": ".format-switch a",
+              "fonts": [
+                {
+                  "familyName": "ToldLife UI SemiBold",
+                  "postScriptName": "ToldLifeUI-SemiBold",
+                  "isCustomFont": true,
+                  "glyphCount": 2
+                }
+              ]
+            },
+            {
+              "selector": ".episode-title",
+              "fonts": [
+                {
+                  "familyName": "ToldLife UI SemiBold",
+                  "postScriptName": "ToldLifeUI-SemiBold",
+                  "isCustomFont": true,
+                  "glyphCount": 13
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "event": "loading",
+              "at": 284
+            },
+            {
+              "event": "loadingdone",
+              "at": 284.2999999523163,
+              "faces": 4
+            }
+          ]
+        },
+        {
+          "label": "first audio switch",
+          "path": "/audiobooks/bae-byunghee/",
+          "summary": {
+            "fontRequests": 5,
+            "fontNetworkResponses": 0,
+            "fontCacheResponses": 5,
+            "fontNetworkBytes": 0,
+            "stylesheetRequests": 1,
+            "stylesheetNetworkBytes": 0,
+            "failedRequests": 0,
+            "observedCls": 0
+          },
+          "platformFonts": [
+            {
+              "selector": "#work-title",
+              "fonts": [
+                {
+                  "familyName": "ToldLife Serif",
+                  "postScriptName": "Hahmlet-ExtraBold",
+                  "isCustomFont": true,
+                  "glyphCount": 13
+                }
+              ]
+            },
+            {
+              "selector": ".format-switch a",
+              "fonts": [
+                {
+                  "familyName": "ToldLife UI Medium",
+                  "postScriptName": "ToldLifeUI-Medium",
+                  "isCustomFont": true,
+                  "glyphCount": 2
+                }
+              ]
+            },
+            {
+              "selector": ".episode-title",
+              "fonts": [
+                {
+                  "familyName": "ToldLife UI SemiBold",
+                  "postScriptName": "ToldLifeUI-SemiBold",
+                  "isCustomFont": true,
+                  "glyphCount": 13
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "event": "loading",
+              "at": 276
+            },
+            {
+              "event": "loadingdone",
+              "at": 276,
+              "faces": 4
+            }
+          ]
+        }
+      ],
+      "stylesheets": [
+        {
+          "url": "https://toldlife.duvridge.com/fonts/reader.719c2f7542a981b0.css",
+          "textBytes": 175854,
+          "declaredFaces": 432,
+          "uniqueFontUrls": 432,
+          "families": [
+            {
+              "family": "ToldLife Serif",
+              "weights": [
+                "400",
+                "500 800"
+              ],
+              "declaredFaces": 56,
+              "uniqueFontUrls": 56
+            },
+            {
+              "family": "ToldLife UI",
+              "weights": [
+                "400",
+                "500",
+                "600",
+                "700"
+              ],
+              "declaredFaces": 376,
+              "uniqueFontUrls": 376
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "novel reading",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "network": "native",
+      "steps": [
+        {
+          "label": "cold prolog",
+          "path": "/novels/bae-byunghee/prolog",
+          "summary": {
+            "fontRequests": 11,
+            "fontNetworkResponses": 11,
+            "fontCacheResponses": 0,
+            "fontNetworkBytes": 317476,
+            "stylesheetRequests": 1,
+            "stylesheetNetworkBytes": 20117,
+            "failedRequests": 0,
+            "observedCls": 0.0032485750026348846
+          },
+          "platformFonts": [
+            {
+              "selector": ".story-content p",
+              "fonts": [
+                {
+                  "familyName": "ToldLife Serif",
+                  "postScriptName": "ToldLifeSerif-Regular",
+                  "isCustomFont": true,
+                  "glyphCount": 74
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "event": "loading",
+              "at": 773.7000000476837
+            },
+            {
+              "event": "loadingdone",
+              "at": 1620.8000000715256,
+              "faces": 11
+            }
+          ]
+        },
+        {
+          "label": "next episode",
+          "path": "/novels/bae-byunghee/ep01",
+          "summary": {
+            "fontRequests": 11,
+            "fontNetworkResponses": 0,
+            "fontCacheResponses": 11,
+            "fontNetworkBytes": 0,
+            "stylesheetRequests": 1,
+            "stylesheetNetworkBytes": 0,
+            "failedRequests": 0,
+            "observedCls": 0
+          },
+          "platformFonts": [
+            {
+              "selector": ".story-content p",
+              "fonts": [
+                {
+                  "familyName": "ToldLife Serif",
+                  "postScriptName": "ToldLifeSerif-Regular",
+                  "isCustomFont": true,
+                  "glyphCount": 54
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "event": "loading",
+              "at": 169.10000002384186
+            },
+            {
+              "event": "loadingdone",
+              "at": 169.19999992847443,
+              "faces": 11
+            }
+          ]
+        }
+      ],
+      "stylesheets": [
+        {
+          "url": "https://toldlife.duvridge.com/fonts/reader.719c2f7542a981b0.css",
+          "textBytes": 175854,
+          "declaredFaces": 432,
+          "uniqueFontUrls": 432,
+          "families": [
+            {
+              "family": "ToldLife Serif",
+              "weights": [
+                "400",
+                "500 800"
+              ],
+              "declaredFaces": 56,
+              "uniqueFontUrls": 56
+            },
+            {
+              "family": "ToldLife UI",
+              "weights": [
+                "400",
+                "500",
+                "600",
+                "700"
+              ],
+              "declaredFaces": 376,
+              "uniqueFontUrls": 376
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "novel sans reading",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "network": "native",
+      "steps": [
+        {
+          "label": "cold prolog with saved sans preference",
+          "path": "/novels/bae-byunghee/prolog",
+          "summary": {
+            "fontRequests": 9,
+            "fontNetworkResponses": 9,
+            "fontCacheResponses": 0,
+            "fontNetworkBytes": 182468,
+            "stylesheetRequests": 1,
+            "stylesheetNetworkBytes": 20130,
+            "failedRequests": 0,
+            "observedCls": 0.0017329764864636049
+          },
+          "platformFonts": [
+            {
+              "selector": ".story-content p",
+              "fonts": [
+                {
+                  "familyName": "ToldLife UI",
+                  "postScriptName": "ToldLifeUI-Regular",
+                  "isCustomFont": true,
+                  "glyphCount": 74
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "event": "loading",
+              "at": 691
+            },
+            {
+              "event": "loadingdone",
+              "at": 1404.5,
+              "faces": 9
+            }
+          ]
+        }
+      ],
+      "stylesheets": [
+        {
+          "url": "https://toldlife.duvridge.com/fonts/reader.719c2f7542a981b0.css",
+          "textBytes": 175854,
+          "declaredFaces": 432,
+          "uniqueFontUrls": 432,
+          "families": [
+            {
+              "family": "ToldLife Serif",
+              "weights": [
+                "400",
+                "500 800"
+              ],
+              "declaredFaces": 56,
+              "uniqueFontUrls": 56
+            },
+            {
+              "family": "ToldLife UI",
+              "weights": [
+                "400",
+                "500",
+                "600",
+                "700"
+              ],
+              "declaredFaces": 376,
+              "uniqueFontUrls": 376
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "early sans preference prototype",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "network": "native",
+      "steps": [
+        {
+          "label": "cold prolog with early sans CSS",
+          "path": "/novels/bae-byunghee/prolog",
+          "summary": {
+            "fontRequests": 9,
+            "fontNetworkResponses": 9,
+            "fontCacheResponses": 0,
+            "fontNetworkBytes": 182360,
+            "stylesheetRequests": 1,
+            "stylesheetNetworkBytes": 20118,
+            "failedRequests": 0,
+            "observedCls": 0.0017329764864636049
+          },
+          "platformFonts": [
+            {
+              "selector": ".story-content p",
+              "fonts": [
+                {
+                  "familyName": "ToldLife UI",
+                  "postScriptName": "ToldLifeUI-Regular",
+                  "isCustomFont": true,
+                  "glyphCount": 74
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "event": "loading",
+              "at": 599.2999999523163
+            },
+            {
+              "event": "loadingdone",
+              "at": 798.5999999046326,
+              "faces": 9
+            }
+          ]
+        }
+      ],
+      "stylesheets": [
+        {
+          "url": "https://toldlife.duvridge.com/fonts/reader.719c2f7542a981b0.css",
+          "textBytes": 175854,
+          "declaredFaces": 432,
+          "uniqueFontUrls": 432,
+          "families": [
+            {
+              "family": "ToldLife Serif",
+              "weights": [
+                "400",
+                "500 800"
+              ],
+              "declaredFaces": 56,
+              "uniqueFontUrls": 56
+            },
+            {
+              "family": "ToldLife UI",
+              "weights": [
+                "400",
+                "500",
+                "600",
+                "700"
+              ],
+              "declaredFaces": 376,
+              "uniqueFontUrls": 376
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "audio listening",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "network": "native",
+      "steps": [
+        {
+          "label": "cold audio prolog",
+          "path": "/audiobooks/bae-byunghee/prolog",
+          "summary": {
+            "fontRequests": 11,
+            "fontNetworkResponses": 11,
+            "fontCacheResponses": 0,
+            "fontNetworkBytes": 241922,
+            "stylesheetRequests": 1,
+            "stylesheetNetworkBytes": 20130,
+            "failedRequests": 0,
+            "observedCls": 0.0005448678803405365
+          },
+          "platformFonts": [],
+          "events": [
+            {
+              "event": "loading",
+              "at": 952.8999999761581
+            },
+            {
+              "event": "loadingdone",
+              "at": 1559,
+              "faces": 11
+            }
+          ]
+        }
+      ],
+      "stylesheets": [
+        {
+          "url": "https://toldlife.duvridge.com/fonts/reader.719c2f7542a981b0.css",
+          "textBytes": 175854,
+          "declaredFaces": 432,
+          "uniqueFontUrls": 432,
+          "families": [
+            {
+              "family": "ToldLife Serif",
+              "weights": [
+                "400",
+                "500 800"
+              ],
+              "declaredFaces": 56,
+              "uniqueFontUrls": 56
+            },
+            {
+              "family": "ToldLife UI",
+              "weights": [
+                "400",
+                "500",
+                "600",
+                "700"
+              ],
+              "declaredFaces": 376,
+              "uniqueFontUrls": 376
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "throttled phone tabs",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "network": {
+        "offline": false,
+        "latency": 150,
+        "downloadThroughput": 200000,
+        "uploadThroughput": 93750
+      },
+      "steps": [
+        {
+          "label": "cold novel work",
+          "path": "/novels/bae-byunghee/",
+          "summary": {
+            "fontRequests": 4,
+            "fontNetworkResponses": 4,
+            "fontCacheResponses": 0,
+            "fontNetworkBytes": 168887,
+            "stylesheetRequests": 1,
+            "stylesheetNetworkBytes": 20115,
+            "failedRequests": 0,
+            "observedCls": 0.00036905660768556933
+          },
+          "platformFonts": [
+            {
+              "selector": "#work-title",
+              "fonts": [
+                {
+                  "familyName": "ToldLife Serif",
+                  "postScriptName": "Hahmlet-ExtraBold",
+                  "isCustomFont": true,
+                  "glyphCount": 13
+                }
+              ]
+            },
+            {
+              "selector": ".format-switch a",
+              "fonts": [
+                {
+                  "familyName": "ToldLife UI SemiBold",
+                  "postScriptName": "ToldLifeUI-SemiBold",
+                  "isCustomFont": true,
+                  "glyphCount": 2
+                }
+              ]
+            },
+            {
+              "selector": ".episode-title",
+              "fonts": [
+                {
+                  "familyName": "ToldLife UI SemiBold",
+                  "postScriptName": "ToldLifeUI-SemiBold",
+                  "isCustomFont": true,
+                  "glyphCount": 13
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "event": "loading",
+              "at": 1342.0999999046326
+            },
+            {
+              "event": "loadingdone",
+              "at": 3919.5,
+              "faces": 4
+            }
+          ]
+        },
+        {
+          "label": "first audio switch",
+          "path": "/audiobooks/bae-byunghee/",
+          "summary": {
+            "fontRequests": 4,
+            "fontNetworkResponses": 0,
+            "fontCacheResponses": 4,
+            "fontNetworkBytes": 0,
+            "stylesheetRequests": 1,
+            "stylesheetNetworkBytes": 0,
+            "failedRequests": 0,
+            "observedCls": 0
+          },
+          "platformFonts": [
+            {
+              "selector": "#work-title",
+              "fonts": [
+                {
+                  "familyName": "ToldLife Serif",
+                  "postScriptName": "Hahmlet-ExtraBold",
+                  "isCustomFont": true,
+                  "glyphCount": 13
+                }
+              ]
+            },
+            {
+              "selector": ".format-switch a",
+              "fonts": [
+                {
+                  "familyName": "ToldLife UI Medium",
+                  "postScriptName": "ToldLifeUI-Medium",
+                  "isCustomFont": true,
+                  "glyphCount": 2
+                }
+              ]
+            },
+            {
+              "selector": ".episode-title",
+              "fonts": [
+                {
+                  "familyName": "ToldLife UI SemiBold",
+                  "postScriptName": "ToldLifeUI-SemiBold",
+                  "isCustomFont": true,
+                  "glyphCount": 13
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "event": "loading",
+              "at": 1135.3000000715256
+            },
+            {
+              "event": "loadingdone",
+              "at": 1135.6000000238419,
+              "faces": 4
+            }
+          ]
+        },
+        {
+          "label": "return novel",
+          "path": "/novels/bae-byunghee/",
+          "summary": {
+            "fontRequests": 4,
+            "fontNetworkResponses": 0,
+            "fontCacheResponses": 4,
+            "fontNetworkBytes": 0,
+            "stylesheetRequests": 1,
+            "stylesheetNetworkBytes": 0,
+            "failedRequests": 0,
+            "observedCls": 0
+          },
+          "platformFonts": [
+            {
+              "selector": "#work-title",
+              "fonts": [
+                {
+                  "familyName": "ToldLife Serif",
+                  "postScriptName": "Hahmlet-ExtraBold",
+                  "isCustomFont": true,
+                  "glyphCount": 13
+                }
+              ]
+            },
+            {
+              "selector": ".format-switch a",
+              "fonts": [
+                {
+                  "familyName": "ToldLife UI SemiBold",
+                  "postScriptName": "ToldLifeUI-SemiBold",
+                  "isCustomFont": true,
+                  "glyphCount": 2
+                }
+              ]
+            },
+            {
+              "selector": ".episode-title",
+              "fonts": [
+                {
+                  "familyName": "ToldLife UI SemiBold",
+                  "postScriptName": "ToldLifeUI-SemiBold",
+                  "isCustomFont": true,
+                  "glyphCount": 13
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "event": "loading",
+              "at": 339.6999999284744
+            },
+            {
+              "event": "loadingdone",
+              "at": 339.6999999284744,
+              "faces": 4
+            }
+          ]
+        }
+      ],
+      "stylesheets": [
+        {
+          "url": "https://toldlife.duvridge.com/fonts/reader.719c2f7542a981b0.css",
+          "textBytes": 175854,
+          "declaredFaces": 432,
+          "uniqueFontUrls": 432,
+          "families": [
+            {
+              "family": "ToldLife Serif",
+              "weights": [
+                "400",
+                "500 800"
+              ],
+              "declaredFaces": 56,
+              "uniqueFontUrls": 56
+            },
+            {
+              "family": "ToldLife UI",
+              "weights": [
+                "400",
+                "500",
+                "600",
+                "700"
+              ],
+              "declaredFaces": 376,
+              "uniqueFontUrls": 376
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "browserVerification": {
+    "checkedAt": "2026-10-10T16:20:22.864Z",
+    "results": [
+      {
+        "group": "company",
+        "origin": "https://www.duvridge.com",
+        "sha": "983a455e8445bb12004ba45866548c9c39941fde",
+        "routes": 7
+      },
+      {
+        "group": "toldlife",
+        "origin": "https://toldlife.duvridge.com",
+        "sha": "983a455e8445bb12004ba45866548c9c39941fde",
+        "episodeRoutes": 78,
+        "recordings": 26,
+        "manuscript": {
+          "bookId": "bae-byunghee",
+          "sha256": "cf2af92f0f335428250489c48d3e60772fafde0b4778d67cb8a5db7aad8347a0",
+          "episodeCount": 26,
+          "paragraphChecks": 409
+        },
+        "devices": [
+          "phone",
+          "desktop"
+        ]
+      }
+    ]
+  },
+  "verificationNote": "The existing general browser verifier has outdated portal button assertions; an ignored local copy verified the current original-series hero link while preserving all manuscript, playback and route checks."
+}
