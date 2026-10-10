@@ -1,0 +1,237 @@
+{
+  "status": "deployed and verified",
+  "approvedOption": "이야기",
+  "heroTitle": "오래도록 남을 당신의 삶.",
+  "heroSub": "한 사람의 인생을 이야기로 남깁니다.",
+  "checkedAt": "2026-10-10T13:44:02.954Z",
+  "checkedAtKST": "2026-10-10T22:44:02.954000+09:00",
+  "sourceRevision": "fa7f9f19855a935a18e42e32cf544b568934bb9b",
+  "origin": "https://www.duvridge.com",
+  "deploymentUrl": "https://758570e5.duvridge.pages.dev",
+  "workflow": "https://github.com/MJbae/duvridge/actions/runs/38056580200",
+  "workflowConclusion": "success",
+  "deployment": {
+    "commit": "fa7f9f19855a935a18e42e32cf544b568934bb9b",
+    "services": [
+      "company-site"
+    ],
+    "sourceRevision": "fa7f9f19855a935a18e42e32cf544b568934bb9b",
+    "sourceDirty": false,
+    "group": "company"
+  },
+  "localValidation": {
+    "repositoryNodeTestsPassed": 32,
+    "repositoryPythonTestsPassed": 10,
+    "companyTestsPassed": 16,
+    "companyBuild": "passed",
+    "gitDiffCheck": "passed",
+    "affectedServices": [
+      "company-site"
+    ],
+    "deployGroups": [
+      "company"
+    ]
+  },
+  "productionValidation": {
+    "httpRoutes": [
+      "https://www.duvridge.com/",
+      "https://www.duvridge.com/ko/",
+      "https://www.duvridge.com/ja/",
+      "https://www.duvridge.com/zh-Hans/",
+      "https://www.duvridge.com/zh-Hant/",
+      "https://www.duvridge.com/guidebook/",
+      "https://www.duvridge.com/guidebook/privacy/"
+    ],
+    "assets": [
+      {
+        "path": "/assets/site.css",
+        "sha256": "5482e9c7afb61ff6ed7ef7a98441877f0ede98eb60c2e870485273cccf98cc68",
+        "matchesCommittedSource": true
+      },
+      {
+        "path": "/assets/site.js",
+        "sha256": "fee0caa12c0bc970c0619cb05023e6dec5875b3027c589d74f7f77decdfdf4b8",
+        "matchesCommittedSource": true
+      }
+    ],
+    "koreanApprovedCopy": true,
+    "renderSummary": [
+      {
+        "width": 320,
+        "documentWidth": 320,
+        "bodyFont": "16px",
+        "fonts": [
+          "Fraunces",
+          "Hahmlet",
+          "Pretendard Variable",
+          "Noto Serif KR"
+        ],
+        "notePresent": false,
+        "images": [
+          {
+            "src": "https://toldlife.duvridge.com/novels/works/bae-byunghee/images/home-cover-1280.webp",
+            "loaded": true,
+            "naturalWidth": 1280,
+            "naturalHeight": 720
+          }
+        ],
+        "title": "duvridge — 오래도록 남을 당신의 삶.",
+        "multiline": [],
+        "outOfBounds": []
+      },
+      {
+        "width": 375,
+        "documentWidth": 375,
+        "bodyFont": "16px",
+        "fonts": [
+          "Fraunces",
+          "Hahmlet",
+          "Pretendard Variable",
+          "Noto Serif KR"
+        ],
+        "notePresent": false,
+        "images": [
+          {
+            "src": "https://toldlife.duvridge.com/novels/works/bae-byunghee/images/home-cover-1280.webp",
+            "loaded": true,
+            "naturalWidth": 1280,
+            "naturalHeight": 720
+          }
+        ],
+        "title": "duvridge — 오래도록 남을 당신의 삶.",
+        "multiline": [],
+        "outOfBounds": []
+      },
+      {
+        "width": 390,
+        "documentWidth": 390,
+        "bodyFont": "16px",
+        "fonts": [
+          "Fraunces",
+          "Hahmlet",
+          "Pretendard Variable",
+          "Noto Serif KR"
+        ],
+        "notePresent": false,
+        "images": [
+          {
+            "src": "https://toldlife.duvridge.com/novels/works/bae-byunghee/images/home-cover-1280.webp",
+            "loaded": true,
+            "naturalWidth": 1280,
+            "naturalHeight": 720
+          }
+        ],
+        "title": "duvridge — 오래도록 남을 당신의 삶.",
+        "multiline": [],
+        "outOfBounds": []
+      },
+      {
+        "width": 768,
+        "documentWidth": 768,
+        "bodyFont": "16.64px",
+        "fonts": [
+          "Fraunces",
+          "Hahmlet",
+          "Pretendard Variable",
+          "Noto Serif KR"
+        ],
+        "notePresent": false,
+        "images": [
+          {
+            "src": "https://toldlife.duvridge.com/novels/works/bae-byunghee/images/home-cover-1280.webp",
+            "loaded": true,
+            "naturalWidth": 1280,
+            "naturalHeight": 720
+          }
+        ],
+        "title": "duvridge — 오래도록 남을 당신의 삶.",
+        "multiline": [],
+        "outOfBounds": []
+      },
+      {
+        "width": 1024,
+        "documentWidth": 1024,
+        "bodyFont": "16.64px",
+        "fonts": [
+          "Fraunces",
+          "Hahmlet",
+          "Pretendard Variable",
+          "Noto Serif KR"
+        ],
+        "notePresent": false,
+        "images": [
+          {
+            "src": "https://toldlife.duvridge.com/novels/works/bae-byunghee/images/home-cover-1280.webp",
+            "loaded": true,
+            "naturalWidth": 1280,
+            "naturalHeight": 720
+          }
+        ],
+        "title": "duvridge — 오래도록 남을 당신의 삶.",
+        "multiline": [],
+        "outOfBounds": []
+      },
+      {
+        "width": 1440,
+        "documentWidth": 1440,
+        "bodyFont": "16.72px",
+        "fonts": [
+          "Fraunces",
+          "Hahmlet",
+          "Pretendard Variable",
+          "Noto Serif KR"
+        ],
+        "notePresent": false,
+        "images": [
+          {
+            "src": "https://toldlife.duvridge.com/novels/works/bae-byunghee/images/home-cover-1280.webp",
+            "loaded": true,
+            "naturalWidth": 1280,
+            "naturalHeight": 720
+          }
+        ],
+        "title": "duvridge — 오래도록 남을 당신의 삶.",
+        "multiline": [],
+        "outOfBounds": []
+      }
+    ],
+    "otherLocales": [
+      {
+        "route": "/",
+        "status": 200,
+        "notePresent": false,
+        "formatLinks": 3
+      },
+      {
+        "route": "/ja/",
+        "status": 200,
+        "notePresent": false,
+        "formatLinks": 3
+      },
+      {
+        "route": "/zh-Hans/",
+        "status": 200,
+        "notePresent": false,
+        "formatLinks": 3
+      },
+      {
+        "route": "/zh-Hant/",
+        "status": 200,
+        "notePresent": false,
+        "formatLinks": 3
+      }
+    ],
+    "staticCopyWithoutJavaScript": true,
+    "coverStatus": 200,
+    "browserFailures": []
+  },
+  "manualVisualReview": {
+    "status": "passed",
+    "screens": [
+      "desktop hero",
+      "mobile full page"
+    ],
+    "issues": []
+  },
+  "localArtifacts": ".deploy/verification/company-story-production/"
+}

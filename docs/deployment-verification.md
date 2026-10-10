@@ -232,3 +232,18 @@ Workspace 177개는 회사 16, 오디오북 58, 소설 34, 포털 15, 영상 6, 
 | https://toldlife.duvridge.com/videos/bae-byunghee/ | `share-bae-byunghee-video-v3.png` | HTTP 200, 687705 bytes |
 
 남은 사람 확인: 카카오 공유 디버거로 위 세 작품 URL의 캐시를 초기화한 후 새 메시지로 공유 미리보기를 확인한다.
+
+## 2026-10-10: 회사 홈페이지 ‘이야기’ 안 적용 및 운영 검증
+
+제안 이미지를 확인한 사용자가 ‘이야기로 가자’라고 요청하여 추천 시안을 적용했다. 구현 커밋은 `fa7f9f19855a935a18e42e32cf544b568934bb9b` (`copy: apply the approved story wording to the company site`)이다. 최신 배포 기록 커밋 `b640240` 위에 반영했다.
+
+- 한국어 제목은 ‘오래도록 남을 당신의 삶.’, 소개는 ‘한 사람의 인생을 이야기로 남깁니다.’다. 본문은 짧은 완결 문장별로 배치하고, 한국어 제목·소개·본문·표지 제목의 폭과 줄바꿈을 조정했다. 한국어 페이지의 검색·공유 제목도 같은 제목으로 갱신했다.
+- ‘AI 낭독 · 재구성 삽화’ 행을 공통 템플릿에서 제거하고, 5개 언어의 `ai_note` 키와 관련 CSS를 함께 삭제했다. 언어별 생성 HTML 5개를 갱신했다.
+- 로컬 검증에서 회사 테스트 16건, 저장소 Node 32건·Python 10건, 회사 빌드와 공백 오류 검사가 통과했다. 변경 선택은 `company-site`와 `company` 그룹만 포함했다.
+- [Actions 실행 38056580200](https://github.com/MJbae/duvridge/actions/runs/38056580200)에서 저장소·회사 서비스·`Monorepo required`·회사 배포·운영 HTTP 검사가 모두 성공했다. 회사 Pages 업로드 주소는 [758570e5.duvridge.pages.dev](https://758570e5.duvridge.pages.dev)다.
+- 운영 확인 시각은 **2026-10-10 22:44 KST**다. 공개 [deployment.json](https://www.duvridge.com/deployment.json)의 `sourceRevision`은 위 구현 SHA이며 `sourceDirty=false`, `group=company`다.
+- `check-deployment-http.py --group company --revision fa7f9f19855a935a18e42e32cf544b568934bb9b`로 회사의 7경로와 정적 자산 응답을 확인했다. 운영 CSS·JavaScript의 SHA-256이 커밋 소스와 일치했다.
+- 실제 운영 Chromium에서 320·375·390·768·1024·1440px의 제목·소개·본문 문장·표지 제목이 한 줄인 것을 확인했다. 가로 넘침·텍스트 영역 이탈·브라우저 오류는 0건이며 본문은 16px 이상이고 기존 글꼴 4종과 표지가 정상 로드됐다. PC 첫 화면과 모바일 전체 화면도 육안 검수했다.
+- 5개 언어 페이지에서 삭제 문구가 없고 소설·오디오북·영상 링크가 유지됨을 확인했다. JavaScript를 끈 한국어 페이지에도 승인한 소개와 본문 13문장, 문의 주소가 표시됐다.
+
+[기계 판독 검증 결과](company-story-deployment-2026-10-10.json)에 배포 marker, 실행 주소, 자산 해시와 화면별 결과를 기록했다. 전체 화면 캡처·상세 JSON·HTTP 로그는 작업 사본의 `.deploy/verification/company-story-production/`에 보존했다.
