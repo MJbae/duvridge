@@ -2,6 +2,10 @@ import { expect, test, type Page } from '@playwright/test'
 import rawCatalog from '../site/.vitepress/generated/catalog.json' with { type: 'json' }
 import { cueIndexAt, type NarrationCue } from '../site/.vitepress/shared/narration-cues.mjs'
 
+const allowedAutoplayTest = test.extend({ launchOptions: { args: ['--autoplay-policy=no-user-gesture-required'] } })
+// Trace snapshots can activate the page before the autoplay assertion.
+const gestureRequiredTest = test.extend({ launchOptions: { args: ['--autoplay-policy=user-gesture-required'] }, trace: 'off' })
+
 type Track = { src: string; duration: number; cues: NarrationCue[]; texts: string[]; scenes: [number, string][] }
 const catalog = rawCatalog as unknown as { video: Record<string, Track>; narration: Record<string, Track> }
 const video = catalog.video
@@ -18,7 +22,7 @@ const offCenter = (page: Page, selector: string) => page.locator(selector).evalu
 
 async function watching(page: Page, id: string) {
   await expect(player(page)).toHaveAttribute('src', `/videos${video[id].src}`)
-  await expect.poll(() => player(page).evaluate((media: HTMLVideoElement) => !media.paused && media.readyState >= 2)).toBe(true)
+  await expect.poll(() => player(page).evaluate((media: HTMLVideoElement) => !media.paused && !media.muted && media.readyState >= 2)).toBe(true)
 }
 async function noOverflow(page: Page) {
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
@@ -145,9 +149,10 @@ test('원작으로 만든 영상은 공통 조작부로 재생되고, 오리지�
 test('단일 영상과 시리즈 회차는 같은 10초 이동, 재생 위치와 전체 화면 조작부를 쓴다', async ({ page }) => {
   for (const id of ['prolog', 'nureon-bongtu']) {
     await page.goto(id)
+    await expect(page.locator('[data-reader-ready="true"]')).toBeVisible()
     const media = page.locator(id === 'prolog' ? 'video.stage-video' : 'video.film-video')
-    if (id === 'prolog') await playButton(page).click()
-    await expect.poll(() => media.evaluate((element: HTMLVideoElement) => !element.paused && element.readyState >= 2)).toBe(true)
+    if (await media.evaluate((element: HTMLVideoElement) => element.paused)) await playButton(page).click()
+    await expect.poll(() => media.evaluate((element: HTMLVideoElement) => !element.paused && !element.muted && element.readyState >= 2)).toBe(true)
     await showControls(page)
     await pauseButton(page).click()
     await expect.poll(() => media.evaluate((element: HTMLVideoElement) => element.paused)).toBe(true)
@@ -211,54 +216,61 @@ test('끝난 뒤 자동 다음 화를 취소할 수 있고 다음 회차도 같�
   expect(await player(page).evaluate((media, first) => media === first, original)).toBe(true)
 })
 
-test('영상 화면을 열면 영상이 바로 재생된다', async ({ page }) => {
-  for (const id of ['nureon-bongtu', 'mot-bon-cheok']) {
-    await page.goto(id)
+allowedAutoplayTest('영상 화면을 열면 음소거 해제 상태로 바로 재생된다', async ({ page }) => {
+  for (const film of films) {
+    await page.goto(film.id)
     const media = page.locator('video.film-video')
-    await expect.poll(() => media.evaluate((element: HTMLVideoElement) => !element.paused && element.currentTime > 0), { timeout: 15000 }).toBe(true)
-    // Started with its sound, it needs nothing more; started silently, one button brings the sound in.
-    const muted = await media.evaluate((element: HTMLVideoElement) => element.muted)
-    await expect(page.getByRole('button', { name: '소리 켜기' })).toHaveCount(muted ? 1 : 0)
+    await expect.poll(() => media.evaluate((element: HTMLVideoElement) => !element.paused && !element.muted && element.volume > 0 && element.currentTime > 0), { timeout: 15000 }).toBe(true)
+    await expect(page.getByRole('button', { name: '소리 켜기' })).toHaveCount(0)
   }
 })
 
-test('브라우저가 소리를 막으면 소리 없이 바로 시작하고, 소리 켜기 한 번으로 소리가 난다', async ({ page }) => {
-  // The strictest browsers (iPhone Safari) refuse sound before a tap on the page itself.
+test('브라우저가 소리를 막아도 음소거로 재시도하지 않고 재생 버튼을 기다린다', async ({ page }) => {
+  // Muted playback would be allowed here, but the app must keep sound enabled.
   await page.addInitScript(() => {
     const play = HTMLMediaElement.prototype.play
     let tapped = false
+    const attempts: boolean[] = []
+    Object.defineProperty(window, 'filmPlayAttempts', { get: () => attempts })
     addEventListener('pointerdown', () => { tapped = true }, true)
     HTMLMediaElement.prototype.play = function (this: HTMLMediaElement) {
+      attempts.push(this.muted)
       return !this.muted && !tapped ? Promise.reject(new DOMException('소리는 누른 뒤에만', 'NotAllowedError')) : play.call(this)
     }
   })
   await page.goto('byeotgap')
   const media = page.locator('video.film-video')
-  await expect.poll(() => media.evaluate((element: HTMLVideoElement) => element.muted && !element.paused), { timeout: 15000 }).toBe(true)
-  const unmute = page.getByRole('button', { name: '소리 켜기' })
-  await expect(unmute).toBeVisible()
-  await unmute.click()
+  await expect.poll(() => page.evaluate(() => Reflect.get(window, 'filmPlayAttempts'))).toEqual([false])
+  expect(await media.evaluate((element: HTMLVideoElement) => element.paused && !element.muted && element.currentTime === 0)).toBe(true)
+  await expect(page.getByRole('button', { name: '소리 켜기' })).toHaveCount(0)
+  await playButton(page).click()
   await expect.poll(() => media.evaluate((element: HTMLVideoElement) => !element.muted && !element.paused)).toBe(true)
-  await expect(unmute).toHaveCount(0)
+  expect(await page.evaluate(() => Reflect.get(window, 'filmPlayAttempts'))).toEqual([false, false])
 })
 
-test('소리와 무음 자동 재생이 모두 막히면 소리 켜기 없이 수동 재생을 기다린다', async ({ page }) => {
-  await page.addInitScript(() => {
-    const play = HTMLMediaElement.prototype.play
-    let tapped = false
-    let attempts = 0
-    Object.defineProperty(window, 'filmPlayAttempts', { get: () => attempts })
-    addEventListener('pointerdown', () => { tapped = true }, true)
-    HTMLMediaElement.prototype.play = function (this: HTMLMediaElement) {
-      attempts++
-      return tapped ? play.call(this) : Promise.reject(new DOMException('누른 뒤에만 재생', 'NotAllowedError'))
-    }
+// Each page gets a fresh browser context so an earlier playback click cannot authorize autoplay.
+for (const [id, kind] of [['prolog', '시리즈 회차'], ['byeotgap', '단일 영상']]) {
+  gestureRequiredTest(`${kind} 페이지는 음소거 해제 상태로 열리고 재생 한 번으로 소리가 난다`, async ({ page }) => {
+    const session = await page.context().newCDPSession(page)
+    await page.goto(id)
+    // Playwright DOM evaluations can count as user gestures; read the initial state without one.
+    await expect.poll(async () => {
+      const { result } = await session.send('Runtime.evaluate', {
+        expression: `(() => {
+          const media = document.querySelector('video');
+          return document.querySelector('[data-reader-ready="true"]') && media
+            ? { paused: media.paused, muted: media.muted, defaultMuted: media.defaultMuted,
+                volume: media.volume, time: media.currentTime, activated: navigator.userActivation.hasBeenActive }
+            : null;
+        })()`,
+        userGesture: false,
+        returnByValue: true,
+      })
+      return result.value
+    }).toEqual({ paused: true, muted: false, defaultMuted: false, volume: 1, time: 0, activated: false })
+    const media = page.locator('video')
+    await expect(page.getByRole('button', { name: '소리 켜기' })).toHaveCount(0)
+    await playButton(page).click()
+    await expect.poll(() => media.evaluate((element: HTMLVideoElement) => !element.paused && !element.muted && element.currentTime > 0)).toBe(true)
   })
-  await page.goto('byeotgap')
-  const media = page.locator('video.film-video')
-  await expect.poll(() => page.evaluate(() => Reflect.get(window, 'filmPlayAttempts'))).toBe(2)
-  expect(await media.evaluate((element: HTMLVideoElement) => element.paused && !element.muted && element.currentTime === 0)).toBe(true)
-  await expect(page.getByRole('button', { name: '소리 켜기', exact: true })).toHaveCount(0)
-  await page.getByRole('button', { name: '재생', exact: true }).click()
-  await expect.poll(() => media.evaluate((element: HTMLVideoElement) => !element.paused && !element.muted)).toBe(true)
-})
+}

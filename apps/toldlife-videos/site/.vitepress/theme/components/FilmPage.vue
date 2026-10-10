@@ -13,11 +13,10 @@ const catalog = useCatalog()
 const film = computed(() => catalog.films.find(entry => entry.id === props.filmId))
 // A film leads back to its whole original work, never to one episode: the novel page, told where the reader came from.
 const originHref = computed(() => `${seriesWorkHref('novel', catalog.work.id)}?from=${encodeURIComponent(props.filmId)}`)
-// Opening a film plays it. Browsers may hold back sound on a page not yet tapped (iPhone Safari always does);
-// then the film starts without sound and one button brings it in.
+// Opening a film tries to play with sound. If the browser requires a tap, keep sound enabled
+// and let the viewer start it with the playback controls.
 const media = ref<HTMLVideoElement>()
 const frame = ref<HTMLElement>()
-const silent = ref(false)
 const playing = ref(false)
 const failed = ref(false)
 const time = ref(0)
@@ -39,26 +38,10 @@ async function autoplay() {
     await video.play()
   } catch {
     if (attempt !== startAttempt || video !== media.value) return
-    video.muted = true
-    try {
-      await video.play()
-      if (attempt === startAttempt && video === media.value) silent.value = true
-    } catch {
-      if (attempt !== startAttempt || video !== media.value) return
-      // Not even a silent start (data saving, for one): the controls stay for the viewer.
-      video.muted = false
-    }
+    playing.value = false
+    failed.value = Boolean(video.error)
   }
 }
-function soundOn() {
-  const video = media.value
-  if (!video) return
-  video.muted = false
-  silent.value = false
-  if (video.paused) void video.play().catch(() => { failed.value = Boolean(video.error) })
-}
-/** Sound turned on elsewhere also clears the button. */
-function syncSound() { if (media.value && !media.value.muted) silent.value = false }
 function syncTime() { time.value = media.value?.currentTime ?? 0 }
 function syncMetadata() {
   const video = media.value
@@ -68,7 +51,7 @@ function syncMetadata() {
   syncTime()
 }
 function syncPlaying() { playing.value = true; failed.value = false }
-function mediaFailed() { playing.value = false; failed.value = true; silent.value = false }
+function mediaFailed() { playing.value = false; failed.value = true }
 function seekTo(value: number) {
   const video = media.value
   if (!video || !Number.isFinite(value)) return
@@ -113,7 +96,6 @@ function onTurn(event: MediaQueryListEvent) { turned.value = event.matches }
 
 watch(() => props.filmId, async () => {
   ++startAttempt
-  silent.value = false
   playing.value = false
   failed.value = false
   time.value = 0
@@ -145,11 +127,10 @@ onBeforeUnmount(() => {
     <main id="main" tabindex="-1" class="film-main">
       <section ref="frame" class="film-frame" :class="{ 'is-tall': film.height > film.width }" aria-label="영상 플레이어">
         <video ref="media" class="film-video" :src="withBase(film.src)" :poster="withBase(film.poster.src)" :width="film.width" :height="film.height"
-          playsinline preload="auto" @volumechange="syncSound" @loadedmetadata="syncMetadata" @durationchange="syncMetadata" @timeupdate="syncTime"
+          playsinline preload="auto" @loadedmetadata="syncMetadata" @durationchange="syncMetadata" @timeupdate="syncTime"
           @play="syncPlaying" @playing="syncPlaying" @pause="playing = false" @ended="playing = false" @error="mediaFailed" />
         <VideoControls :playing="playing" :failed="failed" :time="time" :duration="duration" :full="full" :reset-key="filmId"
           @play="togglePlay" @skip="skip" @seek="seekTo" @fullscreen="toggleFull" />
-        <button v-if="silent" type="button" class="film-sound" @click="soundOn"><ReaderIcon name="sound" :size="20" :stroke="1.9" />소리 켜기</button>
       </section>
       <div class="film-copy">
         <h1 class="film-title">{{ film.title }}</h1>
