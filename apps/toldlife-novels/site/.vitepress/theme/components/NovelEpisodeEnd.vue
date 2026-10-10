@@ -36,6 +36,6 @@ onBeforeUnmount(() => { loadObserver?.disconnect(); readObserver?.disconnect() }
     <section v-if="enabled" id="reactions" class="reactions-anchor" aria-label="마음 남기기">
       <ClientOnly><ReaderReactionBar v-if="ready" :page-id="reactionPageId(catalog.work, pageId)" /></ClientOnly>
     </section>
-    <EpisodeNav series="novel" :previous="link(previous)" :next="link(next)" />
+    <EpisodeNav series="novel" next-icon="chevron" :previous="link(previous)" :next="link(next)" />
   </div>
 </template>

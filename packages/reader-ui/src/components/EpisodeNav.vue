@@ -9,9 +9,9 @@ import { seriesIcons, type SeriesKey } from '../series/series-tabs.mjs'
  */
 export type EpisodeLink = { href?: string; pending?: boolean }
 /** While counting, 다음 화 fills over the delay before the next episode starts by itself. */
-const props = defineProps<{ series: SeriesKey; next?: EpisodeLink; previous?: EpisodeLink; counting?: boolean }>()
+const props = defineProps<{ series: SeriesKey; next?: EpisodeLink; previous?: EpisodeLink; counting?: boolean; nextIcon?: string }>()
 const emit = defineEmits<{ go: [event: MouseEvent]; back: [event: MouseEvent] }>()
-const icon = computed(() => seriesIcons[props.series])
+const icon = computed(() => props.nextIcon ?? seriesIcons[props.series])
 const iconSize = computed(() => (props.series === 'video' ? 18 : 20))
 </script>
 
