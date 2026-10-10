@@ -56,6 +56,8 @@ export function loadEpisodeIllustrations(root, episodes) {
       if (image.episodeId !== episode.id) throw new Error(`다른 회차의 삽화 표시입니다: ${episode.id} → ${marker.id}`)
     }
     const rows = images[episode.id] ?? []
+    // A book can illustrate some episodes and leave others as prose only.
+    if (!rows.length) continue
     for (const image of rows)
       if (!seen.has(image.id)) throw new Error(`원고에 삽화 표시가 없습니다: ${image.id}`)
     const representatives = rows.filter(image => image.representative === true)

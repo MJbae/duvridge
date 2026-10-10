@@ -76,7 +76,7 @@ test('큰 버튼은 플레이어를 열어 바로 재생하고, 회차의 모든
   await expect(pauseButton(page)).toBeVisible()
   const track = narration.prolog
   await expect(page.locator('.lyric-current')).toHaveText(track.texts[0])
-  await expect(page.locator('.lyrics > *')).toHaveCount(track.texts.filter(Boolean).length)
+  await expect(page.locator('.lyrics > *')).toHaveCount(track.texts.filter((text, index) => text && !track.cues[index][2]).length)
   await jumpTo(page, track.cues[5][0] + 0.2)
   await expect(page.locator('.lyric-current')).toHaveText(track.texts[5])
   await expect(page.locator('.lyric-current')).toBeInViewport()
@@ -85,6 +85,28 @@ test('큰 버튼은 플레이어를 열어 바로 재생하고, 회차의 모든
   await expect.poll(() => currentTime(page)).toBeGreaterThanOrEqual(track.cues[6][0] - 0.3)
   const title = await page.evaluate(() => navigator.mediaSession?.metadata?.title)
   expect(title).toBe('프롤로그 벼 한 톨의 무게')
+})
+
+test('배경 안내는 제목 아래에 한 번 표시하고 도입 큐와 본문 문장 클릭의 시각을 보존한다', async ({ page }) => {
+  await page.goto('ep03')
+  await expect(page.locator('[data-reader-ready="true"]')).toBeVisible()
+  const episode = readingOrder.find(entry => entry.id === 'ep03')!
+  const track = narration.ep03
+  const context = page.locator('.listen-titles .episode-context')
+  await expect(context).toHaveText(episode.time)
+  await expect(context).toHaveCount(1)
+  await expect(page.locator('.lyrics')).not.toContainText(episode.time)
+  await playButton(page).click()
+  await listening(page, 'ep03')
+  const opening = track.cues.findIndex(cue => cue[2] === 'dateline')
+  expect(opening).toBeGreaterThanOrEqual(0)
+  await jumpTo(page, track.cues[opening][0] + 0.1)
+  await expect(page.locator('.lyric-current')).toHaveCount(0)
+  const body = track.cues.findIndex(cue => !cue[2])
+  await page.locator('.lyric-line', { hasText: track.texts[body] }).click()
+  await expect.poll(() => currentTime(page)).toBeGreaterThanOrEqual(track.cues[body][0] - 0.3)
+  await expect(page.locator('.lyric-current')).toHaveText(track.texts[body])
+  await noOverflow(page)
 })
 
 

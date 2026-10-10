@@ -3,7 +3,7 @@ import { computed, inject, nextTick, onMounted, ref, watch } from 'vue'
 import ReaderIcon from '@duvridge/reader-ui/components/ReaderIcon.vue'
 import EpisodeNav from '@duvridge/reader-ui/components/EpisodeNav.vue'
 import { clock, cueIndexAt, spokenTime } from '../../shared/narration-cues.mjs'
-import { lyricLines, sceneAt, sleepLabel } from '../../shared/playback-selection.mjs'
+import { lyricLines, proseCueTexts, sceneAt, sleepLabel } from '../../shared/playback-selection.mjs'
 import { useCatalogHelpers } from '../lib/reader-catalog'
 import { followsHere, narrationKey } from '../lib/narration-controller'
 import SceneArt from './SceneArt.vue'
@@ -17,7 +17,7 @@ const order = catalog.readingOrder
 const index = computed(() => order.findIndex(entry => entry.id === props.episodeId))
 const episode = computed(() => order[index.value])
 const track = computed(() => narrationFor(props.episodeId))
-const texts = computed(() => track.value?.texts ?? [])
+const texts = computed(() => proseCueTexts(track.value?.texts ?? [], track.value?.cues ?? []))
 const duration = computed(() => track.value?.duration ?? 0)
 // The page shows its own episode: the one playing, or where the listener left it.
 const isCurrent = computed(() => state.active && state.episodeId === props.episodeId)
@@ -26,7 +26,10 @@ const cue = computed(() => (track.value ? cueIndexAt(track.value.cues, time.valu
 const playing = computed(() => isCurrent.value && state.playing)
 const failed = computed(() => isCurrent.value && state.failed)
 const ended = computed(() => state.ended === props.episodeId)
-const current = computed(() => lyricLines(texts.value, cue.value).current)
+const current = computed(() => {
+  const kind = track.value?.cues[cue.value]?.[2]
+  return kind && kind !== 'music' ? -1 : lyricLines(texts.value, cue.value).current
+})
 const image = computed(() => sceneImage(sceneAt(track.value?.scenes ?? [], cue.value)) ?? episodeImage(props.episodeId))
 const homeHref = computed(() => workHome(episode.value?.episodeId || props.episodeId))
 const previous = computed(() => order.slice(0, Math.max(0, index.value)).reverse().find(entry => narrationFor(entry.id)))
@@ -85,7 +88,7 @@ function goPrevious(event: MouseEvent) { if (previous.value) goEpisode(event, pr
       <template v-if="!ended">
         <div class="listen-heading">
           <SceneArt class="listen-art" :image="image" sizes="112px" eager />
-          <div class="listen-titles"><h1>{{ episode.title }}</h1><p>{{ catalog.work.title }}</p></div>
+          <div class="listen-titles"><h1>{{ episode.title }}</h1><p v-if="episode.time" class="episode-context">{{ episode.time }}</p></div>
         </div>
         <section ref="lyrics" class="lyrics" aria-label="낭독 문장" @wheel.passive="touched" @touchmove.passive="touched">
           <template v-for="line in spoken" :key="line.position">

@@ -13,6 +13,8 @@
 
 `prepareContent({ root, book, extendCatalog })`는 `manuscript.md`와 준비된 자산을 읽습니다. `book`을 생략하면 앱의 `content/book.json`을 읽습니다. 오디오북의 낭독 확장은 앱이 `extendCatalog`로 추가합니다.
 
+회차 첫 줄의 독립된 `*때 · 곳*` 표기는 선택 사항입니다. 없으면 `time`은 빈 문자열이고 본문을 그대로 보존합니다. 연도·장소 형식의 터전 제목도 생략할 수 있으며, 사용하는 작품에는 기존 형식·순서 검증을 적용합니다. 삽화 목록은 일부 회차에만 이미지를 등록할 수 있지만 등록한 이미지와 원고 표시의 일치 검증은 유지합니다.
+
 자산 인코딩은 `buildCoverAssets`, `buildIllustrationAssets`, `buildShareAssets`를 별도 명령으로 호출할 때만 수행합니다. 일반 웹 준비·빌드는 음성 생성이나 자산 재인코딩을 호출하지 않습니다. 공개 URL과 안정적인 삽화 ID는 책의 목록에서 유지합니다.
 
 설치는 저장소 루트의 `npm ci`, 패키지 검증은 `npm test --workspace @duvridge/content-processing`로 실행합니다.

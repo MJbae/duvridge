@@ -112,7 +112,7 @@ onMounted(() => {
       <main id="main" tabindex="-1" class="listen-main">
         <div class="listen-heading">
           <SceneArt class="listen-art" :image="episodeImage(pendingEpisode.id)" sizes="112px" eager />
-          <div class="listen-titles"><h1>{{ pendingEpisode.title }}</h1><p>{{ catalog.work.title }}</p></div>
+          <div class="listen-titles"><h1>{{ pendingEpisode.title }}</h1><p v-if="pendingEpisode.time" class="episode-context">{{ pendingEpisode.time }}</p></div>
         </div>
         <div class="listen-spacer" />
         <button type="button" class="big-button is-pending" disabled><ReaderIcon :name="mode === 'watch' ? 'play' : 'headphones'" :size="20" :stroke="1.9" />{{ pendingEpisode.label }} {{ verb }} · 준비 중</button>

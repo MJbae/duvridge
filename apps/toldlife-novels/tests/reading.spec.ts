@@ -25,6 +25,28 @@ const offCenter = (page: Page, selector: string) => page.locator(selector).evalu
   return Math.abs(box.top + box.height / 2 - innerHeight / 2)
 })
 
+test('회차 배경은 첫 삽화 아래에 한 번 보이며 첫 삽화가 없으면 본문 맨 앞에 둔다', async ({ page }) => {
+  await quiet(page)
+  await page.goto('ep03')
+  const context = page.locator('.story-content .episode-context')
+  await expect(context).toHaveCount(1)
+  await expect(context).toHaveText(rawCatalog.readingOrder.find(entry => entry.id === 'ep03')!.time)
+  expect(await context.evaluate(element => element.previousElementSibling?.matches('.episode-illustration'))).toBe(true)
+  expect(await context.evaluate(element => element.nextElementSibling?.textContent)).toContain('6·25 전쟁이 터졌다.')
+  const figure = (await page.locator('.story-content .episode-illustration').first().boundingBox())!
+  const note = (await context.boundingBox())!
+  expect(Math.abs(note.y - figure.y - figure.height - 14)).toBeLessThan(1)
+  await page.goto('ep08')
+  await expect(context).toHaveText(rawCatalog.readingOrder.find(entry => entry.id === 'ep08')!.time)
+  expect(await context.evaluate(element => element.previousElementSibling?.tagName)).toBe('H1')
+  expect(await context.evaluate(element => element.nextElementSibling?.textContent)).toContain('그때만 해도')
+  await noOverflow(page)
+  await page.goto('./')
+  await expect(page.locator('.episode-context')).toHaveCount(0)
+  const list = await page.locator('.episode-list').innerText()
+  for (const episode of rawCatalog.readingOrder) if (episode.time) expect(list).not.toContain(episode.time)
+})
+
 test('작품 홈은 키아트·제목·소설 | 오디오북 전환·큰 버튼 하나와 소설 회차 목록만 보여 준다', async ({ page }) => {
   await quiet(page)
   await page.goto('./')
@@ -452,6 +474,7 @@ test('자바스크립트 없이도 넓은 줄 간격·명조 기본값과 삽화
     expect(await paragraph.evaluate(element => getComputedStyle(element).lineHeight)).toBe('42px')
     expect(await paragraph.evaluate(element => getComputedStyle(element).fontFamily)).toContain('ToldLife Serif')
     await expect(page.locator('.episode-illustration')).toHaveCount(2)
+    await expect(page.locator('.episode-context')).toHaveText(rawCatalog.readingOrder.find(entry => entry.id === 'ep01')!.time)
     const first = page.locator('.episode-illustration img').first()
     await expect.poll(() => first.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true)
     await page.goto(new URL('ep05', baseURL).href)

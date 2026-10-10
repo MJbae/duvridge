@@ -49,6 +49,11 @@ export function lyricLines(texts, cueIndex) {
   return { previous, current, next: next < texts.length ? next : -1 }
 }
 
+/** Opening information stays in the heading; blank entries preserve every recording cue index. */
+export function proseCueTexts(texts, cues) {
+  return texts.map((text, index) => cues[index]?.[2] ? '' : text)
+}
+
 /** The illustration on screen at a cue: the last scene that has started. */
 export function sceneAt(scenes, cueIndex) {
   let image = scenes[0]?.[1]

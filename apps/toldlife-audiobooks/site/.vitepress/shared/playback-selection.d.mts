@@ -14,5 +14,6 @@ export const sleepChoices: readonly number[]
 export function nextSleepChoice(value: number): number
 export function sleepLabel(value: number): string
 export function lyricLines(texts: readonly string[], cueIndex: number): { previous: number; current: number; next: number }
+export function proseCueTexts(texts: readonly string[], cues: readonly NarrationCue[]): string[]
 export function sceneAt(scenes: readonly [number, string][], cueIndex: number): string | undefined
 export function sceneStarts(scenes: readonly [number, string][], cues: readonly NarrationCue[]): { image: string; start: number }[]

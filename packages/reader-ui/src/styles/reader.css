@@ -316,6 +316,8 @@ html:has(dialog[open]) { overflow: hidden; }
 .story-content hr { border: 0; text-align: center; margin: 40px 0; color: var(--r-sub); }
 .story-content hr::after { content: '⁂'; }
 .story-content .episode-illustration { margin: 0 0 28px; break-inside: avoid; }
+.story-content .episode-illustration:has(+ .episode-context) { margin-bottom: 14px; }
+.story-content .episode-context { margin: 0 0 18px; color: var(--r-sub); font-family: var(--face-ui); font-size: 0.8125rem; font-weight: 400; line-height: 1.5; letter-spacing: 0; }
 .story-content .episode-illustration img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; margin: 0; border-radius: 6px; }
 .responsive-image { position: relative; background: var(--night-raised); border-radius: 6px; overflow: hidden; }
 .page-reader .responsive-image { background: var(--r-line); }

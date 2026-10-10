@@ -4,6 +4,7 @@ import { writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { episodeIllustrations } from '../markdown/render-episode-illustrations.ts'
+import { episodeContext } from '../markdown/render-episode-context.ts'
 import type { ReaderCatalog, Cover, Sharing } from '@duvridge/content-processing/types'
 import { coverImageSizes, episodeImageSizes, imagePreload } from '@duvridge/reader-ui/images/create-image-sources.mjs'
 import { copyReaderFonts, readerFontsPlugin, type ReaderFontAssets } from '@duvridge/reader-ui/fonts/reader-fonts.mjs'
@@ -93,6 +94,7 @@ export function createReaderConfig({ root, catalog, catalogs, series, defaultBas
       config(md) {
         md.set({ html: false })
         md.use(episodeIllustrations, { base, images: catalog.illustrations || {}, works: catalogs })
+        md.use(episodeContext)
         configureMarkdown?.(md)
       },
     },

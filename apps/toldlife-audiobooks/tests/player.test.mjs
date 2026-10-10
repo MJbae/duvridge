@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs'
 import test from 'node:test'
 import ts from 'typescript'
 import { computed } from 'vue'
-import { listenAction, lyricLines, nextSleepChoice, resumeStart, sceneAt, sceneStarts, sleepLabel } from '../site/.vitepress/shared/playback-selection.mjs'
+import { listenAction, lyricLines, nextSleepChoice, proseCueTexts, resumeStart, sceneAt, sceneStarts, sleepLabel } from '../site/.vitepress/shared/playback-selection.mjs'
 
 const readingOrder = ['prolog', 'ep01', 'ep02', 'ep03', 'ep04'].map(id => ({ id }))
 const track = duration => ({ src: '', duration, cues: [[0, 5, 'title'], [5, 20], [20, duration - 10], [duration - 10, duration, 'music']] })
@@ -97,6 +97,18 @@ test('낭독 문장은 앞뒤 문장과 함께 보이고, 끝 음악에서는 �
   assert.deepEqual(lyricLines(texts, -1), { previous: -1, current: 0, next: 1 })
   assert.deepEqual(lyricLines(texts, 2), { previous: 1, current: 2, next: 3 })
   assert.deepEqual(lyricLines(texts, 4), { previous: 2, current: 3, next: -1 })
+})
+
+test('제목·배경 안내는 본문 목록에 중복하지 않으며 문장 클릭과 재생 시각의 인덱스를 보존한다', () => {
+  const cues = [[0, 2, 'cover'], [2, 4, 'title'], [4, 6, 'dateline'], [6, 9], [9, 12], [12, 18, 'music']]
+  const source = ['작품', '회차', '어느 날 · 마을', '첫 문장.', '둘째 문장.', '']
+  const texts = proseCueTexts(source, cues)
+  assert.deepEqual(texts, ['', '', '', '첫 문장.', '둘째 문장.', ''])
+  assert.deepEqual(source, ['작품', '회차', '어느 날 · 마을', '첫 문장.', '둘째 문장.', ''])
+  assert.equal(lyricLines(texts, 3).current, 3)
+  assert.equal(lyricLines(texts, 5).current, 4)
+  assert.equal(cues[texts.findIndex(text => text === '둘째 문장.')][0], 9)
+  assert.deepEqual(proseCueTexts(['도입 없이 시작.'], [[0, 4]]), ['도입 없이 시작.'])
 })
 
 test('장면은 시작한 마지막 그림을 보여 주고, 목록은 장면이 시작하는 시각을 안다', () => {

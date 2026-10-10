@@ -149,6 +149,17 @@ function fixture(t, { excludedEditorialFiles = book.excludedEditorialFiles } = {
   return { root, write, run, readPage }
 }
 
+test('시대·장소와 터전이 없는 작품은 빈 안내와 원문 본문으로 준비한다', t => {
+  const { write, run, readPage } = fixture(t)
+  write(mainFilename, '## 첫 이야기 {#ep01}\n\n본문의 첫 문장.\n\n## 둘째 이야기 {#ep02}\n\n*어느 날 · 마을*\n\n둘째 본문.')
+  const { catalog } = run()
+  assert.deepEqual(catalog.places, [])
+  assert.equal(catalog.readingOrder[0].time, '')
+  assert.equal(readPage('ep01.md').data.time, '')
+  assert.equal(readPage('ep01.md').content.trim(), '# 첫 이야기\n\n본문의 첫 문장.')
+  assert.equal(readPage('ep02.md').data.time, '어느 날 · 마을')
+})
+
 test('터전 4개와 23화, 앞뒤 회차를 생성하고 정본의 모든 본문을 한 번씩 보존한다', (t) => {
   const { root, run, readPage } = fixture(t)
   const { catalog } = run()
@@ -306,11 +317,9 @@ test('누락·잘못된·중복 ID, 터전 제목, 시점 줄, 예약 ID, 본문
     ['# 1977. 남양만 간척지', '# 1977 남양만 간척지', /네 자리 연도, 마침표, 장소/],
     ['# 1977. 남양만 간척지', '# 1977-08. 남양만 간척지', /네 자리 연도, 마침표, 장소/],
     ['# 1936. 안면도\n\n', '# 1936. 안면도\n\n본문\n\n', /터전 제목 아래에는 회차 제목/],
-    ['# 1936. 안면도\n\n', '', /본편 회차 앞에 터전 제목/],
     ['# 2003. 독정 RPC', '# 2000. 빈 터전\n\n# 2003. 독정 RPC', /비어 있는 터전: 2000 빈 터전/],
     ['# 1936. 안면도', '# 1936.', /터전 장소는 1~20자/],
     ['# 1936. 안면도', `# 1936. ${'가'.repeat(21)}`, /터전 장소는 1~20자/],
-    ['*1940년대 · 안면도 중장리*', '시점 없음', /시점 줄/],
     ['*1940년대 · 안면도 중장리*', `*${'가'.repeat(41)}*`, /시점 줄/],
   ]) {
     const changed = original.replace(from, to)
