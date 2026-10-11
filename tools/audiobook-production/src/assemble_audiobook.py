@@ -21,6 +21,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 import render_caption_frames  # noqa: E402
 from generate_narration_clips import clip_path  # noqa: E402
 from resolve_illustration_assets import resolve_illustration_asset  # noqa: E402
+from intro_music import intro_music_profile  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 SITE = Path(os.environ.get("MEMOIR_CONTENT_ROOT", ROOT.parents[1] / "content/books/bae-byunghee")).expanduser().resolve()
@@ -98,7 +99,7 @@ def build_timeline(lines, eid, tempo):
     return pieces, scenes, t
 
 
-def mix(pieces, speech_end, music_path):
+def mix(pieces, speech_end, music_path, intro_profile=None):
     total = speech_end + TAIL + OUTRO
     out = np.zeros((int(total * SR) + 1, 2), np.float32)
     for t0, clip in pieces:
@@ -112,10 +113,11 @@ def mix(pieces, speech_end, music_path):
         ts = np.arange(n) / SR
         return np.interp(ts, [p[0] for p in points], [p[1] for p in points]).astype(np.float32)[:, None]
 
-    # 음악은 낭독이 시작하기 전(LEAD초)에 다 줄어든다. 낭독 시각은 그대로 둔다.
-    intro_len = int(LEAD * SR)
+    # 제목·시점 안내가 있는 회차는 음악을 천천히 줄이고 본문 전에 끝낸다.
+    intro_duration, intro_points = intro_profile or intro_music_profile([], LEAD)
+    intro_len = int(intro_duration * SR)
     intro = music[:intro_len] * gain
-    out[:len(intro)] += intro * env(len(intro), [(0, 0), (0.8, 1), (LEAD - 1.5, 1), (LEAD - 0.5, 0)])
+    out[:len(intro)] += intro * env(len(intro), intro_points)
     o0 = int((speech_end + TAIL - 1.0) * SR)
     outro = music[: len(out) - o0] * gain
     out[o0:o0 + len(outro)] += outro * env(len(outro), [(0, 0), (1.5, 1), (OUTRO - OUTRO_FADE, 1), (OUTRO + 1, 0)])
@@ -196,7 +198,7 @@ def encode_video(eid, audio, scenes, total, out):
 def render(eid, lines, tempo, music):
     """한 가지 속도로 타임라인과 믹스를 만든다. (믹스, 화면 목록, 전체 길이)"""
     pieces, scenes, speech_end = build_timeline(lines, eid, tempo)
-    audio = mix(pieces, speech_end, music)
+    audio = mix(pieces, speech_end, music, intro_music_profile(scenes, LEAD))
     return audio, scenes, len(audio) / SR
 
 
